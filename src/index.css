@@ -1,0 +1,79 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Theme tối kiểu lâu đài: nền đá đậm, chữ ngà, nhấn vàng nến.
+ * App chỉ có theme tối nên token đặt thẳng ở :root (html cũng mang class "dark").
+ */
+:root {
+  --radius: 0.75rem;
+  --background: #14120f; /* đá đậm */
+  --foreground: #efe6d2; /* ngà */
+  --card: #1f1b17;
+  --card-foreground: #efe6d2;
+  --popover: #1f1b17;
+  --popover-foreground: #efe6d2;
+  --primary: #e0a33a; /* vàng nến */
+  --primary-foreground: #1a1510;
+  --secondary: #2a251f;
+  --secondary-foreground: #efe6d2;
+  --muted: #2a251f;
+  --muted-foreground: #a89c86;
+  --accent: #3a3026;
+  --accent-foreground: #f5c66b;
+  --destructive: #c4513f;
+  --border: #3a332b;
+  --input: #3a332b;
+  --ring: #e0a33a;
+  --candle-glow: rgb(245 198 107 / 0.35);
+  --nav-height: 4rem;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-candle-glow: var(--candle-glow);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family: ui-serif, Georgia, 'Times New Roman', serif;
+  }
+}
