@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router'
+import { Outlet, ScrollRestoration } from 'react-router'
 
 import { BottomNav } from '@/components/BottomNav'
 import { storageNotice } from '@/app/storage-notice'
@@ -28,6 +28,7 @@ export function AppShell() {
         <Outlet />
       </main>
       <BottomNav />
+      <ScrollRestoration />
     </div>
   )
 }

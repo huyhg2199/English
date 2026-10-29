@@ -13,6 +13,15 @@
     Mô hình chặng/tuần/bài có anchor từng đoạn và tag kỹ năng, nạp từ lo-trinh-toeic-12-thang.md; bản đồ có Can-do, điểm ước tính, trạm đã qua sáng lên (CAP-1, CAP-20).
     Schema phải đủ để test link về đúng đoạn bài (Constraints: test bám bài).
   spec_checkpoint: true
+- id: "2a"
+  title: Lưu dữ liệu học trên Supabase, local-first và đồng bộ
+  description: >-
+    Supabase là nơi lưu chính của dữ liệu học: app vẫn đọc/ghi localStorage và chạy offline, có mạng thì đồng bộ hai chiều với Supabase; Supabase là bản chuẩn khi đổi máy (CAP-22).
+    Đăng nhập bằng magic link email, bảng có Row Level Security. Gist ở story 13 giữ nguyên, không thay. Cập nhật Constraints SPEC và stack.md cho backend mới.
+  spec_checkpoint: true
+  invoke_dev_with: >-
+    Repo public: chỉ commit URL + anon key Supabase, không commit service key; RLS bắt buộc trên mọi bảng. Không đẩy API key/PAT lên Supabase.
+    Đồng bộ đi qua lớp store/context của story 2, không gọi Supabase rải rác trong component.
 - id: "3"
   title: Bộ từ NGSL/TSL và flashcard SRS có IPA, trọng âm, nút nghe
   description: >-
