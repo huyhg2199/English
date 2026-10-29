@@ -94,6 +94,32 @@ describe('loadStore — I/O Matrix', () => {
     })
   })
 
+  describe('migration thật v1 → v2 (story 2: tiến độ lộ trình)', () => {
+    it('giữ dữ liệu cũ, thêm progress.completedLessonIds rỗng và ghi lại', () => {
+      expect(CURRENT_VERSION).toBe(2)
+      const storage = fakeStorage({
+        [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { streak: 7, notes: ['a'] } }),
+      })
+      const result = loadStore({ storage, warn })
+
+      expect(result.status).toBe('migrated')
+      expect(result.mode).toBe('persistent')
+      expect(result.store).toEqual({
+        schemaVersion: 2,
+        data: { streak: 7, notes: ['a'], progress: { completedLessonIds: [] } },
+      })
+      expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
+    })
+
+    it('v1 đã có progress (hợp lệ dạng object) → giữ nguyên', () => {
+      const progress = { completedLessonIds: ['s1-t1-w1'] }
+      const storage = fakeStorage({
+        [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { progress } }),
+      })
+      expect(loadStore({ storage, warn }).store.data.progress).toEqual(progress)
+    })
+  })
+
   it.each([
     ['JSON không parse được', '{not json'],
     ['sai cấu trúc', JSON.stringify({ foo: 1 })],

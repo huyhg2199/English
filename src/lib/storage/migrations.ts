@@ -1,14 +1,23 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 1
+export const CURRENT_VERSION = 2
 
 /**
  * `migrations[n]` biến store version n → n + 1.
  * Story sau thêm field thì: tăng CURRENT_VERSION và thêm migrations[CURRENT_VERSION - 1].
  * Migration không được xoá dữ liệu cũ; chỉ thêm hoặc đổi dạng field.
  */
-export const migrations: Migrations = {}
+export const migrations: Migrations = {
+  // v1 → v2 (story 2): thêm tiến độ lộ trình. Giữ mọi field cũ; progress đã có thì để nguyên.
+  1: (store) => ({
+    schemaVersion: 2,
+    data: {
+      ...store.data,
+      progress: isPlainObject(store.data.progress) ? store.data.progress : { completedLessonIds: [] },
+    },
+  }),
+}
 
 export function createDefaultStore(version: number = CURRENT_VERSION): Store {
   return { schemaVersion: version, data: {} }

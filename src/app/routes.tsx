@@ -1,6 +1,7 @@
 import { Navigate, type RouteObject } from 'react-router'
 
 import { AppShell } from '@/app/AppShell'
+import { Lesson } from '@/pages/Lesson'
 import { Notebook } from '@/pages/Notebook'
 import { Practice } from '@/pages/Practice'
 import { Roadmap } from '@/pages/Roadmap'
@@ -18,6 +19,8 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <Today /> },
       { path: 'roadmap', element: <Roadmap /> },
+      // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
+      { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson /> },
       { path: 'practice', element: <Practice /> },
       { path: 'notebook', element: <Notebook /> },
       { path: 'trophies', element: <TrophyRoom /> },
