@@ -1,2 +1,10 @@
 .claude/
 _bmad/
+node_modules/
+dist/
+dev-dist/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store
