@@ -1,0 +1,97 @@
+# Đợt 1 — xem mvp-phases.md. Chạy từ trên xuống.
+- id: "1"
+  title: Khung app PWA, deploy GitHub Pages, bottom nav 5 mục và lớp lưu trữ
+  description: >-
+    Dựng Vite + React + shadcn/ui + vite-plugin-pwa, deploy GitHub Pages qua Actions, bottom nav 5 mục, theme tối lâu đài (Constraints, CAP-20).
+    Lớp localStorage có version schema làm nền cho CAP-22.
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Repo public: không commit secret, gist id hay dữ liệu cá nhân. Đặt base path cho Pages. Asset HP chỉ loại "lấy cảm hứng".
+- id: "2"
+  title: Dữ liệu lộ trình 3 chặng và Bản đồ Năm học
+  description: >-
+    Mô hình chặng/tuần/bài có anchor từng đoạn và tag kỹ năng, nạp từ lo-trinh-toeic-12-thang.md; bản đồ có Can-do, điểm ước tính, trạm đã qua sáng lên (CAP-1, CAP-20).
+    Schema phải đủ để test link về đúng đoạn bài (Constraints: test bám bài).
+  spec_checkpoint: true
+- id: "3"
+  title: Bộ từ NGSL/TSL và flashcard SRS có IPA, trọng âm, nút nghe
+  description: >-
+    Đóng gói NGSL + TSL kèm dữ liệu từ sinh bằng AI lúc build (learning-rules.md), SRS chỉ hiện thẻ đến hạn (CAP-9).
+    Mỗi thẻ có IPA, đánh dấu trọng âm, nút nghe speechSynthesis, link Cambridge (CAP-10).
+  spec_checkpoint: true
+  invoke_dev_with: >-
+    Oxford 3000/5000 chỉ link, không đóng gói. Ghi attribution CC BY-SA 4.0 cho NGSL/TSL trong app.
+- id: "4"
+  title: Trang Hôm nay, buổi 30' và ngày lười 10'
+  description: >-
+    Một nút chạy buổi 5' SRS → 15' bài chính → 10' link chọn sẵn; nút "Hôm nay lười" lấy tin HN/Google AI Blog để lưu 3 từ, vẫn giữ streak (CAP-2).
+    Ghi nhật ký buổi học làm dữ liệu cho streak và CAP-5/6/7.
+  done_checkpoint: true
+- id: "5"
+  title: Mũ Phân Loại, bảng khoảng cách kỹ năng và đồng hồ giờ học
+  description: >-
+    Nhập điểm đề ETS theo Part, xếp chặng/bài, gán Nhà qua câu hỏi sở thích (CAP-3).
+    Bảng kỹ năng so với mục tiêu, đẩy bài vào kỹ năng yếu nhất, đồng hồ giờ so với 450h/năm (CAP-7, learning-rules.md).
+  spec_checkpoint: true
+- id: "6"
+  title: Trang bài học và nội dung chặng 1 tháng T1 (tuần 1–4)
+  description: >-
+    Trang bài có phần phát âm so khớp giọng nói, tự ẩn khi không có STT (CAP-10), và phần thì có dòng thời gian, câu thoại VOA/YouGlish, mở khoá thần chú (CAP-11).
+    Soạn nội dung tuần 1–4 tháng T1.
+  spec_checkpoint: true
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Kiểm chứng SpeechRecognition trên iOS Safari PWA; không chạy thì ẩn phần so khớp, giữ nút nghe. Nội dung chỉ lấy từ nguồn trong nguon-hoc-mien-phi.md.
+- id: "7"
+  title: Sao lưu và khôi phục dữ liệu bằng file JSON
+  description: >-
+    Export/import toàn bộ dữ liệu học, không bao giờ chứa API key hay token (CAP-22 phần thủ công).
+  invoke_dev_with: >-
+    Dùng allowlist các key được backup, không dùng blocklist.
+- id: "8"
+  title: Sổ tay, lưu 1 chạm kèm ngữ cảnh và ghi chú kiến thức
+  description: >-
+    Bôi đen từ/câu trong bài đọc và tin để lưu kèm nguồn và câu gốc, có ghi chú tự do (CAP-18).
+    Từ đã lưu có thể thành thẻ SRS giữ câu gốc (CAP-9).
+  done_checkpoint: true
+- id: "9"
+  title: Engine test bám bài, mini test và Sổ lỗi sai của Snape
+  description: >-
+    Engine câu hỏi dùng chung: mỗi câu tag bài nguồn, sai thì link về đúng đoạn; mini test tuần 4 T1; câu sai tự vào sổ kèm nhãn lỗi và hàng ôn SRS (CAP-19).
+    Nút "Vì sao sai?" gọi Gemini BYOK, trả giải thích tiếng Việt kèm 2 ví dụ đúng.
+  spec_checkpoint: true
+  invoke_dev_with: >-
+    Key chỉ ở localStorage, không log, không đưa vào backup/Gist. Câu hỏi theo khuôn ETS, không copy nội dung đề.
+- id: "10"
+  title: Nội dung chặng 1 tháng T2–T4 và link luyện nói kèm prompt roleplay
+  description: >-
+    Soạn bài T2–T4 trên khung của story 6 và 9 (CAP-10, CAP-11).
+    Mỗi bài có nút sang Gemini/AI luyện nói free kèm prompt roleplay chỉ dùng thần chú đã mở (CAP-16 dạng link).
+  spec_checkpoint: true
+- id: "11"
+  title: Gia hạn tiến độ và test quay lại 5'
+  description: >-
+    Trễ thì lùi mốc và hiện ngày dự kiến đạt 750 (CAP-5); nghỉ hơn 1 tuần thì test 5' rồi tới đúng bài hổng (CAP-6).
+    Luật trễ và nguồn câu test theo learning-rules.md.
+  spec_checkpoint: true
+- id: "12"
+  title: Điểm Nhà, Phòng Cúp và huy chương 3 cấp
+  description: >-
+    Streak thành điểm Nhà (ngày lười vẫn tính), Phòng Cúp huy chương đồng/bạc/vàng theo 1/5/20 lần, hiệu ứng Lumos và cú đưa thư bản nhẹ (CAP-20, hp-theme.md).
+    Hagrid/Sirius chưa làm.
+  spec_checkpoint: true
+- id: "13"
+  title: Bản sao Gist tự động, Owl Post Telegram và nhắc nhở
+  description: >-
+    Ghi trạng thái "đã học hôm nay" và snapshot lên secret Gist qua PAT, kéo bản sao về được (CAP-22).
+    Nhắc bằng thông báo trong app, .ics/lịch subscribe và cron Telegram đọc Gist trước khi gửi; chưa làm web push (CAP-21).
+  spec_checkpoint: true
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Repo public: token bot và gist id chỉ ở GitHub Secrets; PAT chỉ ở localStorage, chỉ quyền gist; không ghi key/PAT lên Gist; workflow không echo secret.
+- id: "14"
+  title: Kỳ thi O.W.L. 1 qua cửa chặng 1
+  description: >-
+    Test cuối chặng 1 theo lo-trinh-toeic-12-thang.md, qua cửa khi ≥70% riêng từng phần thì và phát âm (CAP-4, learning-rules.md).
+    Trượt chỉ sinh kế hoạch ôn 2 tuần phần yếu theo Sổ lỗi; qua thì trao huy chương Dumbledore.
+  spec_checkpoint: true
