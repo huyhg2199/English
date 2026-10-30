@@ -27,6 +27,11 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+        env:
+          # GitHub Actions Variables (không phải Secrets): URL và anon key của Supabase là công khai, có RLS bảo vệ.
+          # Chưa đặt thì build ra app chạy chỉ local.
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
       - name: Check PWA files
         run: test -f dist/manifest.webmanifest && test -f dist/sw.js
       - name: Upload Pages artifact

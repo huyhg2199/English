@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadStore, saveStore, STORAGE_KEY } from './storage'
-import { CURRENT_VERSION } from './migrations'
+import { CURRENT_VERSION, LEGACY_UPDATED_AT } from './migrations'
 import type { Migrations, StorageLike } from './types'
 
 function fakeStorage(initial: Record<string, string> = {}) {
@@ -94,9 +94,20 @@ describe('loadStore — I/O Matrix', () => {
     })
   })
 
-  describe('migration thật v1 → v2 (story 2: tiến độ lộ trình)', () => {
-    it('giữ dữ liệu cũ, thêm progress.completedLessonIds rỗng và ghi lại', () => {
-      expect(CURRENT_VERSION).toBe(2)
+  describe('migration thật v1 → v2 → v3 (story 2, 2a: tiến độ lộ trình)', () => {
+    const NOW = '2026-11-02T12:00:00.000Z'
+    // Migration không dùng giờ máy: tiến độ có từ trước luôn mang mốc cũ cố định.
+    const OLD = LEGACY_UPDATED_AT
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(NOW))
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('v1: giữ dữ liệu cũ, thêm progress.lessons rỗng và ghi lại', () => {
+      expect(CURRENT_VERSION).toBe(3)
       const storage = fakeStorage({
         [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { streak: 7, notes: ['a'] } }),
       })
@@ -105,18 +116,61 @@ describe('loadStore — I/O Matrix', () => {
       expect(result.status).toBe('migrated')
       expect(result.mode).toBe('persistent')
       expect(result.store).toEqual({
-        schemaVersion: 2,
-        data: { streak: 7, notes: ['a'], progress: { completedLessonIds: [] } },
+        schemaVersion: 3,
+        data: { streak: 7, notes: ['a'], progress: { lessons: {} } },
       })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
-    it('v1 đã có progress (hợp lệ dạng object) → giữ nguyên', () => {
-      const progress = { completedLessonIds: ['s1-t1-w1'] }
+    it('v1 đã có progress dạng v2 → đổi sang lessons', () => {
       const storage = fakeStorage({
-        [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { progress } }),
+        [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { progress: { completedLessonIds: ['s1-t1-w1'] } } }),
       })
-      expect(loadStore({ storage, warn }).store.data.progress).toEqual(progress)
+      expect(loadStore({ storage, warn }).store.data.progress).toEqual({
+        lessons: { 's1-t1-w1': { done: true, updatedAt: OLD } },
+      })
+    })
+
+    it('v2 → v3: giữ cả id lạ với done: true, updatedAt = mốc 1970 (không phải lúc migrate), giữ field khác', () => {
+      const storage = fakeStorage({
+        [STORAGE_KEY]: JSON.stringify({
+          schemaVersion: 2,
+          data: { streak: 2, progress: { completedLessonIds: ['s1-t1-w1', 'old-id', 7, null], other: 'x' } },
+        }),
+      })
+      const result = loadStore({ storage, warn })
+
+      expect(result.status).toBe('migrated')
+      expect(result.store).toEqual({
+        schemaVersion: 3,
+        data: {
+          streak: 2,
+          progress: {
+            other: 'x',
+            lessons: { 's1-t1-w1': { done: true, updatedAt: OLD }, 'old-id': { done: true, updatedAt: OLD } },
+          },
+        },
+      })
+      expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
+    })
+
+    it('v2 → v3: giữ id trùng tên thuộc tính kế thừa (vd constructor)', () => {
+      const storage = fakeStorage({
+        [STORAGE_KEY]: JSON.stringify({ schemaVersion: 2, data: { progress: { completedLessonIds: ['constructor', 'toString'] } } }),
+      })
+      const lessons = (loadStore({ storage, warn }).store.data.progress as { lessons: Record<string, unknown> }).lessons
+      expect(Object.keys(lessons)).toEqual(['constructor', 'toString'])
+    })
+
+    it.each([
+      ['thiếu progress', {}],
+      ['progress sai dạng', { progress: 'x' }],
+      ['completedLessonIds không phải mảng', { progress: { completedLessonIds: 'a' } }],
+    ])('v2 %s → progress.lessons rỗng, không lỗi', (_, data) => {
+      const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 2, data }) })
+      const result = loadStore({ storage, warn })
+      expect(result.status).toBe('migrated')
+      expect((result.store.data.progress as { lessons: unknown }).lessons).toEqual({})
     })
   })
 

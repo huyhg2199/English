@@ -6,7 +6,11 @@ import type { Store } from '@/lib/storage'
 import { computeRoadmapProgress, readCompletedLessonIds, setLessonCompleted } from './roadmap-progress'
 
 const lessons = allLessons()
-const store = (data: Record<string, unknown>): Store => ({ schemaVersion: 2, data })
+const store = (data: Record<string, unknown>): Store => ({ schemaVersion: 3, data })
+const T = '2026-11-01T00:00:00.000Z'
+const done = (updatedAt = T) => ({ done: true, updatedAt })
+const undone = (updatedAt = T) => ({ done: false, updatedAt })
+const NOW = new Date('2026-11-02T12:00:00.000Z')
 
 describe('computeRoadmapProgress — I/O Matrix', () => {
   it('chưa học gì → không trạm nào sáng, trạm đầu tiên là "học tiếp"', () => {
@@ -28,7 +32,7 @@ describe('computeRoadmapProgress — I/O Matrix', () => {
   })
 
   it('id lạ (bài đã bị xoá) → bỏ qua khi tính, không xoá khỏi store', () => {
-    const s = store({ progress: { completedLessonIds: ['old-lesson', 's1-t1-w1'] } })
+    const s = store({ progress: { lessons: { 'old-lesson': done(), 's1-t1-w1': done() } } })
     const result = computeRoadmapProgress(lessons, readCompletedLessonIds(s))
     expect([...result.completed]).toEqual(['s1-t1-w1'])
     expect(result.nextLessonId).toBe('s1-t1-w2')
@@ -42,42 +46,92 @@ describe('readCompletedLessonIds', () => {
   it.each([
     ['thiếu progress', {}],
     ['progress sai dạng', { progress: 'x' }],
-    ['completedLessonIds không phải mảng', { progress: { completedLessonIds: 'a' } }],
+    ['lessons không phải object', { progress: { lessons: ['a'] } }],
   ])('%s → mảng rỗng', (_, data) => {
     expect(readCompletedLessonIds(store(data))).toEqual([])
   })
 
-  it('bỏ phần tử không phải chuỗi', () => {
-    expect(readCompletedLessonIds(store({ progress: { completedLessonIds: ['a', 1, null] } }))).toEqual(['a'])
+  it('chỉ lấy bài done: true, bỏ mục sai dạng', () => {
+    const lessonsData = {
+      a: done(),
+      b: undone(),
+      c: { done: 'yes', updatedAt: T },
+      d: { done: true },
+      e: { done: true, updatedAt: 'không phải ngày' },
+      f: null,
+    }
+    expect(readCompletedLessonIds(store({ progress: { lessons: lessonsData } }))).toEqual(['a'])
   })
 })
 
 describe('setLessonCompleted', () => {
-  it('đánh dấu rồi bỏ đánh dấu, không sửa store cũ, giữ field khác', () => {
-    const s0 = store({ streak: 3, progress: { completedLessonIds: [], other: 1 } })
-    const s1 = setLessonCompleted(s0, 's1-t1-w1', true)
+  it('đánh dấu rồi bỏ đánh dấu ghi { done, updatedAt }, không sửa store cũ, giữ field khác', () => {
+    const s0 = store({ streak: 3, progress: { lessons: {}, other: 1 } })
+    const s1 = setLessonCompleted(s0, 's1-t1-w1', true, NOW)
     expect(readCompletedLessonIds(s0)).toEqual([])
-    expect(s1.data).toEqual({ streak: 3, progress: { completedLessonIds: ['s1-t1-w1'], other: 1 } })
+    expect(s1.data).toEqual({
+      streak: 3,
+      progress: { lessons: { 's1-t1-w1': { done: true, updatedAt: NOW.toISOString() } }, other: 1 },
+    })
 
-    const s2 = setLessonCompleted(s1, 's1-t1-w1', false)
-    expect(s2.data).toEqual({ streak: 3, progress: { completedLessonIds: [], other: 1 } })
+    const later = new Date('2026-11-03T00:00:00.000Z')
+    const s2 = setLessonCompleted(s1, 's1-t1-w1', false, later)
+    // Bỏ đánh dấu là done: false, không xoá key.
+    expect(s2.data).toEqual({
+      streak: 3,
+      progress: { lessons: { 's1-t1-w1': { done: false, updatedAt: later.toISOString() } }, other: 1 },
+    })
   })
 
   it('không đổi gì thì trả về chính store đó', () => {
-    const s = store({ progress: { completedLessonIds: ['a'] } })
+    const s = store({ progress: { lessons: { a: done(), b: undone() } } })
     expect(setLessonCompleted(s, 'a', true)).toBe(s)
     expect(setLessonCompleted(s, 'b', false)).toBe(s)
+    expect(setLessonCompleted(s, 'never', false)).toBe(s)
   })
 
-  it('giữ phần tử không phải chuỗi trong mảng gốc khi đánh dấu / bỏ đánh dấu', () => {
-    const s0 = store({ progress: { completedLessonIds: ['a', 1, null, { x: 1 }] } })
-    const s1 = setLessonCompleted(s0, 'b', true)
-    expect(s1.data.progress).toEqual({ completedLessonIds: ['a', 1, null, { x: 1 }, 'b'] })
-    const s2 = setLessonCompleted(s1, 'a', false)
-    expect(s2.data.progress).toEqual({ completedLessonIds: [1, null, { x: 1 }, 'b'] })
+  it('giữ mục sai dạng và id lạ khi đánh dấu / bỏ đánh dấu bài khác', () => {
+    const junk = { done: 'x' }
+    const s0 = store({ progress: { lessons: { a: done(), junk, 'old-id': done() } } })
+    const s1 = setLessonCompleted(s0, 'b', true, NOW)
+    const s2 = setLessonCompleted(s1, 'a', false, NOW)
+    expect(s2.data.progress).toEqual({
+      lessons: {
+        a: { done: false, updatedAt: NOW.toISOString() },
+        junk,
+        'old-id': done(),
+        b: { done: true, updatedAt: NOW.toISOString() },
+      },
+    })
   })
 
-  it('store chưa có progress (v2 mới tạo) → tạo progress', () => {
-    expect(setLessonCompleted(store({}), 'a', true).data).toEqual({ progress: { completedLessonIds: ['a'] } })
+  it('đánh dấu lại bài có mục sai dạng → ghi đè bằng mục hợp lệ', () => {
+    const s = store({ progress: { lessons: { a: { done: 'x' } } } })
+    expect(setLessonCompleted(s, 'a', true, NOW).data.progress).toEqual({
+      lessons: { a: { done: true, updatedAt: NOW.toISOString() } },
+    })
+  })
+
+  it('đồng hồ máy lùi: updatedAt mới = updatedAt cũ + 1ms, không lùi', () => {
+    const future = '2027-01-01T00:00:00.000Z'
+    const s = store({ progress: { lessons: { a: done(future) } } })
+    const next = setLessonCompleted(s, 'a', false, NOW)
+    expect(next.data.progress).toEqual({ lessons: { a: { done: false, updatedAt: '2027-01-01T00:00:00.001Z' } } })
+    // Lần sửa tiếp theo vẫn tăng tiếp
+    const again = setLessonCompleted(next, 'a', true, NOW)
+    expect(again.data.progress).toEqual({ lessons: { a: { done: true, updatedAt: '2027-01-01T00:00:00.002Z' } } })
+  })
+
+  it('giờ máy lớn hơn updatedAt cũ → dùng giờ máy', () => {
+    const s = store({ progress: { lessons: { a: done('1970-01-01T00:00:00.000Z') } } })
+    expect(setLessonCompleted(s, 'a', false, NOW).data.progress).toEqual({
+      lessons: { a: { done: false, updatedAt: NOW.toISOString() } },
+    })
+  })
+
+  it('store chưa có progress (v3 mới tạo) → tạo progress.lessons', () => {
+    expect(setLessonCompleted(store({}), 'a', true, NOW).data).toEqual({
+      progress: { lessons: { a: { done: true, updatedAt: NOW.toISOString() } } },
+    })
   })
 })
