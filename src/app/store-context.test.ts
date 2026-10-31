@@ -80,8 +80,49 @@ describe('createStoreHandle', () => {
     const storage = fakeStorage()
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     const listener = vi.fn()
+    const local = vi.fn()
     handle.subscribe(listener)
+    handle.onLocalUpdate(local)
     handle.update((s) => s)
     expect(listener).not.toHaveBeenCalled()
+    expect(local).not.toHaveBeenCalled()
+  })
+
+  it('lưu dạng v3 (progress.lessons) và giữ id lạ', () => {
+    const storage = fakeStorage({
+      [STORAGE_KEY]: JSON.stringify({
+        schemaVersion: 3,
+        data: { progress: { lessons: { 'old-id': { done: true, updatedAt: '2026-01-01T00:00:00.000Z' } } } },
+      }),
+    })
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    handle.update(mark('s1-t1-w1'))
+    const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
+    expect(saved.schemaVersion).toBe(3)
+    expect(Object.keys(saved.data.progress.lessons)).toEqual(['old-id', 's1-t1-w1'])
+    expect(readCompletedLessonIds(saved)).toEqual(['old-id', 's1-t1-w1'])
+  })
+
+  it('update báo onLocalUpdate; replace (bản từ server) ghi local, báo UI nhưng không báo onLocalUpdate', () => {
+    const storage = fakeStorage()
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    const listener = vi.fn()
+    const local = vi.fn()
+    handle.subscribe(listener)
+    const off = handle.onLocalUpdate(local)
+
+    handle.update(mark('a'))
+    expect(local).toHaveBeenCalledTimes(1)
+
+    const remote = setLessonCompleted(handle.getSnapshot().store, 'b', true)
+    handle.replace(remote)
+    expect(local).toHaveBeenCalledTimes(1)
+    expect(listener).toHaveBeenCalledTimes(2)
+    expect(readCompletedLessonIds(handle.getSnapshot().store)).toEqual(['a', 'b'])
+    expect(readCompletedLessonIds(JSON.parse(storage.map.get(STORAGE_KEY)!))).toEqual(['a', 'b'])
+
+    off()
+    handle.update(mark('c'))
+    expect(local).toHaveBeenCalledTimes(1)
   })
 })

@@ -33,6 +33,8 @@ export default defineConfig({
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
+      // Chỉ precache asset của app. Không có runtimeCaching: request tới Supabase (fetch, không phải
+      // navigation) luôn đi thẳng ra mạng, không bị navigateFallback hay cache của service worker chặn.
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
         navigateFallback: 'index.html',

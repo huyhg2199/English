@@ -1,6 +1,7 @@
 import { Outlet, ScrollRestoration } from 'react-router'
 
 import { BottomNav } from '@/components/BottomNav'
+import { SyncBadge } from '@/components/SyncBadge'
 import { storageNotice } from '@/app/storage-notice'
 import { useLoadedStore } from '@/app/store-context'
 
@@ -21,8 +22,10 @@ export function AppShell() {
           {notice}
         </p>
       )}
+      {/* Chỉ báo đồng bộ nằm trong luồng trang (không fixed) nên không che nội dung. */}
+      <SyncBadge />
       <main
-        className="mx-auto w-full max-w-md flex-1 px-4 pt-6"
+        className="mx-auto w-full max-w-md flex-1 px-4 pt-4"
         style={{ paddingBottom: 'calc(var(--nav-height) + env(safe-area-inset-bottom) + 1.5rem)' }}
       >
         <Outlet />

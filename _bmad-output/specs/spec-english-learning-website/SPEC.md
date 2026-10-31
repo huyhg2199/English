@@ -90,7 +90,7 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
 
 ## Constraints
 
-- Chỉ front-end (React + shadcn/ui), không backend. Dữ liệu cá nhân lưu ở localStorage. Thứ duy nhất nằm ngoài máy là GitHub: Gist chứa trạng thái/bản sao, Actions chạy cron. Chi tiết trong `stack.md`.
+- Front-end (React + shadcn/ui), không backend tự viết, không Edge Function. Dữ liệu học local-first: luôn đọc/ghi localStorage và chạy được offline; Supabase (Auth đăng nhập bằng mã OTP email + một bảng có RLS) là nơi lưu chính, đồng bộ hai chiều khi có mạng và là bản chuẩn khi đổi máy. Chỉ các key trong allowlist được đồng bộ, không bao giờ đẩy API key/PAT/token. GitHub vẫn dùng cho Gist (trạng thái "đã học hôm nay" cho cron, CAP-21) và Actions chạy cron. Chi tiết trong `stack.md`.
 - Không dùng proxy. Nguồn không gọi trực tiếp được từ trình duyệt thì chỉ link ra ngoài.
 - Thứ tự làm theo `mvp-phases.md`. Luật học và luật chấm điểm theo `learning-rules.md`.
 - PWA host miễn phí trên GitHub Pages, dùng chính trên iPhone qua "Thêm vào MH chính". Vì vậy app mobile-first, bottom nav đúng 5 mục: Hôm nay / Lộ trình / Luyện tập / Sổ tay / Phòng Cúp.
@@ -106,7 +106,7 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
 
 ## Non-goals
 
-- Nhiều người dùng, tài khoản, backend hay đồng bộ server.
+- Nhiều người dùng, backend tự viết, Edge Function hay realtime subscription. (Tài khoản email chỉ để Huy đồng bộ dữ liệu của chính mình qua Supabase.)
 - App native iOS hoặc TestFlight. Bọc Capacitor để sau.
 - TOEIC Speaking & Writing trước khi đạt 750 L&R.
 - Nguồn hay nội dung trả phí (đã loại Newsela).

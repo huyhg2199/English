@@ -4,8 +4,10 @@
 |---|---|---|
 | UI | React + shadcn/ui; Drawer/Sheet cho điều hướng phụ | Huy chọn |
 | Animation | Framer Motion | Hiệu ứng Lumos và cú đưa thư (CAP-20) |
-| Kiến trúc | Chỉ front-end, không backend | Dùng cá nhân, chi phí $0 |
-| Lưu trữ | localStorage: tiến độ, SRS, sổ tay, sổ lỗi, API key | Không có server |
+| Kiến trúc | Front-end + Supabase (BaaS), không backend tự viết, không Edge Function | Dùng cá nhân, gói free, chi phí $0 |
+| Lưu trữ | Local-first: localStorage (tiến độ, SRS, sổ tay, sổ lỗi, API key) luôn đọc/ghi trước, chạy offline. Supabase là nơi lưu chính và bản chuẩn khi đổi máy: bảng `user_store` (một hàng mỗi user, `data jsonb` = các key trong allowlist `SYNCED_KEYS`, có `schema_version`), RLS theo `auth.uid()` | Story 2a. Đẩy sau mỗi lần sửa (debounce), kéo + gộp khi mở app / online lại / quay lại app. Tiến độ gộp theo từng bài, `updatedAt` mới hơn thắng. Không realtime. Không bao giờ đồng bộ API key/PAT/token |
+| Đăng nhập | Supabase Auth, mã OTP 6 số qua email (gõ trong app, không magic link) | PWA iPhone có bộ nhớ tách khỏi Safari. Bắt buộc đăng nhập; phiên lưu trên máy cho phép học offline |
+| Cấu hình Supabase | Chỉ URL + anon (publishable) key, qua biến build `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (GitHub Actions Variables). Thiếu biến thì app chạy chỉ local | Không có service key ở repo hay app |
 | Đóng gói | PWA (vite-plugin-pwa) | Cài lên iPhone qua "Thêm vào MH chính" |
 | Hosting | GitHub Pages, repo public | Miễn phí. Vì repo public nên mọi bí mật để ở localStorage hoặc GitHub Secrets, asset HP chỉ dùng loại "lấy cảm hứng" |
 | AI | BYOK: key nhập trong app, lưu localStorage, không commit/deploy. Gọi thẳng từ FE | Chỉ dùng cá nhân, Huy đã xác nhận |
@@ -15,7 +17,7 @@
 | TTS / STT | Web Speech API | CAP-10. STT chạy tốt trên Chrome/Edge, Firefox chưa hỗ trợ. **Rủi ro:** iOS Safari cần kiểm chứng; nếu không chạy thì app ẩn phần so khớp giọng nói và vẫn giữ nút nghe |
 | Push | Browser Notification. Web push (Đợt 2) do cron GitHub Actions gửi: VAPID private key để trong Secrets, push subscription lưu trên Gist | Web push trên iOS cần bản 16.4+ và app phải được cài lên MH chính |
 | Lịch | File .ics hoặc lịch subscribe cho iCloud/Google | CAP-21 |
-| Trạng thái + bản sao tự động | Secret GitHub Gist, ghi bằng PAT (BYOK, chỉ cấp quyền `gist`, lưu localStorage). App ghi trạng thái "đã học hôm nay" sau mỗi buổi và đẩy snapshot dữ liệu lên | CAP-21, CAP-22. Không bao giờ ghi API key hay PAT lên Gist |
+| Trạng thái + bản sao tự động | Secret GitHub Gist, ghi bằng PAT (BYOK, chỉ cấp quyền `gist`, lưu localStorage). App ghi trạng thái "đã học hôm nay" sau mỗi buổi và đẩy snapshot dữ liệu lên | CAP-21, CAP-22 (story 13, giữ nguyên; Supabase không thay Gist). Không bao giờ ghi API key hay PAT lên Gist |
 | Backup thủ công | Export/import file JSON | CAP-22 |
 | Telegram "Owl Post" | Bot chạy bằng cron của GitHub Actions vào các khung giờ cố định (trưa, giữa giờ, trước ngủ). Trước khi gửi, cron đọc Gist: đã học thì bỏ qua hoặc gửi lời khen, chưa học thì nhắc | FE không chạy được khi tab đóng. Token bot và gist id để trong GitHub Secrets |
 | Feed tin | Gọi trực tiếp: HN API, HN Algolia, Google AI Blog RSS (parse bằng `DOMParser`) | Không dùng proxy. VOA, BNE, OpenAI và podcast chỉ link ra ngoài |
