@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
+import { buildSession, markKnown } from '@/lib/srs'
+
 import { cambridgeUrl, compareStudyOrder, hasDetails, loadWords, PARTS_OF_SPEECH, VOCAB_ATTRIBUTION } from './index'
 
 const words = await loadWords()
@@ -48,10 +50,35 @@ describe('words.json', () => {
     for (const w of words) expect(w.id.startsWith(`${w.list}-`)).toBe(true)
   })
 
-  it('1000 từ NGSL đầu (hạng 1–1000) có dữ liệu AI, các từ khác chưa có', () => {
-    const detailed = words.filter(hasDetails)
-    expect(detailed).toHaveLength(1000)
-    expect(detailed.every((w) => w.list === 'ngsl' && w.rank <= 1000)).toBe(true)
+  it('mọi từ NGSL + TSL đều có dữ liệu AI', () => {
+    expect(words.filter((w) => !hasDetails(w)).map((w) => w.id)).toEqual([])
+    expect(words.filter(hasDetails)).toHaveLength(2809 + 1250)
+  })
+
+  it('"resume" (động từ) và "résumé" (danh từ, CV) là hai thẻ khác nhau, khác từ loại', () => {
+    const resume = words.find((w) => w.id === 'tsl-resume')
+    const cv = words.find((w) => w.id === 'tsl-résumé')
+    expect(resume?.pos).toBe('verb')
+    expect(cv?.pos).toBe('noun')
+  })
+
+  it('NGSL 1.2 và TSL 1.2 hiện không có từ chung (nếu có, id vẫn tách nhờ tiền tố <list>-)', () => {
+    const ngslWords = new Set(words.filter((w) => w.list === 'ngsl').map((w) => w.word))
+    const shared = words.filter((w) => w.list === 'tsl' && ngslWords.has(w.word)).map((w) => w.word)
+    expect(shared).toEqual([])
+  })
+
+  it('ôn hết NGSL thì từ mới tiếp theo là TSL hạng 1, 2, …', () => {
+    const now = new Date(2026, 10, 2, 9, 0, 0)
+    const cards = Object.fromEntries(
+      words.filter((w) => w.list === 'ngsl').map((w) => [w.id, markKnown(undefined, new Date(2026, 10, 1, 9, 0, 0))]),
+    )
+    const session = buildSession({ cards }, words, now, 3)
+    expect(session.queue.map((i) => [i.kind, i.word.list, i.word.rank])).toEqual([
+      ['new', 'tsl', 1],
+      ['new', 'tsl', 2],
+      ['new', 'tsl', 3],
+    ])
   })
 
   it('dữ liệu AI đúng cấu trúc: âm tiết ghép ra từ, âm nhấn nằm trong âm tiết, IPA có ˈ khi nhiều âm tiết', () => {

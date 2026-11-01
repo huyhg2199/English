@@ -1,0 +1,2659 @@
+[
+  {
+    "word": "adviser",
+    "pos": "noun",
+    "ipa": "ədˈvaɪzɚ",
+    "syllables": [
+      "ad",
+      "vis",
+      "er"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "cố vấn, người tư vấn",
+    "exampleEn": "Our financial adviser suggested a safer plan.",
+    "exampleVi": "Cố vấn tài chính của chúng tôi đề xuất một kế hoạch an toàn hơn."
+  },
+  {
+    "word": "stem",
+    "pos": "verb",
+    "ipa": "stem",
+    "syllables": [
+      "stem"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bắt nguồn, xuất phát; thân cây",
+    "exampleEn": "Most delays stem from unclear requirements.",
+    "exampleVi": "Hầu hết sự chậm trễ bắt nguồn từ yêu cầu không rõ ràng."
+  },
+  {
+    "word": "reverse",
+    "pos": "verb",
+    "ipa": "rɪˈvɝːs",
+    "syllables": [
+      "re",
+      "verse"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "đảo ngược, hủy bỏ; ngược lại",
+    "exampleEn": "The manager reversed his earlier decision.",
+    "exampleVi": "Người quản lý đã đảo ngược quyết định trước đó của mình."
+  },
+  {
+    "word": "mode",
+    "pos": "noun",
+    "ipa": "moʊd",
+    "syllables": [
+      "mode"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chế độ, phương thức",
+    "exampleEn": "Switch your phone to silent mode, please.",
+    "exampleVi": "Vui lòng chuyển điện thoại sang chế độ im lặng."
+  },
+  {
+    "word": "mirror",
+    "pos": "noun",
+    "ipa": "ˈmɪrɚ",
+    "syllables": [
+      "mir",
+      "ror"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gương; phản ánh",
+    "exampleEn": "She checked her hair in the mirror.",
+    "exampleVi": "Cô ấy xem lại tóc trong gương."
+  },
+  {
+    "word": "awful",
+    "pos": "adjective",
+    "ipa": "ˈɑːfəl",
+    "syllables": [
+      "aw",
+      "ful"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tồi tệ, kinh khủng",
+    "exampleEn": "The traffic this morning was awful.",
+    "exampleVi": "Giao thông sáng nay thật tồi tệ."
+  },
+  {
+    "word": "pose",
+    "pos": "verb",
+    "ipa": "poʊz",
+    "syllables": [
+      "pose"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gây ra, đặt ra; tạo dáng",
+    "exampleEn": "The new law poses a challenge for small firms.",
+    "exampleVi": "Luật mới đặt ra thách thức cho các công ty nhỏ."
+  },
+  {
+    "word": "adjust",
+    "pos": "verb",
+    "ipa": "əˈdʒʌst",
+    "syllables": [
+      "ad",
+      "just"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "điều chỉnh, thích nghi",
+    "exampleEn": "You can adjust the screen brightness here.",
+    "exampleVi": "Bạn có thể điều chỉnh độ sáng màn hình ở đây."
+  },
+  {
+    "word": "creative",
+    "pos": "adjective",
+    "ipa": "kriˈeɪt̬ɪv",
+    "syllables": [
+      "cre",
+      "a",
+      "tive"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sáng tạo",
+    "exampleEn": "We need a creative idea for the campaign.",
+    "exampleVi": "Chúng ta cần một ý tưởng sáng tạo cho chiến dịch."
+  },
+  {
+    "word": "nowadays",
+    "pos": "adverb",
+    "ipa": "ˈnaʊədeɪz",
+    "syllables": [
+      "now",
+      "a",
+      "days"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ngày nay, thời nay",
+    "exampleEn": "Nowadays, most meetings happen online.",
+    "exampleVi": "Ngày nay, hầu hết các cuộc họp diễn ra trực tuyến."
+  },
+  {
+    "word": "poem",
+    "pos": "noun",
+    "ipa": "ˈpoʊəm",
+    "syllables": [
+      "po",
+      "em"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bài thơ",
+    "exampleEn": "My son wrote a poem for his teacher.",
+    "exampleVi": "Con trai tôi đã viết một bài thơ tặng cô giáo."
+  },
+  {
+    "word": "agricultural",
+    "pos": "adjective",
+    "ipa": "ˌæɡrəˈkʌltʃɚəl",
+    "syllables": [
+      "ag",
+      "ri",
+      "cul",
+      "tur",
+      "al"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "thuộc nông nghiệp",
+    "exampleEn": "The company exports agricultural products to Japan.",
+    "exampleVi": "Công ty xuất khẩu nông sản sang Nhật Bản."
+  },
+  {
+    "word": "competitor",
+    "pos": "noun",
+    "ipa": "kəmˈpet̬ət̬ɚ",
+    "syllables": [
+      "com",
+      "pet",
+      "i",
+      "tor"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "đối thủ cạnh tranh",
+    "exampleEn": "Our main competitor lowered its prices.",
+    "exampleVi": "Đối thủ cạnh tranh chính của chúng tôi đã giảm giá."
+  },
+  {
+    "word": "alcohol",
+    "pos": "noun",
+    "ipa": "ˈælkəhɑːl",
+    "syllables": [
+      "al",
+      "co",
+      "hol"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "rượu, cồn",
+    "exampleEn": "Alcohol is not allowed in the office.",
+    "exampleVi": "Không được phép uống rượu trong văn phòng."
+  },
+  {
+    "word": "festival",
+    "pos": "noun",
+    "ipa": "ˈfestəvəl",
+    "syllables": [
+      "fes",
+      "ti",
+      "val"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lễ hội",
+    "exampleEn": "The music festival starts next weekend.",
+    "exampleVi": "Lễ hội âm nhạc bắt đầu vào cuối tuần tới."
+  },
+  {
+    "word": "vegetable",
+    "pos": "noun",
+    "ipa": "ˈvedʒtəbəl",
+    "syllables": [
+      "vege",
+      "ta",
+      "ble"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "rau, rau củ",
+    "exampleEn": "I try to eat more vegetables at lunch.",
+    "exampleVi": "Tôi cố gắng ăn nhiều rau hơn vào bữa trưa."
+  },
+  {
+    "word": "van",
+    "pos": "noun",
+    "ipa": "væn",
+    "syllables": [
+      "van"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "xe tải nhỏ, xe van",
+    "exampleEn": "The delivery van arrived at noon.",
+    "exampleVi": "Xe giao hàng đến vào buổi trưa."
+  },
+  {
+    "word": "confident",
+    "pos": "adjective",
+    "ipa": "ˈkɑːnfədənt",
+    "syllables": [
+      "con",
+      "fi",
+      "dent"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tự tin, tin chắc",
+    "exampleEn": "She felt confident before the interview.",
+    "exampleVi": "Cô ấy cảm thấy tự tin trước buổi phỏng vấn."
+  },
+  {
+    "word": "planet",
+    "pos": "noun",
+    "ipa": "ˈplænɪt",
+    "syllables": [
+      "plan",
+      "et"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hành tinh",
+    "exampleEn": "We all share responsibility for the planet.",
+    "exampleVi": "Tất cả chúng ta đều có trách nhiệm với hành tinh."
+  },
+  {
+    "word": "curve",
+    "pos": "noun",
+    "ipa": "kɝːv",
+    "syllables": [
+      "curve"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đường cong, khúc quanh",
+    "exampleEn": "The chart shows a steady upward curve.",
+    "exampleVi": "Biểu đồ cho thấy một đường cong đi lên ổn định."
+  },
+  {
+    "word": "knee",
+    "pos": "noun",
+    "ipa": "niː",
+    "syllables": [
+      "knee"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đầu gối",
+    "exampleEn": "He hurt his knee while running.",
+    "exampleVi": "Anh ấy bị đau đầu gối khi chạy bộ."
+  },
+  {
+    "word": "overcome",
+    "pos": "verb",
+    "ipa": "ˌoʊvɚˈkʌm",
+    "syllables": [
+      "o",
+      "ver",
+      "come"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "vượt qua, khắc phục",
+    "exampleEn": "The team overcame many technical problems.",
+    "exampleVi": "Nhóm đã vượt qua nhiều vấn đề kỹ thuật."
+  },
+  {
+    "word": "web",
+    "pos": "noun",
+    "ipa": "web",
+    "syllables": [
+      "web"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mạng, trang web; mạng nhện",
+    "exampleEn": "You can find the form on the web.",
+    "exampleVi": "Bạn có thể tìm thấy mẫu đơn trên mạng."
+  },
+  {
+    "word": "depth",
+    "pos": "noun",
+    "ipa": "depθ",
+    "syllables": [
+      "depth"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "độ sâu, chiều sâu",
+    "exampleEn": "The report analyzes the issue in depth.",
+    "exampleVi": "Báo cáo phân tích vấn đề một cách sâu sắc."
+  },
+  {
+    "word": "entrance",
+    "pos": "noun",
+    "ipa": "ˈentrəns",
+    "syllables": [
+      "en",
+      "trance"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lối vào, cổng vào",
+    "exampleEn": "Please meet me at the main entrance.",
+    "exampleVi": "Vui lòng gặp tôi ở lối vào chính."
+  },
+  {
+    "word": "log",
+    "pos": "verb",
+    "ipa": "lɑːɡ",
+    "syllables": [
+      "log"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ghi lại, đăng nhập; khúc gỗ, nhật ký",
+    "exampleEn": "Log in with your company email.",
+    "exampleVi": "Hãy đăng nhập bằng email công ty của bạn."
+  },
+  {
+    "word": "giant",
+    "pos": "adjective",
+    "ipa": "ˈdʒaɪənt",
+    "syllables": [
+      "gi",
+      "ant"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "khổng lồ; người khổng lồ, tập đoàn lớn",
+    "exampleEn": "A giant tech company bought the startup.",
+    "exampleVi": "Một tập đoàn công nghệ khổng lồ đã mua lại công ty khởi nghiệp."
+  },
+  {
+    "word": "god",
+    "pos": "noun",
+    "ipa": "ɡɑːd",
+    "syllables": [
+      "god"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thần, Chúa, Trời",
+    "exampleEn": "Many people pray to God for good health.",
+    "exampleVi": "Nhiều người cầu Chúa ban cho sức khỏe tốt."
+  },
+  {
+    "word": "portion",
+    "pos": "noun",
+    "ipa": "ˈpɔːrʃən",
+    "syllables": [
+      "por",
+      "tion"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phần, khẩu phần",
+    "exampleEn": "A large portion of the budget goes to salaries.",
+    "exampleVi": "Một phần lớn ngân sách dành cho lương."
+  },
+  {
+    "word": "substance",
+    "pos": "noun",
+    "ipa": "ˈsʌbstəns",
+    "syllables": [
+      "sub",
+      "stance"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chất, vật chất; thực chất",
+    "exampleEn": "This substance must be stored carefully.",
+    "exampleVi": "Chất này phải được bảo quản cẩn thận."
+  },
+  {
+    "word": "extensive",
+    "pos": "adjective",
+    "ipa": "ɪkˈstensɪv",
+    "syllables": [
+      "ex",
+      "ten",
+      "sive"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "rộng lớn, bao quát",
+    "exampleEn": "She has extensive experience in marketing.",
+    "exampleVi": "Cô ấy có kinh nghiệm sâu rộng về tiếp thị."
+  },
+  {
+    "word": "interpret",
+    "pos": "verb",
+    "ipa": "ɪnˈtɝːprət",
+    "syllables": [
+      "in",
+      "ter",
+      "pret"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "giải thích, hiểu; phiên dịch",
+    "exampleEn": "How should we interpret these results?",
+    "exampleVi": "Chúng ta nên hiểu những kết quả này như thế nào?"
+  },
+  {
+    "word": "independence",
+    "pos": "noun",
+    "ipa": "ˌɪndɪˈpendəns",
+    "syllables": [
+      "in",
+      "de",
+      "pend",
+      "ence"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "sự độc lập",
+    "exampleEn": "The job gives me a lot of independence.",
+    "exampleVi": "Công việc này cho tôi nhiều sự độc lập."
+  },
+  {
+    "word": "sugar",
+    "pos": "noun",
+    "ipa": "ˈʃʊɡɚ",
+    "syllables": [
+      "sug",
+      "ar"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đường",
+    "exampleEn": "Do you take sugar in your coffee?",
+    "exampleVi": "Bạn có cho đường vào cà phê không?"
+  },
+  {
+    "word": "inner",
+    "pos": "adjective",
+    "ipa": "ˈɪnɚ",
+    "syllables": [
+      "in",
+      "ner"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bên trong, nội tâm",
+    "exampleEn": "The inner office is for managers only.",
+    "exampleVi": "Phòng bên trong chỉ dành cho quản lý."
+  },
+  {
+    "word": "harm",
+    "pos": "noun",
+    "ipa": "hɑːrm",
+    "syllables": [
+      "harm"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự tổn hại, thiệt hại; làm hại",
+    "exampleEn": "There is no harm in asking for help.",
+    "exampleVi": "Nhờ giúp đỡ thì chẳng có hại gì."
+  },
+  {
+    "word": "consult",
+    "pos": "verb",
+    "ipa": "kənˈsʌlt",
+    "syllables": [
+      "con",
+      "sult"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "tham khảo, hỏi ý kiến",
+    "exampleEn": "Please consult your manager before signing.",
+    "exampleVi": "Vui lòng hỏi ý kiến quản lý trước khi ký."
+  },
+  {
+    "word": "pink",
+    "pos": "adjective",
+    "ipa": "pɪŋk",
+    "syllables": [
+      "pink"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "màu hồng",
+    "exampleEn": "She bought a pink notebook.",
+    "exampleVi": "Cô ấy đã mua một cuốn sổ màu hồng."
+  },
+  {
+    "word": "shadow",
+    "pos": "noun",
+    "ipa": "ˈʃædoʊ",
+    "syllables": [
+      "shad",
+      "ow"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bóng, bóng tối",
+    "exampleEn": "The tree casts a long shadow in the evening.",
+    "exampleVi": "Cái cây đổ bóng dài vào buổi chiều tối."
+  },
+  {
+    "word": "strip",
+    "pos": "noun",
+    "ipa": "strɪp",
+    "syllables": [
+      "strip"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "dải, mảnh; lột, tước bỏ",
+    "exampleEn": "Cut the paper into thin strips.",
+    "exampleVi": "Hãy cắt giấy thành những dải mỏng."
+  },
+  {
+    "word": "smooth",
+    "pos": "adjective",
+    "ipa": "smuːð",
+    "syllables": [
+      "smooth"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trơn tru, suôn sẻ, nhẵn",
+    "exampleEn": "We want a smooth transition to the new system.",
+    "exampleVi": "Chúng tôi muốn chuyển sang hệ thống mới một cách suôn sẻ."
+  },
+  {
+    "word": "intervention",
+    "pos": "noun",
+    "ipa": "ˌɪnt̬ɚˈvenʃən",
+    "syllables": [
+      "in",
+      "ter",
+      "ven",
+      "tion"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "sự can thiệp",
+    "exampleEn": "The problem was solved without outside intervention.",
+    "exampleVi": "Vấn đề đã được giải quyết mà không cần can thiệp từ bên ngoài."
+  },
+  {
+    "word": "impress",
+    "pos": "verb",
+    "ipa": "ɪmˈpres",
+    "syllables": [
+      "im",
+      "press"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "gây ấn tượng",
+    "exampleEn": "Her presentation impressed the clients.",
+    "exampleVi": "Bài thuyết trình của cô ấy đã gây ấn tượng với khách hàng."
+  },
+  {
+    "word": "exam",
+    "pos": "noun",
+    "ipa": "ɪɡˈzæm",
+    "syllables": [
+      "ex",
+      "am"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "kỳ thi, bài thi",
+    "exampleEn": "I am preparing for the TOEIC exam.",
+    "exampleVi": "Tôi đang chuẩn bị cho kỳ thi TOEIC."
+  },
+  {
+    "word": "vice",
+    "pos": "adjective",
+    "ipa": "vaɪs",
+    "syllables": [
+      "vice"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phó (chức vụ); thói xấu",
+    "exampleEn": "She was promoted to vice president.",
+    "exampleVi": "Cô ấy được thăng chức lên phó chủ tịch."
+  },
+  {
+    "word": "radical",
+    "pos": "adjective",
+    "ipa": "ˈrædɪkəl",
+    "syllables": [
+      "rad",
+      "i",
+      "cal"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "triệt để, căn bản, cấp tiến",
+    "exampleEn": "The company needs radical changes to survive.",
+    "exampleVi": "Công ty cần những thay đổi triệt để để tồn tại."
+  },
+  {
+    "word": "similarly",
+    "pos": "adverb",
+    "ipa": "ˈsɪmələrli",
+    "syllables": [
+      "sim",
+      "i",
+      "lar",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tương tự, cũng vậy",
+    "exampleEn": "Similarly, sales rose in the second quarter.",
+    "exampleVi": "Tương tự, doanh số tăng trong quý hai."
+  },
+  {
+    "word": "behave",
+    "pos": "verb",
+    "ipa": "bɪˈheɪv",
+    "syllables": [
+      "be",
+      "have"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "cư xử, hành xử",
+    "exampleEn": "Employees should behave professionally at events.",
+    "exampleVi": "Nhân viên nên cư xử chuyên nghiệp tại các sự kiện."
+  },
+  {
+    "word": "loud",
+    "pos": "adjective",
+    "ipa": "laʊd",
+    "syllables": [
+      "loud"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "to, ồn ào",
+    "exampleEn": "The music next door is too loud.",
+    "exampleVi": "Nhạc nhà bên cạnh to quá."
+  },
+  {
+    "word": "dimension",
+    "pos": "noun",
+    "ipa": "daɪˈmenʃən",
+    "syllables": [
+      "di",
+      "men",
+      "sion"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "kích thước, chiều; khía cạnh",
+    "exampleEn": "Please check the dimensions of the desk.",
+    "exampleVi": "Vui lòng kiểm tra kích thước của cái bàn."
+  },
+  {
+    "word": "subsequent",
+    "pos": "adjective",
+    "ipa": "ˈsʌbsɪkwənt",
+    "syllables": [
+      "sub",
+      "se",
+      "quent"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tiếp theo, sau đó",
+    "exampleEn": "Subsequent meetings will be held online.",
+    "exampleVi": "Các cuộc họp tiếp theo sẽ được tổ chức trực tuyến."
+  },
+  {
+    "word": "infection",
+    "pos": "noun",
+    "ipa": "ɪnˈfekʃən",
+    "syllables": [
+      "in",
+      "fec",
+      "tion"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự nhiễm trùng, lây nhiễm",
+    "exampleEn": "He took a week off for an ear infection.",
+    "exampleVi": "Anh ấy nghỉ một tuần vì bị nhiễm trùng tai."
+  },
+  {
+    "word": "jacket",
+    "pos": "noun",
+    "ipa": "ˈdʒækɪt",
+    "syllables": [
+      "jack",
+      "et"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "áo khoác",
+    "exampleEn": "Take a jacket; it's cold outside.",
+    "exampleVi": "Mang theo áo khoác nhé, bên ngoài lạnh đấy."
+  },
+  {
+    "word": "efficiency",
+    "pos": "noun",
+    "ipa": "ɪˈfɪʃənsi",
+    "syllables": [
+      "ef",
+      "fi",
+      "cien",
+      "cy"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "hiệu quả, năng suất",
+    "exampleEn": "The new software improved our efficiency.",
+    "exampleVi": "Phần mềm mới đã nâng cao hiệu quả làm việc của chúng tôi."
+  },
+  {
+    "word": "dirty",
+    "pos": "adjective",
+    "ipa": "ˈdɝːt̬i",
+    "syllables": [
+      "dir",
+      "ty"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bẩn, dơ",
+    "exampleEn": "Please put dirty cups in the sink.",
+    "exampleVi": "Vui lòng để cốc bẩn vào bồn rửa."
+  },
+  {
+    "word": "statistic",
+    "pos": "noun",
+    "ipa": "stəˈtɪstɪk",
+    "syllables": [
+      "sta",
+      "tis",
+      "tic"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "số liệu thống kê",
+    "exampleEn": "This statistic shows a rise in online sales.",
+    "exampleVi": "Số liệu thống kê này cho thấy doanh số trực tuyến tăng."
+  },
+  {
+    "word": "regularly",
+    "pos": "adverb",
+    "ipa": "ˈreɡjələrli",
+    "syllables": [
+      "reg",
+      "u",
+      "lar",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thường xuyên, đều đặn",
+    "exampleEn": "Back up your files regularly.",
+    "exampleVi": "Hãy sao lưu tệp của bạn thường xuyên."
+  },
+  {
+    "word": "resort",
+    "pos": "noun",
+    "ipa": "rɪˈzɔːrt",
+    "syllables": [
+      "re",
+      "sort"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "khu nghỉ dưỡng; phương sách",
+    "exampleEn": "The company trip is at a beach resort.",
+    "exampleVi": "Chuyến du lịch công ty diễn ra tại một khu nghỉ dưỡng biển."
+  },
+  {
+    "word": "iron",
+    "pos": "noun",
+    "ipa": "ˈaɪɚn",
+    "syllables": [
+      "i",
+      "ron"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sắt; bàn là; là (ủi)",
+    "exampleEn": "I need to iron my shirt for the interview.",
+    "exampleVi": "Tôi cần là áo sơ mi cho buổi phỏng vấn."
+  },
+  {
+    "word": "broadcast",
+    "pos": "verb",
+    "ipa": "ˈbrɑːdkæst",
+    "syllables": [
+      "broad",
+      "cast"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phát sóng, truyền hình; chương trình phát sóng",
+    "exampleEn": "The event will be broadcast live online.",
+    "exampleVi": "Sự kiện sẽ được phát trực tiếp trên mạng."
+  },
+  {
+    "word": "membership",
+    "pos": "noun",
+    "ipa": "ˈmembɚʃɪp",
+    "syllables": [
+      "mem",
+      "ber",
+      "ship"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tư cách thành viên, hội viên",
+    "exampleEn": "Gym membership is free for our staff.",
+    "exampleVi": "Thẻ hội viên phòng gym miễn phí cho nhân viên của chúng tôi."
+  },
+  {
+    "word": "bread",
+    "pos": "noun",
+    "ipa": "bred",
+    "syllables": [
+      "bread"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bánh mì",
+    "exampleEn": "I usually have bread and eggs for breakfast.",
+    "exampleVi": "Tôi thường ăn bánh mì và trứng vào bữa sáng."
+  },
+  {
+    "word": "blind",
+    "pos": "adjective",
+    "ipa": "blaɪnd",
+    "syllables": [
+      "blind"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mù; rèm cửa",
+    "exampleEn": "The app has features for blind users.",
+    "exampleVi": "Ứng dụng có các tính năng dành cho người dùng khiếm thị."
+  },
+  {
+    "word": "pure",
+    "pos": "adjective",
+    "ipa": "pjʊr",
+    "syllables": [
+      "pure"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nguyên chất, tinh khiết, thuần túy",
+    "exampleEn": "This shirt is made of pure cotton.",
+    "exampleVi": "Chiếc áo này làm từ cotton nguyên chất."
+  },
+  {
+    "word": "bloody",
+    "pos": "adjective",
+    "ipa": "ˈblʌdi",
+    "syllables": [
+      "blood",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đẫm máu; chết tiệt (lóng)",
+    "exampleEn": "The film has some bloody scenes.",
+    "exampleVi": "Bộ phim có vài cảnh đẫm máu."
+  },
+  {
+    "word": "ally",
+    "pos": "noun",
+    "ipa": "ˈælaɪ",
+    "syllables": [
+      "al",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đồng minh",
+    "exampleEn": "She is a strong ally in the management team.",
+    "exampleVi": "Cô ấy là một đồng minh mạnh trong ban quản lý."
+  },
+  {
+    "word": "quantity",
+    "pos": "noun",
+    "ipa": "ˈkwɑːntət̬i",
+    "syllables": [
+      "quan",
+      "ti",
+      "ty"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "số lượng",
+    "exampleEn": "Please confirm the quantity before ordering.",
+    "exampleVi": "Vui lòng xác nhận số lượng trước khi đặt hàng."
+  },
+  {
+    "word": "bend",
+    "pos": "verb",
+    "ipa": "bend",
+    "syllables": [
+      "bend"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "uốn cong, cúi xuống; khúc quanh",
+    "exampleEn": "Bend your knees when you lift heavy boxes.",
+    "exampleVi": "Hãy gập đầu gối khi nâng hộp nặng."
+  },
+  {
+    "word": "mature",
+    "pos": "adjective",
+    "ipa": "məˈtʃʊr",
+    "syllables": [
+      "ma",
+      "ture"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "trưởng thành, chín chắn",
+    "exampleEn": "He is very mature for his age.",
+    "exampleVi": "Cậu ấy rất chín chắn so với tuổi."
+  },
+  {
+    "word": "briefly",
+    "pos": "adverb",
+    "ipa": "ˈbriːfli",
+    "syllables": [
+      "brief",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ngắn gọn, trong chốc lát",
+    "exampleEn": "Let me briefly explain the plan.",
+    "exampleVi": "Để tôi giải thích ngắn gọn kế hoạch."
+  },
+  {
+    "word": "alarm",
+    "pos": "noun",
+    "ipa": "əˈlɑːrm",
+    "syllables": [
+      "a",
+      "larm"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "chuông báo, báo động; sự lo sợ",
+    "exampleEn": "The fire alarm went off during the meeting.",
+    "exampleVi": "Chuông báo cháy reo lên trong cuộc họp."
+  },
+  {
+    "word": "disturb",
+    "pos": "verb",
+    "ipa": "dɪˈstɝːb",
+    "syllables": [
+      "dis",
+      "turb"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "làm phiền, quấy rầy",
+    "exampleEn": "Please do not disturb me during the call.",
+    "exampleVi": "Vui lòng đừng làm phiền tôi trong lúc gọi điện."
+  },
+  {
+    "word": "sustain",
+    "pos": "verb",
+    "ipa": "səˈsteɪn",
+    "syllables": [
+      "sus",
+      "tain"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "duy trì, chịu đựng",
+    "exampleEn": "It is hard to sustain this level of growth.",
+    "exampleVi": "Khó mà duy trì mức tăng trưởng này."
+  },
+  {
+    "word": "flood",
+    "pos": "noun",
+    "ipa": "flʌd",
+    "syllables": [
+      "flood"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lũ lụt; tràn ngập",
+    "exampleEn": "The flood closed several roads downtown.",
+    "exampleVi": "Trận lũ đã làm đóng cửa một số con đường ở trung tâm."
+  },
+  {
+    "word": "poverty",
+    "pos": "noun",
+    "ipa": "ˈpɑːvɚt̬i",
+    "syllables": [
+      "pov",
+      "er",
+      "ty"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự nghèo đói",
+    "exampleEn": "The charity helps families living in poverty.",
+    "exampleVi": "Tổ chức từ thiện giúp đỡ các gia đình sống trong nghèo đói."
+  },
+  {
+    "word": "crazy",
+    "pos": "adjective",
+    "ipa": "ˈkreɪzi",
+    "syllables": [
+      "cra",
+      "zy"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "điên rồ, cuồng nhiệt",
+    "exampleEn": "It has been a crazy week at work.",
+    "exampleVi": "Tuần này ở chỗ làm thật điên rồ."
+  },
+  {
+    "word": "cite",
+    "pos": "verb",
+    "ipa": "saɪt",
+    "syllables": [
+      "cite"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trích dẫn, viện dẫn",
+    "exampleEn": "Please cite your sources in the report.",
+    "exampleVi": "Vui lòng trích dẫn nguồn trong báo cáo."
+  },
+  {
+    "word": "newly",
+    "pos": "adverb",
+    "ipa": "ˈnuːli",
+    "syllables": [
+      "new",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mới, vừa mới",
+    "exampleEn": "We welcomed the newly hired engineers.",
+    "exampleVi": "Chúng tôi chào đón các kỹ sư mới được tuyển."
+  },
+  {
+    "word": "parallel",
+    "pos": "adjective",
+    "ipa": "ˈperəlel",
+    "syllables": [
+      "par",
+      "al",
+      "lel"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "song song; sự tương đồng",
+    "exampleEn": "The two teams work on parallel projects.",
+    "exampleVi": "Hai nhóm làm việc trên các dự án song song."
+  },
+  {
+    "word": "gender",
+    "pos": "noun",
+    "ipa": "ˈdʒendɚ",
+    "syllables": [
+      "gen",
+      "der"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "giới tính",
+    "exampleEn": "Salaries should not depend on gender.",
+    "exampleVi": "Mức lương không nên phụ thuộc vào giới tính."
+  },
+  {
+    "word": "sponsor",
+    "pos": "verb",
+    "ipa": "ˈspɑːnsɚ",
+    "syllables": [
+      "spon",
+      "sor"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tài trợ; nhà tài trợ",
+    "exampleEn": "Our company sponsors the local marathon.",
+    "exampleVi": "Công ty chúng tôi tài trợ cho giải marathon địa phương."
+  },
+  {
+    "word": "boot",
+    "pos": "noun",
+    "ipa": "buːt",
+    "syllables": [
+      "boot"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "giày bốt; khởi động (máy tính)",
+    "exampleEn": "Wear safety boots on the construction site.",
+    "exampleVi": "Hãy mang ủng bảo hộ ở công trường."
+  },
+  {
+    "word": "accurate",
+    "pos": "adjective",
+    "ipa": "ˈækjɚət",
+    "syllables": [
+      "ac",
+      "cur",
+      "ate"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chính xác",
+    "exampleEn": "Make sure the data is accurate.",
+    "exampleVi": "Hãy đảm bảo dữ liệu chính xác."
+  },
+  {
+    "word": "dealer",
+    "pos": "noun",
+    "ipa": "ˈdiːlɚ",
+    "syllables": [
+      "deal",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đại lý, người buôn bán",
+    "exampleEn": "We bought the car from a local dealer.",
+    "exampleVi": "Chúng tôi mua xe từ một đại lý địa phương."
+  },
+  {
+    "word": "button",
+    "pos": "noun",
+    "ipa": "ˈbʌtən",
+    "syllables": [
+      "but",
+      "ton"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nút, cúc áo",
+    "exampleEn": "Click the blue button to submit.",
+    "exampleVi": "Nhấn nút màu xanh để gửi."
+  },
+  {
+    "word": "burden",
+    "pos": "noun",
+    "ipa": "ˈbɝːdən",
+    "syllables": [
+      "bur",
+      "den"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gánh nặng",
+    "exampleEn": "The new rules add a burden to small businesses.",
+    "exampleVi": "Các quy định mới tạo thêm gánh nặng cho doanh nghiệp nhỏ."
+  },
+  {
+    "word": "desert",
+    "pos": "noun",
+    "ipa": "ˈdezɚt",
+    "syllables": [
+      "des",
+      "ert"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sa mạc; bỏ rơi",
+    "exampleEn": "The road crosses a large desert.",
+    "exampleVi": "Con đường băng qua một sa mạc rộng lớn."
+  },
+  {
+    "word": "mate",
+    "pos": "noun",
+    "ipa": "meɪt",
+    "syllables": [
+      "mate"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bạn, bạn đồng hành",
+    "exampleEn": "I went to the movies with a mate from work.",
+    "exampleVi": "Tôi đi xem phim với một người bạn ở chỗ làm."
+  },
+  {
+    "word": "occasionally",
+    "pos": "adverb",
+    "ipa": "əˈkeɪʒənəli",
+    "syllables": [
+      "oc",
+      "ca",
+      "sion",
+      "al",
+      "ly"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "thỉnh thoảng",
+    "exampleEn": "I occasionally work from home on Fridays.",
+    "exampleVi": "Thỉnh thoảng tôi làm việc ở nhà vào thứ Sáu."
+  },
+  {
+    "word": "shareholder",
+    "pos": "noun",
+    "ipa": "ˈʃerhoʊldɚ",
+    "syllables": [
+      "share",
+      "hold",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cổ đông",
+    "exampleEn": "Shareholders will vote at the annual meeting.",
+    "exampleVi": "Các cổ đông sẽ bỏ phiếu tại đại hội thường niên."
+  },
+  {
+    "word": "bowl",
+    "pos": "noun",
+    "ipa": "boʊl",
+    "syllables": [
+      "bowl"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cái bát, tô",
+    "exampleEn": "I had a bowl of pho for lunch.",
+    "exampleVi": "Tôi ăn một tô phở vào bữa trưa."
+  },
+  {
+    "word": "discovery",
+    "pos": "noun",
+    "ipa": "dɪˈskʌvɚi",
+    "syllables": [
+      "dis",
+      "cov",
+      "er",
+      "y"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự khám phá, phát hiện",
+    "exampleEn": "The discovery of the bug saved us a lot of time.",
+    "exampleVi": "Việc phát hiện ra lỗi đã giúp chúng tôi tiết kiệm nhiều thời gian."
+  },
+  {
+    "word": "resistance",
+    "pos": "noun",
+    "ipa": "rɪˈzɪstəns",
+    "syllables": [
+      "re",
+      "sis",
+      "tance"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự kháng cự, phản đối",
+    "exampleEn": "There was some resistance to the new policy.",
+    "exampleVi": "Đã có một số phản đối đối với chính sách mới."
+  },
+  {
+    "word": "bath",
+    "pos": "noun",
+    "ipa": "bæθ",
+    "syllables": [
+      "bath"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự tắm, bồn tắm",
+    "exampleEn": "The hotel room has a large bath.",
+    "exampleVi": "Phòng khách sạn có một bồn tắm lớn."
+  },
+  {
+    "word": "frequency",
+    "pos": "noun",
+    "ipa": "ˈfriːkwənsi",
+    "syllables": [
+      "fre",
+      "quen",
+      "cy"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tần suất, tần số",
+    "exampleEn": "We reduced the frequency of status meetings.",
+    "exampleVi": "Chúng tôi đã giảm tần suất các cuộc họp báo cáo tiến độ."
+  },
+  {
+    "word": "criticize",
+    "pos": "verb",
+    "ipa": "ˈkrɪt̬əsaɪz",
+    "syllables": [
+      "crit",
+      "i",
+      "cize"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chỉ trích, phê bình",
+    "exampleEn": "Don't criticize people in front of others.",
+    "exampleVi": "Đừng chỉ trích người khác trước mặt mọi người."
+  },
+  {
+    "word": "tap",
+    "pos": "verb",
+    "ipa": "tæp",
+    "syllables": [
+      "tap"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chạm nhẹ, gõ nhẹ; vòi nước",
+    "exampleEn": "Tap the icon to open the app.",
+    "exampleVi": "Chạm vào biểu tượng để mở ứng dụng."
+  },
+  {
+    "word": "philosophy",
+    "pos": "noun",
+    "ipa": "fɪˈlɑːsəfi",
+    "syllables": [
+      "phi",
+      "los",
+      "o",
+      "phy"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "triết học, triết lý",
+    "exampleEn": "Our philosophy is to put customers first.",
+    "exampleVi": "Triết lý của chúng tôi là đặt khách hàng lên hàng đầu."
+  },
+  {
+    "word": "lip",
+    "pos": "noun",
+    "ipa": "lɪp",
+    "syllables": [
+      "lip"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "môi",
+    "exampleEn": "My lips get dry in the air-conditioned office.",
+    "exampleVi": "Môi tôi bị khô trong văn phòng có máy lạnh."
+  },
+  {
+    "word": "attribute",
+    "pos": "verb",
+    "ipa": "əˈtrɪbjuːt",
+    "syllables": [
+      "at",
+      "trib",
+      "ute"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "quy cho, cho là do; thuộc tính",
+    "exampleEn": "He attributed his success to hard work.",
+    "exampleVi": "Anh ấy cho rằng thành công của mình là nhờ làm việc chăm chỉ."
+  },
+  {
+    "word": "apologize",
+    "pos": "verb",
+    "ipa": "əˈpɑːlədʒaɪz",
+    "syllables": [
+      "a",
+      "pol",
+      "o",
+      "gize"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "xin lỗi",
+    "exampleEn": "I apologize for the late reply.",
+    "exampleVi": "Tôi xin lỗi vì đã trả lời muộn."
+  },
+  {
+    "word": "approval",
+    "pos": "noun",
+    "ipa": "əˈpruːvəl",
+    "syllables": [
+      "ap",
+      "prov",
+      "al"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự chấp thuận, phê duyệt",
+    "exampleEn": "The budget still needs the director's approval.",
+    "exampleVi": "Ngân sách vẫn cần giám đốc phê duyệt."
+  },
+  {
+    "word": "grab",
+    "pos": "verb",
+    "ipa": "ɡræb",
+    "syllables": [
+      "grab"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chộp lấy, tranh thủ (ăn, uống)",
+    "exampleEn": "Let me grab my laptop before we go.",
+    "exampleVi": "Để tôi lấy laptop rồi mình đi."
+  },
+  {
+    "word": "entitle",
+    "pos": "verb",
+    "ipa": "ɪnˈtaɪt̬əl",
+    "syllables": [
+      "en",
+      "ti",
+      "tle"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "cho quyền; đặt tên",
+    "exampleEn": "Full-time staff are entitled to paid leave.",
+    "exampleVi": "Nhân viên toàn thời gian được hưởng nghỉ phép có lương."
+  },
+  {
+    "word": "lend",
+    "pos": "verb",
+    "ipa": "lend",
+    "syllables": [
+      "lend"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cho mượn, cho vay",
+    "exampleEn": "Can you lend me your charger?",
+    "exampleVi": "Bạn cho tôi mượn cục sạc được không?"
+  },
+  {
+    "word": "involvement",
+    "pos": "noun",
+    "ipa": "ɪnˈvɑːlvmənt",
+    "syllables": [
+      "in",
+      "volve",
+      "ment"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự tham gia, liên quan",
+    "exampleEn": "Thank you for your involvement in the project.",
+    "exampleVi": "Cảm ơn bạn đã tham gia vào dự án."
+  },
+  {
+    "word": "exposure",
+    "pos": "noun",
+    "ipa": "ɪkˈspoʊʒɚ",
+    "syllables": [
+      "ex",
+      "po",
+      "sure"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự tiếp xúc, phơi bày; sự xuất hiện trước công chúng",
+    "exampleEn": "The job gave me exposure to global clients.",
+    "exampleVi": "Công việc giúp tôi được tiếp xúc với khách hàng quốc tế."
+  },
+  {
+    "word": "conventional",
+    "pos": "adjective",
+    "ipa": "kənˈvenʃənəl",
+    "syllables": [
+      "con",
+      "ven",
+      "tion",
+      "al"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "thông thường, truyền thống",
+    "exampleEn": "We tried a less conventional approach.",
+    "exampleVi": "Chúng tôi đã thử một cách tiếp cận ít truyền thống hơn."
+  },
+  {
+    "word": "digital",
+    "pos": "adjective",
+    "ipa": "ˈdɪdʒət̬əl",
+    "syllables": [
+      "dig",
+      "i",
+      "tal"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "kỹ thuật số",
+    "exampleEn": "We send digital invoices to all clients.",
+    "exampleVi": "Chúng tôi gửi hóa đơn điện tử cho tất cả khách hàng."
+  },
+  {
+    "word": "translate",
+    "pos": "verb",
+    "ipa": "trænsˈleɪt",
+    "syllables": [
+      "trans",
+      "late"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "dịch, phiên dịch",
+    "exampleEn": "Could you translate this email into Vietnamese?",
+    "exampleVi": "Bạn có thể dịch email này sang tiếng Việt không?"
+  },
+  {
+    "word": "edit",
+    "pos": "verb",
+    "ipa": "ˈedɪt",
+    "syllables": [
+      "ed",
+      "it"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chỉnh sửa, biên tập",
+    "exampleEn": "Please edit the document before sending it.",
+    "exampleVi": "Vui lòng chỉnh sửa tài liệu trước khi gửi."
+  },
+  {
+    "word": "formation",
+    "pos": "noun",
+    "ipa": "fɔːrˈmeɪʃən",
+    "syllables": [
+      "for",
+      "ma",
+      "tion"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự hình thành, đội hình",
+    "exampleEn": "The formation of the new team took a month.",
+    "exampleVi": "Việc thành lập nhóm mới mất một tháng."
+  },
+  {
+    "word": "deposit",
+    "pos": "noun",
+    "ipa": "dɪˈpɑːzɪt",
+    "syllables": [
+      "de",
+      "pos",
+      "it"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "tiền đặt cọc, tiền gửi; gửi tiền",
+    "exampleEn": "We paid a deposit to book the venue.",
+    "exampleVi": "Chúng tôi đã đặt cọc để thuê địa điểm."
+  },
+  {
+    "word": "pleasant",
+    "pos": "adjective",
+    "ipa": "ˈplezənt",
+    "syllables": [
+      "pleas",
+      "ant"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "dễ chịu, thú vị",
+    "exampleEn": "We had a pleasant lunch with the client.",
+    "exampleVi": "Chúng tôi đã có bữa trưa dễ chịu với khách hàng."
+  },
+  {
+    "word": "overseas",
+    "pos": "adverb",
+    "ipa": "ˌoʊvɚˈsiːz",
+    "syllables": [
+      "o",
+      "ver",
+      "seas"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "ở nước ngoài; thuộc nước ngoài",
+    "exampleEn": "She was sent overseas for training.",
+    "exampleVi": "Cô ấy được cử ra nước ngoài để đào tạo."
+  },
+  {
+    "word": "advocate",
+    "pos": "verb",
+    "ipa": "ˈædvəkeɪt",
+    "syllables": [
+      "ad",
+      "vo",
+      "cate"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ủng hộ, chủ trương; người ủng hộ",
+    "exampleEn": "Many experts advocate flexible working hours.",
+    "exampleVi": "Nhiều chuyên gia ủng hộ giờ làm việc linh hoạt."
+  },
+  {
+    "word": "establishment",
+    "pos": "noun",
+    "ipa": "ɪˈstæblɪʃmənt",
+    "syllables": [
+      "es",
+      "tab",
+      "lish",
+      "ment"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự thành lập; cơ sở kinh doanh",
+    "exampleEn": "The restaurant is a family establishment.",
+    "exampleVi": "Nhà hàng là một cơ sở kinh doanh gia đình."
+  },
+  {
+    "word": "summary",
+    "pos": "noun",
+    "ipa": "ˈsʌmɚi",
+    "syllables": [
+      "sum",
+      "mar",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bản tóm tắt",
+    "exampleEn": "Please send me a summary of the meeting.",
+    "exampleVi": "Vui lòng gửi tôi bản tóm tắt cuộc họp."
+  },
+  {
+    "word": "rough",
+    "pos": "adjective",
+    "ipa": "rʌf",
+    "syllables": [
+      "rough"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thô, gồ ghề; sơ bộ, khó khăn",
+    "exampleEn": "Here is a rough estimate of the cost.",
+    "exampleVi": "Đây là ước tính sơ bộ về chi phí."
+  },
+  {
+    "word": "pen",
+    "pos": "noun",
+    "ipa": "pen",
+    "syllables": [
+      "pen"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bút, bút mực",
+    "exampleEn": "May I borrow your pen to sign this?",
+    "exampleVi": "Tôi mượn bút của bạn để ký cái này được không?"
+  },
+  {
+    "word": "recovery",
+    "pos": "noun",
+    "ipa": "rɪˈkʌvɚi",
+    "syllables": [
+      "re",
+      "cov",
+      "er",
+      "y"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự phục hồi, khôi phục",
+    "exampleEn": "The economy is showing signs of recovery.",
+    "exampleVi": "Nền kinh tế đang có dấu hiệu phục hồi."
+  },
+  {
+    "word": "seal",
+    "pos": "verb",
+    "ipa": "siːl",
+    "syllables": [
+      "seal"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "niêm phong, dán kín; con hải cẩu",
+    "exampleEn": "Please seal the envelope before mailing it.",
+    "exampleVi": "Vui lòng dán kín phong bì trước khi gửi."
+  },
+  {
+    "word": "tube",
+    "pos": "noun",
+    "ipa": "tuːb",
+    "syllables": [
+      "tube"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ống, tuýp",
+    "exampleEn": "I bought a tube of toothpaste.",
+    "exampleVi": "Tôi đã mua một tuýp kem đánh răng."
+  },
+  {
+    "word": "tower",
+    "pos": "noun",
+    "ipa": "ˈtaʊɚ",
+    "syllables": [
+      "tow",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tháp, tòa tháp",
+    "exampleEn": "Our office is in the north tower.",
+    "exampleVi": "Văn phòng của chúng tôi ở tòa tháp phía bắc."
+  },
+  {
+    "word": "characterize",
+    "pos": "verb",
+    "ipa": "ˈkerəktəraɪz",
+    "syllables": [
+      "char",
+      "ac",
+      "ter",
+      "ize"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mô tả đặc điểm, là đặc trưng của",
+    "exampleEn": "The market is characterized by strong competition.",
+    "exampleVi": "Thị trường có đặc trưng là cạnh tranh mạnh."
+  },
+  {
+    "word": "specify",
+    "pos": "verb",
+    "ipa": "ˈspesəfaɪ",
+    "syllables": [
+      "spec",
+      "i",
+      "fy"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chỉ rõ, ghi rõ",
+    "exampleEn": "Please specify the delivery date in the order.",
+    "exampleVi": "Vui lòng ghi rõ ngày giao hàng trong đơn."
+  },
+  {
+    "word": "exact",
+    "pos": "adjective",
+    "ipa": "ɪɡˈzækt",
+    "syllables": [
+      "ex",
+      "act"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "chính xác",
+    "exampleEn": "What is the exact time of the meeting?",
+    "exampleVi": "Thời gian chính xác của cuộc họp là mấy giờ?"
+  },
+  {
+    "word": "spin",
+    "pos": "verb",
+    "ipa": "spɪn",
+    "syllables": [
+      "spin"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "quay, xoay tròn",
+    "exampleEn": "The wheel spins when you press the button.",
+    "exampleVi": "Bánh xe quay khi bạn nhấn nút."
+  },
+  {
+    "word": "operator",
+    "pos": "noun",
+    "ipa": "ˈɑːpəreɪt̬ɚ",
+    "syllables": [
+      "op",
+      "er",
+      "a",
+      "tor"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "người vận hành, nhà khai thác; tổng đài viên",
+    "exampleEn": "The machine operator checks it every morning.",
+    "exampleVi": "Người vận hành máy kiểm tra nó mỗi sáng."
+  },
+  {
+    "word": "infant",
+    "pos": "noun",
+    "ipa": "ˈɪnfənt",
+    "syllables": [
+      "in",
+      "fant"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trẻ sơ sinh",
+    "exampleEn": "The room is designed for mothers with infants.",
+    "exampleVi": "Phòng được thiết kế cho các bà mẹ có con nhỏ."
+  },
+  {
+    "word": "dig",
+    "pos": "verb",
+    "ipa": "dɪɡ",
+    "syllables": [
+      "dig"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đào, bới; tìm hiểu kỹ",
+    "exampleEn": "We need to dig deeper into the data.",
+    "exampleVi": "Chúng ta cần tìm hiểu sâu hơn vào dữ liệu."
+  },
+  {
+    "word": "drag",
+    "pos": "verb",
+    "ipa": "dræɡ",
+    "syllables": [
+      "drag"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "kéo, lê",
+    "exampleEn": "Drag the file into this folder.",
+    "exampleVi": "Kéo tệp vào thư mục này."
+  },
+  {
+    "word": "mount",
+    "pos": "verb",
+    "ipa": "maʊnt",
+    "syllables": [
+      "mount"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gắn, lắp; tăng lên; tổ chức",
+    "exampleEn": "The TV is mounted on the meeting room wall.",
+    "exampleVi": "Ti vi được gắn trên tường phòng họp."
+  },
+  {
+    "word": "wrap",
+    "pos": "verb",
+    "ipa": "ræp",
+    "syllables": [
+      "wrap"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gói, bọc",
+    "exampleEn": "Let's wrap up the meeting here.",
+    "exampleVi": "Chúng ta kết thúc cuộc họp ở đây nhé."
+  },
+  {
+    "word": "anticipate",
+    "pos": "verb",
+    "ipa": "ænˈtɪsəpeɪt",
+    "syllables": [
+      "an",
+      "tic",
+      "i",
+      "pate"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "dự đoán, lường trước",
+    "exampleEn": "We anticipate higher demand next month.",
+    "exampleVi": "Chúng tôi dự đoán nhu cầu sẽ cao hơn vào tháng tới."
+  },
+  {
+    "word": "dependent",
+    "pos": "adjective",
+    "ipa": "dɪˈpendənt",
+    "syllables": [
+      "de",
+      "pend",
+      "ent"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "phụ thuộc",
+    "exampleEn": "The schedule is dependent on the client's feedback.",
+    "exampleVi": "Lịch trình phụ thuộc vào phản hồi của khách hàng."
+  },
+  {
+    "word": "specialize",
+    "pos": "verb",
+    "ipa": "ˈspeʃəlaɪz",
+    "syllables": [
+      "spe",
+      "cial",
+      "ize"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chuyên về, chuyên môn hóa",
+    "exampleEn": "Our firm specializes in mobile apps.",
+    "exampleVi": "Công ty chúng tôi chuyên về ứng dụng di động."
+  },
+  {
+    "word": "angle",
+    "pos": "noun",
+    "ipa": "ˈæŋɡəl",
+    "syllables": [
+      "an",
+      "gle"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "góc, góc độ",
+    "exampleEn": "Let's look at the problem from a different angle.",
+    "exampleVi": "Hãy nhìn vấn đề từ một góc độ khác."
+  },
+  {
+    "word": "chicken",
+    "pos": "noun",
+    "ipa": "ˈtʃɪkɪn",
+    "syllables": [
+      "chick",
+      "en"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gà, thịt gà",
+    "exampleEn": "I ordered chicken rice for lunch.",
+    "exampleVi": "Tôi đã gọi cơm gà cho bữa trưa."
+  },
+  {
+    "word": "anxiety",
+    "pos": "noun",
+    "ipa": "æŋˈzaɪət̬i",
+    "syllables": [
+      "anx",
+      "i",
+      "e",
+      "ty"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự lo âu, lo lắng",
+    "exampleEn": "Many people feel anxiety before a presentation.",
+    "exampleVi": "Nhiều người cảm thấy lo lắng trước khi thuyết trình."
+  },
+  {
+    "word": "virus",
+    "pos": "noun",
+    "ipa": "ˈvaɪrəs",
+    "syllables": [
+      "vi",
+      "rus"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vi-rút",
+    "exampleEn": "Scan the file for viruses before opening it.",
+    "exampleVi": "Hãy quét vi-rút cho tệp trước khi mở."
+  },
+  {
+    "word": "precisely",
+    "pos": "adverb",
+    "ipa": "prɪˈsaɪsli",
+    "syllables": [
+      "pre",
+      "cise",
+      "ly"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "chính xác, đúng",
+    "exampleEn": "The train left at precisely nine o'clock.",
+    "exampleVi": "Tàu khởi hành đúng chín giờ."
+  },
+  {
+    "word": "rival",
+    "pos": "noun",
+    "ipa": "ˈraɪvəl",
+    "syllables": [
+      "ri",
+      "val"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đối thủ, địch thủ",
+    "exampleEn": "Our rival launched a similar product.",
+    "exampleVi": "Đối thủ của chúng tôi đã ra mắt sản phẩm tương tự."
+  },
+  {
+    "word": "offense",
+    "pos": "noun",
+    "ipa": "əˈfens",
+    "syllables": [
+      "of",
+      "fense"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự xúc phạm; tội, vi phạm",
+    "exampleEn": "No offense, but I disagree with your idea.",
+    "exampleVi": "Không có ý xúc phạm, nhưng tôi không đồng ý với ý tưởng của bạn."
+  },
+  {
+    "word": "detect",
+    "pos": "verb",
+    "ipa": "dɪˈtekt",
+    "syllables": [
+      "de",
+      "tect"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "phát hiện, dò ra",
+    "exampleEn": "The system can detect errors automatically.",
+    "exampleVi": "Hệ thống có thể tự động phát hiện lỗi."
+  },
+  {
+    "word": "teenager",
+    "pos": "noun",
+    "ipa": "ˈtiːneɪdʒɚ",
+    "syllables": [
+      "teen",
+      "ag",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thanh thiếu niên",
+    "exampleEn": "The app is popular among teenagers.",
+    "exampleVi": "Ứng dụng này được giới thanh thiếu niên ưa chuộng."
+  },
+  {
+    "word": "admire",
+    "pos": "verb",
+    "ipa": "ədˈmaɪr",
+    "syllables": [
+      "ad",
+      "mire"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "ngưỡng mộ, khâm phục",
+    "exampleEn": "I admire her calm attitude under pressure.",
+    "exampleVi": "Tôi ngưỡng mộ thái độ bình tĩnh của cô ấy khi chịu áp lực."
+  },
+  {
+    "word": "moderate",
+    "pos": "adjective",
+    "ipa": "ˈmɑːdɚət",
+    "syllables": [
+      "mod",
+      "er",
+      "ate"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vừa phải, ôn hòa",
+    "exampleEn": "The hotel offers rooms at moderate prices.",
+    "exampleVi": "Khách sạn có phòng với giá vừa phải."
+  },
+  {
+    "word": "surgery",
+    "pos": "noun",
+    "ipa": "ˈsɝːdʒɚi",
+    "syllables": [
+      "sur",
+      "ger",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phẫu thuật",
+    "exampleEn": "He is recovering from knee surgery.",
+    "exampleVi": "Anh ấy đang hồi phục sau ca phẫu thuật đầu gối."
+  },
+  {
+    "word": "musician",
+    "pos": "noun",
+    "ipa": "mjuːˈzɪʃən",
+    "syllables": [
+      "mu",
+      "si",
+      "cian"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "nhạc sĩ, nhạc công",
+    "exampleEn": "A local musician played at our party.",
+    "exampleVi": "Một nhạc công địa phương đã biểu diễn tại bữa tiệc của chúng tôi."
+  },
+  {
+    "word": "significance",
+    "pos": "noun",
+    "ipa": "sɪɡˈnɪfəkəns",
+    "syllables": [
+      "sig",
+      "nif",
+      "i",
+      "cance"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "tầm quan trọng, ý nghĩa",
+    "exampleEn": "Few people understood the significance of the deal.",
+    "exampleVi": "Ít người hiểu được tầm quan trọng của thương vụ này."
+  },
+  {
+    "word": "shower",
+    "pos": "noun",
+    "ipa": "ˈʃaʊɚ",
+    "syllables": [
+      "show",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vòi sen, tắm vòi sen; mưa rào",
+    "exampleEn": "I take a shower after going to the gym.",
+    "exampleVi": "Tôi tắm vòi sen sau khi đi tập gym."
+  },
+  {
+    "word": "illegal",
+    "pos": "adjective",
+    "ipa": "ɪˈliːɡəl",
+    "syllables": [
+      "il",
+      "le",
+      "gal"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bất hợp pháp",
+    "exampleEn": "Using pirated software is illegal.",
+    "exampleVi": "Sử dụng phần mềm lậu là bất hợp pháp."
+  },
+  {
+    "word": "charity",
+    "pos": "noun",
+    "ipa": "ˈtʃerət̬i",
+    "syllables": [
+      "char",
+      "i",
+      "ty"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tổ chức từ thiện, lòng từ thiện",
+    "exampleEn": "Our team raised money for a children's charity.",
+    "exampleVi": "Nhóm chúng tôi đã quyên tiền cho một tổ chức từ thiện trẻ em."
+  },
+  {
+    "word": "universal",
+    "pos": "adjective",
+    "ipa": "ˌjuːnəˈvɝːsəl",
+    "syllables": [
+      "u",
+      "ni",
+      "ver",
+      "sal"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "phổ biến, toàn cầu, chung",
+    "exampleEn": "This charger is a universal model.",
+    "exampleVi": "Cục sạc này là loại dùng chung cho mọi thiết bị."
+  },
+  {
+    "word": "cigarette",
+    "pos": "noun",
+    "ipa": "ˈsɪɡəret",
+    "syllables": [
+      "cig",
+      "a",
+      "rette"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "điếu thuốc lá",
+    "exampleEn": "Cigarettes are not allowed inside the building.",
+    "exampleVi": "Không được hút thuốc lá trong tòa nhà."
+  },
+  {
+    "word": "constitute",
+    "pos": "verb",
+    "ipa": "ˈkɑːnstətuːt",
+    "syllables": [
+      "con",
+      "sti",
+      "tute"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cấu thành, tạo thành",
+    "exampleEn": "Women constitute half of our workforce.",
+    "exampleVi": "Phụ nữ chiếm một nửa lực lượng lao động của chúng tôi."
+  },
+  {
+    "word": "adequate",
+    "pos": "adjective",
+    "ipa": "ˈædəkwət",
+    "syllables": [
+      "ad",
+      "e",
+      "quate"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đủ, thỏa đáng",
+    "exampleEn": "Make sure there is adequate lighting in the room.",
+    "exampleVi": "Hãy đảm bảo phòng có đủ ánh sáng."
+  },
+  {
+    "word": "consultant",
+    "pos": "noun",
+    "ipa": "kənˈsʌltənt",
+    "syllables": [
+      "con",
+      "sult",
+      "ant"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "chuyên viên tư vấn",
+    "exampleEn": "We hired an IT consultant for the project.",
+    "exampleVi": "Chúng tôi đã thuê một chuyên viên tư vấn CNTT cho dự án."
+  },
+  {
+    "word": "historian",
+    "pos": "noun",
+    "ipa": "hɪˈstɔːriən",
+    "syllables": [
+      "his",
+      "to",
+      "ri",
+      "an"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "nhà sử học",
+    "exampleEn": "The historian gave a talk about the city.",
+    "exampleVi": "Nhà sử học đã có bài nói chuyện về thành phố."
+  },
+  {
+    "word": "cousin",
+    "pos": "noun",
+    "ipa": "ˈkʌzən",
+    "syllables": [
+      "cous",
+      "in"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "anh chị em họ",
+    "exampleEn": "My cousin also works in IT.",
+    "exampleVi": "Anh họ tôi cũng làm trong ngành CNTT."
+  },
+  {
+    "word": "visual",
+    "pos": "adjective",
+    "ipa": "ˈvɪʒuəl",
+    "syllables": [
+      "vis",
+      "u",
+      "al"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thuộc thị giác, trực quan",
+    "exampleEn": "Visual aids make the presentation clearer.",
+    "exampleVi": "Công cụ trực quan giúp bài thuyết trình rõ ràng hơn."
+  },
+  {
+    "word": "stupid",
+    "pos": "adjective",
+    "ipa": "ˈstuːpɪd",
+    "syllables": [
+      "stu",
+      "pid"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ngu ngốc, ngớ ngẩn",
+    "exampleEn": "There are no stupid questions here.",
+    "exampleVi": "Ở đây không có câu hỏi nào ngớ ngẩn cả."
+  },
+  {
+    "word": "keen",
+    "pos": "adjective",
+    "ipa": "kiːn",
+    "syllables": [
+      "keen"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "háo hức, say mê; sắc bén",
+    "exampleEn": "She is keen to learn new skills.",
+    "exampleVi": "Cô ấy rất háo hức học kỹ năng mới."
+  },
+  {
+    "word": "ethnic",
+    "pos": "adjective",
+    "ipa": "ˈeθnɪk",
+    "syllables": [
+      "eth",
+      "nic"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thuộc dân tộc, sắc tộc",
+    "exampleEn": "The city has many ethnic restaurants.",
+    "exampleVi": "Thành phố có nhiều nhà hàng mang đậm bản sắc dân tộc."
+  },
+  {
+    "word": "twin",
+    "pos": "noun",
+    "ipa": "twɪn",
+    "syllables": [
+      "twin"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "anh chị em sinh đôi; đôi",
+    "exampleEn": "I booked a room with twin beds.",
+    "exampleVi": "Tôi đã đặt một phòng có hai giường đơn."
+  },
+  {
+    "word": "clinical",
+    "pos": "adjective",
+    "ipa": "ˈklɪnɪkəl",
+    "syllables": [
+      "clin",
+      "i",
+      "cal"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thuộc lâm sàng",
+    "exampleEn": "The drug is still in clinical trials.",
+    "exampleVi": "Loại thuốc này vẫn đang trong giai đoạn thử nghiệm lâm sàng."
+  },
+  {
+    "word": "eastern",
+    "pos": "adjective",
+    "ipa": "ˈiːstɚn",
+    "syllables": [
+      "east",
+      "ern"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thuộc phía đông",
+    "exampleEn": "We plan to expand into Eastern Europe.",
+    "exampleVi": "Chúng tôi dự định mở rộng sang Đông Âu."
+  },
+  {
+    "word": "forecast",
+    "pos": "noun",
+    "ipa": "ˈfɔːrkæst",
+    "syllables": [
+      "fore",
+      "cast"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "dự báo; dự đoán",
+    "exampleEn": "The sales forecast looks good for next year.",
+    "exampleVi": "Dự báo doanh số cho năm sau trông khả quan."
+  },
+  {
+    "word": "segment",
+    "pos": "noun",
+    "ipa": "ˈseɡmənt",
+    "syllables": [
+      "seg",
+      "ment"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phân khúc, phần, đoạn",
+    "exampleEn": "Young people are our main customer segment.",
+    "exampleVi": "Người trẻ là phân khúc khách hàng chính của chúng tôi."
+  },
+  {
+    "word": "custom",
+    "pos": "noun",
+    "ipa": "ˈkʌstəm",
+    "syllables": [
+      "cus",
+      "tom"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phong tục, tập quán; đặt làm riêng",
+    "exampleEn": "It is a local custom to give gifts at Tet.",
+    "exampleVi": "Tặng quà dịp Tết là phong tục địa phương."
+  },
+  {
+    "word": "adapt",
+    "pos": "verb",
+    "ipa": "əˈdæpt",
+    "syllables": [
+      "a",
+      "dapt"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "thích nghi, điều chỉnh",
+    "exampleEn": "New staff adapt quickly to our system.",
+    "exampleVi": "Nhân viên mới thích nghi nhanh với hệ thống của chúng tôi."
+  },
+  {
+    "word": "sand",
+    "pos": "noun",
+    "ipa": "sænd",
+    "syllables": [
+      "sand"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cát",
+    "exampleEn": "The kids played in the sand all afternoon.",
+    "exampleVi": "Bọn trẻ chơi cát cả buổi chiều."
+  },
+  {
+    "word": "cap",
+    "pos": "noun",
+    "ipa": "kæp",
+    "syllables": [
+      "cap"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mũ lưỡi trai, nắp; mức trần",
+    "exampleEn": "There is a cap on travel expenses.",
+    "exampleVi": "Có mức trần cho chi phí đi lại."
+  },
+  {
+    "word": "prompt",
+    "pos": "adjective",
+    "ipa": "prɑːmpt",
+    "syllables": [
+      "prompt"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhanh chóng, kịp thời; thúc đẩy",
+    "exampleEn": "Thank you for your prompt reply.",
+    "exampleVi": "Cảm ơn bạn đã trả lời nhanh chóng."
+  },
+  {
+    "word": "charm",
+    "pos": "noun",
+    "ipa": "tʃɑːrm",
+    "syllables": [
+      "charm"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự quyến rũ, sức hấp dẫn",
+    "exampleEn": "The old town has a special charm.",
+    "exampleVi": "Phố cổ có một nét quyến rũ đặc biệt."
+  },
+  {
+    "word": "react",
+    "pos": "verb",
+    "ipa": "riˈækt",
+    "syllables": [
+      "re",
+      "act"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "phản ứng",
+    "exampleEn": "How did the client react to the news?",
+    "exampleVi": "Khách hàng phản ứng thế nào với tin này?"
+  },
+  {
+    "word": "lecture",
+    "pos": "noun",
+    "ipa": "ˈlektʃɚ",
+    "syllables": [
+      "lec",
+      "ture"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bài giảng, buổi thuyết giảng",
+    "exampleEn": "The lecture on AI starts at two.",
+    "exampleVi": "Bài giảng về AI bắt đầu lúc hai giờ."
+  },
+  {
+    "word": "venture",
+    "pos": "noun",
+    "ipa": "ˈventʃɚ",
+    "syllables": [
+      "ven",
+      "ture"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "dự án kinh doanh mạo hiểm; liều",
+    "exampleEn": "The two firms started a joint venture.",
+    "exampleVi": "Hai công ty đã thành lập một liên doanh."
+  },
+  {
+    "word": "compound",
+    "pos": "noun",
+    "ipa": "ˈkɑːmpaʊnd",
+    "syllables": [
+      "com",
+      "pound"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hợp chất, khu nhà; làm trầm trọng thêm",
+    "exampleEn": "This chemical compound is used in batteries.",
+    "exampleVi": "Hợp chất hóa học này được dùng trong pin."
+  },
+  {
+    "word": "rescue",
+    "pos": "verb",
+    "ipa": "ˈreskjuː",
+    "syllables": [
+      "res",
+      "cue"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "giải cứu, cứu hộ",
+    "exampleEn": "The new investor rescued the company.",
+    "exampleVi": "Nhà đầu tư mới đã cứu công ty."
+  },
+  {
+    "word": "mess",
+    "pos": "noun",
+    "ipa": "mes",
+    "syllables": [
+      "mess"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự bừa bộn, mớ hỗn độn",
+    "exampleEn": "Sorry about the mess on my desk.",
+    "exampleVi": "Xin lỗi vì bàn làm việc của tôi bừa bộn."
+  },
+  {
+    "word": "preference",
+    "pos": "noun",
+    "ipa": "ˈprefɚəns",
+    "syllables": [
+      "pref",
+      "er",
+      "ence"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự ưa thích, ưu tiên",
+    "exampleEn": "Do you have a preference for the meeting time?",
+    "exampleVi": "Bạn có ưu tiên giờ họp nào không?"
+  },
+  {
+    "word": "comprehensive",
+    "pos": "adjective",
+    "ipa": "ˌkɑːmprəˈhensɪv",
+    "syllables": [
+      "com",
+      "pre",
+      "hen",
+      "sive"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "toàn diện, bao quát",
+    "exampleEn": "We offer a comprehensive training program.",
+    "exampleVi": "Chúng tôi cung cấp một chương trình đào tạo toàn diện."
+  },
+  {
+    "word": "incentive",
+    "pos": "noun",
+    "ipa": "ɪnˈsent̬ɪv",
+    "syllables": [
+      "in",
+      "cen",
+      "tive"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "sự khuyến khích, ưu đãi",
+    "exampleEn": "Bonuses are a strong incentive for sales staff.",
+    "exampleVi": "Tiền thưởng là động lực mạnh cho nhân viên bán hàng."
+  },
+  {
+    "word": "league",
+    "pos": "noun",
+    "ipa": "liːɡ",
+    "syllables": [
+      "league"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "liên đoàn, giải đấu",
+    "exampleEn": "Our office has a small football league.",
+    "exampleVi": "Văn phòng chúng tôi có một giải bóng đá nhỏ."
+  },
+  {
+    "word": "dialog",
+    "pos": "noun",
+    "ipa": "ˈdaɪəlɑːɡ",
+    "syllables": [
+      "di",
+      "a",
+      "log"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cuộc đối thoại; hộp thoại",
+    "exampleEn": "Click OK to close the dialog box.",
+    "exampleVi": "Nhấn OK để đóng hộp thoại."
+  },
+  {
+    "word": "cream",
+    "pos": "noun",
+    "ipa": "kriːm",
+    "syllables": [
+      "cream"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "kem; màu kem",
+    "exampleEn": "Would you like cream in your coffee?",
+    "exampleVi": "Bạn có muốn cho kem vào cà phê không?"
+  },
+  {
+    "word": "rapid",
+    "pos": "adjective",
+    "ipa": "ˈræpɪd",
+    "syllables": [
+      "rap",
+      "id"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhanh chóng",
+    "exampleEn": "The company saw rapid growth last year.",
+    "exampleVi": "Công ty đã tăng trưởng nhanh chóng vào năm ngoái."
+  },
+  {
+    "word": "cancel",
+    "pos": "verb",
+    "ipa": "ˈkænsəl",
+    "syllables": [
+      "can",
+      "cel"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hủy, hủy bỏ",
+    "exampleEn": "We had to cancel the flight because of the storm.",
+    "exampleVi": "Chúng tôi phải hủy chuyến bay vì cơn bão."
+  },
+  {
+    "word": "regret",
+    "pos": "verb",
+    "ipa": "rɪˈɡret",
+    "syllables": [
+      "re",
+      "gret"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "hối tiếc, lấy làm tiếc",
+    "exampleEn": "We regret to inform you that the event is cancelled.",
+    "exampleVi": "Chúng tôi rất tiếc phải thông báo rằng sự kiện bị hủy."
+  },
+  {
+    "word": "dismiss",
+    "pos": "verb",
+    "ipa": "dɪˈsmɪs",
+    "syllables": [
+      "dis",
+      "miss"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "gạt bỏ, bác bỏ; sa thải",
+    "exampleEn": "Don't dismiss the idea too quickly.",
+    "exampleVi": "Đừng gạt bỏ ý tưởng đó quá nhanh."
+  },
+  {
+    "word": "margin",
+    "pos": "noun",
+    "ipa": "ˈmɑːrdʒɪn",
+    "syllables": [
+      "mar",
+      "gin"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lề; biên độ, lợi nhuận biên",
+    "exampleEn": "Our profit margin fell this quarter.",
+    "exampleVi": "Biên lợi nhuận của chúng tôi giảm trong quý này."
+  },
+  {
+    "word": "beneath",
+    "pos": "preposition",
+    "ipa": "bɪˈniːθ",
+    "syllables": [
+      "be",
+      "neath"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bên dưới, ở dưới",
+    "exampleEn": "The cables run beneath the floor.",
+    "exampleVi": "Dây cáp chạy bên dưới sàn nhà."
+  },
+  {
+    "word": "opponent",
+    "pos": "noun",
+    "ipa": "əˈpoʊnənt",
+    "syllables": [
+      "op",
+      "po",
+      "nent"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "đối thủ, người phản đối",
+    "exampleEn": "He shook hands with his opponent after the game.",
+    "exampleVi": "Anh ấy bắt tay đối thủ sau trận đấu."
+  },
+  {
+    "word": "resist",
+    "pos": "verb",
+    "ipa": "rɪˈzɪst",
+    "syllables": [
+      "re",
+      "sist"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "chống lại, cưỡng lại",
+    "exampleEn": "I couldn't resist buying a new laptop.",
+    "exampleVi": "Tôi không cưỡng lại được việc mua một chiếc laptop mới."
+  },
+  {
+    "word": "capability",
+    "pos": "noun",
+    "ipa": "ˌkeɪpəˈbɪlət̬i",
+    "syllables": [
+      "ca",
+      "pa",
+      "bil",
+      "i",
+      "ty"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "khả năng, năng lực",
+    "exampleEn": "The new server has greater storage capability.",
+    "exampleVi": "Máy chủ mới có khả năng lưu trữ lớn hơn."
+  },
+  {
+    "word": "absolute",
+    "pos": "adjective",
+    "ipa": "ˈæbsəluːt",
+    "syllables": [
+      "ab",
+      "so",
+      "lute"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tuyệt đối, hoàn toàn",
+    "exampleEn": "Security is an absolute priority for us.",
+    "exampleVi": "Bảo mật là ưu tiên tuyệt đối của chúng tôi."
+  },
+  {
+    "word": "correspond",
+    "pos": "verb",
+    "ipa": "ˌkɔːrəˈspɑːnd",
+    "syllables": [
+      "cor",
+      "re",
+      "spond"
+    ],
+    "stressIndex": 2,
+    "meaningVi": "tương ứng, khớp; trao đổi thư từ",
+    "exampleEn": "The numbers don't correspond with our records.",
+    "exampleVi": "Các con số không khớp với hồ sơ của chúng tôi."
+  },
+  {
+    "word": "stroke",
+    "pos": "noun",
+    "ipa": "stroʊk",
+    "syllables": [
+      "stroke"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đột quỵ; nét, cú đánh",
+    "exampleEn": "He had a stroke last year but recovered well.",
+    "exampleVi": "Ông ấy bị đột quỵ năm ngoái nhưng đã hồi phục tốt."
+  }
+]

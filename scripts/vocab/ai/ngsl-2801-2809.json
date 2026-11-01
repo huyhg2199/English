@@ -1,0 +1,116 @@
+[
+  {
+    "word": "alright",
+    "pos": "adverb",
+    "ipa": "ɑːlˈraɪt",
+    "syllables": [
+      "al",
+      "right"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "ổn, được rồi",
+    "exampleEn": "Is everything alright with the new laptop?",
+    "exampleVi": "Mọi thứ với chiếc máy tính xách tay mới ổn chứ?"
+  },
+  {
+    "word": "lazy",
+    "pos": "adjective",
+    "ipa": "ˈleɪzi",
+    "syllables": [
+      "la",
+      "zy"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lười biếng",
+    "exampleEn": "I feel lazy on Sunday mornings.",
+    "exampleVi": "Tôi thấy lười vào các buổi sáng Chủ nhật."
+  },
+  {
+    "word": "hello",
+    "pos": "interjection",
+    "ipa": "heˈloʊ",
+    "syllables": [
+      "hel",
+      "lo"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "xin chào, a lô",
+    "exampleEn": "Hello, this is Lan from the sales team.",
+    "exampleVi": "Xin chào, tôi là Lan từ nhóm kinh doanh."
+  },
+  {
+    "word": "hunger",
+    "pos": "noun",
+    "ipa": "ˈhʌŋɡɚ",
+    "syllables": [
+      "hun",
+      "ger"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cơn đói, sự khao khát",
+    "exampleEn": "The charity works to end hunger in poor areas.",
+    "exampleVi": "Tổ chức từ thiện hoạt động để xóa đói ở các vùng nghèo."
+  },
+  {
+    "word": "insure",
+    "pos": "verb",
+    "ipa": "ɪnˈʃʊr",
+    "syllables": [
+      "in",
+      "sure"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bảo hiểm, mua bảo hiểm",
+    "exampleEn": "You should insure your car against theft.",
+    "exampleVi": "Bạn nên mua bảo hiểm mất cắp cho xe hơi."
+  },
+  {
+    "word": "ashamed",
+    "pos": "adjective",
+    "ipa": "əˈʃeɪmd",
+    "syllables": [
+      "a",
+      "shamed"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "xấu hổ, hổ thẹn",
+    "exampleEn": "He was ashamed of his rude comment.",
+    "exampleVi": "Anh ấy xấu hổ vì lời nhận xét thô lỗ của mình."
+  },
+  {
+    "word": "found",
+    "pos": "verb",
+    "ipa": "faʊnd",
+    "syllables": [
+      "found"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thành lập, sáng lập",
+    "exampleEn": "The company was founded in 2010.",
+    "exampleVi": "Công ty được thành lập vào năm 2010."
+  },
+  {
+    "word": "blog",
+    "pos": "noun",
+    "ipa": "blɑːɡ",
+    "syllables": [
+      "blog"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "blog, nhật ký trực tuyến",
+    "exampleEn": "She writes a blog about software testing.",
+    "exampleVi": "Cô ấy viết blog về kiểm thử phần mềm."
+  },
+  {
+    "word": "thirst",
+    "pos": "noun",
+    "ipa": "θɝːst",
+    "syllables": [
+      "thirst"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cơn khát, sự khao khát",
+    "exampleEn": "He has a strong thirst for knowledge.",
+    "exampleVi": "Anh ấy có niềm khao khát kiến thức mãnh liệt."
+  }
+]
