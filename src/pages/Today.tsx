@@ -1,19 +1,45 @@
 import { useMemo } from 'react'
-import { BookOpenCheck, Check, Coffee, Flame, Play } from 'lucide-react'
+import { BookOpenCheck, Check, Coffee, Flame, Play, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useSessions } from '@/app/store-context'
+import { usePlacement, useSessions, useSkillBoard } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
+import { SkillGapCard } from '@/components/SkillGapCard'
+import { StudyClock } from '@/components/StudyClock'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { lessonHref } from '@/data/roadmap'
+import { studyHours } from '@/lib/placement'
 import { computeStreak, isSessionDay, localDayKey } from '@/lib/sessions'
 
-/** Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại và streak. */
+/** Mời đội Mũ Phân Loại khi chưa làm. */
+function SortingHatInvite() {
+  return (
+    <Card className="gap-3 border-primary/50">
+      <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
+        <Sparkles className="row-span-2 size-9 text-primary drop-shadow-[0_0_10px_var(--candle-glow)]" aria-hidden="true" />
+        <CardTitle className="text-lg">
+          <h2>Đội Mũ Phân Loại</h2>
+        </CardTitle>
+        <CardDescription>Nhập điểm đề mẫu để xếp đúng bài, chọn Nhà và có bảng kỹ năng.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button asChild variant="outline" className="w-full">
+          <Link to="/sorting-hat">Đội Mũ</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+/** Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại, streak, Mũ Phân Loại / bảng kỹ năng. */
 export function Today() {
   const { days, current } = useSessions()
+  const { done: placed } = usePlacement()
+  const { board, weakest } = useSkillBoard()
   const [now] = useNow()
   const streak = useMemo(() => computeStreak(days, now), [days, now])
+  const hours = useMemo(() => studyHours(days, now), [days, now])
   const todayEntry = days[localDayKey(now)]
   const today = isSessionDay(todayEntry) ? todayEntry : null
 
@@ -90,6 +116,15 @@ export function Today() {
           )}
         </CardHeader>
       </Card>
+
+      {placed ? (
+        <>
+          <SkillGapCard board={board} weakest={weakest} />
+          <StudyClock hours={hours} />
+        </>
+      ) : (
+        <SortingHatInvite />
+      )}
     </section>
   )
 }

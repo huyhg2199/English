@@ -8,6 +8,7 @@ import { Notebook } from '@/pages/Notebook'
 import { Practice } from '@/pages/Practice'
 import { Roadmap } from '@/pages/Roadmap'
 import { Session } from '@/pages/Session'
+import { SortingHat } from '@/pages/SortingHat'
 import { Today } from '@/pages/Today'
 import { TrophyRoom } from '@/pages/TrophyRoom'
 
@@ -24,6 +25,8 @@ export const routes: RouteObject[] = [
       // Buổi 30' và ngày lười 10'; tab Hôm nay vẫn sáng (`alsoActiveFor` trong nav-items).
       { path: 'session', element: <Session /> },
       { path: 'session/lazy', element: <LazySession /> },
+      // Mũ Phân Loại: nhập điểm đề mẫu + câu hỏi Nhà; tab Hôm nay vẫn sáng (`alsoActiveFor`).
+      { path: 'sorting-hat', element: <SortingHat /> },
       { path: 'roadmap', element: <Roadmap /> },
       // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
       { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson /> },

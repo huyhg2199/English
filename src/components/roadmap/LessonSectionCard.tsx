@@ -1,4 +1,4 @@
-import { Link2 } from 'lucide-react'
+import { Link2, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { SKILL_LABELS } from '@/components/roadmap/skill-labels'
@@ -6,10 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { resourcesForSection, sectionHref, type Lesson, type Section, type Stage } from '@/data/roadmap'
 import { cn } from '@/lib/utils'
 
-type Props = { lesson: Lesson; stage: Stage; section: Section; highlighted?: boolean }
+type Props = {
+  lesson: Lesson
+  stage: Stage
+  section: Section
+  highlighted?: boolean
+  /** Đoạn thuộc kỹ năng yếu nhất (bảng kỹ năng): hiện nhãn "Ưu tiên". */
+  priority?: boolean
+}
 
 /** Một đoạn của bài: việc cần làm, kỹ năng, kỳ kiểm tra và nguồn miễn phí (trang bài và buổi học dùng chung). */
-export function LessonSectionCard({ lesson, stage, section, highlighted = false }: Props) {
+export function LessonSectionCard({ lesson, stage, section, highlighted = false, priority = false }: Props) {
   const resources = resourcesForSection(stage, section)
   return (
     <Card
@@ -21,7 +28,15 @@ export function LessonSectionCard({ lesson, stage, section, highlighted = false 
     >
       <CardHeader>
         <CardTitle className="flex items-center justify-between gap-2">
-          <h2>{section.title}</h2>
+          <span className="flex min-w-0 flex-wrap items-center gap-2">
+            <h2>{section.title}</h2>
+            {priority && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">
+                <Sparkles className="size-3" aria-hidden="true" />
+                Ưu tiên
+              </span>
+            )}
+          </span>
           <Link
             to={sectionHref(lesson.id, section.id)}
             aria-label={`Link tới đoạn ${section.title}`}

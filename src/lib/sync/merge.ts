@@ -1,15 +1,17 @@
+import { isPlacementAttempt } from '@/lib/placement/store'
 import { isLessonProgress } from '@/lib/roadmap-progress'
 import { isSavedWord } from '@/lib/saved-words'
 import { isSessionDay } from '@/lib/sessions'
 import { isSrsCard } from '@/lib/srs'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
+import { isTimeString } from '@/lib/updated-at'
 
 /**
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -128,6 +130,36 @@ function mergeKeyed(field: string, mergeMap: (l: unknown, s: unknown) => Record<
   }
 }
 
+/** Gộp `placement.attempts` theo id lần làm (không bao giờ bỏ lần nào). */
+export function mergePlacementAttempts(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isPlacementAttempt)
+}
+
+/**
+ * Gộp `placement`: `attempts` theo id lần làm; các field còn lại lấy theo bên có `updatedAt` mới hơn (bằng nhau hoặc
+ * không so được thì giữ local, bên kia bù field thiếu). Riêng `house` / `startLessonId`: bên mới hơn là null thì lấy
+ * giá trị khác null của bên kia.
+ */
+export function mergePlacement(local: unknown, server: unknown): unknown {
+  const hasLocal = isPlainObject(local)
+  const hasServer = isPlainObject(server)
+  if (!hasLocal && !hasServer) return local ?? server
+  const l = hasLocal ? local : {}
+  const s = hasServer ? server : {}
+  const lt = isTimeString(l.updatedAt) ? Date.parse(l.updatedAt) : Number.NEGATIVE_INFINITY
+  const st = isTimeString(s.updatedAt) ? Date.parse(s.updatedAt) : Number.NEGATIVE_INFINITY
+  const [winner, other] = hasLocal && !(st > lt) ? [l, s] : [s, l]
+  // Bên mới hơn chỉ đổi Nhà (bài bắt đầu còn null) thì không xoá bài bắt đầu bên kia đã xếp, và ngược lại.
+  const pick = (key: 'house' | 'startLessonId') => winner[key] ?? other[key] ?? null
+  return {
+    ...other,
+    ...winner,
+    house: pick('house'),
+    startLessonId: pick('startLessonId'),
+    attempts: mergePlacementAttempts(l.attempts, s.attempts),
+  }
+}
+
 export const mergeSessions = mergeKeyed('days', mergeSessionDays)
 export const mergeSavedWords = mergeKeyed('items', mergeSavedWordItems)
 
@@ -137,6 +169,7 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   srs: mergeSrs,
   sessions: mergeSessions,
   savedWords: mergeSavedWords,
+  placement: mergePlacement,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

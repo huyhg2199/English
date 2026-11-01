@@ -1,5 +1,6 @@
 import { allLessons, getLessonEntry, type Lesson, type Stage } from '@/data/roadmap'
 import type { WordList } from '@/data/vocab'
+import { readStartLessonId } from '@/lib/placement/store'
 import { computeRoadmapProgress, readCompletedLessonIds } from '@/lib/roadmap-progress'
 import { isPlainObject, type Store } from '@/lib/storage'
 import { isTimeString, nextUpdatedAt } from '@/lib/updated-at'
@@ -104,9 +105,12 @@ export function computeStreak(days: Record<string, unknown>, now: Date): number 
 
 export type SessionLesson = { lesson: Lesson; stage: Stage }
 
-/** Bài của buổi = bài chưa xong đầu tiên trên lộ trình; null khi đã xong cả lộ trình. */
+/**
+ * Bài của buổi = bài chưa xong đầu tiên trên lộ trình, tính từ bài bắt đầu của Mũ Phân Loại (nếu có);
+ * null khi đã xong cả lộ trình.
+ */
 export function sessionLesson(store: Store): SessionLesson | null {
-  const { nextLessonId } = computeRoadmapProgress(allLessons(), readCompletedLessonIds(store))
+  const { nextLessonId } = computeRoadmapProgress(allLessons(), readCompletedLessonIds(store), readStartLessonId(store))
   const entry = nextLessonId ? getLessonEntry(nextLessonId) : undefined
   return entry ? { lesson: entry.lesson, stage: entry.stage } : null
 }

@@ -88,7 +88,7 @@ describe('createStoreHandle', () => {
     expect(local).not.toHaveBeenCalled()
   })
 
-  it('lưu (migrate lên v5) dạng progress.lessons và giữ id lạ', () => {
+  it('lưu (migrate lên v6) dạng progress.lessons và giữ id lạ', () => {
     const storage = fakeStorage({
       [STORAGE_KEY]: JSON.stringify({
         schemaVersion: 3,
@@ -98,7 +98,7 @@ describe('createStoreHandle', () => {
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     handle.update(mark('s1-t1-w1'))
     const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
-    expect(saved.schemaVersion).toBe(5)
+    expect(saved.schemaVersion).toBe(6)
     expect(Object.keys(saved.data.progress.lessons)).toEqual(['old-id', 's1-t1-w1'])
     expect(readCompletedLessonIds(saved)).toEqual(['old-id', 's1-t1-w1'])
   })

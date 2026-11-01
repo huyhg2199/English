@@ -11,8 +11,10 @@ export type Progress = { lessons: Record<string, LessonProgress> }
 export type RoadmapProgress = {
   /** Id bài đã xong và có trong dữ liệu lộ trình (id lạ bị bỏ qua). */
   completed: ReadonlySet<string>
-  /** Bài chưa xong đầu tiên theo thứ tự; null khi đã xong hết. */
+  /** Bài chưa xong đầu tiên theo thứ tự (tính từ bài bắt đầu); null khi đã xong hết. */
   nextLessonId: string | null
+  /** Bài trước bài bắt đầu của Mũ Phân Loại mà chưa xong ("đã bỏ qua"); bài đã xong không nằm ở đây. */
+  skipped: ReadonlySet<string>
 }
 
 export function isLessonProgress(value: unknown): value is LessonProgress {
@@ -53,17 +55,33 @@ export function setLessonCompleted(store: Store, lessonId: string, done: boolean
   }
 }
 
-/** Tính trạm đã qua và trạm "học tiếp" từ danh sách bài (theo thứ tự) và tiến độ. */
+/**
+ * Tính trạm đã qua, trạm "học tiếp" và trạm "đã bỏ qua" từ danh sách bài (theo thứ tự) và tiến độ.
+ * `startLessonId` (Mũ Phân Loại): "học tiếp" là bài chưa xong đầu tiên **từ** bài đó; bài chưa xong phía trước
+ * là "đã bỏ qua" (không bị đánh dấu xong). Xong hết từ bài bắt đầu trở đi thì "học tiếp" quay về bài bỏ qua đầu tiên.
+ * `startLessonId` thiếu hoặc không có trong lộ trình → như không xếp lớp.
+ */
 export function computeRoadmapProgress(
   lessons: readonly { id: string }[],
   completedLessonIds: readonly string[],
+  startLessonId?: string | null,
 ): RoadmapProgress {
   const saved = new Set(completedLessonIds)
   const completed = new Set<string>()
+  const skipped = new Set<string>()
+  const startIndex = startLessonId ? Math.max(0, lessons.findIndex((l) => l.id === startLessonId)) : 0
   let nextLessonId: string | null = null
-  for (const { id } of lessons) {
+  let firstSkipped: string | null = null
+  lessons.forEach(({ id }, i) => {
     if (saved.has(id)) completed.add(id)
-    else if (nextLessonId === null) nextLessonId = id
+    else if (i < startIndex) {
+      skipped.add(id)
+      firstSkipped ??= id
+    } else if (nextLessonId === null) nextLessonId = id
+  })
+  if (nextLessonId === null && firstSkipped !== null) {
+    nextLessonId = firstSkipped
+    skipped.delete(firstSkipped)
   }
-  return { completed, nextLessonId }
+  return { completed, nextLessonId, skipped }
 }

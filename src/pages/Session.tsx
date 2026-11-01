@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { ArrowLeft, ArrowRight, BookOpenCheck, Layers, Music, PartyPopper } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 
-import { useSessions } from '@/app/store-context'
+import { useSessions, useSkillBoard } from '@/app/store-context'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { BackToToday, LinkList, SessionDoneView, StepClock } from '@/components/session/SessionParts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { entertainmentLinks, entertainmentTask, lessonHref } from '@/data/roadmap'
+import { prioritizeSections } from '@/lib/placement'
 import { resolveSessionLesson, wordListForLesson, type SessionLesson } from '@/lib/sessions'
 import { cn } from '@/lib/utils'
 
@@ -44,6 +45,7 @@ function Stepper({ step }: { step: number }) {
 }
 
 function LessonStep({ current }: { current: SessionLesson | null }) {
+  const { weakest } = useSkillBoard()
   if (!current) {
     return (
       <Card>
@@ -71,11 +73,13 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
           Mở trang bài
         </Link>
       </div>
-      {lesson.sections
-        .filter((s) => s.id !== 'entertainment')
-        .map((section) => (
-          <LessonSectionCard key={section.id} lesson={lesson} stage={stage} section={section} />
-        ))}
+      {/* Đoạn của kỹ năng yếu nhất (bảng kỹ năng) lên đầu, nhãn "Ưu tiên"; chưa đội Mũ thì giữ thứ tự. */}
+      {prioritizeSections(
+        lesson.sections.filter((s) => s.id !== 'entertainment'),
+        weakest,
+      ).map(({ section, priority }) => (
+        <LessonSectionCard key={section.id} lesson={lesson} stage={stage} section={section} priority={priority} />
+      ))}
     </>
   )
 }

@@ -1,6 +1,17 @@
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from 'react'
 
 import { saveStore, type LoadedStore, type StorageOptions, type Store } from '@/lib/storage'
+import {
+  applyStartLesson,
+  listAttempts,
+  readPlacement,
+  recordPlacementAttempt,
+  setHouse,
+  skillGaps,
+  weakestForStore,
+  type House,
+  type PartScores,
+} from '@/lib/placement'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { readSavedWords, saveWord, type SavedWordSource } from '@/lib/saved-words'
 import {
@@ -83,11 +94,42 @@ export function useProgress() {
   const handle = useStoreHandle()
   const { store } = useLoadedStore()
   const completedLessonIds = useMemo(() => readCompletedLessonIds(store), [store])
+  const startLessonId = useMemo(() => readPlacement(store).startLessonId, [store])
   const setCompleted = useCallback(
     (lessonId: string, done: boolean) => handle.update((s) => setLessonCompleted(s, lessonId, done)),
     [handle],
   )
-  return { completedLessonIds, setCompleted }
+  return { completedLessonIds, startLessonId, setCompleted }
+}
+
+/**
+ * Mũ Phân Loại (`store.data.placement`): các lần nhập điểm, Nhà, bài bắt đầu và hàm ghi.
+ * Lần nhập đầu tiên tự xếp bài bắt đầu; các lần sau chỉ đổi khi gọi `applyPlacement`.
+ */
+export function usePlacement() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const placement = useMemo(() => readPlacement(store), [store])
+  const attempts = useMemo(() => listAttempts(store), [store])
+  const saveAttempt = useCallback(
+    (parts: PartScores, now: Date = new Date()) =>
+      handle.update((s) => recordPlacementAttempt(s, parts, now).store),
+    [handle],
+  )
+  const saveHouse = useCallback((house: House, now: Date = new Date()) => handle.update((s) => setHouse(s, house, now)), [handle])
+  const applyPlacement = useCallback(
+    (lessonId: string, now: Date = new Date()) => handle.update((s) => applyStartLesson(s, lessonId, now)),
+    [handle],
+  )
+  return { placement, attempts, done: attempts.length > 0, saveAttempt, saveHouse, applyPlacement }
+}
+
+/** Bảng 5 kỹ năng và kỹ năng yếu nhất (null khi chưa đội Mũ Phân Loại → không đổi thứ tự đoạn). */
+export function useSkillBoard() {
+  const { store } = useLoadedStore()
+  return useMemo(() => {
+    return { board: skillGaps(store), weakest: weakestForStore(store) }
+  }, [store])
 }
 
 /**

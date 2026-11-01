@@ -10,7 +10,7 @@ export type NavItem = {
 
 /** Đúng 5 mục, đúng thứ tự theo Constraints của SPEC. */
 export const NAV_ITEMS: readonly NavItem[] = [
-  { path: '/', label: 'Hôm nay', icon: Flame, alsoActiveFor: ['/session'] },
+  { path: '/', label: 'Hôm nay', icon: Flame, alsoActiveFor: ['/session', '/sorting-hat'] },
   { path: '/roadmap', label: 'Lộ trình', icon: Map },
   { path: '/practice', label: 'Luyện tập', icon: WandSparkles },
   { path: '/notebook', label: 'Sổ tay', icon: BookOpen },

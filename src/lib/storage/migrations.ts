@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 5
+export const CURRENT_VERSION = 6
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -51,6 +51,17 @@ export const migrations: Migrations = {
       ...store.data,
       sessions: isPlainObject(store.data.sessions) ? store.data.sessions : { days: {} },
       savedWords: isPlainObject(store.data.savedWords) ? store.data.savedWords : { items: {} },
+    },
+  }),
+  // v5 → v6 (story 5): kết quả Mũ Phân Loại `placement`. Đã có thì để nguyên.
+  // `updatedAt` = mốc cũ cố định để mọi lần sửa thật (Nhà, bài bắt đầu) đều thắng khi gộp.
+  5: (store) => ({
+    schemaVersion: 6,
+    data: {
+      ...store.data,
+      placement: isPlainObject(store.data.placement)
+        ? store.data.placement
+        : { attempts: {}, house: null, startLessonId: null, updatedAt: LEGACY_UPDATED_AT },
     },
   }),
 }

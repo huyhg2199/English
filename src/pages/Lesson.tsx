@@ -2,11 +2,12 @@ import { useEffect } from 'react'
 import { ArrowLeft, BookOpenCheck, Check, MapPinOff } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
-import { useProgress } from '@/app/store-context'
+import { useProgress, useSkillBoard } from '@/app/store-context'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { resolveLessonRoute } from '@/data/roadmap'
+import { prioritizeSections } from '@/lib/placement'
 
 function BackLink() {
   return (
@@ -25,6 +26,7 @@ export function Lesson() {
   const { lessonId, sectionId } = useParams()
   const { entry, targetSectionId: target } = resolveLessonRoute(lessonId, sectionId)
   const { completedLessonIds, setCompleted } = useProgress()
+  const { weakest } = useSkillBoard()
   const { key: locationKey } = useLocation()
 
   // Có đoạn hợp lệ thì cuộn tới đó, không thì về đầu trang (kể cả khi reload).
@@ -86,13 +88,15 @@ export function Lesson() {
         )}
       </header>
 
-      {lesson.sections.map((section) => (
+      {/* Đoạn của kỹ năng yếu nhất lên đầu, nhãn "Ưu tiên"; chưa đội Mũ Phân Loại thì giữ thứ tự. */}
+      {prioritizeSections(lesson.sections, weakest).map(({ section, priority }) => (
         <LessonSectionCard
           key={section.id}
           lesson={lesson}
           stage={stage}
           section={section}
           highlighted={section.id === target}
+          priority={priority}
         />
       ))}
 
