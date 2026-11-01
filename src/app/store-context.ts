@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useSyncExternalStore }
 
 import { saveStore, type LoadedStore, type StorageOptions, type Store } from '@/lib/storage'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
+import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
 import type { SyncController, SyncSnapshot } from '@/lib/sync'
 
 /**
@@ -79,6 +80,25 @@ export function useProgress() {
     [handle],
   )
   return { completedLessonIds, setCompleted }
+}
+
+/**
+ * Trạng thái SRS flashcard (`store.data.srs`) và hàm chấm thẻ / "Đã biết".
+ * Ghi qua `handle.update` nên được lưu local và đồng bộ như tiến độ.
+ */
+export function useSrs() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const srs = useMemo(() => readSrs(store), [store])
+  const grade = useCallback(
+    (wordId: string, value: Grade, now: Date = new Date()) => handle.update((s) => gradeCard(s, wordId, value, now)),
+    [handle],
+  )
+  const markKnown = useCallback(
+    (wordId: string, now: Date = new Date()) => handle.update((s) => markCardKnown(s, wordId, now)),
+    [handle],
+  )
+  return { srs, grade, markKnown }
 }
 
 export const SyncContext = createContext<SyncController | null>(null)

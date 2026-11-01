@@ -1,5 +1,6 @@
 import type { Store } from '@/lib/storage'
 import { isPlainObject } from '@/lib/storage'
+import { isTimeString, nextUpdatedAt } from '@/lib/updated-at'
 
 /** Trạng thái một bài. Bỏ đánh dấu là `done: false` (không xoá key) để đồng bộ không làm sống lại. */
 export type LessonProgress = { done: boolean; updatedAt: string }
@@ -18,8 +19,7 @@ export function isLessonProgress(value: unknown): value is LessonProgress {
   return (
     isPlainObject(value) &&
     typeof value.done === 'boolean' &&
-    typeof value.updatedAt === 'string' &&
-    !Number.isNaN(Date.parse(value.updatedAt))
+    isTimeString(value.updatedAt)
   )
 }
 
@@ -36,15 +36,6 @@ export function readCompletedLessonIds(store: Store): readonly string[] {
 }
 
 /**
- * `updatedAt` của một bài không bao giờ lùi: `max(giờ máy, updatedAt cũ + 1ms)`.
- * Đồng hồ máy chạy lùi (hoặc bản cũ do máy chạy nhanh ghi) thì lần sửa mới vẫn thắng khi gộp.
- */
-function nextUpdatedAt(previous: unknown, now: Date): string {
-  const prev = isLessonProgress(previous) ? Date.parse(previous.updatedAt) : Number.NEGATIVE_INFINITY
-  return new Date(Math.max(now.getTime(), prev + 1)).toISOString()
-}
-
-/**
  * Trả về store mới với bài được đánh dấu / bỏ đánh dấu (ghi `{ done, updatedAt }`).
  * Không sửa store cũ, giữ nguyên các bài khác (kể cả id lạ, mục sai dạng) và các field khác của `progress`.
  */
@@ -54,7 +45,8 @@ export function setLessonCompleted(store: Store, lessonId: string, done: boolean
   const current = lessons[lessonId]
   const currentlyDone = isLessonProgress(current) && current.done
   if (currentlyDone === done) return store
-  const entry: LessonProgress = { done, updatedAt: nextUpdatedAt(current, now) }
+  const previousAt = isLessonProgress(current) ? current.updatedAt : undefined
+  const entry: LessonProgress = { done, updatedAt: nextUpdatedAt(previousAt, now) }
   return {
     ...store,
     data: { ...store.data, progress: { ...progress, lessons: { ...lessons, [lessonId]: entry } } },

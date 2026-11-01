@@ -1,19 +1,20 @@
 import { describe, expect, it } from 'vitest'
 
 import { readCompletedLessonIds } from '@/lib/roadmap-progress'
+import { buildSession, gradeCard, readSrs } from '@/lib/srs'
 import { LEGACY_UPDATED_AT, migrations, runMigrations, type Store } from '@/lib/storage'
 
-import { deepEqual, InvalidRemoteError, mergeLessons, mergeWithRemote, pickSynced, SYNCED_KEYS } from './merge'
+import { deepEqual, InvalidRemoteError, mergeCards, mergeLessons, mergeWithRemote, pickSynced, SYNCED_KEYS } from './merge'
 
 const T1 = '2026-11-01T10:00:00.000Z'
 const T2 = '2026-11-01T11:00:00.000Z'
-const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 3, data })
-const remote = (data: Record<string, unknown>, schemaVersion = 3) => ({ schemaVersion, data, updatedAt: T1 })
+const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 4, data })
+const remote = (data: Record<string, unknown>, schemaVersion = 4) => ({ schemaVersion, data, updatedAt: T1 })
 const lessons = (l: Record<string, unknown>) => ({ progress: { lessons: l } })
 
 describe('pickSynced / allowlist', () => {
-  it('chỉ có progress trong allowlist', () => {
-    expect(SYNCED_KEYS).toEqual(['progress'])
+  it('chỉ có progress và srs trong allowlist', () => {
+    expect(SYNCED_KEYS).toEqual(['progress', 'srs'])
   })
 
   it('bỏ mọi key ngoài allowlist (vd API key)', () => {
@@ -98,10 +99,10 @@ describe('mergeWithRemote — I/O Matrix', () => {
   })
 
   it('server mới hơn app → outdated, không gộp', () => {
-    expect(mergeWithRemote(local({}), remote({}, 4))).toEqual({ kind: 'outdated' })
+    expect(mergeWithRemote(local({}), remote({}, 5))).toEqual({ kind: 'outdated' })
   })
 
-  it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng v3', () => {
+  it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v4)', () => {
     const r = mergeWithRemote(
       local(lessons({ a: { done: true, updatedAt: T1 } })),
       remote({ progress: { completedLessonIds: ['b', 'old-id'] } }, 2),
@@ -184,5 +185,76 @@ describe('deepEqual', () => {
     expect(deepEqual({ a: 1, b: [1, { c: 2 }] }, { b: [1, { c: 2 }], a: 1 })).toBe(true)
     expect(deepEqual({ a: 1 }, { a: 1, b: undefined })).toBe(false)
     expect(deepEqual([1], { 0: 1 })).toBe(false)
+  })
+})
+
+describe('srs (story 3) — gộp từng thẻ', () => {
+  const NOW = new Date(2026, 10, 2, 9)
+  const srs = (cards: Record<string, unknown>) => ({ srs: { cards } })
+  const cardsOf = (s: Store) => readSrs(s).cards
+
+  it('hai máy chấm cùng thẻ khi offline → sau đồng bộ cả hai theo bản updatedAt mới hơn', () => {
+    // A chấm "Nhớ" lúc 9h, B chấm "Quên" lúc 10h (cùng thẻ), mỗi máy thêm một thẻ riêng.
+    const a = gradeCard(gradeCard(local({}), 'ngsl-x', 'good', NOW), 'ngsl-a', 'good', NOW)
+    const b = gradeCard(gradeCard(local({}), 'ngsl-x', 'again', new Date(2026, 10, 2, 10)), 'ngsl-b', 'easy', NOW)
+
+    // A đẩy trước, B kéo về rồi đẩy lên; A kéo lại.
+    const onB = mergeWithRemote(b, remote(pickSynced(a.data)))
+    if (onB.kind !== 'merged') throw new Error('expected merged')
+    expect(onB.push).toBe(true)
+    const onA = mergeWithRemote(a, remote(pickSynced(onB.store.data)))
+    if (onA.kind !== 'merged') throw new Error('expected merged')
+
+    expect(cardsOf(onA.store)).toEqual(cardsOf(onB.store))
+    expect(Object.keys(cardsOf(onA.store)).sort()).toEqual(['ngsl-a', 'ngsl-b', 'ngsl-x'])
+    expect(cardsOf(onA.store)['ngsl-x']).toEqual(cardsOf(b)['ngsl-x'])
+    // Cùng số thẻ đến hạn trên hai máy.
+    const words = ['x', 'a', 'b'].map((w, i) => ({
+      id: `ngsl-${w}`, word: w, list: 'ngsl' as const, rank: i + 1, pos: 'noun' as const, ipa: w,
+      syllables: [w], stressIndex: 0, meaningVi: w, exampleEn: w, exampleVi: w,
+    }))
+    const later = new Date(2026, 10, 9)
+    expect(buildSession(readSrs(onA.store), words, later).dueCount).toBe(
+      buildSession(readSrs(onB.store), words, later).dueCount,
+    )
+  })
+
+  it('đồng hồ máy lùi: lần chấm mới vẫn thắng bản cũ có updatedAt "tương lai"', () => {
+    const future = '2027-06-01T00:00:00.000Z'
+    const old = { due: future, interval: 3, ease: 2.5, reps: 1, lapses: 0, learning: false, introducedAt: future, known: false, updatedAt: future }
+    const graded = gradeCard(local(srs({ x: old })), 'x', 'again', NOW)
+    const r = mergeWithRemote(graded, remote(srs({ x: old })))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(cardsOf(r.store).x).toMatchObject({ lapses: 1, updatedAt: '2027-06-01T00:00:00.001Z' })
+    expect(r.push).toBe(true)
+  })
+
+  it('thẻ sai dạng: lấy bên hợp lệ; cả hai sai thì giữ local, không xoá thẻ nào', () => {
+    const good = gradeCard(local({}), 'x', 'good', NOW)
+    const merged = mergeCards({ x: { junk: 1 }, y: 'bad-local' }, { x: cardsOf(good).x, y: 'bad-server', z: null })
+    expect(merged).toEqual({ x: cardsOf(good).x, y: 'bad-local', z: null })
+  })
+
+  it('srs thiếu ở một bên → lấy bên còn lại; field khác của srs: local ưu tiên', () => {
+    const r = mergeWithRemote(local({ srs: { cards: {}, a: 1 } }), remote({ srs: { cards: {}, a: 2, b: 3 } }))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.store.data.srs).toEqual({ cards: {}, a: 1, b: 3 })
+    const pulled = mergeWithRemote(local({}), remote(srs({ q: { junk: true } })))
+    if (pulled.kind !== 'merged') throw new Error('expected merged')
+    expect(pulled.store.data.srs).toEqual({ cards: { q: { junk: true } } })
+  })
+
+  it('server v3 (app cũ đẩy lên) → migrate lên v4 rồi gộp, giữ srs local, đẩy lên bằng v4', () => {
+    const l = gradeCard(local({}), 'x', 'good', NOW)
+    const r = mergeWithRemote(l, remote({ progress: { lessons: {} } }, 3), { migrations })
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.push).toBe(true)
+    expect(cardsOf(r.store)).toEqual(cardsOf(l))
+  })
+
+  it('app cũ (v3) gặp server v4 → outdated, không gộp, không ghi đè srs', () => {
+    const server = remote({ progress: { lessons: {} }, ...srs({ x: { due: 'x' } }) }, 4)
+    const oldApp = { schemaVersion: 3, data: { progress: { lessons: {} } } }
+    expect(mergeWithRemote(oldApp, server, { currentVersion: 3 })).toEqual({ kind: 'outdated' })
   })
 })

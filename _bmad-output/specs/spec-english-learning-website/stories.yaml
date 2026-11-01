@@ -30,6 +30,13 @@
   spec_checkpoint: true
   invoke_dev_with: >-
     Oxford 3000/5000 chỉ link, không đóng gói. Ghi attribution CC BY-SA 4.0 cho NGSL/TSL trong app.
+- id: "3a"
+  title: Dữ liệu AI cho phần còn lại của NGSL và toàn bộ TSL
+  description: >-
+    Sinh IPA, trọng âm, nghĩa Việt, câu ví dụ cho NGSL hạng 1001–2809 và 1250 từ TSL theo đúng định dạng lô của story 3, để phiên ôn đi tiếp NGSL → TSL (CAP-9).
+    Phải xong trước T5 (03/2027), lúc lộ trình chuyển sang từ vựng công sở.
+  invoke_dev_with: >-
+    Chỉ thêm lô vào scripts/vocab/ai/ rồi chạy npm run vocab:build; Huy duyệt mẫu như story 3.
 - id: "4"
   title: Trang Hôm nay, buổi 30' và ngày lười 10'
   description: >-

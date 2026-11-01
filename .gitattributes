@@ -1,2 +1,8 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# CSV gốc NGSL/TSL: giữ nguyên byte như khi tải (TSL có CRLF và Latin-1)
+scripts/vocab/source/*.csv -text
+
+# Sinh bằng npm run vocab:build
+src/data/vocab/words.json linguist-generated=true

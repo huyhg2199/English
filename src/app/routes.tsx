@@ -1,6 +1,7 @@
 import { Navigate, type RouteObject } from 'react-router'
 
 import { AppShell } from '@/app/AppShell'
+import { Flashcards } from '@/pages/Flashcards'
 import { Lesson } from '@/pages/Lesson'
 import { Notebook } from '@/pages/Notebook'
 import { Practice } from '@/pages/Practice'
@@ -22,6 +23,8 @@ export const routes: RouteObject[] = [
       // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
       { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson /> },
       { path: 'practice', element: <Practice /> },
+      // Phiên ôn flashcard; tab Luyện tập vẫn sáng (NavLink /practice không `end`).
+      { path: 'practice/flashcards', element: <Flashcards /> },
       { path: 'notebook', element: <Notebook /> },
       { path: 'trophies', element: <TrophyRoom /> },
       { path: '*', element: <Navigate to="/" replace /> },

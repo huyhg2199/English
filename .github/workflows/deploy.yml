@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - name: Check words.json khớp với scripts/vocab (không sửa tay, không quên build lại)
+        run: npm run vocab:build && git diff --exit-code src/data/vocab/words.json
       - run: npm test
       - run: npm run build
         env:

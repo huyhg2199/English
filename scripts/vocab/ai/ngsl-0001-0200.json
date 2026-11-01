@@ -1,0 +1,2453 @@
+[
+  {
+    "word": "the",
+    "pos": "determiner",
+    "ipa": "ðə",
+    "syllables": [
+      "the"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "(mạo từ) cái, này — chỉ vật đã xác định",
+    "exampleEn": "The meeting starts at nine.",
+    "exampleVi": "Cuộc họp bắt đầu lúc chín giờ."
+  },
+  {
+    "word": "be",
+    "pos": "verb",
+    "ipa": "biː",
+    "syllables": [
+      "be"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thì, là, ở",
+    "exampleEn": "She is a nurse.",
+    "exampleVi": "Cô ấy là y tá."
+  },
+  {
+    "word": "and",
+    "pos": "conjunction",
+    "ipa": "ænd",
+    "syllables": [
+      "and"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "và",
+    "exampleEn": "I like tea and coffee.",
+    "exampleVi": "Tôi thích trà và cà phê."
+  },
+  {
+    "word": "of",
+    "pos": "preposition",
+    "ipa": "ɑːv",
+    "syllables": [
+      "of"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "của, thuộc về",
+    "exampleEn": "This is a map of the city.",
+    "exampleVi": "Đây là bản đồ của thành phố."
+  },
+  {
+    "word": "to",
+    "pos": "preposition",
+    "ipa": "tuː",
+    "syllables": [
+      "to"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đến, tới; (trước động từ) để",
+    "exampleEn": "I go to work by bus.",
+    "exampleVi": "Tôi đi làm bằng xe buýt."
+  },
+  {
+    "word": "a",
+    "pos": "determiner",
+    "ipa": "ə",
+    "syllables": [
+      "a"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "(mạo từ) một — chỉ vật chưa xác định",
+    "exampleEn": "I have a meeting today.",
+    "exampleVi": "Hôm nay tôi có một cuộc họp."
+  },
+  {
+    "word": "in",
+    "pos": "preposition",
+    "ipa": "ɪn",
+    "syllables": [
+      "in"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trong, ở trong",
+    "exampleEn": "The files are in the box.",
+    "exampleVi": "Tài liệu ở trong hộp."
+  },
+  {
+    "word": "have",
+    "pos": "verb",
+    "ipa": "hæv",
+    "syllables": [
+      "have"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có; đã (trợ động từ)",
+    "exampleEn": "I have two brothers.",
+    "exampleVi": "Tôi có hai anh trai."
+  },
+  {
+    "word": "it",
+    "pos": "pronoun",
+    "ipa": "ɪt",
+    "syllables": [
+      "it"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nó, cái đó",
+    "exampleEn": "It is very cold today.",
+    "exampleVi": "Hôm nay trời rất lạnh."
+  },
+  {
+    "word": "you",
+    "pos": "pronoun",
+    "ipa": "juː",
+    "syllables": [
+      "you"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bạn, các bạn",
+    "exampleEn": "Can you help me?",
+    "exampleVi": "Bạn có thể giúp tôi không?"
+  },
+  {
+    "word": "he",
+    "pos": "pronoun",
+    "ipa": "hiː",
+    "syllables": [
+      "he"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "anh ấy, ông ấy, cậu ấy",
+    "exampleEn": "He works in a bank.",
+    "exampleVi": "Anh ấy làm việc ở ngân hàng."
+  },
+  {
+    "word": "for",
+    "pos": "preposition",
+    "ipa": "fɔːr",
+    "syllables": [
+      "for"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cho, dành cho; trong (khoảng thời gian)",
+    "exampleEn": "This gift is for you.",
+    "exampleVi": "Món quà này dành cho bạn."
+  },
+  {
+    "word": "they",
+    "pos": "pronoun",
+    "ipa": "ðeɪ",
+    "syllables": [
+      "they"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "họ, chúng nó",
+    "exampleEn": "They live near the office.",
+    "exampleVi": "Họ sống gần văn phòng."
+  },
+  {
+    "word": "not",
+    "pos": "adverb",
+    "ipa": "nɑːt",
+    "syllables": [
+      "not"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "không (phủ định)",
+    "exampleEn": "I am not ready yet.",
+    "exampleVi": "Tôi chưa sẵn sàng."
+  },
+  {
+    "word": "that",
+    "pos": "determiner",
+    "ipa": "ðæt",
+    "syllables": [
+      "that"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đó, kia; rằng",
+    "exampleEn": "That desk is mine.",
+    "exampleVi": "Cái bàn kia là của tôi."
+  },
+  {
+    "word": "we",
+    "pos": "pronoun",
+    "ipa": "wiː",
+    "syllables": [
+      "we"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chúng tôi, chúng ta",
+    "exampleEn": "We have lunch at noon.",
+    "exampleVi": "Chúng tôi ăn trưa lúc giữa trưa."
+  },
+  {
+    "word": "on",
+    "pos": "preposition",
+    "ipa": "ɑːn",
+    "syllables": [
+      "on"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trên; vào (ngày)",
+    "exampleEn": "The keys are on the table.",
+    "exampleVi": "Chìa khóa ở trên bàn."
+  },
+  {
+    "word": "with",
+    "pos": "preposition",
+    "ipa": "wɪð",
+    "syllables": [
+      "with"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "với, cùng với",
+    "exampleEn": "I work with a good team.",
+    "exampleVi": "Tôi làm việc với một nhóm tốt."
+  },
+  {
+    "word": "this",
+    "pos": "determiner",
+    "ipa": "ðɪs",
+    "syllables": [
+      "this"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "này, cái này",
+    "exampleEn": "This room is very quiet.",
+    "exampleVi": "Căn phòng này rất yên tĩnh."
+  },
+  {
+    "word": "I",
+    "pos": "pronoun",
+    "ipa": "aɪ",
+    "syllables": [
+      "I"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tôi, mình",
+    "exampleEn": "I am a student.",
+    "exampleVi": "Tôi là sinh viên."
+  },
+  {
+    "word": "do",
+    "pos": "verb",
+    "ipa": "duː",
+    "syllables": [
+      "do"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "làm; (trợ động từ)",
+    "exampleEn": "I do my homework every night.",
+    "exampleVi": "Tôi làm bài tập mỗi tối."
+  },
+  {
+    "word": "as",
+    "pos": "preposition",
+    "ipa": "æz",
+    "syllables": [
+      "as"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "như, với tư cách là; khi",
+    "exampleEn": "She works as a teacher.",
+    "exampleVi": "Cô ấy làm nghề giáo viên."
+  },
+  {
+    "word": "at",
+    "pos": "preposition",
+    "ipa": "æt",
+    "syllables": [
+      "at"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ở, tại; lúc (giờ)",
+    "exampleEn": "See you at the station.",
+    "exampleVi": "Hẹn gặp bạn ở nhà ga."
+  },
+  {
+    "word": "she",
+    "pos": "pronoun",
+    "ipa": "ʃiː",
+    "syllables": [
+      "she"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cô ấy, bà ấy",
+    "exampleEn": "She is my manager.",
+    "exampleVi": "Cô ấy là quản lý của tôi."
+  },
+  {
+    "word": "but",
+    "pos": "conjunction",
+    "ipa": "bʌt",
+    "syllables": [
+      "but"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhưng",
+    "exampleEn": "The room is small but clean.",
+    "exampleVi": "Căn phòng nhỏ nhưng sạch."
+  },
+  {
+    "word": "from",
+    "pos": "preposition",
+    "ipa": "frɑːm",
+    "syllables": [
+      "from"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "từ",
+    "exampleEn": "I am from Vietnam.",
+    "exampleVi": "Tôi đến từ Việt Nam."
+  },
+  {
+    "word": "by",
+    "pos": "preposition",
+    "ipa": "baɪ",
+    "syllables": [
+      "by"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bởi; bằng (phương tiện); cạnh",
+    "exampleEn": "I go to work by train.",
+    "exampleVi": "Tôi đi làm bằng tàu hỏa."
+  },
+  {
+    "word": "will",
+    "pos": "verb",
+    "ipa": "wɪl",
+    "syllables": [
+      "will"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sẽ (chỉ tương lai)",
+    "exampleEn": "I will call you tomorrow.",
+    "exampleVi": "Tôi sẽ gọi cho bạn vào ngày mai."
+  },
+  {
+    "word": "or",
+    "pos": "conjunction",
+    "ipa": "ɔːr",
+    "syllables": [
+      "or"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hoặc, hay",
+    "exampleEn": "Tea or coffee?",
+    "exampleVi": "Trà hay cà phê?"
+  },
+  {
+    "word": "say",
+    "pos": "verb",
+    "ipa": "seɪ",
+    "syllables": [
+      "say"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nói",
+    "exampleEn": "What did he say?",
+    "exampleVi": "Anh ấy đã nói gì?"
+  },
+  {
+    "word": "go",
+    "pos": "verb",
+    "ipa": "ɡoʊ",
+    "syllables": [
+      "go"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đi",
+    "exampleEn": "Let's go home.",
+    "exampleVi": "Chúng ta về nhà thôi."
+  },
+  {
+    "word": "so",
+    "pos": "adverb",
+    "ipa": "soʊ",
+    "syllables": [
+      "so"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "rất, quá; vì vậy",
+    "exampleEn": "I am so tired today.",
+    "exampleVi": "Hôm nay tôi mệt quá."
+  },
+  {
+    "word": "all",
+    "pos": "determiner",
+    "ipa": "ɑːl",
+    "syllables": [
+      "all"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tất cả",
+    "exampleEn": "All the staff are here.",
+    "exampleVi": "Tất cả nhân viên đều ở đây."
+  },
+  {
+    "word": "if",
+    "pos": "conjunction",
+    "ipa": "ɪf",
+    "syllables": [
+      "if"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nếu",
+    "exampleEn": "Call me if you are late.",
+    "exampleVi": "Gọi cho tôi nếu bạn đến muộn."
+  },
+  {
+    "word": "one",
+    "pos": "number",
+    "ipa": "wʌn",
+    "syllables": [
+      "one"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "một, số một",
+    "exampleEn": "I have one question.",
+    "exampleVi": "Tôi có một câu hỏi."
+  },
+  {
+    "word": "would",
+    "pos": "verb",
+    "ipa": "wʊd",
+    "syllables": [
+      "would"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sẽ (quá khứ/lịch sự); muốn",
+    "exampleEn": "Would you like some water?",
+    "exampleVi": "Bạn có muốn uống chút nước không?"
+  },
+  {
+    "word": "about",
+    "pos": "preposition",
+    "ipa": "əˈbaʊt",
+    "syllables": [
+      "a",
+      "bout"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "về; khoảng",
+    "exampleEn": "Tell me about your job.",
+    "exampleVi": "Hãy kể cho tôi về công việc của bạn."
+  },
+  {
+    "word": "can",
+    "pos": "verb",
+    "ipa": "kæn",
+    "syllables": [
+      "can"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có thể, biết (làm gì)",
+    "exampleEn": "I can speak English.",
+    "exampleVi": "Tôi có thể nói tiếng Anh."
+  },
+  {
+    "word": "which",
+    "pos": "determiner",
+    "ipa": "wɪtʃ",
+    "syllables": [
+      "which"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nào, cái nào",
+    "exampleEn": "Which bus goes to the airport?",
+    "exampleVi": "Xe buýt nào đi đến sân bay?"
+  },
+  {
+    "word": "there",
+    "pos": "adverb",
+    "ipa": "ðer",
+    "syllables": [
+      "there"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ở đó; (there is/are) có",
+    "exampleEn": "There is a bank near here.",
+    "exampleVi": "Có một ngân hàng gần đây."
+  },
+  {
+    "word": "know",
+    "pos": "verb",
+    "ipa": "noʊ",
+    "syllables": [
+      "know"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "biết",
+    "exampleEn": "I know her name.",
+    "exampleVi": "Tôi biết tên cô ấy."
+  },
+  {
+    "word": "more",
+    "pos": "determiner",
+    "ipa": "mɔːr",
+    "syllables": [
+      "more"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhiều hơn, thêm",
+    "exampleEn": "We need more time.",
+    "exampleVi": "Chúng ta cần thêm thời gian."
+  },
+  {
+    "word": "get",
+    "pos": "verb",
+    "ipa": "ɡet",
+    "syllables": [
+      "get"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhận được, lấy; trở nên",
+    "exampleEn": "I get up at six.",
+    "exampleVi": "Tôi thức dậy lúc sáu giờ."
+  },
+  {
+    "word": "who",
+    "pos": "pronoun",
+    "ipa": "huː",
+    "syllables": [
+      "who"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ai; người mà",
+    "exampleEn": "Who is your manager?",
+    "exampleVi": "Quản lý của bạn là ai?"
+  },
+  {
+    "word": "like",
+    "pos": "verb",
+    "ipa": "laɪk",
+    "syllables": [
+      "like"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thích; giống như",
+    "exampleEn": "I like my new job.",
+    "exampleVi": "Tôi thích công việc mới của mình."
+  },
+  {
+    "word": "when",
+    "pos": "adverb",
+    "ipa": "wen",
+    "syllables": [
+      "when"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "khi nào; khi",
+    "exampleEn": "When does the shop open?",
+    "exampleVi": "Khi nào cửa hàng mở cửa?"
+  },
+  {
+    "word": "think",
+    "pos": "verb",
+    "ipa": "θɪŋk",
+    "syllables": [
+      "think"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nghĩ, cho rằng",
+    "exampleEn": "I think it will rain.",
+    "exampleVi": "Tôi nghĩ trời sẽ mưa."
+  },
+  {
+    "word": "make",
+    "pos": "verb",
+    "ipa": "meɪk",
+    "syllables": [
+      "make"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "làm, tạo ra",
+    "exampleEn": "I make coffee every morning.",
+    "exampleVi": "Tôi pha cà phê mỗi sáng."
+  },
+  {
+    "word": "time",
+    "pos": "noun",
+    "ipa": "taɪm",
+    "syllables": [
+      "time"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thời gian; lần",
+    "exampleEn": "What time is it?",
+    "exampleVi": "Bây giờ là mấy giờ?"
+  },
+  {
+    "word": "see",
+    "pos": "verb",
+    "ipa": "siː",
+    "syllables": [
+      "see"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhìn thấy, gặp",
+    "exampleEn": "I can see the sea.",
+    "exampleVi": "Tôi có thể nhìn thấy biển."
+  },
+  {
+    "word": "what",
+    "pos": "pronoun",
+    "ipa": "wɑːt",
+    "syllables": [
+      "what"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gì, cái gì",
+    "exampleEn": "What is your name?",
+    "exampleVi": "Bạn tên là gì?"
+  },
+  {
+    "word": "up",
+    "pos": "adverb",
+    "ipa": "ʌp",
+    "syllables": [
+      "up"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lên, ở trên",
+    "exampleEn": "Please stand up.",
+    "exampleVi": "Vui lòng đứng lên."
+  },
+  {
+    "word": "some",
+    "pos": "determiner",
+    "ipa": "sʌm",
+    "syllables": [
+      "some"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "một vài, một ít",
+    "exampleEn": "I need some paper.",
+    "exampleVi": "Tôi cần một ít giấy."
+  },
+  {
+    "word": "other",
+    "pos": "adjective",
+    "ipa": "ˈʌðɚ",
+    "syllables": [
+      "oth",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "khác",
+    "exampleEn": "Do you have other colors?",
+    "exampleVi": "Bạn có màu khác không?"
+  },
+  {
+    "word": "out",
+    "pos": "adverb",
+    "ipa": "aʊt",
+    "syllables": [
+      "out"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ra ngoài, ở ngoài",
+    "exampleEn": "She is out for lunch.",
+    "exampleVi": "Cô ấy ra ngoài ăn trưa."
+  },
+  {
+    "word": "good",
+    "pos": "adjective",
+    "ipa": "ɡʊd",
+    "syllables": [
+      "good"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tốt, giỏi, hay",
+    "exampleEn": "This is a good idea.",
+    "exampleVi": "Đây là một ý tưởng hay."
+  },
+  {
+    "word": "people",
+    "pos": "noun",
+    "ipa": "ˈpiːpəl",
+    "syllables": [
+      "peo",
+      "ple"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "người, con người",
+    "exampleEn": "Many people work here.",
+    "exampleVi": "Nhiều người làm việc ở đây."
+  },
+  {
+    "word": "year",
+    "pos": "noun",
+    "ipa": "jɪr",
+    "syllables": [
+      "year"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "năm",
+    "exampleEn": "I started this job last year.",
+    "exampleVi": "Tôi bắt đầu công việc này năm ngoái."
+  },
+  {
+    "word": "take",
+    "pos": "verb",
+    "ipa": "teɪk",
+    "syllables": [
+      "take"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "lấy, cầm; mang đi; mất (thời gian)",
+    "exampleEn": "Take an umbrella with you.",
+    "exampleVi": "Hãy mang theo ô."
+  },
+  {
+    "word": "no",
+    "pos": "determiner",
+    "ipa": "noʊ",
+    "syllables": [
+      "no"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "không, không có",
+    "exampleEn": "There is no milk left.",
+    "exampleVi": "Không còn sữa nữa."
+  },
+  {
+    "word": "well",
+    "pos": "adverb",
+    "ipa": "wel",
+    "syllables": [
+      "well"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tốt, giỏi",
+    "exampleEn": "She speaks English well.",
+    "exampleVi": "Cô ấy nói tiếng Anh giỏi."
+  },
+  {
+    "word": "because",
+    "pos": "conjunction",
+    "ipa": "bɪˈkɑːz",
+    "syllables": [
+      "be",
+      "cause"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bởi vì",
+    "exampleEn": "I am late because of the rain.",
+    "exampleVi": "Tôi đến muộn vì trời mưa."
+  },
+  {
+    "word": "very",
+    "pos": "adverb",
+    "ipa": "ˈveri",
+    "syllables": [
+      "ver",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "rất",
+    "exampleEn": "The food is very good.",
+    "exampleVi": "Đồ ăn rất ngon."
+  },
+  {
+    "word": "just",
+    "pos": "adverb",
+    "ipa": "dʒʌst",
+    "syllables": [
+      "just"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vừa mới; chỉ",
+    "exampleEn": "I just arrived.",
+    "exampleVi": "Tôi vừa mới đến."
+  },
+  {
+    "word": "come",
+    "pos": "verb",
+    "ipa": "kʌm",
+    "syllables": [
+      "come"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đến, tới",
+    "exampleEn": "Come to my office, please.",
+    "exampleVi": "Vui lòng đến văn phòng tôi."
+  },
+  {
+    "word": "could",
+    "pos": "verb",
+    "ipa": "kʊd",
+    "syllables": [
+      "could"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có thể (quá khứ/lịch sự)",
+    "exampleEn": "Could you open the window?",
+    "exampleVi": "Bạn có thể mở cửa sổ được không?"
+  },
+  {
+    "word": "work",
+    "pos": "verb",
+    "ipa": "wɝːk",
+    "syllables": [
+      "work"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "làm việc; công việc",
+    "exampleEn": "I work from nine to five.",
+    "exampleVi": "Tôi làm việc từ chín giờ đến năm giờ."
+  },
+  {
+    "word": "use",
+    "pos": "verb",
+    "ipa": "juːz",
+    "syllables": [
+      "use"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sử dụng, dùng",
+    "exampleEn": "Can I use your phone?",
+    "exampleVi": "Tôi có thể dùng điện thoại của bạn không?"
+  },
+  {
+    "word": "than",
+    "pos": "conjunction",
+    "ipa": "ðæn",
+    "syllables": [
+      "than"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hơn (so sánh)",
+    "exampleEn": "He is taller than me.",
+    "exampleVi": "Anh ấy cao hơn tôi."
+  },
+  {
+    "word": "now",
+    "pos": "adverb",
+    "ipa": "naʊ",
+    "syllables": [
+      "now"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bây giờ",
+    "exampleEn": "I am busy now.",
+    "exampleVi": "Bây giờ tôi đang bận."
+  },
+  {
+    "word": "then",
+    "pos": "adverb",
+    "ipa": "ðen",
+    "syllables": [
+      "then"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sau đó; lúc đó",
+    "exampleEn": "Finish this, then go home.",
+    "exampleVi": "Làm xong cái này rồi về nhà."
+  },
+  {
+    "word": "also",
+    "pos": "adverb",
+    "ipa": "ˈɑːlsoʊ",
+    "syllables": [
+      "al",
+      "so"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cũng",
+    "exampleEn": "I also speak French.",
+    "exampleVi": "Tôi cũng nói tiếng Pháp."
+  },
+  {
+    "word": "into",
+    "pos": "preposition",
+    "ipa": "ˈɪntuː",
+    "syllables": [
+      "in",
+      "to"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vào trong",
+    "exampleEn": "She walked into the room.",
+    "exampleVi": "Cô ấy bước vào phòng."
+  },
+  {
+    "word": "only",
+    "pos": "adverb",
+    "ipa": "ˈoʊnli",
+    "syllables": [
+      "on",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chỉ; duy nhất",
+    "exampleEn": "I only have ten dollars.",
+    "exampleVi": "Tôi chỉ có mười đô la."
+  },
+  {
+    "word": "look",
+    "pos": "verb",
+    "ipa": "lʊk",
+    "syllables": [
+      "look"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhìn; trông có vẻ",
+    "exampleEn": "Look at this photo.",
+    "exampleVi": "Hãy nhìn bức ảnh này."
+  },
+  {
+    "word": "want",
+    "pos": "verb",
+    "ipa": "wɑːnt",
+    "syllables": [
+      "want"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "muốn",
+    "exampleEn": "I want a cup of tea.",
+    "exampleVi": "Tôi muốn một tách trà."
+  },
+  {
+    "word": "give",
+    "pos": "verb",
+    "ipa": "ɡɪv",
+    "syllables": [
+      "give"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cho, đưa",
+    "exampleEn": "Please give me the report.",
+    "exampleVi": "Vui lòng đưa tôi bản báo cáo."
+  },
+  {
+    "word": "first",
+    "pos": "adjective",
+    "ipa": "fɝːst",
+    "syllables": [
+      "first"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đầu tiên, thứ nhất",
+    "exampleEn": "This is my first day here.",
+    "exampleVi": "Đây là ngày đầu tiên của tôi ở đây."
+  },
+  {
+    "word": "new",
+    "pos": "adjective",
+    "ipa": "nuː",
+    "syllables": [
+      "new"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mới",
+    "exampleEn": "I bought a new laptop.",
+    "exampleVi": "Tôi đã mua một máy tính xách tay mới."
+  },
+  {
+    "word": "way",
+    "pos": "noun",
+    "ipa": "weɪ",
+    "syllables": [
+      "way"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đường đi; cách",
+    "exampleEn": "Is this the way to the station?",
+    "exampleVi": "Đây có phải đường đến nhà ga không?"
+  },
+  {
+    "word": "find",
+    "pos": "verb",
+    "ipa": "faɪnd",
+    "syllables": [
+      "find"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tìm thấy, tìm ra",
+    "exampleEn": "I can't find my keys.",
+    "exampleVi": "Tôi không tìm thấy chìa khóa."
+  },
+  {
+    "word": "over",
+    "pos": "preposition",
+    "ipa": "ˈoʊvɚ",
+    "syllables": [
+      "o",
+      "ver"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trên, qua; hơn",
+    "exampleEn": "The plane flew over the city.",
+    "exampleVi": "Máy bay bay qua thành phố."
+  },
+  {
+    "word": "any",
+    "pos": "determiner",
+    "ipa": "ˈeni",
+    "syllables": [
+      "an",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bất kỳ; nào (câu hỏi, phủ định)",
+    "exampleEn": "Do you have any questions?",
+    "exampleVi": "Bạn có câu hỏi nào không?"
+  },
+  {
+    "word": "after",
+    "pos": "preposition",
+    "ipa": "ˈæftɚ",
+    "syllables": [
+      "af",
+      "ter"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sau, sau khi",
+    "exampleEn": "Let's meet after work.",
+    "exampleVi": "Chúng ta gặp nhau sau giờ làm nhé."
+  },
+  {
+    "word": "day",
+    "pos": "noun",
+    "ipa": "deɪ",
+    "syllables": [
+      "day"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ngày",
+    "exampleEn": "Have a nice day!",
+    "exampleVi": "Chúc một ngày tốt lành!"
+  },
+  {
+    "word": "where",
+    "pos": "adverb",
+    "ipa": "wer",
+    "syllables": [
+      "where"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ở đâu",
+    "exampleEn": "Where is the meeting room?",
+    "exampleVi": "Phòng họp ở đâu?"
+  },
+  {
+    "word": "thing",
+    "pos": "noun",
+    "ipa": "θɪŋ",
+    "syllables": [
+      "thing"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đồ vật, điều, việc",
+    "exampleEn": "I have many things to do.",
+    "exampleVi": "Tôi có nhiều việc phải làm."
+  },
+  {
+    "word": "most",
+    "pos": "determiner",
+    "ipa": "moʊst",
+    "syllables": [
+      "most"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhiều nhất, hầu hết",
+    "exampleEn": "Most people like music.",
+    "exampleVi": "Hầu hết mọi người thích âm nhạc."
+  },
+  {
+    "word": "should",
+    "pos": "verb",
+    "ipa": "ʃʊd",
+    "syllables": [
+      "should"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nên",
+    "exampleEn": "You should see a doctor.",
+    "exampleVi": "Bạn nên đi khám bác sĩ."
+  },
+  {
+    "word": "need",
+    "pos": "verb",
+    "ipa": "niːd",
+    "syllables": [
+      "need"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cần",
+    "exampleEn": "I need your help.",
+    "exampleVi": "Tôi cần sự giúp đỡ của bạn."
+  },
+  {
+    "word": "much",
+    "pos": "determiner",
+    "ipa": "mʌtʃ",
+    "syllables": [
+      "much"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhiều (không đếm được)",
+    "exampleEn": "How much is this bag?",
+    "exampleVi": "Cái túi này bao nhiêu tiền?"
+  },
+  {
+    "word": "right",
+    "pos": "adjective",
+    "ipa": "raɪt",
+    "syllables": [
+      "right"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đúng; bên phải",
+    "exampleEn": "Your answer is right.",
+    "exampleVi": "Câu trả lời của bạn đúng."
+  },
+  {
+    "word": "how",
+    "pos": "adverb",
+    "ipa": "haʊ",
+    "syllables": [
+      "how"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thế nào, bằng cách nào",
+    "exampleEn": "How are you today?",
+    "exampleVi": "Hôm nay bạn thế nào?"
+  },
+  {
+    "word": "back",
+    "pos": "adverb",
+    "ipa": "bæk",
+    "syllables": [
+      "back"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trở lại, về; phía sau",
+    "exampleEn": "I will be back soon.",
+    "exampleVi": "Tôi sẽ quay lại sớm."
+  },
+  {
+    "word": "mean",
+    "pos": "verb",
+    "ipa": "miːn",
+    "syllables": [
+      "mean"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có nghĩa là; ý muốn nói",
+    "exampleEn": "What does this word mean?",
+    "exampleVi": "Từ này nghĩa là gì?"
+  },
+  {
+    "word": "even",
+    "pos": "adverb",
+    "ipa": "ˈiːvən",
+    "syllables": [
+      "e",
+      "ven"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thậm chí, ngay cả",
+    "exampleEn": "He works even on Sundays.",
+    "exampleVi": "Anh ấy làm việc ngay cả vào Chủ nhật."
+  },
+  {
+    "word": "may",
+    "pos": "verb",
+    "ipa": "meɪ",
+    "syllables": [
+      "may"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có thể, có lẽ; được phép",
+    "exampleEn": "May I come in?",
+    "exampleVi": "Tôi vào được không?"
+  },
+  {
+    "word": "here",
+    "pos": "adverb",
+    "ipa": "hɪr",
+    "syllables": [
+      "here"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ở đây",
+    "exampleEn": "Please sign here.",
+    "exampleVi": "Vui lòng ký vào đây."
+  },
+  {
+    "word": "many",
+    "pos": "determiner",
+    "ipa": "ˈmeni",
+    "syllables": [
+      "man",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhiều (đếm được)",
+    "exampleEn": "We have many customers.",
+    "exampleVi": "Chúng tôi có nhiều khách hàng."
+  },
+  {
+    "word": "such",
+    "pos": "determiner",
+    "ipa": "sʌtʃ",
+    "syllables": [
+      "such"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "như vậy, như thế",
+    "exampleEn": "It was such a nice day.",
+    "exampleVi": "Hôm đó là một ngày thật đẹp."
+  },
+  {
+    "word": "last",
+    "pos": "adjective",
+    "ipa": "læst",
+    "syllables": [
+      "last"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cuối cùng; vừa qua",
+    "exampleEn": "I saw him last week.",
+    "exampleVi": "Tôi đã gặp anh ấy tuần trước."
+  },
+  {
+    "word": "child",
+    "pos": "noun",
+    "ipa": "tʃaɪld",
+    "syllables": [
+      "child"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đứa trẻ, con",
+    "exampleEn": "She has one child.",
+    "exampleVi": "Cô ấy có một đứa con."
+  },
+  {
+    "word": "tell",
+    "pos": "verb",
+    "ipa": "tel",
+    "syllables": [
+      "tell"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "kể, nói, bảo",
+    "exampleEn": "Please tell me the time.",
+    "exampleVi": "Vui lòng cho tôi biết mấy giờ rồi."
+  },
+  {
+    "word": "really",
+    "pos": "adverb",
+    "ipa": "ˈriːəli",
+    "syllables": [
+      "re",
+      "al",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thật sự, thực sự",
+    "exampleEn": "I really like this song.",
+    "exampleVi": "Tôi thật sự thích bài hát này."
+  },
+  {
+    "word": "call",
+    "pos": "verb",
+    "ipa": "kɑːl",
+    "syllables": [
+      "call"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gọi (điện thoại); gọi là",
+    "exampleEn": "I will call you later.",
+    "exampleVi": "Tôi sẽ gọi cho bạn sau."
+  },
+  {
+    "word": "before",
+    "pos": "preposition",
+    "ipa": "bɪˈfɔːr",
+    "syllables": [
+      "be",
+      "fore"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "trước, trước khi",
+    "exampleEn": "Wash your hands before lunch.",
+    "exampleVi": "Hãy rửa tay trước bữa trưa."
+  },
+  {
+    "word": "company",
+    "pos": "noun",
+    "ipa": "ˈkʌmpəni",
+    "syllables": [
+      "com",
+      "pa",
+      "ny"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "công ty",
+    "exampleEn": "She works for a big company.",
+    "exampleVi": "Cô ấy làm việc cho một công ty lớn."
+  },
+  {
+    "word": "through",
+    "pos": "preposition",
+    "ipa": "θruː",
+    "syllables": [
+      "through"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "qua, xuyên qua",
+    "exampleEn": "We walked through the park.",
+    "exampleVi": "Chúng tôi đi bộ qua công viên."
+  },
+  {
+    "word": "down",
+    "pos": "adverb",
+    "ipa": "daʊn",
+    "syllables": [
+      "down"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "xuống, ở dưới",
+    "exampleEn": "Please sit down.",
+    "exampleVi": "Mời ngồi xuống."
+  },
+  {
+    "word": "show",
+    "pos": "verb",
+    "ipa": "ʃoʊ",
+    "syllables": [
+      "show"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cho xem, chỉ; buổi biểu diễn",
+    "exampleEn": "Can you show me the way?",
+    "exampleVi": "Bạn có thể chỉ đường cho tôi không?"
+  },
+  {
+    "word": "life",
+    "pos": "noun",
+    "ipa": "laɪf",
+    "syllables": [
+      "life"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cuộc sống, đời sống",
+    "exampleEn": "City life is busy.",
+    "exampleVi": "Cuộc sống thành phố rất bận rộn."
+  },
+  {
+    "word": "man",
+    "pos": "noun",
+    "ipa": "mæn",
+    "syllables": [
+      "man"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "người đàn ông",
+    "exampleEn": "That man is my boss.",
+    "exampleVi": "Người đàn ông đó là sếp của tôi."
+  },
+  {
+    "word": "change",
+    "pos": "verb",
+    "ipa": "tʃeɪndʒ",
+    "syllables": [
+      "change"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thay đổi; tiền lẻ",
+    "exampleEn": "We need to change the plan.",
+    "exampleVi": "Chúng ta cần thay đổi kế hoạch."
+  },
+  {
+    "word": "place",
+    "pos": "noun",
+    "ipa": "pleɪs",
+    "syllables": [
+      "place"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nơi, chỗ",
+    "exampleEn": "This is a nice place to eat.",
+    "exampleVi": "Đây là một chỗ ăn uống tốt."
+  },
+  {
+    "word": "long",
+    "pos": "adjective",
+    "ipa": "lɑːŋ",
+    "syllables": [
+      "long"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "dài, lâu",
+    "exampleEn": "It was a long meeting.",
+    "exampleVi": "Đó là một cuộc họp dài."
+  },
+  {
+    "word": "between",
+    "pos": "preposition",
+    "ipa": "bɪˈtwiːn",
+    "syllables": [
+      "be",
+      "tween"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "giữa (hai người/vật)",
+    "exampleEn": "The bank is between two shops.",
+    "exampleVi": "Ngân hàng nằm giữa hai cửa hàng."
+  },
+  {
+    "word": "feel",
+    "pos": "verb",
+    "ipa": "fiːl",
+    "syllables": [
+      "feel"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cảm thấy",
+    "exampleEn": "I feel tired today.",
+    "exampleVi": "Hôm nay tôi cảm thấy mệt."
+  },
+  {
+    "word": "too",
+    "pos": "adverb",
+    "ipa": "tuː",
+    "syllables": [
+      "too"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "quá; cũng",
+    "exampleEn": "This coffee is too hot.",
+    "exampleVi": "Cà phê này nóng quá."
+  },
+  {
+    "word": "still",
+    "pos": "adverb",
+    "ipa": "stɪl",
+    "syllables": [
+      "still"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vẫn, vẫn còn",
+    "exampleEn": "She is still at work.",
+    "exampleVi": "Cô ấy vẫn còn ở chỗ làm."
+  },
+  {
+    "word": "problem",
+    "pos": "noun",
+    "ipa": "ˈprɑːbləm",
+    "syllables": [
+      "prob",
+      "lem"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "vấn đề, rắc rối",
+    "exampleEn": "There is a problem with my computer.",
+    "exampleVi": "Máy tính của tôi có vấn đề."
+  },
+  {
+    "word": "write",
+    "pos": "verb",
+    "ipa": "raɪt",
+    "syllables": [
+      "write"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "viết",
+    "exampleEn": "Please write your name here.",
+    "exampleVi": "Vui lòng viết tên bạn vào đây."
+  },
+  {
+    "word": "same",
+    "pos": "adjective",
+    "ipa": "seɪm",
+    "syllables": [
+      "same"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "giống nhau, cùng",
+    "exampleEn": "We work in the same office.",
+    "exampleVi": "Chúng tôi làm cùng một văn phòng."
+  },
+  {
+    "word": "lot",
+    "pos": "noun",
+    "ipa": "lɑːt",
+    "syllables": [
+      "lot"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "(a lot) nhiều, rất nhiều",
+    "exampleEn": "I have a lot of work today.",
+    "exampleVi": "Hôm nay tôi có rất nhiều việc."
+  },
+  {
+    "word": "great",
+    "pos": "adjective",
+    "ipa": "ɡreɪt",
+    "syllables": [
+      "great"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tuyệt vời; lớn",
+    "exampleEn": "That's a great idea!",
+    "exampleVi": "Đó là một ý tưởng tuyệt vời!"
+  },
+  {
+    "word": "try",
+    "pos": "verb",
+    "ipa": "traɪ",
+    "syllables": [
+      "try"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cố gắng; thử",
+    "exampleEn": "Try this cake.",
+    "exampleVi": "Hãy thử bánh này đi."
+  },
+  {
+    "word": "leave",
+    "pos": "verb",
+    "ipa": "liːv",
+    "syllables": [
+      "leave"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "rời đi; để lại",
+    "exampleEn": "I leave the office at six.",
+    "exampleVi": "Tôi rời văn phòng lúc sáu giờ."
+  },
+  {
+    "word": "number",
+    "pos": "noun",
+    "ipa": "ˈnʌmbɚ",
+    "syllables": [
+      "num",
+      "ber"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "số, con số",
+    "exampleEn": "What is your phone number?",
+    "exampleVi": "Số điện thoại của bạn là gì?"
+  },
+  {
+    "word": "both",
+    "pos": "determiner",
+    "ipa": "boʊθ",
+    "syllables": [
+      "both"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cả hai",
+    "exampleEn": "Both rooms are free.",
+    "exampleVi": "Cả hai phòng đều trống."
+  },
+  {
+    "word": "own",
+    "pos": "adjective",
+    "ipa": "oʊn",
+    "syllables": [
+      "own"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "riêng, của chính mình",
+    "exampleEn": "I have my own office.",
+    "exampleVi": "Tôi có văn phòng riêng."
+  },
+  {
+    "word": "part",
+    "pos": "noun",
+    "ipa": "pɑːrt",
+    "syllables": [
+      "part"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phần, bộ phận",
+    "exampleEn": "This is the best part of the job.",
+    "exampleVi": "Đây là phần tốt nhất của công việc."
+  },
+  {
+    "word": "point",
+    "pos": "noun",
+    "ipa": "pɔɪnt",
+    "syllables": [
+      "point"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "điểm; ý chính",
+    "exampleEn": "That's a good point.",
+    "exampleVi": "Đó là một ý hay."
+  },
+  {
+    "word": "little",
+    "pos": "adjective",
+    "ipa": "ˈlɪt̬əl",
+    "syllables": [
+      "lit",
+      "tle"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhỏ, bé; (a little) một chút",
+    "exampleEn": "I speak a little English.",
+    "exampleVi": "Tôi nói được một chút tiếng Anh."
+  },
+  {
+    "word": "help",
+    "pos": "verb",
+    "ipa": "help",
+    "syllables": [
+      "help"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "giúp đỡ",
+    "exampleEn": "Can I help you?",
+    "exampleVi": "Tôi có thể giúp gì cho bạn?"
+  },
+  {
+    "word": "ask",
+    "pos": "verb",
+    "ipa": "æsk",
+    "syllables": [
+      "ask"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hỏi; yêu cầu",
+    "exampleEn": "Can I ask a question?",
+    "exampleVi": "Tôi có thể hỏi một câu không?"
+  },
+  {
+    "word": "meet",
+    "pos": "verb",
+    "ipa": "miːt",
+    "syllables": [
+      "meet"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gặp, gặp gỡ",
+    "exampleEn": "Nice to meet you.",
+    "exampleVi": "Rất vui được gặp bạn."
+  },
+  {
+    "word": "start",
+    "pos": "verb",
+    "ipa": "stɑːrt",
+    "syllables": [
+      "start"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bắt đầu",
+    "exampleEn": "The class starts at eight.",
+    "exampleVi": "Lớp học bắt đầu lúc tám giờ."
+  },
+  {
+    "word": "talk",
+    "pos": "verb",
+    "ipa": "tɑːk",
+    "syllables": [
+      "talk"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nói chuyện",
+    "exampleEn": "Can we talk after lunch?",
+    "exampleVi": "Chúng ta nói chuyện sau bữa trưa được không?"
+  },
+  {
+    "word": "something",
+    "pos": "pronoun",
+    "ipa": "ˈsʌmθɪŋ",
+    "syllables": [
+      "some",
+      "thing"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cái gì đó, điều gì đó",
+    "exampleEn": "I want something to drink.",
+    "exampleVi": "Tôi muốn uống gì đó."
+  },
+  {
+    "word": "put",
+    "pos": "verb",
+    "ipa": "pʊt",
+    "syllables": [
+      "put"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đặt, để",
+    "exampleEn": "Put the box on the desk.",
+    "exampleVi": "Đặt cái hộp lên bàn."
+  },
+  {
+    "word": "another",
+    "pos": "determiner",
+    "ipa": "əˈnʌðɚ",
+    "syllables": [
+      "an",
+      "oth",
+      "er"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "một cái khác; thêm một",
+    "exampleEn": "Can I have another cup?",
+    "exampleVi": "Cho tôi thêm một tách nữa được không?"
+  },
+  {
+    "word": "become",
+    "pos": "verb",
+    "ipa": "bɪˈkʌm",
+    "syllables": [
+      "be",
+      "come"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "trở thành, trở nên",
+    "exampleEn": "She wants to become a doctor.",
+    "exampleVi": "Cô ấy muốn trở thành bác sĩ."
+  },
+  {
+    "word": "interest",
+    "pos": "noun",
+    "ipa": "ˈɪnt̬ɚɪst",
+    "syllables": [
+      "in",
+      "ter",
+      "est"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự quan tâm, sở thích; tiền lãi",
+    "exampleEn": "I have an interest in music.",
+    "exampleVi": "Tôi có hứng thú với âm nhạc."
+  },
+  {
+    "word": "country",
+    "pos": "noun",
+    "ipa": "ˈkʌntri",
+    "syllables": [
+      "coun",
+      "try"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đất nước, quốc gia; nông thôn",
+    "exampleEn": "Vietnam is a beautiful country.",
+    "exampleVi": "Việt Nam là một đất nước xinh đẹp."
+  },
+  {
+    "word": "old",
+    "pos": "adjective",
+    "ipa": "oʊld",
+    "syllables": [
+      "old"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cũ; già",
+    "exampleEn": "This is an old building.",
+    "exampleVi": "Đây là một tòa nhà cũ."
+  },
+  {
+    "word": "each",
+    "pos": "determiner",
+    "ipa": "iːtʃ",
+    "syllables": [
+      "each"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mỗi",
+    "exampleEn": "Each room has a TV.",
+    "exampleVi": "Mỗi phòng đều có TV."
+  },
+  {
+    "word": "school",
+    "pos": "noun",
+    "ipa": "skuːl",
+    "syllables": [
+      "school"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trường học",
+    "exampleEn": "My son goes to school by bus.",
+    "exampleVi": "Con trai tôi đi học bằng xe buýt."
+  },
+  {
+    "word": "late",
+    "pos": "adjective",
+    "ipa": "leɪt",
+    "syllables": [
+      "late"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "muộn, trễ",
+    "exampleEn": "Sorry, I am late.",
+    "exampleVi": "Xin lỗi, tôi đến muộn."
+  },
+  {
+    "word": "high",
+    "pos": "adjective",
+    "ipa": "haɪ",
+    "syllables": [
+      "high"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "cao",
+    "exampleEn": "The price is too high.",
+    "exampleVi": "Giá quá cao."
+  },
+  {
+    "word": "different",
+    "pos": "adjective",
+    "ipa": "ˈdɪfɚənt",
+    "syllables": [
+      "dif",
+      "fer",
+      "ent"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "khác, khác nhau",
+    "exampleEn": "We have different ideas.",
+    "exampleVi": "Chúng tôi có những ý tưởng khác nhau."
+  },
+  {
+    "word": "off",
+    "pos": "adverb",
+    "ipa": "ɑːf",
+    "syllables": [
+      "off"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tắt; rời khỏi; nghỉ",
+    "exampleEn": "Please turn off the lights.",
+    "exampleVi": "Vui lòng tắt đèn."
+  },
+  {
+    "word": "next",
+    "pos": "adjective",
+    "ipa": "nekst",
+    "syllables": [
+      "next"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tiếp theo, kế tiếp",
+    "exampleEn": "See you next week.",
+    "exampleVi": "Hẹn gặp bạn tuần sau."
+  },
+  {
+    "word": "end",
+    "pos": "noun",
+    "ipa": "end",
+    "syllables": [
+      "end"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sự kết thúc, cuối",
+    "exampleEn": "The office is at the end of the hall.",
+    "exampleVi": "Văn phòng ở cuối hành lang."
+  },
+  {
+    "word": "live",
+    "pos": "verb",
+    "ipa": "lɪv",
+    "syllables": [
+      "live"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sống",
+    "exampleEn": "I live in Hanoi.",
+    "exampleVi": "Tôi sống ở Hà Nội."
+  },
+  {
+    "word": "why",
+    "pos": "adverb",
+    "ipa": "waɪ",
+    "syllables": [
+      "why"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tại sao",
+    "exampleEn": "Why are you late?",
+    "exampleVi": "Tại sao bạn đến muộn?"
+  },
+  {
+    "word": "while",
+    "pos": "conjunction",
+    "ipa": "waɪl",
+    "syllables": [
+      "while"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trong khi",
+    "exampleEn": "I listen to music while I work.",
+    "exampleVi": "Tôi nghe nhạc trong khi làm việc."
+  },
+  {
+    "word": "world",
+    "pos": "noun",
+    "ipa": "wɝːld",
+    "syllables": [
+      "world"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "thế giới",
+    "exampleEn": "She wants to travel the world.",
+    "exampleVi": "Cô ấy muốn đi du lịch khắp thế giới."
+  },
+  {
+    "word": "week",
+    "pos": "noun",
+    "ipa": "wiːk",
+    "syllables": [
+      "week"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "tuần",
+    "exampleEn": "I work five days a week.",
+    "exampleVi": "Tôi làm việc năm ngày một tuần."
+  },
+  {
+    "word": "play",
+    "pos": "verb",
+    "ipa": "pleɪ",
+    "syllables": [
+      "play"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chơi; vở kịch",
+    "exampleEn": "The kids play in the park.",
+    "exampleVi": "Bọn trẻ chơi trong công viên."
+  },
+  {
+    "word": "might",
+    "pos": "verb",
+    "ipa": "maɪt",
+    "syllables": [
+      "might"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có lẽ, có thể",
+    "exampleEn": "It might rain later.",
+    "exampleVi": "Lát nữa có thể trời sẽ mưa."
+  },
+  {
+    "word": "must",
+    "pos": "verb",
+    "ipa": "mʌst",
+    "syllables": [
+      "must"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "phải",
+    "exampleEn": "You must wear a helmet.",
+    "exampleVi": "Bạn phải đội mũ bảo hiểm."
+  },
+  {
+    "word": "home",
+    "pos": "noun",
+    "ipa": "hoʊm",
+    "syllables": [
+      "home"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhà, quê nhà",
+    "exampleEn": "I am at home now.",
+    "exampleVi": "Bây giờ tôi đang ở nhà."
+  },
+  {
+    "word": "never",
+    "pos": "adverb",
+    "ipa": "ˈnevɚ",
+    "syllables": [
+      "nev",
+      "er"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "không bao giờ",
+    "exampleEn": "I never drink coffee at night.",
+    "exampleVi": "Tôi không bao giờ uống cà phê vào buổi tối."
+  },
+  {
+    "word": "include",
+    "pos": "verb",
+    "ipa": "ɪnˈkluːd",
+    "syllables": [
+      "in",
+      "clude"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bao gồm",
+    "exampleEn": "The price includes breakfast.",
+    "exampleVi": "Giá đã bao gồm bữa sáng."
+  },
+  {
+    "word": "course",
+    "pos": "noun",
+    "ipa": "kɔːrs",
+    "syllables": [
+      "course"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "khóa học; (of course) tất nhiên",
+    "exampleEn": "I am taking an English course.",
+    "exampleVi": "Tôi đang học một khóa tiếng Anh."
+  },
+  {
+    "word": "house",
+    "pos": "noun",
+    "ipa": "haʊs",
+    "syllables": [
+      "house"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ngôi nhà",
+    "exampleEn": "They have a big house.",
+    "exampleVi": "Họ có một ngôi nhà lớn."
+  },
+  {
+    "word": "report",
+    "pos": "noun",
+    "ipa": "rɪˈpɔːrt",
+    "syllables": [
+      "re",
+      "port"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bản báo cáo; báo cáo",
+    "exampleEn": "Please send me the report.",
+    "exampleVi": "Vui lòng gửi tôi bản báo cáo."
+  },
+  {
+    "word": "group",
+    "pos": "noun",
+    "ipa": "ɡruːp",
+    "syllables": [
+      "group"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhóm",
+    "exampleEn": "We work in small groups.",
+    "exampleVi": "Chúng tôi làm việc theo nhóm nhỏ."
+  },
+  {
+    "word": "case",
+    "pos": "noun",
+    "ipa": "keɪs",
+    "syllables": [
+      "case"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trường hợp; cái hộp, va li",
+    "exampleEn": "In that case, call me.",
+    "exampleVi": "Trong trường hợp đó, hãy gọi cho tôi."
+  },
+  {
+    "word": "woman",
+    "pos": "noun",
+    "ipa": "ˈwʊmən",
+    "syllables": [
+      "wom",
+      "an"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "người phụ nữ",
+    "exampleEn": "That woman is our new manager.",
+    "exampleVi": "Người phụ nữ đó là quản lý mới của chúng tôi."
+  },
+  {
+    "word": "around",
+    "pos": "preposition",
+    "ipa": "əˈraʊnd",
+    "syllables": [
+      "a",
+      "round"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "xung quanh; khoảng",
+    "exampleEn": "There are shops around the hotel.",
+    "exampleVi": "Có các cửa hàng quanh khách sạn."
+  },
+  {
+    "word": "book",
+    "pos": "noun",
+    "ipa": "bʊk",
+    "syllables": [
+      "book"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "quyển sách; đặt trước (động từ)",
+    "exampleEn": "I am reading a good book.",
+    "exampleVi": "Tôi đang đọc một cuốn sách hay."
+  },
+  {
+    "word": "family",
+    "pos": "noun",
+    "ipa": "ˈfæməli",
+    "syllables": [
+      "fam",
+      "i",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "gia đình",
+    "exampleEn": "I live with my family.",
+    "exampleVi": "Tôi sống cùng gia đình."
+  },
+  {
+    "word": "seem",
+    "pos": "verb",
+    "ipa": "siːm",
+    "syllables": [
+      "seem"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "có vẻ, dường như",
+    "exampleEn": "She seems happy today.",
+    "exampleVi": "Hôm nay cô ấy có vẻ vui."
+  },
+  {
+    "word": "let",
+    "pos": "verb",
+    "ipa": "let",
+    "syllables": [
+      "let"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "để, cho phép",
+    "exampleEn": "Let me help you.",
+    "exampleVi": "Để tôi giúp bạn."
+  },
+  {
+    "word": "again",
+    "pos": "adverb",
+    "ipa": "əˈɡen",
+    "syllables": [
+      "a",
+      "gain"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "lại, lần nữa",
+    "exampleEn": "Please say that again.",
+    "exampleVi": "Vui lòng nói lại lần nữa."
+  },
+  {
+    "word": "kind",
+    "pos": "noun",
+    "ipa": "kaɪnd",
+    "syllables": [
+      "kind"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "loại, kiểu; tử tế (tính từ)",
+    "exampleEn": "What kind of music do you like?",
+    "exampleVi": "Bạn thích loại nhạc nào?"
+  },
+  {
+    "word": "keep",
+    "pos": "verb",
+    "ipa": "kiːp",
+    "syllables": [
+      "keep"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "giữ, giữ gìn; tiếp tục",
+    "exampleEn": "Please keep the door closed.",
+    "exampleVi": "Vui lòng giữ cửa đóng."
+  },
+  {
+    "word": "hear",
+    "pos": "verb",
+    "ipa": "hɪr",
+    "syllables": [
+      "hear"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nghe thấy",
+    "exampleEn": "I can't hear you.",
+    "exampleVi": "Tôi không nghe thấy bạn."
+  },
+  {
+    "word": "system",
+    "pos": "noun",
+    "ipa": "ˈsɪstəm",
+    "syllables": [
+      "sys",
+      "tem"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "hệ thống",
+    "exampleEn": "The computer system is down.",
+    "exampleVi": "Hệ thống máy tính đang bị lỗi."
+  },
+  {
+    "word": "every",
+    "pos": "determiner",
+    "ipa": "ˈevri",
+    "syllables": [
+      "ev",
+      "ery"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mỗi, mọi",
+    "exampleEn": "I swim every morning.",
+    "exampleVi": "Tôi bơi mỗi buổi sáng."
+  },
+  {
+    "word": "question",
+    "pos": "noun",
+    "ipa": "ˈkwestʃən",
+    "syllables": [
+      "ques",
+      "tion"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "câu hỏi; vấn đề",
+    "exampleEn": "May I ask a question?",
+    "exampleVi": "Tôi có thể hỏi một câu không?"
+  },
+  {
+    "word": "during",
+    "pos": "preposition",
+    "ipa": "ˈdʊrɪŋ",
+    "syllables": [
+      "dur",
+      "ing"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "trong suốt, trong khi",
+    "exampleEn": "Please turn off phones during the meeting.",
+    "exampleVi": "Vui lòng tắt điện thoại trong cuộc họp."
+  },
+  {
+    "word": "always",
+    "pos": "adverb",
+    "ipa": "ˈɑːlweɪz",
+    "syllables": [
+      "al",
+      "ways"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "luôn luôn",
+    "exampleEn": "She is always on time.",
+    "exampleVi": "Cô ấy luôn đúng giờ."
+  },
+  {
+    "word": "big",
+    "pos": "adjective",
+    "ipa": "bɪɡ",
+    "syllables": [
+      "big"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "to, lớn",
+    "exampleEn": "They live in a big city.",
+    "exampleVi": "Họ sống ở một thành phố lớn."
+  },
+  {
+    "word": "set",
+    "pos": "verb",
+    "ipa": "set",
+    "syllables": [
+      "set"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đặt, sắp đặt; bộ (danh từ)",
+    "exampleEn": "I set my alarm for six.",
+    "exampleVi": "Tôi đặt báo thức lúc sáu giờ."
+  },
+  {
+    "word": "small",
+    "pos": "adjective",
+    "ipa": "smɑːl",
+    "syllables": [
+      "small"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "nhỏ",
+    "exampleEn": "I live in a small apartment.",
+    "exampleVi": "Tôi sống trong một căn hộ nhỏ."
+  },
+  {
+    "word": "study",
+    "pos": "verb",
+    "ipa": "ˈstʌdi",
+    "syllables": [
+      "stud",
+      "y"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "học, nghiên cứu",
+    "exampleEn": "I study English every day.",
+    "exampleVi": "Tôi học tiếng Anh mỗi ngày."
+  },
+  {
+    "word": "follow",
+    "pos": "verb",
+    "ipa": "ˈfɑːloʊ",
+    "syllables": [
+      "fol",
+      "low"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "đi theo; làm theo",
+    "exampleEn": "Please follow me.",
+    "exampleVi": "Vui lòng đi theo tôi."
+  },
+  {
+    "word": "begin",
+    "pos": "verb",
+    "ipa": "bɪˈɡɪn",
+    "syllables": [
+      "be",
+      "gin"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "bắt đầu",
+    "exampleEn": "The meeting will begin soon.",
+    "exampleVi": "Cuộc họp sẽ sớm bắt đầu."
+  },
+  {
+    "word": "important",
+    "pos": "adjective",
+    "ipa": "ɪmˈpɔːrtənt",
+    "syllables": [
+      "im",
+      "por",
+      "tant"
+    ],
+    "stressIndex": 1,
+    "meaningVi": "quan trọng",
+    "exampleEn": "This is an important email.",
+    "exampleVi": "Đây là một email quan trọng."
+  },
+  {
+    "word": "since",
+    "pos": "preposition",
+    "ipa": "sɪns",
+    "syllables": [
+      "since"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "từ khi; vì",
+    "exampleEn": "I have worked here since 2020.",
+    "exampleVi": "Tôi làm việc ở đây từ năm 2020."
+  },
+  {
+    "word": "run",
+    "pos": "verb",
+    "ipa": "rʌn",
+    "syllables": [
+      "run"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "chạy; điều hành",
+    "exampleEn": "I run in the park every morning.",
+    "exampleVi": "Tôi chạy bộ trong công viên mỗi sáng."
+  },
+  {
+    "word": "under",
+    "pos": "preposition",
+    "ipa": "ˈʌndɚ",
+    "syllables": [
+      "un",
+      "der"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "dưới, bên dưới",
+    "exampleEn": "The bag is under the desk.",
+    "exampleVi": "Cái túi ở dưới bàn."
+  },
+  {
+    "word": "turn",
+    "pos": "verb",
+    "ipa": "tɝːn",
+    "syllables": [
+      "turn"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "rẽ, quay; lượt (danh từ)",
+    "exampleEn": "Turn left at the bank.",
+    "exampleVi": "Rẽ trái ở ngân hàng."
+  },
+  {
+    "word": "few",
+    "pos": "determiner",
+    "ipa": "fjuː",
+    "syllables": [
+      "few"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "ít; (a few) một vài",
+    "exampleEn": "I have a few questions.",
+    "exampleVi": "Tôi có một vài câu hỏi."
+  },
+  {
+    "word": "bring",
+    "pos": "verb",
+    "ipa": "brɪŋ",
+    "syllables": [
+      "bring"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "mang đến, đem theo",
+    "exampleEn": "Please bring your ID card.",
+    "exampleVi": "Vui lòng mang theo thẻ căn cước."
+  },
+  {
+    "word": "early",
+    "pos": "adjective",
+    "ipa": "ˈɝːli",
+    "syllables": [
+      "ear",
+      "ly"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "sớm",
+    "exampleEn": "I have an early meeting.",
+    "exampleVi": "Tôi có một cuộc họp sớm."
+  },
+  {
+    "word": "hand",
+    "pos": "noun",
+    "ipa": "hænd",
+    "syllables": [
+      "hand"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bàn tay",
+    "exampleEn": "Please raise your hand.",
+    "exampleVi": "Vui lòng giơ tay lên."
+  },
+  {
+    "word": "state",
+    "pos": "noun",
+    "ipa": "steɪt",
+    "syllables": [
+      "state"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "bang; tình trạng; nhà nước",
+    "exampleEn": "Texas is a big state.",
+    "exampleVi": "Texas là một bang lớn."
+  },
+  {
+    "word": "move",
+    "pos": "verb",
+    "ipa": "muːv",
+    "syllables": [
+      "move"
+    ],
+    "stressIndex": 0,
+    "meaningVi": "di chuyển; chuyển (nhà)",
+    "exampleEn": "We will move to a new office.",
+    "exampleVi": "Chúng tôi sẽ chuyển đến văn phòng mới."
+  }
+]
