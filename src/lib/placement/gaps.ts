@@ -1,4 +1,5 @@
 import { allLessons, STAGES, type Section, type SkillTag, type Stage } from '@/data/roadmap'
+import { PRONUNCIATION_TARGET_PERCENT, pronunciationAverage } from '@/lib/pronunciation'
 import { isSessionDay, localDayKey, sessionLesson } from '@/lib/sessions'
 import { isSrsCard, readCards } from '@/lib/srs'
 import type { Store } from '@/lib/storage'
@@ -68,7 +69,7 @@ export type SkillBoard = {
 
 /**
  * Bảng 5 kỹ năng so với mục tiêu của chặng hiện tại (chặng của bài học tiếp theo; xong hết thì chặng cuối).
- * Phát âm luôn "chưa có dữ liệu" cho tới khi có chấm phát âm.
+ * Phát âm = trung bình điểm tốt nhất các câu mẫu đã thử (mục tiêu 70%); chưa thử câu nào thì "chưa có dữ liệu".
  */
 export function skillGaps(store: Store): SkillBoard {
   const attempts = listAttempts(store)
@@ -112,7 +113,10 @@ export function skillGaps(store: Store): SkillBoard {
       row('reading', 'score', latest?.reading ?? null, readingTarget, baselineScore?.reading ?? null),
       row('grammar', 'percent', grammarPercent, GRAMMAR_TARGET_PERCENT, first ? grammarPercentOf(first.parts) : null),
       row('vocabulary', 'words', learnedCardCount(store), vocabularyTargetFor(lessonId)),
-      row('pronunciation', 'score', null, null),
+      (() => {
+        const avg = pronunciationAverage(store)
+        return row('pronunciation', 'percent', avg, avg === null ? null : PRONUNCIATION_TARGET_PERCENT)
+      })(),
     ],
   }
 }

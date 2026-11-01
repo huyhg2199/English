@@ -98,7 +98,7 @@ describe('createStoreHandle', () => {
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     handle.update(mark('s1-t1-w1'))
     const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
-    expect(saved.schemaVersion).toBe(6)
+    expect(saved.schemaVersion).toBe(7)
     expect(Object.keys(saved.data.progress.lessons)).toEqual(['old-id', 's1-t1-w1'])
     expect(readCompletedLessonIds(saved)).toEqual(['old-id', 's1-t1-w1'])
   })

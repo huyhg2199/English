@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Link2, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
@@ -13,10 +14,12 @@ type Props = {
   highlighted?: boolean
   /** Đoạn thuộc kỹ năng yếu nhất (bảng kỹ năng): hiện nhãn "Ưu tiên". */
   priority?: boolean
+  /** Nội dung học của đoạn (story 6), hiện sau việc cần làm. */
+  children?: ReactNode
 }
 
 /** Một đoạn của bài: việc cần làm, kỹ năng, kỳ kiểm tra và nguồn miễn phí (trang bài và buổi học dùng chung). */
-export function LessonSectionCard({ lesson, stage, section, highlighted = false, priority = false }: Props) {
+export function LessonSectionCard({ lesson, stage, section, highlighted = false, priority = false, children }: Props) {
   const resources = resourcesForSection(stage, section)
   return (
     <Card
@@ -55,6 +58,8 @@ export function LessonSectionCard({ lesson, stage, section, highlighted = false,
       </CardHeader>
       <CardContent className="flex flex-col gap-3 text-sm">
         <p className="text-base">{section.task}</p>
+
+        {children}
 
         {section.id === 'checkpoint' && (
           <div className="rounded-lg border border-primary/40 bg-accent/40 p-3">

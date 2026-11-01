@@ -12,6 +12,8 @@ import {
   type House,
   type PartScores,
 } from '@/lib/placement'
+import { applyRecognition, readPronunciation, type SpeakOutcome } from '@/lib/pronunciation'
+import type { RecognitionResult } from '@/lib/speech-recognition'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { readSavedWords, saveWord, type SavedWordSource } from '@/lib/saved-words'
 import {
@@ -21,6 +23,7 @@ import {
   sessionLesson,
   type SessionKind,
 } from '@/lib/sessions'
+import { unlockedSpells } from '@/lib/spells'
 import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
 import type { SyncController, SyncSnapshot } from '@/lib/sync'
 
@@ -185,6 +188,35 @@ export function useSavedWords() {
     [handle],
   )
   return { items, save }
+}
+
+/**
+ * Điểm luyện nói (`store.data.pronunciation.items`) và hàm áp một kết quả nhận giọng nói
+ * (thành công thì lưu điểm tốt nhất và đồng bộ; lỗi / huỷ / không hỗ trợ thì không ghi gì).
+ */
+export function usePronunciation() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const items = useMemo(() => readPronunciation(store), [store])
+  const apply = useCallback(
+    (sentence: { id: string; text: string }, result: RecognitionResult, now: Date = new Date()): SpeakOutcome => {
+      let outcome: SpeakOutcome = { kind: 'aborted' }
+      handle.update((s) => {
+        const applied = applyRecognition(s, sentence, result, now)
+        outcome = applied.outcome
+        return applied.store
+      })
+      return outcome
+    },
+    [handle],
+  )
+  return { items, apply }
+}
+
+/** Thần chú đã mở khoá (theo tiến độ bài, không có key riêng). */
+export function useSpells() {
+  const { store } = useLoadedStore()
+  return useMemo(() => unlockedSpells(store), [store])
 }
 
 export const SyncContext = createContext<SyncController | null>(null)

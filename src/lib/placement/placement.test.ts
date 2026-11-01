@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { allLessons, getLesson, STAGES } from '@/data/roadmap'
+import { recordAttempt as recordPronunciationAttempt } from '@/lib/pronunciation'
 import { computeRoadmapProgress, readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { localDayKey, recordSession, sessionLesson } from '@/lib/sessions'
 import { gradeCard, markCardKnown } from '@/lib/srs'
@@ -32,7 +33,7 @@ import {
   type PartScores,
 } from '.'
 
-const store = (data: Record<string, unknown> = {}): Store => ({ schemaVersion: 6, data })
+const store = (data: Record<string, unknown> = {}): Store => ({ schemaVersion: 7, data })
 const NOW = new Date(2026, 10, 14, 12)
 const zero: PartScores = { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }
 const full: PartScores = { ...PART_LIMITS }
@@ -224,6 +225,20 @@ describe('skillGaps / weakestSkill', () => {
     const ordered = prioritizeSections(lesson.sections, null)
     expect(ordered.map((o) => o.section.id)).toEqual(lesson.sections.map((x) => x.id))
     expect(ordered.some((o) => o.priority)).toBe(false)
+  })
+
+  it('phát âm: trung bình điểm tốt nhất các câu đã thử so với 70% (4 câu 50/70/80/100 → 75%)', () => {
+    let s = store()
+    ;[50, 70, 80, 100].forEach((score, i) => {
+      s = recordPronunciationAttempt(s, `c${i}`, score, NOW)
+    })
+    // Lần sau thấp hơn không kéo điểm tốt nhất xuống.
+    s = recordPronunciationAttempt(s, 'c0', 10, NOW)
+    const p = skillGaps(s).rows.find((r) => r.skill === 'pronunciation')!
+    expect(p).toMatchObject({ unit: 'percent', current: 75, target: 70, gap: 0 })
+    s = recordPronunciationAttempt(store(), 'x', 35, NOW)
+    const low = skillGaps(s).rows.find((r) => r.skill === 'pronunciation')!
+    expect(low).toMatchObject({ current: 35, target: 70, gap: 0.5 })
   })
 
   it('phát âm "chưa có dữ liệu" không bao giờ là kỹ năng yếu nhất', () => {

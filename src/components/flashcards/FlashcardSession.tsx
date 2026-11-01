@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { ExternalLink, RotateCw, Volume2 } from 'lucide-react'
+import { ExternalLink, RotateCw } from 'lucide-react'
 
 import { useNewWordList, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
@@ -7,7 +7,7 @@ import { useWords } from '@/app/use-words'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { cambridgeUrl, POS_LABELS, VOCAB_ATTRIBUTION, type StudyWord, type WordList } from '@/data/vocab'
-import { canSpeak, speak } from '@/lib/speech'
+import { ListenButton } from '@/components/ListenButton'
 import {
   buildSession,
   formatDelay,
@@ -30,26 +30,6 @@ const KIND_LABELS: Record<SessionItem['kind'], string> = {
   new: 'Từ mới',
   review: 'Ôn lại',
   learning: 'Học lại',
-}
-
-function ListenButton({ text, label, size = 'icon' }: { text: string; label: string; size?: 'icon' | 'sm' }) {
-  if (!canSpeak()) return null
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      size={size}
-      onClick={(e) => {
-        e.stopPropagation()
-        speak(text)
-      }}
-      aria-label={label}
-      title={label}
-      className="shrink-0"
-    >
-      <Volume2 aria-hidden="true" />
-    </Button>
-  )
 }
 
 /** Âm tiết theo chính tả, âm nhấn nổi bật (vd peo·ple với "PEO" sáng). */

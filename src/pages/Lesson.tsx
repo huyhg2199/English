@@ -3,9 +3,11 @@ import { ArrowLeft, BookOpenCheck, Check, MapPinOff } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
 import { useProgress, useSkillBoard } from '@/app/store-context'
+import { GrammarSection, PronunciationSection } from '@/components/lesson/LessonContentParts'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+import { getLessonContent } from '@/data/lessons'
 import { resolveLessonRoute } from '@/data/roadmap'
 import { prioritizeSections } from '@/lib/placement'
 
@@ -64,6 +66,8 @@ export function Lesson() {
 
   const { lesson, month, stage } = entry
   const done = completedLessonIds.includes(lesson.id)
+  // Bài đã soạn nội dung (T1) thì gắn vào đoạn Phát âm / Ngữ pháp; bài khác giữ như cũ.
+  const content = getLessonContent(lesson.id)
 
   return (
     <section className="flex flex-col gap-6">
@@ -97,7 +101,10 @@ export function Lesson() {
           section={section}
           highlighted={section.id === target}
           priority={priority}
-        />
+        >
+          {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
+          {content && section.id === 'grammar' && <GrammarSection content={content} />}
+        </LessonSectionCard>
       ))}
 
       <div className="flex flex-col gap-2">

@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 6
+export const CURRENT_VERSION = 7
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -62,6 +62,15 @@ export const migrations: Migrations = {
       placement: isPlainObject(store.data.placement)
         ? store.data.placement
         : { attempts: {}, house: null, startLessonId: null, updatedAt: LEGACY_UPDATED_AT },
+    },
+  }),
+  // v6 → v7 (story 6): điểm luyện nói `pronunciation: { items: {} }`. Đã có thì để nguyên.
+  // Lên v7 để app cũ (v6) trên máy khác thấy server mới hơn và không ghi đè mất key này.
+  6: (store) => ({
+    schemaVersion: 7,
+    data: {
+      ...store.data,
+      pronunciation: isPlainObject(store.data.pronunciation) ? store.data.pronunciation : { items: {} },
     },
   }),
 }

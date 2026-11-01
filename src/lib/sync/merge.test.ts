@@ -12,6 +12,7 @@ import {
   mergeCards,
   mergeLessons,
   mergePlacement,
+  mergePronunciationItems,
   mergeSavedWordItems,
   mergeSessionDays,
   mergeWithRemote,
@@ -21,13 +22,13 @@ import {
 
 const T1 = '2026-11-01T10:00:00.000Z'
 const T2 = '2026-11-01T11:00:00.000Z'
-const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 6, data })
-const remote = (data: Record<string, unknown>, schemaVersion = 6) => ({ schemaVersion, data, updatedAt: T1 })
+const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 7, data })
+const remote = (data: Record<string, unknown>, schemaVersion = 7) => ({ schemaVersion, data, updatedAt: T1 })
 const lessons = (l: Record<string, unknown>) => ({ progress: { lessons: l } })
 
 describe('pickSynced / allowlist', () => {
-  it('chỉ có progress, srs, sessions, savedWords, placement trong allowlist', () => {
-    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement'])
+  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation trong allowlist', () => {
+    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation'])
   })
 
   it('bỏ mọi key ngoài allowlist (vd API key)', () => {
@@ -112,7 +113,7 @@ describe('mergeWithRemote — I/O Matrix', () => {
   })
 
   it('server mới hơn app → outdated, không gộp', () => {
-    expect(mergeWithRemote(local({}), remote({}, 7))).toEqual({ kind: 'outdated' })
+    expect(mergeWithRemote(local({}), remote({}, 8))).toEqual({ kind: 'outdated' })
   })
 
   it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v5)', () => {
@@ -346,6 +347,41 @@ describe('sessions / savedWords (story 4)', () => {
   it('app cũ (v4) gặp server v5 → outdated, không gộp, không ghi đè', () => {
     const server = remote(pickSynced(recordSession(local({}), 'full', DAY).data), 5)
     expect(mergeWithRemote({ schemaVersion: 4, data: {} }, server, { currentVersion: 4 })).toEqual({ kind: 'outdated' })
+  })
+})
+
+describe('mergePronunciationItems (story 6)', () => {
+  it('cùng câu: best lấy max, attempts lấy max, updatedAt mới hơn; hợp các câu', () => {
+    const merged = mergePronunciationItems(
+      { a: { best: 60, attempts: 4, updatedAt: T2 }, b: { best: 50, attempts: 1, updatedAt: T1 } },
+      { a: { best: 90, attempts: 2, updatedAt: T1 }, c: { best: 70, attempts: 1, updatedAt: T1 } },
+    )
+    expect(merged).toEqual({
+      a: { best: 90, attempts: 4, updatedAt: T2 },
+      b: { best: 50, attempts: 1, updatedAt: T1 },
+      c: { best: 70, attempts: 1, updatedAt: T1 },
+    })
+  })
+
+  it('mục sai dạng ở một bên → lấy bên hợp lệ', () => {
+    expect(mergePronunciationItems({ a: 'x' }, { a: { best: 10, attempts: 1, updatedAt: T1 } })).toEqual({
+      a: { best: 10, attempts: 1, updatedAt: T1 },
+    })
+  })
+
+  it('hai máy: best 60 ở A, 90 ở B → sau đồng bộ best 90 (qua mergeWithRemote)', () => {
+    const a = local({ pronunciation: { items: { s: { best: 60, attempts: 1, updatedAt: T2 } } } })
+    const r = mergeWithRemote(a, remote({ pronunciation: { items: { s: { best: 90, attempts: 3, updatedAt: T1 } } } }))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.store.data.pronunciation).toEqual({ items: { s: { best: 90, attempts: 3, updatedAt: T2 } } })
+    expect(r.push).toBe(true)
+  })
+
+  it('server v6 (chưa có pronunciation) → migrate rồi giữ điểm local', () => {
+    const a = local({ pronunciation: { items: { s: { best: 60, attempts: 1, updatedAt: T2 } } } })
+    const r = mergeWithRemote(a, remote({}, 6))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.store.data.pronunciation).toEqual({ items: { s: { best: 60, attempts: 1, updatedAt: T2 } } })
   })
 })
 

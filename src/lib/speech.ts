@@ -32,3 +32,12 @@ export function speak(text: string, opts: { rate?: number } = {}, g: SpeechGloba
     return false
   }
 }
+
+/** Dừng câu đang đọc (vd trước khi bật micro để micro không nghe lại giọng máy). */
+export function stopSpeaking(g: SpeechGlobal = globalThis as SpeechGlobal): void {
+  try {
+    g.speechSynthesis?.cancel()
+  } catch {
+    // bỏ qua
+  }
+}

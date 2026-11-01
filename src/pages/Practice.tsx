@@ -1,11 +1,13 @@
 import { useMemo } from 'react'
-import { ChevronRight, Layers, WandSparkles } from 'lucide-react'
+import { ChevronRight, Layers, Sparkles, WandSparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useNewWordList, useSrs } from '@/app/store-context'
+import { useNewWordList, useSpells, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { SPELLS } from '@/data/lessons'
+import { sectionHref } from '@/data/roadmap'
 import { buildSession } from '@/lib/srs'
 
 function FlashcardSummary() {
@@ -21,6 +23,45 @@ function FlashcardSummary() {
   if (!session) return wordsState.status === 'error' ? 'Chưa mở được bộ từ' : 'Đang đếm thẻ…'
   if (session.queue.length === 0) return 'Xong hôm nay'
   return `${session.dueCount} thẻ đến hạn · ${session.newCount} từ mới hôm nay`
+}
+
+/** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */
+function SpellList() {
+  const unlocked = useSpells()
+  return (
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Sparkles className="size-5 text-primary" aria-hidden="true" />
+          <h2>Thần chú đã mở</h2>
+        </CardTitle>
+        <CardDescription>
+          {unlocked.length}/{SPELLS.length} thần chú · mỗi thì học xong là một thần chú.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {unlocked.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Chưa mở thần chú nào. Học xong bài tuần 1 (động từ to be) để mở Lumos.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {unlocked.map((spell) => (
+              <li key={spell.id}>
+                <Link
+                  to={sectionHref(spell.lessonId, 'grammar')}
+                  className="flex flex-col rounded-lg border border-primary/50 bg-accent/30 p-3 text-sm hover:shadow-[0_0_16px_var(--candle-glow)]"
+                >
+                  <span className="font-semibold text-primary">{spell.name}</span>
+                  <span className="text-muted-foreground">{spell.description}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  )
 }
 
 export function Practice() {
@@ -47,10 +88,14 @@ export function Practice() {
         </Card>
       </Link>
 
+      <SpellList />
+
       <Card>
         <CardHeader>
           <CardTitle>Sắp có</CardTitle>
-          <CardDescription>Luyện phát âm, ôn Sổ lỗi, 7 Part TOEIC và link luyện nói.</CardDescription>
+          <CardDescription>
+            Ôn Sổ lỗi, 7 Part TOEIC và link luyện nói. Luyện phát âm đã có trong từng bài tháng T1 (đoạn Phát âm).
+          </CardDescription>
         </CardHeader>
       </Card>
     </section>

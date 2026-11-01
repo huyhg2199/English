@@ -102,6 +102,7 @@ describe('loadStore — I/O Matrix', () => {
       sessions: { days: {} },
       savedWords: { items: {} },
       placement: { attempts: {}, house: null, startLessonId: null, updatedAt: OLD },
+      pronunciation: { items: {} },
     }
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['Date'] })
@@ -112,7 +113,7 @@ describe('loadStore — I/O Matrix', () => {
     })
 
     it('v1: giữ dữ liệu cũ, thêm progress.lessons rỗng và ghi lại', () => {
-      expect(CURRENT_VERSION).toBe(6)
+      expect(CURRENT_VERSION).toBe(7)
       const storage = fakeStorage({
         [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { streak: 7, notes: ['a'] } }),
       })
@@ -121,7 +122,7 @@ describe('loadStore — I/O Matrix', () => {
       expect(result.status).toBe('migrated')
       expect(result.mode).toBe('persistent')
       expect(result.store).toEqual({
-        schemaVersion: 6,
+        schemaVersion: 7,
         data: { streak: 7, notes: ['a'], progress: { lessons: {} }, srs: { cards: {} }, ...V5 },
       })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
@@ -147,7 +148,7 @@ describe('loadStore — I/O Matrix', () => {
 
       expect(result.status).toBe('migrated')
       expect(result.store).toEqual({
-        schemaVersion: 6,
+        schemaVersion: 7,
         data: {
           streak: 2,
           progress: {
@@ -185,7 +186,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 3, data: { streak: 1, progress } }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 6, data: { streak: 1, progress, srs: { cards: {} }, ...V5 } })
+      expect(result.store).toEqual({ schemaVersion: 7, data: { streak: 1, progress, srs: { cards: {} }, ...V5 } })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
@@ -200,7 +201,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 4, data }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 6, data: { ...data, ...V5 } })
+      expect(result.store).toEqual({ schemaVersion: 7, data: { ...data, ...V5 } })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
@@ -218,7 +219,22 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 5, data }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 6, data: { ...data, placement: V5.placement } })
+      expect(result.store).toEqual({ schemaVersion: 7, data: { ...data, placement: V5.placement, pronunciation: V5.pronunciation } })
+    })
+
+    it('v6 → v7: thêm pronunciation rỗng, giữ nguyên mọi field khác', () => {
+      const data = { streak: 1, progress: { lessons: {} }, placement: V5.placement }
+      const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 6, data }) })
+      const result = loadStore({ storage, warn })
+      expect(result.status).toBe('migrated')
+      expect(result.store).toEqual({ schemaVersion: 7, data: { ...data, pronunciation: { items: {} } } })
+      expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
+    })
+
+    it('v6 → v7: pronunciation đã có thì giữ nguyên', () => {
+      const pronunciation = { items: { x: { best: 80, attempts: 2, updatedAt: NOW } }, extra: 1 }
+      const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 6, data: { pronunciation } }) })
+      expect(loadStore({ storage, warn }).store.data.pronunciation).toEqual(pronunciation)
     })
 
     it('v5 → v6: placement đã có thì giữ nguyên', () => {

@@ -1,4 +1,5 @@
 import { isPlacementAttempt } from '@/lib/placement/store'
+import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
 import { isLessonProgress } from '@/lib/roadmap-progress'
 import { isSavedWord } from '@/lib/saved-words'
 import { isSessionDay } from '@/lib/sessions'
@@ -11,7 +12,7 @@ import { isTimeString } from '@/lib/updated-at'
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -160,7 +161,20 @@ export function mergePlacement(local: unknown, server: unknown): unknown {
   }
 }
 
+/**
+ * Gộp `pronunciation.items` theo từng câu: `best` lấy max, `attempts` lấy max, `updatedAt` lấy mới hơn
+ * (hai máy đều luyện thì không mất điểm tốt nhất của máy nào).
+ */
+export function mergePronunciationItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isPronunciationItem, (a: PronunciationItem, b: PronunciationItem) => ({
+    best: Math.max(a.best, b.best),
+    attempts: Math.max(a.attempts, b.attempts),
+    updatedAt: newer(a, b).updatedAt,
+  }))
+}
+
 export const mergeSessions = mergeKeyed('days', mergeSessionDays)
+export const mergePronunciation = mergeKeyed('items', mergePronunciationItems)
 export const mergeSavedWords = mergeKeyed('items', mergeSavedWordItems)
 
 /** Luật gộp cho từng key đồng bộ. Thêm key vào `SYNCED_KEYS` mà thiếu luật ở đây thì lỗi type-check. */
@@ -170,6 +184,7 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   sessions: mergeSessions,
   savedWords: mergeSavedWords,
   placement: mergePlacement,
+  pronunciation: mergePronunciation,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */
