@@ -25,4 +25,11 @@ describe('NAV_ITEMS', () => {
       expect(leaf.element).toBeTruthy()
     },
   )
+
+  it('/practice/flashcards là route thật nằm dưới tab Luyện tập', () => {
+    const leaf = matchRoutes(routes, '/practice/flashcards')!.at(-1)!.route
+    expect(leaf.path).toBe('practice/flashcards')
+    const practice = NAV_ITEMS.find((item) => item.label === 'Luyện tập')!
+    expect('/practice/flashcards'.startsWith(`${practice.path}/`)).toBe(true)
+  })
 })

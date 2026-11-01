@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 3
+export const CURRENT_VERSION = 4
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -37,6 +37,12 @@ export const migrations: Migrations = {
     }
     return { schemaVersion: 3, data: { ...store.data, progress: { ...rest, lessons } } }
   },
+  // v3 → v4 (story 3): thêm trạng thái SRS flashcard `srs: { cards: {} }`. Đã có `srs` thì để nguyên.
+  // Lên v4 để app cũ (v3) trên máy khác thấy server mới hơn và không ghi đè mất `srs`.
+  3: (store) => ({
+    schemaVersion: 4,
+    data: { ...store.data, srs: isPlainObject(store.data.srs) ? store.data.srs : { cards: {} } },
+  }),
 }
 
 export function createDefaultStore(version: number = CURRENT_VERSION): Store {

@@ -1,4 +1,5 @@
 import { isLessonProgress } from '@/lib/roadmap-progress'
+import { isSrsCard } from '@/lib/srs'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
 
@@ -6,7 +7,7 @@ import type { Migrations, Store } from '@/lib/storage'
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress'] as const
+export const SYNCED_KEYS = ['progress', 'srs'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -41,24 +42,39 @@ function time(entry: { updatedAt: string }): number {
 }
 
 /**
- * Gộp `progress.lessons` theo từng bài: `updatedAt` mới hơn thắng, bằng nhau thì giữ local.
+ * Gộp map `{ [id]: { ..., updatedAt } }` theo từng mục: `updatedAt` mới hơn thắng, bằng nhau thì giữ local.
  * Một bên sai dạng thì lấy bên hợp lệ; cả hai sai dạng thì giữ local (hoặc server nếu local không có).
+ * Không bao giờ bỏ mục nào (mục sai dạng vẫn giữ).
  */
-export function mergeLessons(local: unknown, server: unknown): Record<string, unknown> {
+function mergeEntries(
+  local: unknown,
+  server: unknown,
+  isValid: (value: unknown) => value is { updatedAt: string },
+): Record<string, unknown> {
   const l = isPlainObject(local) ? local : {}
   const s = isPlainObject(server) ? server : {}
   const out: Record<string, unknown> = {}
   for (const id of new Set([...Object.keys(l), ...Object.keys(s)])) {
     const a = l[id]
     const b = s[id]
-    const aOk = isLessonProgress(a)
-    const bOk = isLessonProgress(b)
+    const aOk = isValid(a)
+    const bOk = isValid(b)
     if (aOk && bOk) out[id] = time(b) > time(a) ? b : a
     else if (aOk) out[id] = a
     else if (bOk) out[id] = b
     else out[id] = id in l ? a : b
   }
   return out
+}
+
+/** Gộp `progress.lessons` theo từng bài (xem `mergeEntries`). */
+export function mergeLessons(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isLessonProgress)
+}
+
+/** Gộp `srs.cards` theo từng thẻ (xem `mergeEntries`), cùng luật với `progress.lessons`. */
+export function mergeCards(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isSrsCard)
 }
 
 function mergeProgress(local: unknown, server: unknown): unknown {
@@ -71,9 +87,19 @@ function mergeProgress(local: unknown, server: unknown): unknown {
   return { ...s, ...l, lessons: mergeLessons(l.lessons, s.lessons) }
 }
 
+function mergeSrs(local: unknown, server: unknown): unknown {
+  const hasLocal = isPlainObject(local)
+  const hasServer = isPlainObject(server)
+  if (!hasLocal && !hasServer) return local ?? server
+  const l = hasLocal ? local : {}
+  const s = hasServer ? server : {}
+  return { ...s, ...l, cards: mergeCards(l.cards, s.cards) }
+}
+
 /** Luật gộp cho từng key đồng bộ. Thêm key vào `SYNCED_KEYS` mà thiếu luật ở đây thì lỗi type-check. */
 const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unknown) => unknown> = {
   progress: mergeProgress,
+  srs: mergeSrs,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

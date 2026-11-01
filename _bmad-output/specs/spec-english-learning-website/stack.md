@@ -23,8 +23,17 @@
 | Feed tin | Gọi trực tiếp: HN API, HN Algolia, Google AI Blog RSS (parse bằng `DOMParser`) | Không dùng proxy. VOA, BNE, OpenAI và podcast chỉ link ra ngoài |
 | Video | Embed YouTube bằng IFrame Player API, widget YouGlish (cho clip nói tắt) | Theo `nguon-hoc-mien-phi.md` |
 | Phụ đề | Claude tự làm sub lúc build, chạy bằng script ngoài app: lấy sub Anh có timestamp (caption YouTube hoặc transcript VOA) → AI dịch sang Việt và chú thích idiom/nói tắt/nghĩa ngữ cảnh → lưu JSON tĩnh theo từng video. App overlay sub theo `getCurrentTime()` của player | CAP-12, CAP-14 |
-| Dữ liệu từ vựng | Đóng gói NGSL + TSL thành JSON tĩnh, ghi nguồn CC BY-SA 4.0. IPA, trọng âm, nghĩa Việt và câu ví dụ do AI sinh lúc build bằng script ngoài app | Oxford 3000 chỉ dùng làm thứ tự học và link |
+| Dữ liệu từ vựng | Đóng gói NGSL + TSL thành JSON tĩnh (`src/data/vocab/words.json`, nạp bằng dynamic import nên là chunk riêng), ghi nguồn CC BY-SA 4.0. IPA kiểu Mỹ, âm tiết + trọng âm, từ loại, nghĩa Việt và câu ví dụ do AI sinh lúc build bằng script ngoài app (`npm run vocab:build`, xem mục dưới) | Oxford 3000 chỉ dùng làm thứ tự học và link. Story 3 |
+| Flashcard SRS | Thuật toán kiểu SM-2 tự viết (`src/lib/srs`), 4 nút Quên/Khó/Nhớ/Dễ, 10 từ mới/ngày theo giờ máy, "Đã biết" xếp lịch 60 ngày. Trạng thái ở `store.data.srs.cards` (schema v4), đồng bộ Supabase, gộp từng thẻ theo `updatedAt` | Story 3. Không xoá/reset thẻ |
 | AI giải thích lỗi | Gemini (gói free), BYOK | CAP-19. Dùng lại key này cho Gemini Live ở Đợt 3 |
+
+## Bộ từ vựng: `npm run vocab:build`
+
+- `scripts/vocab/source/`: CSV gốc NGSL 1.2 + TSL 1.2 (giữ nguyên byte) và `README.md` ghi nguồn, giấy phép.
+- `scripts/vocab/ai/*.json`: dữ liệu AI theo lô ~200 từ, đặt tên theo hạng (`ngsl-0001-0200.json`, …). Mỗi mục `{ word, pos, ipa, syllables[], stressIndex, meaningVi, exampleEn, exampleVi }`; `word` viết đúng như trong CSV; `pos` thuộc `noun|verb|adjective|adverb|pronoun|preposition|conjunction|determiner|number|interjection`; `ipa` kiểu Mỹ (như Cambridge US), không có `/`, có `ˈ` trước âm nhấn khi nhiều âm tiết, dùng `ː` (không dùng `'` hay `:`); `syllables` là âm tiết theo chính tả, ghép lại đúng bằng từ; `stressIndex` là vị trí âm nhấn trong `syllables`.
+- **Thêm lô mới:** sinh lô bằng AI ở ngoài app (không commit API key), lưu vào `scripts/vocab/ai/`, kiểm bằng `node scripts/vocab/check-batch.mjs <file> <hạng đầu> <hạng cuối>` (thêm `tsl` ở cuối cho lô TSL), rồi chạy `npm run vocab:build` và commit cả lô lẫn `words.json`. Từ chưa có dữ liệu AI vẫn nằm trong `words.json` nhưng không được đưa vào phiên ôn.
+- `vocab:build` kiểm: không trùng id, từ có trong NGSL/TSL, không trùng giữa các lô, `stressIndex` nằm trong `syllables`, IPA có `ˈ` khi nhiều âm tiết. Lỗi thì dừng, không ghi. Kết quả xác định: chạy lại không đổi nội dung.
+- Id thẻ là `ngsl-<từ>` / `tsl-<từ>` (giữ dấu, vì TSL có cả `resume` và `résumé`), không theo hạng, nên đổi phiên bản danh sách không làm lệch thẻ SRS.
 
 ## Đã loại
 
