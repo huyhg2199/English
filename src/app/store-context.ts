@@ -2,6 +2,14 @@ import { createContext, useCallback, useContext, useMemo, useSyncExternalStore }
 
 import { saveStore, type LoadedStore, type StorageOptions, type Store } from '@/lib/storage'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
+import { readSavedWords, saveWord, type SavedWordSource } from '@/lib/saved-words'
+import {
+  newWordListFor,
+  readSessionDays,
+  recordSession,
+  sessionLesson,
+  type SessionKind,
+} from '@/lib/sessions'
 import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
 import type { SyncController, SyncSnapshot } from '@/lib/sync'
 
@@ -99,6 +107,42 @@ export function useSrs() {
     [handle],
   )
   return { srs, grade, markKnown }
+}
+
+/**
+ * Nhật ký buổi học (`store.data.sessions.days`), bài của buổi và hàm ghi buổi đã xong.
+ * Buổi chuẩn ưu tiên hơn buổi lười khi cùng ngày (xem `recordSession`).
+ */
+export function useSessions() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const days = useMemo(() => readSessionDays(store), [store])
+  const current = useMemo(() => sessionLesson(store), [store])
+  const record = useCallback(
+    (kind: SessionKind, now: Date = new Date(), extra: { lessonId?: string | null } = {}) =>
+      handle.update((s) => recordSession(s, kind, now, extra)),
+    [handle],
+  )
+  return { days, current, record }
+}
+
+/** Danh sách lấy từ mới trước theo chặng của bài hiện tại (chặng 1: NGSL, chặng 2+: TSL). */
+export function useNewWordList() {
+  const { store } = useLoadedStore()
+  return useMemo(() => newWordListFor(store), [store])
+}
+
+/** Từ đã lưu (`store.data.savedWords.items`) và hàm lưu từ kèm câu gốc + nguồn. */
+export function useSavedWords() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const items = useMemo(() => readSavedWords(store), [store])
+  const save = useCallback(
+    (input: { word: string; sentence: string; source: SavedWordSource }, now: Date = new Date()) =>
+      handle.update((s) => saveWord(s, input, now)),
+    [handle],
+  )
+  return { items, save }
 }
 
 export const SyncContext = createContext<SyncController | null>(null)

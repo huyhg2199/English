@@ -1,13 +1,12 @@
 import { useEffect } from 'react'
-import { ArrowLeft, BookOpenCheck, Check, Link2, MapPinOff } from 'lucide-react'
+import { ArrowLeft, BookOpenCheck, Check, MapPinOff } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
 import { useProgress } from '@/app/store-context'
-import { SKILL_LABELS } from '@/components/roadmap/skill-labels'
+import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { resolveLessonRoute, resourcesForSection, sectionHref } from '@/data/roadmap'
-import { cn } from '@/lib/utils'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+import { resolveLessonRoute } from '@/data/roadmap'
 
 function BackLink() {
   return (
@@ -87,74 +86,15 @@ export function Lesson() {
         )}
       </header>
 
-      {lesson.sections.map((section) => {
-        const highlighted = section.id === target
-        const resources = resourcesForSection(stage, section)
-        return (
-          <Card
-            key={section.id}
-            id={section.id}
-            className={cn(
-              'scroll-mt-4 gap-4 transition-shadow',
-              highlighted && 'border-primary shadow-[0_0_24px_var(--candle-glow)] ring-2 ring-primary/50',
-            )}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between gap-2">
-                <h2>{section.title}</h2>
-                <Link
-                  to={sectionHref(lesson.id, section.id)}
-                  aria-label={`Link tới đoạn ${section.title}`}
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <Link2 className="size-4" aria-hidden="true" />
-                </Link>
-              </CardTitle>
-              <ul className="flex flex-wrap gap-1.5" aria-label="Kỹ năng">
-                {section.tags.map((tag) => (
-                  <li key={tag} className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-                    {SKILL_LABELS[tag]}
-                  </li>
-                ))}
-              </ul>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 text-sm">
-              <p className="text-base">{section.task}</p>
-
-              {section.id === 'checkpoint' && (
-                <div className="rounded-lg border border-primary/40 bg-accent/40 p-3">
-                  <p className="mb-1 font-semibold text-accent-foreground">
-                    {stage.checkpoint.name}
-                    {lesson.checkpointAttempt && stage.checkpoint.attempts > 1
-                      ? ` · lần ${lesson.checkpointAttempt}/${stage.checkpoint.attempts}`
-                      : ''}
-                  </p>
-                  <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-                    {stage.checkpoint.scope.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                  <p className="mt-2">{stage.checkpoint.passThreshold}</p>
-                  <p className="mt-1 text-muted-foreground">{stage.checkpoint.ifNotPassed}</p>
-                </div>
-              )}
-
-              {resources.length > 0 && (
-                <div>
-                  <h3 className="mb-1 font-semibold">Nguồn miễn phí</h3>
-                  <ul className="space-y-1 text-muted-foreground">
-                    {resources.map((r) => (
-                      <li key={r.area} className="break-words">
-                        <span className="text-foreground">{r.area}:</span> {r.items}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )
-      })}
+      {lesson.sections.map((section) => (
+        <LessonSectionCard
+          key={section.id}
+          lesson={lesson}
+          stage={stage}
+          section={section}
+          highlighted={section.id === target}
+        />
+      ))}
 
       <div className="flex flex-col gap-2">
         <Button

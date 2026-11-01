@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { ChevronRight, Layers, WandSparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useSrs } from '@/app/store-context'
+import { useNewWordList, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,10 +11,11 @@ import { buildSession } from '@/lib/srs'
 function FlashcardSummary() {
   const wordsState = useWords()
   const { srs } = useSrs()
+  const firstList = useNewWordList()
   const [now] = useNow()
   const session = useMemo(
-    () => (wordsState.status === 'ready' ? buildSession(srs, wordsState.words, now) : null),
-    [srs, wordsState, now],
+    () => (wordsState.status === 'ready' ? buildSession(srs, wordsState.words, now, undefined, firstList) : null),
+    [srs, wordsState, now, firstList],
   )
 
   if (!session) return wordsState.status === 'error' ? 'Chưa mở được bộ từ' : 'Đang đếm thẻ…'

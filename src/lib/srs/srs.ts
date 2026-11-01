@@ -1,4 +1,4 @@
-import { compareStudyOrder, hasDetails, type StudyWord, type Word } from '@/data/vocab'
+import { compareStudyOrder, hasDetails, type StudyWord, type Word, type WordList } from '@/data/vocab'
 import { isPlainObject } from '@/lib/storage'
 import { isTimeString, nextUpdatedAt } from '@/lib/updated-at'
 
@@ -196,9 +196,17 @@ export function readCards(srs: unknown): Record<string, unknown> {
 
 /**
  * Dựng phiên ôn: chỉ từ có dữ liệu AI; thẻ chưa đến hạn không hiện; tối đa `newPerDay` từ mới mỗi ngày
- * (giờ máy), lấy theo thứ tự NGSL → TSL theo hạng. Thẻ sai dạng bị bỏ qua, từ của nó không bị coi là từ mới.
+ * (giờ máy), lấy theo hạng: hết danh sách `firstList` rồi tới danh sách còn lại (mặc định NGSL → TSL;
+ * chặng 2 trở đi truyền `'tsl'`, xem `newWordListFor`). Thẻ đã có lịch không đổi.
+ * Thẻ sai dạng bị bỏ qua, từ của nó không bị coi là từ mới.
  */
-export function buildSession(srs: unknown, words: readonly Word[], now: Date, newPerDay: number = NEW_PER_DAY): Session {
+export function buildSession(
+  srs: unknown,
+  words: readonly Word[],
+  now: Date,
+  newPerDay: number = NEW_PER_DAY,
+  firstList: WordList = 'ngsl',
+): Session {
   const cards = readCards(srs)
   const study = words.filter(hasDetails)
   const tomorrow = startOfLocalDay(now, 1).getTime()
@@ -226,7 +234,7 @@ export function buildSession(srs: unknown, words: readonly Word[], now: Date, ne
   const newLimit = Math.max(0, newPerDay - introducedToday)
   const fresh = study
     .filter((w) => !Object.hasOwn(cards, w.id))
-    .sort(compareStudyOrder)
+    .sort((a, b) => compareStudyOrder(a, b, firstList))
     .slice(0, newLimit)
 
   const queue: SessionItem[] = [

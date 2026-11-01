@@ -2,10 +2,12 @@ import { Navigate, type RouteObject } from 'react-router'
 
 import { AppShell } from '@/app/AppShell'
 import { Flashcards } from '@/pages/Flashcards'
+import { LazySession } from '@/pages/LazySession'
 import { Lesson } from '@/pages/Lesson'
 import { Notebook } from '@/pages/Notebook'
 import { Practice } from '@/pages/Practice'
 import { Roadmap } from '@/pages/Roadmap'
+import { Session } from '@/pages/Session'
 import { Today } from '@/pages/Today'
 import { TrophyRoom } from '@/pages/TrophyRoom'
 
@@ -19,6 +21,9 @@ export const routes: RouteObject[] = [
     element: <AppShell />,
     children: [
       { index: true, element: <Today /> },
+      // Buổi 30' và ngày lười 10'; tab Hôm nay vẫn sáng (`alsoActiveFor` trong nav-items).
+      { path: 'session', element: <Session /> },
+      { path: 'session/lazy', element: <LazySession /> },
       { path: 'roadmap', element: <Roadmap /> },
       // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
       { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson /> },

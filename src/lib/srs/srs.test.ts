@@ -169,6 +169,20 @@ describe('buildSession — I/O Matrix', () => {
     expect(s.dueCount).toBe(0)
   })
 
+  it('firstList = tsl (chặng 2+): từ mới là TSL hạng 1, 2, …; hết TSL thì NGSL chưa học theo hạng', () => {
+    const TSL = Array.from({ length: 3 }, (_, i) => word('tsl', i + 1))
+    const cards: Record<string, SrsCard> = {}
+    NGSL.slice(0, 5).forEach((w) => (cards[w.id] = card({ introducedAt: at(-3).toISOString(), due: at(10).toISOString() })))
+    const s = buildSession({ cards }, [...NGSL, ...TSL], NOW, 6, 'tsl')
+    expect(s.queue.map((i) => i.word.id)).toEqual(['tsl-w1', 'tsl-w2', 'tsl-w3', 'ngsl-w6', 'ngsl-w7', 'ngsl-w8'])
+  })
+
+  it('firstList mặc định ngsl: TSL chỉ tới sau khi hết NGSL', () => {
+    const TSL = [word('tsl', 1)]
+    const s = buildSession({ cards: {} }, [...TSL, ...NGSL.slice(0, 2)], NOW, 3)
+    expect(s.queue.map((i) => i.word.id)).toEqual(['ngsl-w1', 'ngsl-w2', 'tsl-w1'])
+  })
+
   it('srs thiếu hoặc sai dạng → như rỗng', () => {
     expect(buildSession(undefined, NGSL, NOW, 3).newCount).toBe(3)
     expect(buildSession({ cards: 'x' }, NGSL, NOW, 3).newCount).toBe(3)

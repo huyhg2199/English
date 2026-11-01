@@ -94,10 +94,11 @@ describe('loadStore — I/O Matrix', () => {
     })
   })
 
-  describe('migration thật v1 → v2 → v3 → v4 (story 2, 2a: tiến độ lộ trình; story 3: SRS)', () => {
+  describe('migration thật v1 → … → v5 (story 2, 2a: tiến độ lộ trình; story 3: SRS; story 4: buổi học)', () => {
     const NOW = '2026-11-02T12:00:00.000Z'
     // Migration không dùng giờ máy: tiến độ có từ trước luôn mang mốc cũ cố định.
     const OLD = LEGACY_UPDATED_AT
+    const V5 = { sessions: { days: {} }, savedWords: { items: {} } }
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['Date'] })
       vi.setSystemTime(new Date(NOW))
@@ -107,7 +108,7 @@ describe('loadStore — I/O Matrix', () => {
     })
 
     it('v1: giữ dữ liệu cũ, thêm progress.lessons rỗng và ghi lại', () => {
-      expect(CURRENT_VERSION).toBe(4)
+      expect(CURRENT_VERSION).toBe(5)
       const storage = fakeStorage({
         [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { streak: 7, notes: ['a'] } }),
       })
@@ -116,8 +117,8 @@ describe('loadStore — I/O Matrix', () => {
       expect(result.status).toBe('migrated')
       expect(result.mode).toBe('persistent')
       expect(result.store).toEqual({
-        schemaVersion: 4,
-        data: { streak: 7, notes: ['a'], progress: { lessons: {} }, srs: { cards: {} } },
+        schemaVersion: 5,
+        data: { streak: 7, notes: ['a'], progress: { lessons: {} }, srs: { cards: {} }, ...V5 },
       })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
@@ -142,7 +143,7 @@ describe('loadStore — I/O Matrix', () => {
 
       expect(result.status).toBe('migrated')
       expect(result.store).toEqual({
-        schemaVersion: 4,
+        schemaVersion: 5,
         data: {
           streak: 2,
           progress: {
@@ -150,6 +151,7 @@ describe('loadStore — I/O Matrix', () => {
             lessons: { 's1-t1-w1': { done: true, updatedAt: OLD }, 'old-id': { done: true, updatedAt: OLD } },
           },
           srs: { cards: {} },
+          ...V5,
         },
       })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
@@ -179,7 +181,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 3, data: { streak: 1, progress } }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 4, data: { streak: 1, progress, srs: { cards: {} } } })
+      expect(result.store).toEqual({ schemaVersion: 5, data: { streak: 1, progress, srs: { cards: {} }, ...V5 } })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
@@ -187,6 +189,24 @@ describe('loadStore — I/O Matrix', () => {
       const srs = { cards: { x: { junk: true } }, extra: 1 }
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 3, data: { srs } }) })
       expect(loadStore({ storage, warn }).store.data.srs).toEqual(srs)
+    })
+
+    it('v4 → v5: thêm sessions và savedWords rỗng, giữ nguyên srs, progress và field khác', () => {
+      const data = { streak: 1, progress: { lessons: {} }, srs: { cards: { a: 1 } } }
+      const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 4, data }) })
+      const result = loadStore({ storage, warn })
+      expect(result.status).toBe('migrated')
+      expect(result.store).toEqual({ schemaVersion: 5, data: { ...data, ...V5 } })
+      expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
+    })
+
+    it('v4 → v5: sessions/savedWords đã có thì giữ nguyên', () => {
+      const sessions = { days: { x: 1 }, extra: true }
+      const savedWords = { items: { y: 2 } }
+      const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 4, data: { sessions, savedWords } }) })
+      const data = loadStore({ storage, warn }).store.data
+      expect(data.sessions).toEqual(sessions)
+      expect(data.savedWords).toEqual(savedWords)
     })
   })
 

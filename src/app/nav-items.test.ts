@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { matchRoutes } from 'react-router'
 
-import { NAV_ITEMS } from './nav-items'
+import { isNavItemActive, NAV_ITEMS } from './nav-items'
 import { routes } from './routes'
 
 describe('NAV_ITEMS', () => {
@@ -31,5 +31,21 @@ describe('NAV_ITEMS', () => {
     expect(leaf.path).toBe('practice/flashcards')
     const practice = NAV_ITEMS.find((item) => item.label === 'Luyện tập')!
     expect('/practice/flashcards'.startsWith(`${practice.path}/`)).toBe(true)
+  })
+
+  it('/session và /session/lazy là route thật, tab Hôm nay sáng; các tab khác không', () => {
+    for (const path of ['/session', '/session/lazy']) {
+      const leaf = matchRoutes(routes, path)!.at(-1)!.route
+      expect(leaf.path).not.toBe('*')
+      expect(NAV_ITEMS.filter((item) => isNavItemActive(item, path)).map((i) => i.label)).toEqual(['Hôm nay'])
+    }
+  })
+
+  it('isNavItemActive: / chỉ khớp đúng /, tab khác khớp route con', () => {
+    const active = (p: string) => NAV_ITEMS.filter((item) => isNavItemActive(item, p)).map((i) => i.label)
+    expect(active('/')).toEqual(['Hôm nay'])
+    expect(active('/practice/flashcards')).toEqual(['Luyện tập'])
+    expect(active('/roadmap/lesson/s1-t1-w1')).toEqual(['Lộ trình'])
+    expect(active('/sessionx')).toEqual([])
   })
 })

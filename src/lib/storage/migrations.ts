@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 4
+export const CURRENT_VERSION = 5
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -42,6 +42,16 @@ export const migrations: Migrations = {
   3: (store) => ({
     schemaVersion: 4,
     data: { ...store.data, srs: isPlainObject(store.data.srs) ? store.data.srs : { cards: {} } },
+  }),
+  // v4 → v5 (story 4): nhật ký buổi học `sessions: { days: {} }` và từ đã lưu `savedWords: { items: {} }`.
+  // Đã có thì để nguyên. Lên v5 để app cũ (v4) thấy server mới hơn và không ghi đè mất hai key này.
+  4: (store) => ({
+    schemaVersion: 5,
+    data: {
+      ...store.data,
+      sessions: isPlainObject(store.data.sessions) ? store.data.sessions : { days: {} },
+      savedWords: isPlainObject(store.data.savedWords) ? store.data.savedWords : { items: {} },
+    },
   }),
 }
 
