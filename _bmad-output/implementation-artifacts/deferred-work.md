@@ -18,3 +18,6 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/5-sorting-hat-skill-gap-hours.md`
   summary: Bản đồ (`Roadmap.tsx`) và Hôm nay/buổi học (`sessionLesson`) tự tính bài tiếp theo riêng, có thể lệch nhau nếu một chỗ quên truyền `startLessonId`.
   evidence: Không có test chung; cần helper `roadmapProgressFor(store)` dùng ở cả hai chỗ.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/7-backup-restore-json.md`
+  summary: `useBackup().restore` (ghi qua `handle.update` để đồng bộ tự đẩy) chưa có test.
+  evidence: Repo chưa có môi trường test hook/component; nếu cần thì tách thành hàm thuần `(handle, backup) => result` và test cạnh `createStoreHandle`.

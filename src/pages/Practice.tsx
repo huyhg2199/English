@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ChevronRight, Layers, Sparkles, WandSparkles } from 'lucide-react'
+import { ChevronRight, HardDriveDownload, Layers, Sparkles, WandSparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useNewWordList, useSpells, useSrs } from '@/app/store-context'
@@ -98,6 +98,20 @@ export function Practice() {
           </CardDescription>
         </CardHeader>
       </Card>
+
+      <Link
+        to="/backup"
+        className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <Card className="transition-shadow hover:shadow-[0_0_20px_var(--candle-glow)]">
+          <CardHeader className="grid-cols-[auto_1fr_auto] items-center gap-x-3">
+            <HardDriveDownload className="row-span-2 size-8 text-primary" aria-hidden="true" />
+            <CardTitle className="text-lg">Sao lưu dữ liệu</CardTitle>
+            <ChevronRight className="row-span-2 size-5 text-muted-foreground" aria-hidden="true" />
+            <CardDescription>Xuất file JSON để tự giữ, hoặc khôi phục từ file.</CardDescription>
+          </CardHeader>
+        </Card>
+      </Link>
     </section>
   )
 }

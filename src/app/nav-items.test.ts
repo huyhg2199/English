@@ -48,4 +48,10 @@ describe('NAV_ITEMS', () => {
     expect(active('/roadmap/lesson/s1-t1-w1')).toEqual(['Lộ trình'])
     expect(active('/sessionx')).toEqual([])
   })
+
+  it('/backup là route thật, tab Luyện tập sáng', () => {
+    const leaf = matchRoutes(routes, '/backup')!.at(-1)!.route
+    expect(leaf.path).toBe('backup')
+    expect(NAV_ITEMS.filter((item) => isNavItemActive(item, '/backup')).map((i) => i.label)).toEqual(['Luyện tập'])
+  })
 })

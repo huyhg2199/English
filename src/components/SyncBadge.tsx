@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { AlertTriangle, CloudCheck, CloudOff, LogOut, RefreshCw } from 'lucide-react'
+import { AlertTriangle, CloudCheck, CloudOff, HardDriveDownload, LogOut, RefreshCw } from 'lucide-react'
+import { Link } from 'react-router'
 
 import { syncIndicator, type SyncIndicator } from '@/app/sync-indicator'
 import { useSync } from '@/app/store-context'
@@ -54,6 +55,12 @@ export function SyncBadge() {
             <Button variant="secondary" onClick={() => void syncNow()} disabled={status === 'syncing'}>
               <RefreshCw aria-hidden="true" />
               Đồng bộ ngay
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/backup" onClick={() => setOpen(false)}>
+                <HardDriveDownload aria-hidden="true" />
+                Sao lưu dữ liệu
+              </Link>
             </Button>
             <Button
               variant="outline"

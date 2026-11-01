@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from 'react'
 
+import { createBackup, restoreBackup, type Backup } from '@/lib/backup'
 import { saveStore, type LoadedStore, type StorageOptions, type Store } from '@/lib/storage'
 import {
   applyStartLesson,
@@ -211,6 +212,28 @@ export function usePronunciation() {
     [handle],
   )
   return { items, apply }
+}
+
+/**
+ * Sao lưu / khôi phục (story 7). `exportBackup` dựng file từ store hiện tại (chỉ key allowlist).
+ * `restore` gộp file vào store qua `handle.update` (nên đồng bộ tự đẩy lên); `saved` = đã ghi được localStorage chưa.
+ */
+export function useBackup() {
+  const handle = useStoreHandle()
+  const exportBackup = useCallback((now: Date = new Date()) => createBackup(handle.getSnapshot().store, now), [handle])
+  const restore = useCallback(
+    (backup: Backup) => {
+      let counts = { added: 0, updated: 0 }
+      const saved = handle.update((s) => {
+        const r = restoreBackup(s, backup)
+        counts = { added: r.added, updated: r.updated }
+        return r.store
+      })
+      return { ...counts, saved }
+    },
+    [handle],
+  )
+  return { exportBackup, restore }
 }
 
 /** Thần chú đã mở khoá (theo tiến độ bài, không có key riêng). */

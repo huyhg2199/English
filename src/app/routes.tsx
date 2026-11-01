@@ -1,6 +1,7 @@
 import { Navigate, type RouteObject } from 'react-router'
 
 import { AppShell } from '@/app/AppShell'
+import { Backup } from '@/pages/Backup'
 import { Flashcards } from '@/pages/Flashcards'
 import { LazySession } from '@/pages/LazySession'
 import { Lesson } from '@/pages/Lesson'
@@ -33,6 +34,8 @@ export const routes: RouteObject[] = [
       { path: 'practice', element: <Practice /> },
       // Phiên ôn flashcard; tab Luyện tập vẫn sáng (NavLink /practice không `end`).
       { path: 'practice/flashcards', element: <Flashcards /> },
+      // Sao lưu / khôi phục file JSON; tab Luyện tập vẫn sáng (`alsoActiveFor`).
+      { path: 'backup', element: <Backup /> },
       { path: 'notebook', element: <Notebook /> },
       { path: 'trophies', element: <TrophyRoom /> },
       { path: '*', element: <Navigate to="/" replace /> },
