@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { BookX, ChevronRight, ClipboardCheck, HardDriveDownload, Layers, Sparkles, WandSparkles, type LucideIcon } from 'lucide-react'
+import { BookX, ChevronRight, ClipboardCheck, HardDriveDownload, Layers, Mail, Sparkles, WandSparkles, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
@@ -159,6 +159,20 @@ export function Practice() {
             <CardTitle className="text-lg">Sao lưu dữ liệu</CardTitle>
             <ChevronRight className="row-span-2 size-5 text-muted-foreground" aria-hidden="true" />
             <CardDescription>Xuất file JSON để tự giữ, hoặc khôi phục từ file.</CardDescription>
+          </CardHeader>
+        </Card>
+      </Link>
+
+      <Link
+        to="/owl-post"
+        className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <Card className="transition-shadow hover:shadow-[0_0_20px_var(--candle-glow)]">
+          <CardHeader className="grid-cols-[auto_1fr_auto] items-center gap-x-3">
+            <Mail className="row-span-2 size-8 text-primary" aria-hidden="true" />
+            <CardTitle className="text-lg">Owl Post &amp; sao lưu</CardTitle>
+            <ChevronRight className="row-span-2 size-5 text-muted-foreground" aria-hidden="true" />
+            <CardDescription>Bản sao Gist tự động, giờ nhắc, lịch .ics và nhắc qua Telegram.</CardDescription>
           </CardHeader>
         </Card>
       </Link>

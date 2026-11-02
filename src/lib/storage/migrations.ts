@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 10
+export const CURRENT_VERSION = 11
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -106,6 +106,20 @@ export const migrations: Migrations = {
       data: {
         ...store.data,
         trophies: isPlainObject(trophies) ? trophies : trophies === undefined ? { seen: {} } : { seen: {}, legacy: trophies },
+      },
+    }
+  },
+  // v10 → v11 (story 13): giờ nhắc `reminders: { times: ['12:00', '21:30'], updatedAt }`. `updatedAt` = mốc cũ cố định
+  // để mọi lần đổi giờ thật (ở máy khác) đều thắng khi gộp. Đã có (object) thì để nguyên; giá trị lạ thì giữ trong
+  // `legacy`. Lên v11 để app cũ (v10) không ghi đè mất key này.
+  10: (store) => {
+    const reminders = store.data.reminders
+    const fresh = { times: ['12:00', '21:30'], updatedAt: LEGACY_UPDATED_AT }
+    return {
+      schemaVersion: 11,
+      data: {
+        ...store.data,
+        reminders: isPlainObject(reminders) ? reminders : reminders === undefined ? fresh : { ...fresh, legacy: reminders },
       },
     }
   },

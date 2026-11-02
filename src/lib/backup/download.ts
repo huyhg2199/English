@@ -11,6 +11,8 @@ export type ShareOrDownloadDeps = {
   document?: Document
   createObjectURL?: (blob: Blob) => string
   revokeObjectURL?: (url: string) => void
+  /** MIME của file (mặc định JSON). */
+  type?: string
 }
 
 function isAbort(error: unknown): boolean {
@@ -28,10 +30,11 @@ export async function shareOrDownload(
   deps: ShareOrDownloadDeps = {},
 ): Promise<ShareOrDownloadResult> {
   const nav = deps.navigator === undefined ? (globalThis.navigator as ShareNavigator | undefined) : deps.navigator
-  const blob = new Blob([json], { type: 'application/json' })
+  const type = deps.type ?? 'application/json'
+  const blob = new Blob([json], { type })
   let shareFailed = false
   if (nav?.share && nav.canShare && typeof File !== 'undefined') {
-    const file = new File([blob], fileName, { type: 'application/json' })
+    const file = new File([blob], fileName, { type })
     let canShare: boolean
     try {
       canShare = nav.canShare({ files: [file] })

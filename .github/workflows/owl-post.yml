@@ -1,0 +1,39 @@
+name: Owl Post (nhắc học qua Telegram)
+
+# 3 mốc giờ Việt Nam (UTC+7): 12:00, 15:30, 21:30 → UTC 05:00, 08:30, 14:30.
+# Cron của GitHub có thể chạy trễ vài phút tới vài chục phút lúc đông.
+on:
+  schedule:
+    - cron: '0 5 * * *'
+    - cron: '30 8 * * *'
+    - cron: '30 14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owl-post
+  cancel-in-progress: false
+
+jobs:
+  owl-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/owl-post
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Script không có dependency nên không cần npm ci. Secrets chỉ đi qua env, không echo;
+      # GitHub tự che giá trị secret nếu lỡ xuất hiện trong log.
+      - name: Gửi Owl Post nếu hôm nay chưa học
+        run: node scripts/owl-post/send.mjs
+        env:
+          GIST_ID: ${{ secrets.GIST_ID }}
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          APP_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/

@@ -7,6 +7,7 @@ import { LazySession } from '@/pages/LazySession'
 import { Lesson } from '@/pages/Lesson'
 import { Mistakes } from '@/pages/Mistakes'
 import { Notebook } from '@/pages/Notebook'
+import { OwlPostPage } from '@/pages/OwlPost'
 import { Practice } from '@/pages/Practice'
 import { Quiz } from '@/pages/Quiz'
 import { Roadmap } from '@/pages/Roadmap'
@@ -41,6 +42,8 @@ export const routes: RouteObject[] = [
       { path: 'practice/mistakes', element: <Mistakes /> },
       // Sao lưu / khôi phục file JSON; tab Luyện tập vẫn sáng (`alsoActiveFor`).
       { path: 'backup', element: <Backup /> },
+      // Owl Post & sao lưu: Gist tự động, giờ nhắc, lịch .ics, Telegram (story 13); tab Luyện tập vẫn sáng.
+      { path: 'owl-post', element: <OwlPostPage /> },
       { path: 'notebook', element: <Notebook /> },
       { path: 'trophies', element: <TrophyRoom /> },
       { path: '*', element: <Navigate to="/" replace /> },

@@ -45,7 +45,7 @@ function roundTrip(store: Store, now = T1): Backup {
 
 describe('BACKUP_KEYS / allowlist', () => {
   it('trùng với allowlist đồng bộ', () => {
-    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies'])
+    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders'])
   })
 
   it('không có key nào giống API key / token / PAT / secret / password', () => {
@@ -401,6 +401,24 @@ describe('trophies.seen trong sao lưu (story 12)', () => {
   })
 })
 
+describe('reminders trong sao lưu (story 13)', () => {
+  it('giờ nhắc hợp lệ được giữ và gộp theo updatedAt; sai dạng bị bỏ', () => {
+    const reminders = { times: ['07:00', '20:00'], updatedAt: T1.toISOString() }
+    const backup = roundTrip({ ...empty(), data: { reminders } })
+    expect(backup.data.reminders).toEqual(reminders)
+    const older = { ...empty(), data: { reminders: { times: ['12:00'], updatedAt: T0.toISOString() } } }
+    const r = restoreBackup(older, backup)
+    expect(r.store.data.reminders).toEqual(reminders)
+    expect(r).toMatchObject({ added: 0, updated: 1 })
+    const newer = { ...empty(), data: { reminders: { times: ['12:00'], updatedAt: T2.toISOString() } } }
+    expect(restoreBackup(newer, backup)).toMatchObject({ added: 0, updated: 0 })
+    const bad = parseBackup(
+      JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: T1.toISOString(), data: { reminders: { times: ['99:99'], updatedAt: 'x' } } }),
+    )
+    expect(bad.ok && bad.backup.data.reminders).toBeUndefined()
+  })
+})
+
 describe('shareOrDownload', () => {
   function fakeDocument() {
     const link = { href: '', download: '', rel: '', style: {} as Record<string, string>, click: vi.fn(), remove: vi.fn() }
@@ -415,6 +433,22 @@ describe('shareOrDownload', () => {
     expect(r).toBe('shared')
     expect(share).toHaveBeenCalledOnce()
     expect(link.click).not.toHaveBeenCalled()
+  })
+
+  it('type tuỳ chọn (text/calendar) dùng cho cả File chia sẻ lẫn Blob tải về; mặc định vẫn application/json', async () => {
+    const shared: File[] = []
+    const share = vi.fn(async (data: ShareData) => void shared.push(...(data.files ?? [])))
+    const { doc } = fakeDocument()
+    await shareOrDownload('a.ics', 'BEGIN:VCALENDAR', { navigator: { canShare: () => true, share }, document: doc, type: 'text/calendar' })
+    expect(shared[0].type).toBe('text/calendar')
+    const blobs: Blob[] = []
+    const download = (type?: string) =>
+      shareOrDownload('b', 'x', { navigator: null, document: fakeDocument().doc, createObjectURL: (b) => (blobs.push(b), 'blob:x'), revokeObjectURL: () => {}, ...(type ? { type } : {}) })
+    await download('text/calendar')
+    await download()
+    expect(blobs.map((b) => b.type)).toEqual(['text/calendar', 'application/json'])
+    await shareOrDownload('c.json', '{}', { navigator: { canShare: () => true, share }, document: doc })
+    expect(shared[1].type).toBe('application/json')
   })
 
   it('không hỗ trợ share file → tải qua link download', async () => {

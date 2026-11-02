@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
-import { BookOpenCheck, Check, Coffee, Flame, Play, Sparkles } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Bell, BookOpenCheck, Check, Coffee, Flame, Play, Sparkles, X } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useComeback, usePlacement, useSchedule, useSessions, useSkillBoard } from '@/app/store-context'
+import { useComeback, useLoadedStore, usePlacement, useSchedule, useSessions, useSkillBoard } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { ComebackCard } from '@/components/ComebackCard'
 import { ScheduleCard } from '@/components/ScheduleCard'
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { lessonHref } from '@/data/roadmap'
 import { studyHours } from '@/lib/placement'
+import { readDismissedDay, saveDismissedDay, showReminderBanner } from '@/lib/reminders'
 import { computeStreak, isSessionDay, localDayKey } from '@/lib/sessions'
 
 /** Mời đội Mũ Phân Loại khi chưa làm. */
@@ -31,6 +32,33 @@ function SortingHatInvite() {
         </Button>
       </CardContent>
     </Card>
+  )
+}
+
+/** Dải nhắc nhẹ (story 13): qua giờ nhắc đầu tiên mà hôm nay chưa học. Đóng thì ẩn tới mai (nhớ trên máy này). */
+function ReminderBanner({ now }: { now: Date }) {
+  const { store } = useLoadedStore()
+  const [dismissed, setDismissed] = useState(() => readDismissedDay())
+  if (!showReminderBanner(store, now, dismissed)) return null
+  return (
+    <div role="status" className="flex items-center gap-3 rounded-xl border border-primary/50 bg-accent/40 px-3 py-2 text-sm">
+      <Bell className="size-5 shrink-0 text-primary" aria-hidden="true" />
+      <p className="min-w-0 flex-1">
+        Cú đưa thư nhắc: hôm nay chưa học đó. Lười thì <Link to="/session/lazy" className="font-medium underline">10 phút thôi</Link>.
+      </p>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Đóng nhắc hôm nay"
+        onClick={() => {
+          const day = localDayKey(now)
+          saveDismissedDay(day)
+          setDismissed(day)
+        }}
+      >
+        <X aria-hidden="true" />
+      </Button>
+    </div>
   )
 }
 
@@ -56,6 +84,8 @@ export function Today() {
         <Flame className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
         <h1 className="text-2xl font-semibold tracking-wide">Hôm nay</h1>
       </header>
+
+      <ReminderBanner now={now} />
 
       {comeback.pending && comeback.questionCount > 0 && (
         <ComebackCard pending={comeback.pending} questionCount={comeback.questionCount} onSkip={comeback.skip} />

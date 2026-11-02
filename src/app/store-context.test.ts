@@ -5,7 +5,10 @@ import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progre
 
 import { readSeen } from '@/lib/trophies'
 
-import { createStoreHandle, deliverOwlPost } from './store-context'
+import { createGistWriter, GIST_ID_STORAGE, GIST_STATUS_FILE, GIST_TOKEN_STORAGE } from '@/lib/gist'
+import { readSessionDays } from '@/lib/sessions'
+
+import { createStoreHandle, deliverOwlPost, mergeGistBackup, recordSessionAndBackup } from './store-context'
 
 function fakeStorage(initial: Record<string, string> = {}) {
   const map = new Map(Object.entries(initial))
@@ -100,7 +103,7 @@ describe('createStoreHandle', () => {
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     handle.update(mark('s1-t1-w1'))
     const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
-    expect(saved.schemaVersion).toBe(10)
+    expect(saved.schemaVersion).toBe(11)
     expect(Object.keys(saved.data.progress.lessons)).toEqual(['old-id', 's1-t1-w1'])
     expect(readCompletedLessonIds(saved)).toEqual(['old-id', 's1-t1-w1'])
   })
@@ -136,7 +139,7 @@ describe('deliverOwlPost (story 12)', () => {
       quizId: 'mini-t1', seed: 's', startedAt: T, finishedAt: T, score: 1, total: 1,
       answers: [{ questionId: 'q', chosen: 'a', correct: true }], updatedAt: T,
     }
-    const raw = JSON.stringify({ schemaVersion: 10, data: { quizzes: { attempts: { a1: attempt } }, trophies: { seen: {} } } })
+    const raw = JSON.stringify({ schemaVersion: 11, data: { quizzes: { attempts: { a1: attempt } }, trophies: { seen: {} } } })
     const storage = fakeStorage({ [STORAGE_KEY]: raw })
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     const now = new Date('2026-11-02T08:00:00.000Z')
@@ -149,5 +152,41 @@ describe('deliverOwlPost (story 12)', () => {
     // Mở app lại (store đọc từ storage) → vẫn không báo lại.
     const reopened = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     expect(deliverOwlPost(reopened, now)).toEqual([])
+  })
+})
+
+describe('recordSessionAndBackup (story 13: xong buổi → ghi Gist)', () => {
+  it('ghi buổi vào store trước, rồi đúng một PATCH lên Gist với status.json studied true và đúng loại buổi', async () => {
+    const storage = fakeStorage()
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    const keys = new Map([
+      [GIST_TOKEN_STORAGE, 'ghp_test'],
+      [GIST_ID_STORAGE, 'aa11bb22cc33dd44ee55'],
+    ])
+    const keyStorage = { getItem: (k: string) => keys.get(k) ?? null, setItem: (k: string, v: string) => void keys.set(k, v), removeItem: (k: string) => void keys.delete(k) }
+    const calls: { method: string; body?: string; daysAtCall: number }[] = []
+    const fetch = async (_url: string, init?: RequestInit) => {
+      calls.push({ method: init?.method ?? 'GET', body: init?.body as string | undefined, daysAtCall: Object.keys(readSessionDays(handle.getSnapshot().store)).length })
+      return new Response(JSON.stringify(init?.method === 'PATCH' ? {} : { owner: { login: 'huy' }, files: {} }), { status: 200 })
+    }
+    const now = new Date('2026-11-02T05:00:00.000Z')
+    const gist = createGistWriter({ getLoaded: handle.getSnapshot, fetch, storage: keyStorage, now: () => now, merge: (b) => mergeGistBackup(handle, b) })
+
+    const r = recordSessionAndBackup(handle, gist, 'lazy', now)
+    expect(r.saved).toBe(true)
+    await r.backup
+    const patches = calls.filter((c) => c.method === 'PATCH')
+    expect(patches).toHaveLength(1)
+    expect(patches[0].daysAtCall).toBe(1)
+    const status = JSON.parse(JSON.parse(patches[0].body!).files[GIST_STATUS_FILE].content)
+    expect(status).toMatchObject({ date: '2026-11-02', studied: true, kind: 'lazy' })
+  })
+
+  it('không có writer → chỉ ghi store', async () => {
+    const storage = fakeStorage()
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    const r = recordSessionAndBackup(handle, null, 'full', new Date('2026-11-02T05:00:00.000Z'))
+    expect(r.saved).toBe(true)
+    await expect(r.backup).resolves.toBeUndefined()
   })
 })

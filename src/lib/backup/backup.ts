@@ -3,6 +3,7 @@ import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem } from '@/lib/pronunciation'
 import { isMistakeItem, isQuizAttempt } from '@/lib/quiz'
 import { isLessonProgress, readCompletedLessonIds } from '@/lib/roadmap-progress'
+import { isReminders } from '@/lib/reminders/reminders'
 import { isSavedWord, readSavedWords } from '@/lib/saved-words'
 import { isSessionDay, readSessionDays } from '@/lib/sessions'
 import { isSrsCard, readCards } from '@/lib/srs'
@@ -87,8 +88,11 @@ export function serializeBackup(backup: Backup): string {
   return JSON.stringify(backup, null, 2)
 }
 
-/** Map gộp theo mục của từng key (để làm sạch file và đếm số mục thêm / cập nhật). */
-const ENTRY_FIELD: Record<BackupKey, string> = {
+/**
+ * Map gộp theo mục của từng key (để làm sạch file và đếm số mục thêm / cập nhật).
+ * `null`: key là một object gộp nguyên khối theo `updatedAt` (vd giờ nhắc), kiểm bằng `WHOLE_VALID`.
+ */
+const ENTRY_FIELD: Record<BackupKey, string | null> = {
   progress: 'lessons',
   srs: 'cards',
   sessions: 'days',
@@ -99,9 +103,14 @@ const ENTRY_FIELD: Record<BackupKey, string> = {
   quizzes: 'attempts',
   mistakes: 'items',
   trophies: 'seen',
+  reminders: null,
 }
 
-const ENTRY_VALID: Record<BackupKey, (value: unknown) => boolean> = {
+const WHOLE_VALID: Partial<Record<BackupKey, (value: unknown) => boolean>> = {
+  reminders: isReminders,
+}
+
+const ENTRY_VALID: Record<Exclude<BackupKey, 'reminders'>, (value: unknown) => boolean> = {
   progress: isLessonProgress,
   srs: isSrsCard,
   sessions: isSessionDay,
@@ -134,7 +143,11 @@ export function sanitizeBackupData(data: Record<string, unknown>): Record<string
   for (const key of BACKUP_KEYS) {
     const value = data[key]
     if (!isPlainObject(value)) continue
-    const field = ENTRY_FIELD[key]
+    if (key === 'reminders') {
+      if (WHOLE_VALID[key]?.(value)) out[key] = safeEntries(value, (v) => v !== undefined)
+      continue
+    }
+    const field = ENTRY_FIELD[key] as string
     const clean = safeEntries(value, (v) => v !== undefined)
     clean[field] = isPlainObject(value[field]) ? safeEntries(value[field], ENTRY_VALID[key]) : {}
     out[key] = clean
@@ -214,6 +227,14 @@ export function restoreBackup(store: Store, backup: Backup): RestoreResult {
   for (const key of BACKUP_KEYS) {
     if (UNCOUNTED_KEYS.has(key)) continue
     const field = ENTRY_FIELD[key]
+    if (field === null) {
+      // Object gộp nguyên khối: có trong file mà máy chưa có → thêm; khác → cập nhật.
+      if (!deepEqual(store.data[key], merged[key])) {
+        if (store.data[key] === undefined) added++
+        else updated++
+      }
+      continue
+    }
     const before = asObject(store.data[key])
     const after = asObject(merged[key])
     const beforeEntries = asObject(before[field])
@@ -236,7 +257,8 @@ export function restoreBackup(store: Store, backup: Backup): RestoreResult {
 
 function entriesOf(data: Record<string, unknown>, key: BackupKey): Record<string, unknown> {
   const value = data[key]
-  const entries = isPlainObject(value) ? value[ENTRY_FIELD[key]] : undefined
+  const field = ENTRY_FIELD[key]
+  const entries = isPlainObject(value) && field !== null ? value[field] : undefined
   return isPlainObject(entries) ? entries : {}
 }
 

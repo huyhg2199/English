@@ -44,6 +44,8 @@ export default defineConfig({
         // chunk vắng khỏi precache vì lý do khác (vd globPatterns).
         maximumFileSizeToCacheInBytes: PRECACHE_MAX_BYTES,
         navigateFallback: 'index.html',
+        // Lịch nhắc tĩnh (story 13): mở link .ics phải ra file thật, không bị trả index.html.
+        navigateFallbackDenylist: [/\.ics$/],
       },
     }),
   ],

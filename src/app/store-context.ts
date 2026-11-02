@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, u
 
 import { OWL_POST_DEADLINE_MS, owlPostReady } from '@/app/owl-post-gate'
 import { createBackup, restoreBackup, type Backup } from '@/lib/backup'
+import type { GistWriter, MergeCounts } from '@/lib/gist'
+import { readReminders, setReminderTimes } from '@/lib/reminders'
 import { saveStore, type LoadedStore, type StorageOptions, type Store } from '@/lib/storage'
 import {
   applyStartLesson,
@@ -186,18 +188,45 @@ export function useSrs() {
 }
 
 /**
+ * Ghi buổi đã xong rồi ghi bản sao + `status.json` lên Gist ngay (story 13). Không có PAT thì writer không làm gì;
+ * lỗi Gist không chặn học. `backup` resolve khi lượt ghi Gist xong.
+ */
+export function recordSessionAndBackup(
+  handle: StoreHandle,
+  gist: GistWriter | null,
+  kind: SessionKind,
+  now: Date,
+  extra: { lessonId?: string | null } = {},
+): { saved: boolean; backup: Promise<void> } {
+  const saved = handle.update((s) => recordSession(s, kind, now, extra))
+  return { saved, backup: gist ? gist.writeNow() : Promise.resolve() }
+}
+
+/** Gộp bản sao đọc từ Gist vào store qua `handle.update` (đồng bộ Supabase tự đẩy lên). */
+export function mergeGistBackup(handle: StoreHandle, backup: Backup): MergeCounts {
+  let counts: MergeCounts = { added: 0, updated: 0 }
+  handle.update((s) => {
+    const r = restoreBackup(s, backup)
+    counts = { added: r.added, updated: r.updated }
+    return r.store
+  })
+  return counts
+}
+
+/**
  * Nhật ký buổi học (`store.data.sessions.days`), bài của buổi và hàm ghi buổi đã xong.
  * Buổi chuẩn ưu tiên hơn buổi lười khi cùng ngày (xem `recordSession`).
  */
 export function useSessions() {
   const handle = useStoreHandle()
+  const gist = useContext(GistContext)
   const { store } = useLoadedStore()
   const days = useMemo(() => readSessionDays(store), [store])
   const current = useMemo(() => sessionLesson(store), [store])
   const record = useCallback(
     (kind: SessionKind, now: Date = new Date(), extra: { lessonId?: string | null } = {}) =>
-      handle.update((s) => recordSession(s, kind, now, extra)),
-    [handle],
+      recordSessionAndBackup(handle, gist, kind, now, extra).saved,
+    [handle, gist],
   )
   return { days, current, record }
 }
@@ -444,6 +473,31 @@ export function useOwlPost() {
 
   const dismiss = useCallback(() => setLetters([]), [])
   return { letters, dismiss }
+}
+
+/** Giờ nhắc (`store.data.reminders`, story 13) và hàm đổi giờ (đồng bộ như dữ liệu học). */
+export function useReminders() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const reminders = useMemo(() => readReminders(store), [store])
+  const setTimes = useCallback(
+    (times: readonly string[], now: Date = new Date()) => handle.update((s) => setReminderTimes(s, times, now)),
+    [handle],
+  )
+  return { reminders, setTimes }
+}
+
+/** Bản sao Gist tự động (story 13). null khi chưa gắn (vd test). */
+export const GistContext = createContext<GistWriter | null>(null)
+
+const NO_GIST = () => () => {}
+const OFF_STATE = { phase: 'off', gistId: null, writtenAt: null, error: null } as const
+
+/** Trạng thái Gist (kết nối / đang ghi / lỗi) và writer để gọi thao tác. */
+export function useGist() {
+  const gist = useContext(GistContext)
+  const state = useSyncExternalStore(gist ? gist.subscribe : NO_GIST, gist ? gist.getState : () => OFF_STATE)
+  return { state, writer: gist }
 }
 
 export const SyncContext = createContext<SyncController | null>(null)

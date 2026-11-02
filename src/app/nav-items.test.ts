@@ -54,4 +54,10 @@ describe('NAV_ITEMS', () => {
     expect(leaf.path).toBe('backup')
     expect(NAV_ITEMS.filter((item) => isNavItemActive(item, '/backup')).map((i) => i.label)).toEqual(['Luyện tập'])
   })
+
+  it('/owl-post là route thật, tab Luyện tập sáng', () => {
+    const leaf = matchRoutes(routes, '/owl-post')!.at(-1)!.route
+    expect(leaf.path).toBe('owl-post')
+    expect(NAV_ITEMS.filter((item) => isNavItemActive(item, '/owl-post')).map((i) => i.label)).toEqual(['Luyện tập'])
+  })
 })

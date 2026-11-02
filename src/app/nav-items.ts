@@ -12,7 +12,7 @@ export type NavItem = {
 export const NAV_ITEMS: readonly NavItem[] = [
   { path: '/', label: 'Hôm nay', icon: Flame, alsoActiveFor: ['/session', '/sorting-hat'] },
   { path: '/roadmap', label: 'Lộ trình', icon: Map },
-  { path: '/practice', label: 'Luyện tập', icon: WandSparkles, alsoActiveFor: ['/backup'] },
+  { path: '/practice', label: 'Luyện tập', icon: WandSparkles, alsoActiveFor: ['/backup', '/owl-post'] },
   { path: '/notebook', label: 'Sổ tay', icon: BookOpen },
   { path: '/trophies', label: 'Phòng Cúp', icon: Trophy },
 ]
