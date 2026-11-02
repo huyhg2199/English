@@ -30,10 +30,18 @@ jobs:
       - run: npm test
       - run: npm run build
         env:
-          # GitHub Actions Variables (không phải Secrets): URL và anon key của Supabase là công khai, có RLS bảo vệ.
+          # Nên đặt ở Actions Variables (URL và anon key Supabase là công khai, có RLS bảo vệ); lỡ đặt ở Secrets cũng đọc được.
           # Chưa đặt thì build ra app chạy chỉ local.
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
+      - name: Báo nếu build không có cấu hình Supabase
+        env:
+          HAS_URL: ${{ (vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL) && 'yes' || '' }}
+          HAS_KEY: ${{ (vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY) && 'yes' || '' }}
+        run: |
+          if [ -z "$HAS_URL" ] || [ -z "$HAS_KEY" ]; then
+            echo "::warning::Thiếu VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY nên app build ra sẽ bỏ qua đăng nhập. Kiểm tra Settings → Secrets and variables → Actions → tab Variables (Repository variables)."
+          fi
       - name: Check PWA files
         run: test -f dist/manifest.webmanifest && test -f dist/sw.js
       - name: Upload Pages artifact
