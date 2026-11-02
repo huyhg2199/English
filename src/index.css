@@ -30,6 +30,39 @@
   --nav-height: 4rem;
 }
 
+/*
+ * Màu nhấn theo Nhà (Mũ Phân Loại): `data-house` trên <html>. Chỉ đổi màu nhấn; nền, chữ giữ nguyên.
+ * Màu đủ sáng để chữ tối (--primary-foreground) trên nền nhấn và chữ nhấn trên nền đá đều dễ đọc (≥ 4.5:1).
+ */
+html[data-house='gryffindor'] {
+  --primary: #e8735a;
+  --ring: #e8735a;
+  --accent: #3d2622;
+  --accent-foreground: #f6a48f;
+  --candle-glow: rgb(240 120 90 / 0.35);
+}
+html[data-house='hufflepuff'] {
+  --primary: #e6c23f;
+  --ring: #e6c23f;
+  --accent: #3a3320;
+  --accent-foreground: #f4dc7c;
+  --candle-glow: rgb(240 205 80 / 0.35);
+}
+html[data-house='ravenclaw'] {
+  --primary: #7aa7ea;
+  --ring: #7aa7ea;
+  --accent: #212c3d;
+  --accent-foreground: #a9c8f5;
+  --candle-glow: rgb(122 167 234 / 0.35);
+}
+html[data-house='slytherin'] {
+  --primary: #5cbf86;
+  --ring: #5cbf86;
+  --accent: #1f3328;
+  --accent-foreground: #94dcb1;
+  --candle-glow: rgb(92 191 134 / 0.35);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -75,5 +108,32 @@
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
     font-family: ui-serif, Georgia, 'Times New Roman', serif;
+  }
+}
+
+/* Trả lời đúng: hiệu ứng "Lumos" nhẹ — ánh nến loé lên rồi dịu lại (hp-theme.md). */
+@keyframes lumos-flare {
+  0% {
+    box-shadow: 0 0 0 0 var(--candle-glow);
+    filter: brightness(1);
+  }
+  35% {
+    box-shadow: 0 0 28px 8px var(--candle-glow);
+    filter: brightness(1.25);
+  }
+  100% {
+    box-shadow: 0 0 12px 2px var(--candle-glow);
+    filter: brightness(1);
+  }
+}
+
+.lumos {
+  animation: lumos-flare 900ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lumos {
+    animation: none;
+    box-shadow: 0 0 12px 2px var(--candle-glow);
   }
 }

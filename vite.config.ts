@@ -6,6 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const BG = '#14120f'
+/** Giới hạn precache của service worker (4 MiB), đủ cho chunk từ vựng. */
+const PRECACHE_MAX_BYTES = 4 * 1024 * 1024
 
 export default defineConfig({
   base: '/English/',
@@ -37,6 +39,10 @@ export default defineConfig({
       // navigation) luôn đi thẳng ra mạng, không bị navigateFallback hay cache của service worker chặn.
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        // Chunk từ vựng (words-*.js, ~1.2 MB) phải được precache để ôn offline. Mặc định 2 MiB; vite-plugin-pwa làm
+        // build lỗi nếu asset vượt giới hạn. scripts/check-precache.mjs (chạy trong `npm run build`) chặn trường hợp
+        // chunk vắng khỏi precache vì lý do khác (vd globPatterns).
+        maximumFileSizeToCacheInBytes: PRECACHE_MAX_BYTES,
         navigateFallback: 'index.html',
       },
     }),

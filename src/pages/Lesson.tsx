@@ -1,13 +1,18 @@
-import { useEffect } from 'react'
-import { ArrowLeft, BookOpenCheck, Check, Link2, MapPinOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowLeft, BookOpenCheck, Check, MapPinOff, NotebookPen } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
-import { useProgress } from '@/app/store-context'
-import { SKILL_LABELS } from '@/components/roadmap/skill-labels'
+import { useNotes, useProgress, useSkillBoard } from '@/app/store-context'
+import { GrammarSection, PronunciationSection } from '@/components/lesson/LessonContentParts'
+import { NoteForm } from '@/components/notebook/NoteForm'
+import { ReadingSourceContext } from '@/components/reading-source'
+import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { resolveLessonRoute, resourcesForSection, sectionHref } from '@/data/roadmap'
-import { cn } from '@/lib/utils'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { getLessonContent } from '@/data/lessons'
+import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
+import { prioritizeSections } from '@/lib/placement'
 
 function BackLink() {
   return (
@@ -21,11 +26,51 @@ function BackLink() {
   )
 }
 
+/** Ghi chú gắn với bài (story 8): mở Sheet có form 3 ô; lưu xong ghi chú có link về bài trong Sổ tay. */
+function LessonNoteButton({ lessonId }: { lessonId: string }) {
+  const { create } = useNotes()
+  const [open, setOpen] = useState(false)
+  const [saved, setSaved] = useState(false)
+  return (
+    <div className="flex flex-col gap-1">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button variant="outline" onClick={() => setSaved(false)}>
+            <NotebookPen aria-hidden="true" />
+            Ghi chú cho bài này
+          </Button>
+        </SheetTrigger>
+        <SheetContent className="max-h-[90dvh] overflow-y-auto">
+          <SheetTitle>Ghi chú cho bài này</SheetTitle>
+          <SheetDescription>Quy tắc, lỗi sai, câu ví dụ: điền ô nào cũng được, ít nhất một ô.</SheetDescription>
+          <NoteForm
+            lessonId={lessonId}
+            onSubmit={(input) => {
+              const reason = create(input)
+              if (!reason) {
+                setOpen(false)
+                setSaved(true)
+              }
+              return reason
+            }}
+          />
+        </SheetContent>
+      </Sheet>
+      {saved && (
+        <p role="status" className="text-xs text-muted-foreground">
+          Đã lưu ghi chú vào Sổ tay.
+        </p>
+      )}
+    </div>
+  )
+}
+
 /** Trang chi tiết bài: liệt kê việc cần làm và nguồn của từng đoạn. */
 export function Lesson() {
   const { lessonId, sectionId } = useParams()
   const { entry, targetSectionId: target } = resolveLessonRoute(lessonId, sectionId)
   const { completedLessonIds, setCompleted } = useProgress()
+  const { weakest } = useSkillBoard()
   const { key: locationKey } = useLocation()
 
   // Có đoạn hợp lệ thì cuộn tới đó, không thì về đầu trang (kể cả khi reload).
@@ -63,6 +108,8 @@ export function Lesson() {
 
   const { lesson, month, stage } = entry
   const done = completedLessonIds.includes(lesson.id)
+  // Bài đã soạn nội dung (T1) thì gắn vào đoạn Phát âm / Ngữ pháp; bài khác giữ như cũ.
+  const content = getLessonContent(lesson.id)
 
   return (
     <section className="flex flex-col gap-6">
@@ -87,74 +134,26 @@ export function Lesson() {
         )}
       </header>
 
-      {lesson.sections.map((section) => {
-        const highlighted = section.id === target
-        const resources = resourcesForSection(stage, section)
-        return (
-          <Card
-            key={section.id}
-            id={section.id}
-            className={cn(
-              'scroll-mt-4 gap-4 transition-shadow',
-              highlighted && 'border-primary shadow-[0_0_24px_var(--candle-glow)] ring-2 ring-primary/50',
-            )}
+      {/* Đoạn của kỹ năng yếu nhất lên đầu, nhãn "Ưu tiên"; chưa đội Mũ Phân Loại thì giữ thứ tự. */}
+      {prioritizeSections(lesson.sections, weakest).map(({ section, priority }) => (
+        <ReadingSourceContext.Provider
+          key={section.id}
+          value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
+        >
+          <LessonSectionCard
+            lesson={lesson}
+            stage={stage}
+            section={section}
+            highlighted={section.id === target}
+            priority={priority}
           >
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between gap-2">
-                <h2>{section.title}</h2>
-                <Link
-                  to={sectionHref(lesson.id, section.id)}
-                  aria-label={`Link tới đoạn ${section.title}`}
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <Link2 className="size-4" aria-hidden="true" />
-                </Link>
-              </CardTitle>
-              <ul className="flex flex-wrap gap-1.5" aria-label="Kỹ năng">
-                {section.tags.map((tag) => (
-                  <li key={tag} className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-                    {SKILL_LABELS[tag]}
-                  </li>
-                ))}
-              </ul>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 text-sm">
-              <p className="text-base">{section.task}</p>
+            {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
+            {content && section.id === 'grammar' && <GrammarSection content={content} />}
+          </LessonSectionCard>
+        </ReadingSourceContext.Provider>
+      ))}
 
-              {section.id === 'checkpoint' && (
-                <div className="rounded-lg border border-primary/40 bg-accent/40 p-3">
-                  <p className="mb-1 font-semibold text-accent-foreground">
-                    {stage.checkpoint.name}
-                    {lesson.checkpointAttempt && stage.checkpoint.attempts > 1
-                      ? ` · lần ${lesson.checkpointAttempt}/${stage.checkpoint.attempts}`
-                      : ''}
-                  </p>
-                  <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-                    {stage.checkpoint.scope.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                  <p className="mt-2">{stage.checkpoint.passThreshold}</p>
-                  <p className="mt-1 text-muted-foreground">{stage.checkpoint.ifNotPassed}</p>
-                </div>
-              )}
-
-              {resources.length > 0 && (
-                <div>
-                  <h3 className="mb-1 font-semibold">Nguồn miễn phí</h3>
-                  <ul className="space-y-1 text-muted-foreground">
-                    {resources.map((r) => (
-                      <li key={r.area} className="break-words">
-                        <span className="text-foreground">{r.area}:</span> {r.items}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )
-      })}
+      <LessonNoteButton lessonId={lesson.id} />
 
       <div className="flex flex-col gap-2">
         <Button

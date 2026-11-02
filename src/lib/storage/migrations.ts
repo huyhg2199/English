@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 4
+export const CURRENT_VERSION = 9
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -43,6 +43,60 @@ export const migrations: Migrations = {
     schemaVersion: 4,
     data: { ...store.data, srs: isPlainObject(store.data.srs) ? store.data.srs : { cards: {} } },
   }),
+  // v4 → v5 (story 4): nhật ký buổi học `sessions: { days: {} }` và từ đã lưu `savedWords: { items: {} }`.
+  // Đã có thì để nguyên. Lên v5 để app cũ (v4) thấy server mới hơn và không ghi đè mất hai key này.
+  4: (store) => ({
+    schemaVersion: 5,
+    data: {
+      ...store.data,
+      sessions: isPlainObject(store.data.sessions) ? store.data.sessions : { days: {} },
+      savedWords: isPlainObject(store.data.savedWords) ? store.data.savedWords : { items: {} },
+    },
+  }),
+  // v5 → v6 (story 5): kết quả Mũ Phân Loại `placement`. Đã có thì để nguyên.
+  // `updatedAt` = mốc cũ cố định để mọi lần sửa thật (Nhà, bài bắt đầu) đều thắng khi gộp.
+  5: (store) => ({
+    schemaVersion: 6,
+    data: {
+      ...store.data,
+      placement: isPlainObject(store.data.placement)
+        ? store.data.placement
+        : { attempts: {}, house: null, startLessonId: null, updatedAt: LEGACY_UPDATED_AT },
+    },
+  }),
+  // v6 → v7 (story 6): điểm luyện nói `pronunciation: { items: {} }`. Đã có thì để nguyên.
+  // Lên v7 để app cũ (v6) trên máy khác thấy server mới hơn và không ghi đè mất key này.
+  6: (store) => ({
+    schemaVersion: 7,
+    data: {
+      ...store.data,
+      pronunciation: isPlainObject(store.data.pronunciation) ? store.data.pronunciation : { items: {} },
+    },
+  }),
+  // v7 → v8 (story 8): ghi chú kiến thức `notes: { items: {} }`. Đã có (object) thì để nguyên; giá trị lạ
+  // không phải object thì giữ trong `notes.legacy` (migration không xoá dữ liệu). Mục `savedWords` thêm field tuỳ chọn
+  // (`meaningVi`, `inSrs`, `deleted`) nên mục cũ hợp lệ không cần đổi. Lên v8 để app cũ (v7) không ghi đè mất `notes`.
+  7: (store) => {
+    const notes = store.data.notes
+    return {
+      schemaVersion: 8,
+      data: {
+        ...store.data,
+        notes: isPlainObject(notes) ? notes : notes === undefined ? { items: {} } : { items: {}, legacy: notes },
+      },
+    }
+  },
+  // v8 → v9 (story 9): lần làm test `quizzes: { attempts: {} }` và Sổ lỗi sai `mistakes: { items: {} }`.
+  // Đã có (object) thì để nguyên; giá trị lạ thì giữ trong `legacy`. Lên v9 để app cũ (v8) không ghi đè mất hai key này.
+  8: (store) => {
+    const { quizzes, mistakes } = store.data
+    const keep = (value: unknown, field: string) =>
+      isPlainObject(value) ? value : value === undefined ? { [field]: {} } : { [field]: {}, legacy: value }
+    return {
+      schemaVersion: 9,
+      data: { ...store.data, quizzes: keep(quizzes, 'attempts'), mistakes: keep(mistakes, 'items') },
+    }
+  },
 }
 
 export function createDefaultStore(version: number = CURRENT_VERSION): Store {

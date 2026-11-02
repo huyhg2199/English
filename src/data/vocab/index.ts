@@ -71,9 +71,12 @@ export function hasDetails(word: Word): word is StudyWord {
   )
 }
 
-/** Thứ tự học: hết NGSL theo hạng rồi tới TSL theo hạng. */
-export function compareStudyOrder(a: Word, b: Word): number {
-  if (a.list !== b.list) return a.list === 'ngsl' ? -1 : 1
+/**
+ * Thứ tự học: hết danh sách `firstList` theo hạng rồi tới danh sách còn lại theo hạng.
+ * Mặc định NGSL trước (chặng 1); từ chặng 2 trở đi lấy TSL trước (story 4).
+ */
+export function compareStudyOrder(a: Word, b: Word, firstList: WordList = 'ngsl'): number {
+  if (a.list !== b.list) return a.list === firstList ? -1 : 1
   return a.rank - b.rank
 }
 

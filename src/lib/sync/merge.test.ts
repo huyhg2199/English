@@ -1,20 +1,34 @@
 import { describe, expect, it } from 'vitest'
 
 import { readCompletedLessonIds } from '@/lib/roadmap-progress'
+import { readSavedWords, saveWord, savedWordsOn } from '@/lib/saved-words'
+import { computeStreak, readSessionDays, recordSession, todaySession } from '@/lib/sessions'
 import { buildSession, gradeCard, readSrs } from '@/lib/srs'
 import { LEGACY_UPDATED_AT, migrations, runMigrations, type Store } from '@/lib/storage'
 
-import { deepEqual, InvalidRemoteError, mergeCards, mergeLessons, mergeWithRemote, pickSynced, SYNCED_KEYS } from './merge'
+import {
+  deepEqual,
+  InvalidRemoteError,
+  mergeCards,
+  mergeLessons,
+  mergePlacement,
+  mergePronunciationItems,
+  mergeSavedWordItems,
+  mergeSessionDays,
+  mergeWithRemote,
+  pickSynced,
+  SYNCED_KEYS,
+} from './merge'
 
 const T1 = '2026-11-01T10:00:00.000Z'
 const T2 = '2026-11-01T11:00:00.000Z'
-const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 4, data })
-const remote = (data: Record<string, unknown>, schemaVersion = 4) => ({ schemaVersion, data, updatedAt: T1 })
+const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 9, data })
+const remote = (data: Record<string, unknown>, schemaVersion = 9) => ({ schemaVersion, data, updatedAt: T1 })
 const lessons = (l: Record<string, unknown>) => ({ progress: { lessons: l } })
 
 describe('pickSynced / allowlist', () => {
-  it('chỉ có progress và srs trong allowlist', () => {
-    expect(SYNCED_KEYS).toEqual(['progress', 'srs'])
+  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation, notes, quizzes, mistakes trong allowlist', () => {
+    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'])
   })
 
   it('bỏ mọi key ngoài allowlist (vd API key)', () => {
@@ -99,10 +113,10 @@ describe('mergeWithRemote — I/O Matrix', () => {
   })
 
   it('server mới hơn app → outdated, không gộp', () => {
-    expect(mergeWithRemote(local({}), remote({}, 5))).toEqual({ kind: 'outdated' })
+    expect(mergeWithRemote(local({}), remote({}, 10))).toEqual({ kind: 'outdated' })
   })
 
-  it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v4)', () => {
+  it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v5)', () => {
     const r = mergeWithRemote(
       local(lessons({ a: { done: true, updatedAt: T1 } })),
       remote({ progress: { completedLessonIds: ['b', 'old-id'] } }, 2),
@@ -244,7 +258,7 @@ describe('srs (story 3) — gộp từng thẻ', () => {
     expect(pulled.store.data.srs).toEqual({ cards: { q: { junk: true } } })
   })
 
-  it('server v3 (app cũ đẩy lên) → migrate lên v4 rồi gộp, giữ srs local, đẩy lên bằng v4', () => {
+  it('server v3 (app cũ đẩy lên) → migrate lên v5 rồi gộp, giữ srs local, đẩy lên bằng v5', () => {
     const l = gradeCard(local({}), 'x', 'good', NOW)
     const r = mergeWithRemote(l, remote({ progress: { lessons: {} } }, 3), { migrations })
     if (r.kind !== 'merged') throw new Error('expected merged')
@@ -256,5 +270,167 @@ describe('srs (story 3) — gộp từng thẻ', () => {
     const server = remote({ progress: { lessons: {} }, ...srs({ x: { due: 'x' } }) }, 4)
     const oldApp = { schemaVersion: 3, data: { progress: { lessons: {} } } }
     expect(mergeWithRemote(oldApp, server, { currentVersion: 3 })).toEqual({ kind: 'outdated' })
+  })
+})
+
+describe('sessions / savedWords (story 4)', () => {
+  const DAY = new Date(2026, 10, 5, 9)
+  const LATER = new Date(2026, 10, 5, 20)
+  const src = { title: 'T', url: 'https://a.b/' }
+
+  it('hai máy cùng ngày: A ghi lazy, B (sau) ghi full → sau đồng bộ cả hai là full', () => {
+    const a = recordSession(local({}), 'lazy', DAY)
+    const b = recordSession(local({}), 'full', LATER)
+    const onA = mergeWithRemote(a, remote(pickSynced(b.data)))
+    if (onA.kind !== 'merged') throw new Error('expected merged')
+    expect(todaySession(onA.store, DAY)?.kind).toBe('full')
+    expect(onA.changedLocal).toBe(true)
+    const onB = mergeWithRemote(b, remote(pickSynced(a.data)))
+    if (onB.kind !== 'merged') throw new Error('expected merged')
+    expect(todaySession(onB.store, DAY)?.kind).toBe('full')
+    expect(onB.push).toBe(true)
+  })
+
+  it('khác loại: full thắng lazy dù lazy mới hơn, ở cả hai chiều', () => {
+    const full = readSessionDays(recordSession(local({}), 'full', DAY))
+    const lazy = readSessionDays(recordSession(local({}), 'lazy', LATER))
+    const key = Object.keys(full)[0]
+    expect(mergeSessionDays(full, lazy)[key]).toEqual(full[key])
+    expect(mergeSessionDays(lazy, full)[key]).toEqual(full[key])
+  })
+
+  it('cùng loại: updatedAt mới hơn thắng', () => {
+    const a = readSessionDays(recordSession(local({}), 'full', DAY))
+    const b = readSessionDays(recordSession(local({}), 'full', LATER))
+    const key = Object.keys(a)[0]
+    expect(mergeSessionDays(a, b)[key]).toEqual(b[key])
+    expect(mergeSessionDays(b, a)[key]).toEqual(b[key])
+  })
+
+  it('hợp các ngày khác nhau → streak tính trên cả hai máy', () => {
+    const a = recordSession(local({}), 'full', new Date(2026, 10, 4, 9))
+    const b = recordSession(local({}), 'lazy', DAY)
+    const r = mergeWithRemote(a, remote(pickSynced(b.data)))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(computeStreak(readSessionDays(r.store), DAY)).toBe(2)
+  })
+
+  it('mục sai dạng: lấy bên hợp lệ; cả hai sai thì giữ local, không bỏ mục nào', () => {
+    const good = readSessionDays(recordSession(local({}), 'full', DAY))
+    const key = Object.keys(good)[0]
+    expect(mergeSessionDays({ [key]: { kind: 'x' }, z: 'bad-l' }, { [key]: good[key], z: 'bad-s', y: 1 })).toEqual({
+      [key]: good[key],
+      z: 'bad-l',
+      y: 1,
+    })
+    expect(mergeSavedWordItems({ a: 'junk' }, { a: 'junk2', b: null })).toEqual({ a: 'junk', b: null })
+  })
+
+  it('savedWords gộp theo mục: hợp từ của hai máy, field khác local ưu tiên', () => {
+    const a = saveWord(local({}), { word: 'alpha', sentence: 's', source: src }, DAY)
+    const b = saveWord(local({ savedWords: { items: {}, x: 1 } }), { word: 'beta', sentence: 's', source: src }, DAY)
+    const r = mergeWithRemote(a, remote(pickSynced(b.data)))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(savedWordsOn(readSavedWords(r.store), DAY).map((w) => w.word).sort()).toEqual(['alpha', 'beta'])
+    expect((r.store.data.savedWords as { x: number }).x).toBe(1)
+  })
+
+  it('server v4 (app cũ) → migrate lên v5, giữ sessions/savedWords local, đẩy lên', () => {
+    const l = recordSession(local({}), 'lazy', DAY)
+    const r = mergeWithRemote(l, remote({ progress: { lessons: {} }, srs: { cards: {} } }, 4), { migrations })
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.push).toBe(true)
+    expect(todaySession(r.store, DAY)?.kind).toBe('lazy')
+    expect(r.store.data.savedWords).toEqual({ items: {} })
+  })
+
+  it('app cũ (v4) gặp server v5 → outdated, không gộp, không ghi đè', () => {
+    const server = remote(pickSynced(recordSession(local({}), 'full', DAY).data), 5)
+    expect(mergeWithRemote({ schemaVersion: 4, data: {} }, server, { currentVersion: 4 })).toEqual({ kind: 'outdated' })
+  })
+})
+
+describe('mergePronunciationItems (story 6)', () => {
+  it('cùng câu: best lấy max, attempts lấy max, updatedAt mới hơn; hợp các câu', () => {
+    const merged = mergePronunciationItems(
+      { a: { best: 60, attempts: 4, updatedAt: T2 }, b: { best: 50, attempts: 1, updatedAt: T1 } },
+      { a: { best: 90, attempts: 2, updatedAt: T1 }, c: { best: 70, attempts: 1, updatedAt: T1 } },
+    )
+    expect(merged).toEqual({
+      a: { best: 90, attempts: 4, updatedAt: T2 },
+      b: { best: 50, attempts: 1, updatedAt: T1 },
+      c: { best: 70, attempts: 1, updatedAt: T1 },
+    })
+  })
+
+  it('mục sai dạng ở một bên → lấy bên hợp lệ', () => {
+    expect(mergePronunciationItems({ a: 'x' }, { a: { best: 10, attempts: 1, updatedAt: T1 } })).toEqual({
+      a: { best: 10, attempts: 1, updatedAt: T1 },
+    })
+  })
+
+  it('hai máy: best 60 ở A, 90 ở B → sau đồng bộ best 90 (qua mergeWithRemote)', () => {
+    const a = local({ pronunciation: { items: { s: { best: 60, attempts: 1, updatedAt: T2 } } } })
+    const r = mergeWithRemote(a, remote({ pronunciation: { items: { s: { best: 90, attempts: 3, updatedAt: T1 } } } }))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.store.data.pronunciation).toEqual({ items: { s: { best: 90, attempts: 3, updatedAt: T2 } } })
+    expect(r.push).toBe(true)
+  })
+
+  it('server v6 (chưa có pronunciation) → migrate rồi giữ điểm local', () => {
+    const a = local({ pronunciation: { items: { s: { best: 60, attempts: 1, updatedAt: T2 } } } })
+    const r = mergeWithRemote(a, remote({}, 6))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(r.store.data.pronunciation).toEqual({ items: { s: { best: 60, attempts: 1, updatedAt: T2 } } })
+  })
+})
+
+describe('mergePlacement (story 5)', () => {
+  const attempt = (at: string) => ({ takenAt: at, parts: { p1: 1, p2: 2, p3: 3, p4: 4, p5: 5, p6: 6, p7: 7 }, updatedAt: at })
+
+  it('hai máy làm Mũ khác lần → sau đồng bộ có cả hai lần; field đơn theo updatedAt mới hơn', () => {
+    const a = { attempts: { x: attempt(T1) }, house: 'ravenclaw', startLessonId: 's1-t1-w1', updatedAt: T1 }
+    const b = { attempts: { y: attempt(T2) }, house: 'gryffindor', startLessonId: 's2-t5-w1', updatedAt: T2 }
+    const expected = { attempts: { x: attempt(T1), y: attempt(T2) }, house: 'gryffindor', startLessonId: 's2-t5-w1', updatedAt: T2 }
+    expect(mergePlacement(a, b)).toEqual(expected)
+    expect(mergePlacement(b, a)).toEqual(expected)
+  })
+
+  it('bằng nhau giữ local; một bên thiếu thì lấy bên kia; không bên nào thì để nguyên', () => {
+    const a = { attempts: {}, house: 'ravenclaw', startLessonId: null, updatedAt: T1 }
+    const b = { attempts: {}, house: 'slytherin', startLessonId: null, updatedAt: T1 }
+    expect(mergePlacement(a, b)).toMatchObject({ house: 'ravenclaw' })
+    expect(mergePlacement(undefined, b)).toEqual(b)
+    expect(mergePlacement(a, undefined)).toEqual(a)
+    expect(mergePlacement(undefined, undefined)).toBeUndefined()
+  })
+
+  it('bên mới hơn chỉ đổi Nhà (startLessonId null) → giữ bài bắt đầu đã xếp ở bên kia', () => {
+    const placed = { attempts: { x: attempt(T1) }, house: null, startLessonId: 's2-t5-w1', updatedAt: T1 }
+    const houseOnly = { attempts: {}, house: 'slytherin', startLessonId: null, updatedAt: T2 }
+    const expected = { attempts: { x: attempt(T1) }, house: 'slytherin', startLessonId: 's2-t5-w1', updatedAt: T2 }
+    expect(mergePlacement(placed, houseOnly)).toEqual(expected)
+    expect(mergePlacement(houseOnly, placed)).toEqual(expected)
+  })
+
+  it('placement server sai dạng → giữ local', () => {
+    const a = { attempts: { x: attempt(T1) }, house: 'ravenclaw', startLessonId: 's1-t1-w1', updatedAt: T1 }
+    expect(mergePlacement(a, 'junk')).toEqual(a)
+    expect(mergePlacement(a, ['x'])).toEqual(a)
+  })
+
+  it('cùng id lần làm ở hai bên → một lần (bằng nhau giữ local, updatedAt mới hơn thắng)', () => {
+    const a = { attempts: { x: attempt(T1) }, house: null, startLessonId: null, updatedAt: T1 }
+    const b = { attempts: { x: attempt(T2) }, house: null, startLessonId: null, updatedAt: T1 }
+    expect(mergePlacement(a, a)).toEqual(a)
+    expect((mergePlacement(a, b) as { attempts: object }).attempts).toEqual({ x: attempt(T2) })
+  })
+
+  it('qua mergeWithRemote: placement được đồng bộ, lần làm không bị mất', () => {
+    const l = local({ placement: { attempts: { x: attempt(T1) }, house: null, startLessonId: null, updatedAt: T1 } })
+    const r = mergeWithRemote(l, remote({ placement: { attempts: { y: attempt(T2) }, house: 'hufflepuff', startLessonId: null, updatedAt: T2 } }))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(Object.keys((r.store.data.placement as { attempts: object }).attempts)).toEqual(['x', 'y'])
+    expect(r.push).toBe(true)
   })
 })

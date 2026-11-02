@@ -9,8 +9,11 @@ import { allLessons, getLesson, lessonHref, SCORE_ESTIMATE_NOTE, STAGES } from '
 import { computeRoadmapProgress } from '@/lib/roadmap-progress'
 
 export function Roadmap() {
-  const { completedLessonIds } = useProgress()
-  const progress = useMemo(() => computeRoadmapProgress(allLessons(), completedLessonIds), [completedLessonIds])
+  const { completedLessonIds, startLessonId } = useProgress()
+  const progress = useMemo(
+    () => computeRoadmapProgress(allLessons(), completedLessonIds, startLessonId),
+    [completedLessonIds, startLessonId],
+  )
   const next = progress.nextLessonId ? getLesson(progress.nextLessonId) : undefined
 
   return (
@@ -24,6 +27,11 @@ export function Roadmap() {
         <p className="text-sm text-muted-foreground">
           Bản đồ 3 Năm học từ 0 tới TOEIC 750+. Đã qua {progress.completed.size}/{allLessons().length} trạm.
         </p>
+        {progress.skipped.size > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Mũ Phân Loại xếp bạn bắt đầu muộn hơn: {progress.skipped.size} trạm mờ là "đã bỏ qua", vẫn mở ra học được bất cứ lúc nào.
+          </p>
+        )}
         {next && (
           <Button asChild className="h-auto min-h-9 justify-start whitespace-normal text-left">
             <Link to={lessonHref(next.id)}>Học tiếp: {next.title}</Link>

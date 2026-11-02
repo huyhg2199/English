@@ -1,4 +1,5 @@
 export { SECTION_TITLES } from './sections'
+export * from './entertainment-links'
 export * from './lookup'
 export * from './types'
 

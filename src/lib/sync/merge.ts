@@ -1,13 +1,20 @@
+import { isNote } from '@/lib/notes'
+import { isPlacementAttempt } from '@/lib/placement/store'
+import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
+import { isMistakeItem, isQuizAttempt, mergeMistakeItem } from '@/lib/quiz'
 import { isLessonProgress } from '@/lib/roadmap-progress'
+import { isSavedWord } from '@/lib/saved-words'
+import { isSessionDay } from '@/lib/sessions'
 import { isSrsCard } from '@/lib/srs'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
+import { isTimeString } from '@/lib/updated-at'
 
 /**
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -46,10 +53,15 @@ function time(entry: { updatedAt: string }): number {
  * Một bên sai dạng thì lấy bên hợp lệ; cả hai sai dạng thì giữ local (hoặc server nếu local không có).
  * Không bao giờ bỏ mục nào (mục sai dạng vẫn giữ).
  */
-function mergeEntries(
+function newer<T extends { updatedAt: string }>(a: T, b: T): T {
+  return time(b) > time(a) ? b : a
+}
+
+function mergeEntries<T extends { updatedAt: string }>(
   local: unknown,
   server: unknown,
-  isValid: (value: unknown) => value is { updatedAt: string },
+  isValid: (value: unknown) => value is T,
+  pick: (a: T, b: T) => T = newer,
 ): Record<string, unknown> {
   const l = isPlainObject(local) ? local : {}
   const s = isPlainObject(server) ? server : {}
@@ -59,7 +71,7 @@ function mergeEntries(
     const b = s[id]
     const aOk = isValid(a)
     const bOk = isValid(b)
-    if (aOk && bOk) out[id] = time(b) > time(a) ? b : a
+    if (aOk && bOk) out[id] = pick(a, b)
     else if (aOk) out[id] = a
     else if (bOk) out[id] = b
     else out[id] = id in l ? a : b
@@ -96,10 +108,112 @@ function mergeSrs(local: unknown, server: unknown): unknown {
   return { ...s, ...l, cards: mergeCards(l.cards, s.cards) }
 }
 
+/**
+ * Gộp `sessions.days` theo từng ngày (xem `mergeEntries`): khác loại thì `full` thắng `lazy`
+ * (buổi chuẩn ưu tiên, kể cả giữa hai máy); cùng loại thì `updatedAt` mới hơn thắng.
+ */
+export function mergeSessionDays(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isSessionDay, (a, b) => (a.kind !== b.kind ? (a.kind === 'full' ? a : b) : newer(a, b)))
+}
+
+/**
+ * Gộp `savedWords.items` theo từng mục (xem `mergeEntries`). Xoá là dấu `deleted` + `updatedAt` mới hơn,
+ * nên bản cũ ở máy khác không làm mục đã xoá sống lại.
+ */
+export function mergeSavedWordItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isSavedWord)
+}
+
+/** Gộp object `{ [field]: map, ...khác }`: map gộp theo mục, field khác local ưu tiên, server bù chỗ thiếu. */
+function mergeKeyed(field: string, mergeMap: (l: unknown, s: unknown) => Record<string, unknown>) {
+  return (local: unknown, server: unknown): unknown => {
+    const hasLocal = isPlainObject(local)
+    const hasServer = isPlainObject(server)
+    if (!hasLocal && !hasServer) return local ?? server
+    const l = hasLocal ? local : {}
+    const s = hasServer ? server : {}
+    return { ...s, ...l, [field]: mergeMap(l[field], s[field]) }
+  }
+}
+
+/** Gộp `placement.attempts` theo id lần làm (không bao giờ bỏ lần nào). */
+export function mergePlacementAttempts(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isPlacementAttempt)
+}
+
+/**
+ * Gộp `placement`: `attempts` theo id lần làm; các field còn lại lấy theo bên có `updatedAt` mới hơn (bằng nhau hoặc
+ * không so được thì giữ local, bên kia bù field thiếu). Riêng `house` / `startLessonId`: bên mới hơn là null thì lấy
+ * giá trị khác null của bên kia.
+ */
+export function mergePlacement(local: unknown, server: unknown): unknown {
+  const hasLocal = isPlainObject(local)
+  const hasServer = isPlainObject(server)
+  if (!hasLocal && !hasServer) return local ?? server
+  const l = hasLocal ? local : {}
+  const s = hasServer ? server : {}
+  const lt = isTimeString(l.updatedAt) ? Date.parse(l.updatedAt) : Number.NEGATIVE_INFINITY
+  const st = isTimeString(s.updatedAt) ? Date.parse(s.updatedAt) : Number.NEGATIVE_INFINITY
+  const [winner, other] = hasLocal && !(st > lt) ? [l, s] : [s, l]
+  // Bên mới hơn chỉ đổi Nhà (bài bắt đầu còn null) thì không xoá bài bắt đầu bên kia đã xếp, và ngược lại.
+  const pick = (key: 'house' | 'startLessonId') => winner[key] ?? other[key] ?? null
+  return {
+    ...other,
+    ...winner,
+    house: pick('house'),
+    startLessonId: pick('startLessonId'),
+    attempts: mergePlacementAttempts(l.attempts, s.attempts),
+  }
+}
+
+/**
+ * Gộp `pronunciation.items` theo từng câu: `best` lấy max, `attempts` lấy max, `updatedAt` lấy mới hơn
+ * (hai máy đều luyện thì không mất điểm tốt nhất của máy nào).
+ */
+export function mergePronunciationItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isPronunciationItem, (a: PronunciationItem, b: PronunciationItem) => ({
+    best: Math.max(a.best, b.best),
+    attempts: Math.max(a.attempts, b.attempts),
+    updatedAt: newer(a, b).updatedAt,
+  }))
+}
+
+/** Gộp `notes.items` theo từng ghi chú (cùng luật với `savedWords`, kể cả dấu xoá). */
+export function mergeNoteItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isNote)
+}
+
+/** Gộp `quizzes.attempts` theo id lần làm (lần làm không sửa sau khi ghi; không bao giờ bỏ lần nào). */
+export function mergeQuizAttempts(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isQuizAttempt)
+}
+
+/**
+ * Gộp `mistakes.items` theo id câu: `wrongCount` lấy max, lịch SRS và lời giải thích theo `updatedAt` mới hơn
+ * (xem `mergeMistakeItem`).
+ */
+export function mergeMistakeItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isMistakeItem, mergeMistakeItem)
+}
+
+export const mergeNotes = mergeKeyed('items', mergeNoteItems)
+export const mergeQuizzes = mergeKeyed('attempts', mergeQuizAttempts)
+export const mergeMistakes = mergeKeyed('items', mergeMistakeItems)
+export const mergeSessions = mergeKeyed('days', mergeSessionDays)
+export const mergePronunciation = mergeKeyed('items', mergePronunciationItems)
+export const mergeSavedWords = mergeKeyed('items', mergeSavedWordItems)
+
 /** Luật gộp cho từng key đồng bộ. Thêm key vào `SYNCED_KEYS` mà thiếu luật ở đây thì lỗi type-check. */
 const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unknown) => unknown> = {
   progress: mergeProgress,
   srs: mergeSrs,
+  sessions: mergeSessions,
+  savedWords: mergeSavedWords,
+  placement: mergePlacement,
+  pronunciation: mergePronunciation,
+  notes: mergeNotes,
+  quizzes: mergeQuizzes,
+  mistakes: mergeMistakes,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

@@ -1,4 +1,4 @@
-import { compareStudyOrder, hasDetails, type StudyWord, type Word } from '@/data/vocab'
+import { compareStudyOrder, hasDetails, type StudyWord, type Word, type WordList } from '@/data/vocab'
 import { isPlainObject } from '@/lib/storage'
 import { isTimeString, nextUpdatedAt } from '@/lib/updated-at'
 
@@ -30,6 +30,28 @@ export type SrsCard = {
   known: boolean
   /** Lần sửa gần nhất; không bao giờ lùi. Dùng để gộp khi đồng bộ. */
   updatedAt: string
+  /** Thẻ do Huy tự thêm từ Sổ tay (story 8): không tính vào quota từ mới/ngày. */
+  added?: boolean
+}
+
+/** Thẻ riêng của một cụm/từ ngoài danh sách đã lưu trong Sổ tay (story 8). Id thẻ: `saved-<id mục lưu>`. */
+export type CustomStudyWord = {
+  id: string
+  custom: true
+  /** Cụm/từ đã chuẩn hoá. */
+  word: string
+  /** Nghĩa tiếng Việt do Huy nhập. */
+  meaningVi: string
+  /** Câu gốc chứa cụm. */
+  sentence: string
+  source: { title: string; url: string }
+}
+
+/** Từ trong phiên ôn: từ NGSL/TSL có dữ liệu AI hoặc thẻ riêng từ Sổ tay. */
+export type SessionWord = StudyWord | CustomStudyWord
+
+export function isCustomWord(word: SessionWord): word is CustomStudyWord {
+  return 'custom' in word && word.custom === true
 }
 
 /** `store.data.srs` từ schema v4. Thẻ sai dạng vẫn nằm trong `cards` (không xoá), chỉ bị bỏ qua. */
@@ -67,7 +89,8 @@ export function isSrsCard(value: unknown): value is SrsCard {
     Number.isInteger(lapses) &&
     (lapses as number) >= 0 &&
     typeof learning === 'boolean' &&
-    typeof known === 'boolean'
+    typeof known === 'boolean' &&
+    (value.added === undefined || typeof value.added === 'boolean')
   )
 }
 
@@ -100,6 +123,13 @@ function newCard(now: Date, previous: unknown): SrsCard {
     known: false,
     updatedAt: nextUpdatedAt(isPlainObject(previous) ? previous.updatedAt : undefined, now),
   }
+}
+
+/**
+ * Thẻ Huy tự thêm từ Sổ tay: như từ mới (vào phiên ngay), đánh dấu `added` để không tính quota từ mới/ngày.
+ */
+export function addedCard(now: Date, previous?: unknown): SrsCard {
+  return { ...newCard(now, previous), added: true }
 }
 
 /**
@@ -171,7 +201,7 @@ export function markKnown(card: unknown, now: Date): SrsCard {
 }
 
 export type SessionItem = {
-  word: StudyWord
+  word: SessionWord
   /** `review`: thẻ đến hạn; `new`: từ mới hôm nay; `learning`: thẻ đang học, quay lại sau ít phút. */
   kind: 'review' | 'new' | 'learning'
 }
@@ -183,7 +213,7 @@ export type Session = {
   dueCount: number
   /** Số từ mới còn lại hôm nay. */
   newCount: number
-  /** Số từ mới đã giới thiệu hôm nay (không tính "Đã biết"). */
+  /** Số từ mới đã giới thiệu hôm nay (không tính "Đã biết" và thẻ Huy tự thêm từ Sổ tay). */
   introducedToday: number
   /** Thẻ kế tiếp đến hạn khi đã hết việc hôm nay; null nếu không có thẻ nào. */
   nextDue: Date | null
@@ -194,51 +224,86 @@ export function readCards(srs: unknown): Record<string, unknown> {
   return isPlainObject(srs) && isPlainObject(srs.cards) ? srs.cards : {}
 }
 
+/** Thẻ `added` chưa chấm lần nào (vẫn y như lúc `addedCard` tạo: hạn = lúc giới thiệu, chưa nhớ/quên lần nào). */
+function isUnreviewedAdded(card: SrsCard): boolean {
+  return card.added === true && card.learning && !card.known && card.reps === 0 && card.lapses === 0 && card.due === card.introducedAt
+}
+
+/** Thứ tự ổn định: từ trong danh sách theo `compareStudyOrder`, thẻ riêng xếp sau theo id. */
+function compareSessionWords(a: SessionWord, b: SessionWord, firstList: WordList = 'ngsl'): number {
+  const ca = isCustomWord(a)
+  const cb = isCustomWord(b)
+  if (!ca && !cb) return compareStudyOrder(a, b, firstList)
+  if (ca !== cb) return ca ? 1 : -1
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+}
+
 /**
  * Dựng phiên ôn: chỉ từ có dữ liệu AI; thẻ chưa đến hạn không hiện; tối đa `newPerDay` từ mới mỗi ngày
- * (giờ máy), lấy theo thứ tự NGSL → TSL theo hạng. Thẻ sai dạng bị bỏ qua, từ của nó không bị coi là từ mới.
+ * (giờ máy), lấy theo hạng: hết danh sách `firstList` rồi tới danh sách còn lại (mặc định NGSL → TSL;
+ * chặng 2 trở đi truyền `'tsl'`, xem `newWordListFor`). Thẻ đã có lịch không đổi.
+ * Thẻ sai dạng bị bỏ qua, từ của nó không bị coi là từ mới.
+ * `custom`: thẻ riêng từ Sổ tay (`customStudyWords`), cùng lịch/thuật toán; chưa có thẻ thì vào như từ mới
+ * nhưng không tính quota. Thẻ có `added` (Huy tự thêm) không tính vào quota từ mới.
  */
-export function buildSession(srs: unknown, words: readonly Word[], now: Date, newPerDay: number = NEW_PER_DAY): Session {
+export function buildSession(
+  srs: unknown,
+  words: readonly Word[],
+  now: Date,
+  newPerDay: number = NEW_PER_DAY,
+  firstList: WordList = 'ngsl',
+  custom: readonly CustomStudyWord[] = [],
+): Session {
   const cards = readCards(srs)
   const study = words.filter(hasDetails)
+  const scheduled: SessionWord[] = [...study, ...custom]
   const tomorrow = startOfLocalDay(now, 1).getTime()
   const t = now.getTime()
 
-  const due: { word: StudyWord; at: number }[] = []
-  const later: { word: StudyWord; at: number }[] = []
+  const due: { word: SessionWord; at: number }[] = []
+  const addedNew: { word: SessionWord; at: number }[] = []
+  const later: { word: SessionWord; at: number }[] = []
   let introducedToday = 0
   let nextDue: number | null = null
 
-  for (const word of study) {
+  for (const word of scheduled) {
     const card = cards[word.id]
     if (!isSrsCard(card)) continue
-    if (!card.known && isSameLocalDay(new Date(card.introducedAt), now)) introducedToday++
+    if (!card.known && !card.added && !isCustomWord(word) && isSameLocalDay(new Date(card.introducedAt), now)) introducedToday++
     const at = Date.parse(card.due)
-    if (at <= t) due.push({ word, at })
+    // Thẻ Huy vừa thêm từ Sổ tay, chưa chấm lần nào: hiện như từ mới (có "Đã biết"), vẫn không tính quota.
+    if (at <= t && isUnreviewedAdded(card)) addedNew.push({ word, at })
+    else if (at <= t) due.push({ word, at })
     else if (card.learning && at < tomorrow) later.push({ word, at })
     else if (nextDue === null || at < nextDue) nextDue = at
   }
 
-  const byTime = (a: { word: StudyWord; at: number }, b: { word: StudyWord; at: number }) => a.at - b.at || compareStudyOrder(a.word, b.word)
+  const byTime = (a: { word: SessionWord; at: number }, b: { word: SessionWord; at: number }) =>
+    a.at - b.at || compareSessionWords(a.word, b.word)
   due.sort(byTime)
+  addedNew.sort(byTime)
   later.sort(byTime)
 
   const newLimit = Math.max(0, newPerDay - introducedToday)
   const fresh = study
     .filter((w) => !Object.hasOwn(cards, w.id))
-    .sort(compareStudyOrder)
+    .sort((a, b) => compareStudyOrder(a, b, firstList))
     .slice(0, newLimit)
+  // Thẻ riêng chưa có lịch (vd đồng bộ mới về mục lưu): vào như từ mới, không trừ quota.
+  const freshCustom = custom.filter((w) => !Object.hasOwn(cards, w.id))
 
   const queue: SessionItem[] = [
     ...due.map(({ word }) => ({ word, kind: 'review' as const })),
     ...fresh.map((word) => ({ word, kind: 'new' as const })),
+    ...addedNew.map(({ word }) => ({ word, kind: 'new' as const })),
+    ...freshCustom.map((word) => ({ word, kind: 'new' as const })),
     ...later.map(({ word }) => ({ word, kind: 'learning' as const })),
   ]
 
   return {
     queue,
     dueCount: due.length + later.length,
-    newCount: fresh.length,
+    newCount: fresh.length + addedNew.length + freshCustom.length,
     introducedToday,
     nextDue: queue.length === 0 && nextDue !== null ? new Date(nextDue) : null,
   }

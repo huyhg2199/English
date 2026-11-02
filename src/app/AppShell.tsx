@@ -1,12 +1,22 @@
+import { useLayoutEffect } from 'react'
 import { Outlet, ScrollRestoration } from 'react-router'
 
 import { BottomNav } from '@/components/BottomNav'
 import { SyncBadge } from '@/components/SyncBadge'
 import { storageNotice } from '@/app/storage-notice'
-import { useLoadedStore } from '@/app/store-context'
+import { useLoadedStore, usePlacement } from '@/app/store-context'
 
 export function AppShell() {
   const notice = storageNotice(useLoadedStore())
+  const { house } = usePlacement().placement
+
+  // Màu nhấn theo Nhà: biến CSS dưới `html[data-house]` (index.css).
+  // Layout effect: đặt trước khi trình duyệt vẽ để không nháy màu mặc định.
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    if (house) root.dataset.house = house
+    else delete root.dataset.house
+  }, [house])
 
   return (
     <div
