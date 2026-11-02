@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 9
+export const CURRENT_VERSION = 10
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -95,6 +95,18 @@ export const migrations: Migrations = {
     return {
       schemaVersion: 9,
       data: { ...store.data, quizzes: keep(quizzes, 'attempts'), mistakes: keep(mistakes, 'items') },
+    }
+  },
+  // v9 → v10 (story 12): huy chương đã báo `trophies: { seen: {} }`. Đã có (object) thì để nguyên; giá trị lạ
+  // thì giữ trong `legacy`. Lên v10 để app cũ (v9) không ghi đè mất key này.
+  9: (store) => {
+    const trophies = store.data.trophies
+    return {
+      schemaVersion: 10,
+      data: {
+        ...store.data,
+        trophies: isPlainObject(trophies) ? trophies : trophies === undefined ? { seen: {} } : { seen: {}, legacy: trophies },
+      },
     }
   },
 }

@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
+import { OWL_POST_DEADLINE_MS, owlPostReady } from '@/app/owl-post-gate'
 import { createBackup, restoreBackup, type Backup } from '@/lib/backup'
 import { saveStore, type LoadedStore, type StorageOptions, type Store } from '@/lib/storage'
 import {
@@ -45,6 +46,7 @@ import {
 } from '@/lib/saved-words'
 import type { StudyWord } from '@/data/vocab'
 import {
+  computeStreak,
   newWordListFor,
   readSessionDays,
   recordSession,
@@ -52,6 +54,7 @@ import {
   type SessionKind,
 } from '@/lib/sessions'
 import { unlockedSpells } from '@/lib/spells'
+import { housePoints, longestStreak, markSeen, medalProgress, unseenLevelUps, type LevelUp } from '@/lib/trophies'
 import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
 import type { SyncController, SyncSnapshot } from '@/lib/sync'
 
@@ -379,6 +382,68 @@ export function useMistakes() {
 export function useSpells() {
   const { store } = useLoadedStore()
   return useMemo(() => unlockedSpells(store), [store])
+}
+
+/** Phòng Cúp (story 12): điểm Nhà, chuỗi hiện tại / dài nhất, tiến độ huy chương. Tính lại từ dữ liệu, không có key riêng. */
+export function useTrophies(now: Date) {
+  const { store } = useLoadedStore()
+  return useMemo(() => {
+    const days = readSessionDays(store)
+    return {
+      house: readPlacement(store).house,
+      points: housePoints(days),
+      streak: computeStreak(days, now),
+      longest: longestStreak(days),
+      medals: medalProgress(store),
+    }
+  }, [store, now])
+}
+
+/**
+ * Một lần kiểm tra cú đưa thư: các cấp huy chương đã đạt mà chưa báo, ghi `trophies.seen` ngay (đồng bộ để
+ * máy khác không báo lại) và trả về để hiện. Gọi lại khi không có gì mới thì trả về [] và không ghi.
+ */
+export function deliverOwlPost(handle: StoreHandle, now: Date = new Date()): LevelUp[] {
+  const ups = unseenLevelUps(handle.getSnapshot().store)
+  if (ups.length > 0) handle.update((s) => markSeen(s, ups, now))
+  return ups
+}
+
+/**
+ * Cú đưa thư (story 12): khi mở app thì chờ lượt đồng bộ đầu xong (xem `owlPostReady`, hạn chót tính từ lúc mở app)
+ * rồi kiểm tra; mỗi lần app hiện lại (`visibilitychange`) kiểm tra lại để báo huy chương nhận trong lúc mở app.
+ */
+export function useOwlPost() {
+  const handle = useStoreHandle()
+  const sync = useSync()
+  const [deadlinePassed, setDeadlinePassed] = useState(false)
+  const [letters, setLetters] = useState<LevelUp[]>([])
+  const ready = owlPostReady(sync, deadlinePassed)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDeadlinePassed(true), OWL_POST_DEADLINE_MS)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (!ready) return
+    const check = () => {
+      const ups = deliverOwlPost(handle)
+      if (ups.length > 0) setLetters((prev) => [...prev.filter((p) => !ups.some((u) => u.id === p.id)), ...ups])
+    }
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') check()
+    }
+    const timer = setTimeout(check, 0)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [ready, handle])
+
+  const dismiss = useCallback(() => setLetters([]), [])
+  return { letters, dismiss }
 }
 
 export const SyncContext = createContext<SyncController | null>(null)

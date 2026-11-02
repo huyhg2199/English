@@ -137,3 +137,77 @@ html[data-house='slytherin'] {
     box-shadow: 0 0 12px 2px var(--candle-glow);
   }
 }
+
+/*
+ * Cú đưa thư (story 12): cú bay từ góc trên phải tới, thả thư xuống thẻ huy chương. Tổng ≤ 2 giây, chỉ transform/opacity.
+ * Thẻ dùng chung ánh Lumos (`.lumos`), bắt đầu khi thư rơi xuống.
+ */
+@keyframes owl-fly-in {
+  0% {
+    transform: translate(60vw, -55vh) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-40vw, -40vh) scale(0.6);
+    opacity: 0;
+  }
+}
+@keyframes owl-flap {
+  50% {
+    transform: scaleY(0.6);
+  }
+}
+@keyframes owl-letter-drop {
+  0%,
+  60% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+@keyframes owl-card-in {
+  0%,
+  55% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.owl-flight {
+  animation: owl-fly-in 1.9s ease-in-out both;
+}
+.owl-wing {
+  transform-origin: 40px 24px;
+  animation: owl-flap 0.25s ease-in-out 7;
+}
+.owl-letter {
+  animation: owl-letter-drop 1.6s ease-in both;
+}
+.owl-card {
+  animation:
+    owl-card-in 1.3s ease-out both,
+    lumos-flare 900ms ease-out 1.1s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owl-flight {
+    display: none;
+  }
+  .owl-card {
+    animation: none;
+    box-shadow: 0 0 12px 2px var(--candle-glow);
+  }
+}

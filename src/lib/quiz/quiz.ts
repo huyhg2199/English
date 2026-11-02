@@ -29,10 +29,12 @@ export type QuizAttempt = {
   kind?: string
   /** Lần làm rỗng ghi "Để sau" cho test quay lại (chỉ với `kind: 'comeback'`, `total: 0`; không tính điểm). */
   skipped?: boolean
+  /** Qua cửa hay không (story 14 ghi cho `kind: 'owl'`). */
+  passed?: boolean
 }
 
-/** Loại lần làm app này hiểu (thiếu `kind` = test thường). */
-export const KNOWN_ATTEMPT_KINDS = ['comeback'] as const
+/** Loại lần làm app này hiểu (thiếu `kind` = test thường; `owl` = O.W.L., story 14). */
+export const KNOWN_ATTEMPT_KINDS = ['comeback', 'owl'] as const
 export type AttemptKind = (typeof KNOWN_ATTEMPT_KINDS)[number]
 
 export type QuizAttemptEntry = QuizAttempt & { id: string }
@@ -50,9 +52,10 @@ function isAnswer(value: unknown): value is AttemptAnswer {
 
 export function isQuizAttempt(value: unknown): value is QuizAttempt {
   if (!isPlainObject(value)) return false
-  const { quizId, seed, startedAt, finishedAt, score, total, answers, updatedAt, kind, skipped } = value
+  const { quizId, seed, startedAt, finishedAt, score, total, answers, updatedAt, kind, skipped, passed } = value
   return (
     (kind === undefined || typeof kind === 'string') &&
+    (passed === undefined || typeof passed === 'boolean') &&
     (skipped === undefined || skipped === false || (skipped === true && kind === 'comeback' && total === 0)) &&
     typeof quizId === 'string' &&
     typeof seed === 'string' &&

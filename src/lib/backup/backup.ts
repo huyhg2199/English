@@ -6,6 +6,7 @@ import { isLessonProgress, readCompletedLessonIds } from '@/lib/roadmap-progress
 import { isSavedWord, readSavedWords } from '@/lib/saved-words'
 import { isSessionDay, readSessionDays } from '@/lib/sessions'
 import { isSrsCard, readCards } from '@/lib/srs'
+import { isSeenEntry } from '@/lib/trophies'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
 import { deepEqual, mergeData, SYNCED_KEYS } from '@/lib/sync/merge'
@@ -97,6 +98,7 @@ const ENTRY_FIELD: Record<BackupKey, string> = {
   notes: 'items',
   quizzes: 'attempts',
   mistakes: 'items',
+  trophies: 'seen',
 }
 
 const ENTRY_VALID: Record<BackupKey, (value: unknown) => boolean> = {
@@ -109,6 +111,7 @@ const ENTRY_VALID: Record<BackupKey, (value: unknown) => boolean> = {
   notes: isNote,
   quizzes: isQuizAttempt,
   mistakes: isMistakeItem,
+  trophies: isSeenEntry,
 }
 
 /** Id có thể làm hỏng object khi gán (prototype pollution). */
@@ -197,6 +200,9 @@ function without(obj: Record<string, unknown>, field: string): Record<string, un
   return out
 }
 
+/** Key sổ sách nội bộ (vd huy chương đã báo): vẫn khôi phục nhưng không đếm vào số mục thêm / cập nhật. */
+const UNCOUNTED_KEYS: ReadonlySet<BackupKey> = new Set<BackupKey>(['trophies'])
+
 /**
  * Gộp file vào store bằng đúng luật đồng bộ (`mergeData`: mục nào `updatedAt` mới hơn thắng).
  * Không bao giờ xoá dữ liệu trên máy. Key ngoài allowlist trong file bị bỏ qua; key ngoài allowlist trên máy giữ nguyên.
@@ -206,6 +212,7 @@ export function restoreBackup(store: Store, backup: Backup): RestoreResult {
   let added = 0
   let updated = 0
   for (const key of BACKUP_KEYS) {
+    if (UNCOUNTED_KEYS.has(key)) continue
     const field = ENTRY_FIELD[key]
     const before = asObject(store.data[key])
     const after = asObject(merged[key])

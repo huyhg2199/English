@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { loadStore, STORAGE_KEY, type StorageLike } from '@/lib/storage'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 
-import { createStoreHandle } from './store-context'
+import { readSeen } from '@/lib/trophies'
+
+import { createStoreHandle, deliverOwlPost } from './store-context'
 
 function fakeStorage(initial: Record<string, string> = {}) {
   const map = new Map(Object.entries(initial))
@@ -98,7 +100,7 @@ describe('createStoreHandle', () => {
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     handle.update(mark('s1-t1-w1'))
     const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
-    expect(saved.schemaVersion).toBe(9)
+    expect(saved.schemaVersion).toBe(10)
     expect(Object.keys(saved.data.progress.lessons)).toEqual(['old-id', 's1-t1-w1'])
     expect(readCompletedLessonIds(saved)).toEqual(['old-id', 's1-t1-w1'])
   })
@@ -124,5 +126,28 @@ describe('createStoreHandle', () => {
     off()
     handle.update(mark('c'))
     expect(local).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('deliverOwlPost (story 12)', () => {
+  it('lần đầu trả về huy chương mới và lưu trophies.seen; lần sau trả về []', () => {
+    const T = '2026-11-01T10:00:00.000Z'
+    const attempt = {
+      quizId: 'mini-t1', seed: 's', startedAt: T, finishedAt: T, score: 1, total: 1,
+      answers: [{ questionId: 'q', chosen: 'a', correct: true }], updatedAt: T,
+    }
+    const raw = JSON.stringify({ schemaVersion: 10, data: { quizzes: { attempts: { a1: attempt } }, trophies: { seen: {} } } })
+    const storage = fakeStorage({ [STORAGE_KEY]: raw })
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    const now = new Date('2026-11-02T08:00:00.000Z')
+
+    expect(deliverOwlPost(handle, now).map((u) => u.key)).toEqual(['hermione:bronze'])
+    const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
+    expect(readSeen(saved)).toEqual({ 'hermione:bronze': { updatedAt: now.toISOString() } })
+    expect(deliverOwlPost(handle, now)).toEqual([])
+
+    // Mở app lại (store đọc từ storage) → vẫn không báo lại.
+    const reopened = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    expect(deliverOwlPost(reopened, now)).toEqual([])
   })
 })

@@ -15,6 +15,8 @@ import {
   mergePronunciationItems,
   mergeSavedWordItems,
   mergeSessionDays,
+  mergeSeen,
+  mergeTrophies,
   mergeWithRemote,
   pickSynced,
   SYNCED_KEYS,
@@ -22,13 +24,13 @@ import {
 
 const T1 = '2026-11-01T10:00:00.000Z'
 const T2 = '2026-11-01T11:00:00.000Z'
-const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 9, data })
-const remote = (data: Record<string, unknown>, schemaVersion = 9) => ({ schemaVersion, data, updatedAt: T1 })
+const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 10, data })
+const remote = (data: Record<string, unknown>, schemaVersion = 10) => ({ schemaVersion, data, updatedAt: T1 })
 const lessons = (l: Record<string, unknown>) => ({ progress: { lessons: l } })
 
 describe('pickSynced / allowlist', () => {
-  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation, notes, quizzes, mistakes trong allowlist', () => {
-    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'])
+  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation, notes, quizzes, mistakes, trophies trong allowlist', () => {
+    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies'])
   })
 
   it('bỏ mọi key ngoài allowlist (vd API key)', () => {
@@ -113,7 +115,7 @@ describe('mergeWithRemote — I/O Matrix', () => {
   })
 
   it('server mới hơn app → outdated, không gộp', () => {
-    expect(mergeWithRemote(local({}), remote({}, 10))).toEqual({ kind: 'outdated' })
+    expect(mergeWithRemote(local({}), remote({}, 11))).toEqual({ kind: 'outdated' })
   })
 
   it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v5)', () => {
@@ -432,5 +434,32 @@ describe('mergePlacement (story 5)', () => {
     if (r.kind !== 'merged') throw new Error('expected merged')
     expect(Object.keys((r.store.data.placement as { attempts: object }).attempts)).toEqual(['x', 'y'])
     expect(r.push).toBe(true)
+  })
+})
+
+describe('trophies (story 12)', () => {
+  it('mergeSeen: giữ mọi mục hai bên; trùng thì thời điểm báo sớm hơn thắng; mục sai dạng bên kia hợp lệ thì lấy bên hợp lệ', () => {
+    expect(
+      mergeSeen(
+        { 'hermione:bronze': { updatedAt: T2 }, 'neville:bronze': { updatedAt: T1 }, bad: 'x' },
+        { 'hermione:bronze': { updatedAt: T1 }, 'dumbledore:bronze': { updatedAt: T2 }, bad: { updatedAt: T1 } },
+      ),
+    ).toEqual({
+      'hermione:bronze': { updatedAt: T1 },
+      'neville:bronze': { updatedAt: T1 },
+      'dumbledore:bronze': { updatedAt: T2 },
+      bad: { updatedAt: T1 },
+    })
+  })
+
+  it('mergeTrophies giữ field khác; mergeWithRemote kéo seen từ server về', () => {
+    expect(mergeTrophies({ seen: {}, a: 1 }, { seen: { k: { updatedAt: T1 } }, b: 2 })).toEqual({ a: 1, b: 2, seen: { k: { updatedAt: T1 } } })
+    const r = mergeWithRemote(local({}), remote({ trophies: { seen: { 'hermione:bronze': { updatedAt: T1 } } } }))
+    expect(r.kind === 'merged' && r.store.data.trophies).toEqual({ seen: { 'hermione:bronze': { updatedAt: T1 } } })
+  })
+
+  it('server v9 (chưa có trophies) → migrate lên v10 rồi gộp, đẩy lên', () => {
+    const r = mergeWithRemote(local({ trophies: { seen: { k: { updatedAt: T1 } } } }), remote({}, 9))
+    expect(r).toMatchObject({ kind: 'merged', push: true, store: { data: { trophies: { seen: { k: { updatedAt: T1 } } } } } })
   })
 })

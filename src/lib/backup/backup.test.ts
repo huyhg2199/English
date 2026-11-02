@@ -7,6 +7,7 @@ import { createNote, deleteNote, listNotes, readNotes } from '@/lib/notes'
 import { deleteSavedWord, readSavedWords, saveWord, savedWordId } from '@/lib/saved-words'
 import { readSessionDays, recordSession } from '@/lib/sessions'
 import { gradeCard, readSrs } from '@/lib/srs'
+import { readSeen } from '@/lib/trophies'
 import { createDefaultStore, CURRENT_VERSION, migrations, runMigrations, type Store } from '@/lib/storage'
 
 import {
@@ -44,7 +45,7 @@ function roundTrip(store: Store, now = T1): Backup {
 
 describe('BACKUP_KEYS / allowlist', () => {
   it('trùng với allowlist đồng bộ', () => {
-    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'])
+    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies'])
   })
 
   it('không có key nào giống API key / token / PAT / secret / password', () => {
@@ -385,6 +386,18 @@ describe('quizzes / mistakes trong sao lưu (story 9)', () => {
     expect(listAttempts(r.store).map((a) => a.id)).toEqual(['a1'])
     expect(Object.keys(readMistakes(r.store))).toEqual([question.id])
     expect(r.added).toBe(2)
+  })
+})
+
+describe('trophies.seen trong sao lưu (story 12)', () => {
+  it('mục hợp lệ còn nguyên sau khi khôi phục, mục sai dạng bị bỏ; không đếm vào added / updated', () => {
+    const seen = { 'hermione:bronze': { updatedAt: T0.toISOString() }, bad: { updatedAt: 'x' } }
+    const store: Store = { ...empty(), data: { trophies: { seen } } }
+    const backup = roundTrip(store)
+    expect(backup.data.trophies).toEqual({ seen: { 'hermione:bronze': { updatedAt: T0.toISOString() } } })
+    const r = restoreBackup(empty(), backup)
+    expect(readSeen(r.store)).toEqual({ 'hermione:bronze': { updatedAt: T0.toISOString() } })
+    expect(r).toMatchObject({ added: 0, updated: 0 })
   })
 })
 
