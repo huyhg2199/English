@@ -381,7 +381,7 @@ export const PRONUNCIATION_T3_W4: PronunciationContent = {
 }
 
 export const PRONUNCIATION_T4_W1: PronunciationContent = {
-  intro: 'Phim và nhạc đầy dạng rút gọn. Học để nghe ra, mỗi cụm có link YouGlish để nghe trong video thật.',
+  intro: 'Phim và nhạc đầy dạng rút gọn. Học để nghe ra, mỗi cụm có nút nghe trong video thật (YouGlish).',
   groups: [],
   blocks: [REDUCTIONS],
   sentences: [

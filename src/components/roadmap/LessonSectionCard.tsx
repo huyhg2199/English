@@ -2,9 +2,11 @@ import type { ReactNode } from 'react'
 import { Link2, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
+import { VideoList } from '@/components/media/VideoEmbed'
 import { SKILL_LABELS } from '@/components/roadmap/skill-labels'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { resourcesForSection, sectionHref, type Lesson, type Section, type Stage } from '@/data/roadmap'
+import { videosFor } from '@/data/videos'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -18,7 +20,7 @@ type Props = {
   children?: ReactNode
 }
 
-/** Một đoạn của bài: việc cần làm, kỹ năng, kỳ kiểm tra và nguồn miễn phí (trang bài và buổi học dùng chung). */
+/** Một đoạn của bài: việc cần làm, video gắn đoạn (story 15), kỹ năng, kỳ kiểm tra và nguồn miễn phí (trang bài và buổi học dùng chung). */
 export function LessonSectionCard({ lesson, stage, section, highlighted = false, priority = false, children }: Props) {
   const resources = resourcesForSection(stage, section)
   return (
@@ -58,6 +60,8 @@ export function LessonSectionCard({ lesson, stage, section, highlighted = false,
       </CardHeader>
       <CardContent className="flex flex-col gap-3 text-sm">
         <p className="text-base">{section.task}</p>
+
+        <VideoList videos={videosFor(lesson.id, section.id)} />
 
         {children}
 

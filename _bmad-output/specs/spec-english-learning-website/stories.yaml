@@ -111,3 +111,16 @@
     Test cuối chặng 1 theo lo-trinh-toeic-12-thang.md, qua cửa khi ≥70% riêng từng phần thì và phát âm (CAP-4, learning-rules.md).
     Trượt chỉ sinh kế hoạch ôn 2 tuần phần yếu theo Sổ lỗi; qua thì trao huy chương Dumbledore.
   spec_checkpoint: true
+- id: "15"
+  title: Nhúng video YouTube và widget YouGlish ngay trong bài học
+  description: >-
+    Mỗi bài chặng 1 có 1–2 video YouTube phát ngay trong trang (VOA Let's Learn English, BBC Learning English, Rachel's English…), phần 10' giải trí phát video trong app, widget YouGlish thay cho link YouGlish.
+    Nguồn chặn nhúng (trang VOA, TED-Ed, LyricsTraining, ELLLO) giữ dạng link. Chưa có phụ đề song ngữ (story 16).
+  spec_checkpoint: true
+  invoke_dev_with: >-
+    Mọi video ID phải kiểm qua YouTube oEmbed (tồn tại, cho nhúng); không bịa ID. Dùng youtube-nocookie, chỉ tải iframe khi bấm.
+- id: "16"
+  title: Video song ngữ Anh–Việt, chú thích và ẩn sub điền từ (CAP-12)
+  description: >-
+    Trên các video của story 15: phụ đề Anh + Việt chạy theo thời gian player, chú thích idiom/nói tắt/nghĩa ngữ cảnh, highlight câu liên quan bài, chế độ ẩn sub để điền từ (CAP-12, stack.md: sub do Claude làm lúc build, lưu JSON tĩnh).
+  spec_checkpoint: true
