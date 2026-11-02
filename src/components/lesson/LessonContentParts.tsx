@@ -1,4 +1,4 @@
-import { ClipboardCheck, GraduationCap } from 'lucide-react'
+import { ClipboardCheck, CloudMoon, GraduationCap } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useSpells } from '@/app/store-context'
@@ -6,12 +6,36 @@ import { Button } from '@/components/ui/button'
 import type { GrammarContent, LessonContent } from '@/data/lessons'
 import { quizHref } from '@/data/questions'
 
+import { IrregularVerbTable } from './IrregularVerbTable'
+import { PronunciationBlockView } from './PronunciationBlocks'
 import { SoundTable } from './SoundTable'
 import { SpeakPractice } from './SpeakPractice'
 import { TenseCard } from './TenseCard'
 
-/** Nội dung đoạn Phát âm: (tuần 1) nút làm bài đầu vào, bảng âm và luyện nói câu mẫu. */
+/** Tuần Tết: không có nội dung mới, chỉ nhắc chạy chế độ ngày lười 10'. */
+function LazyWeekNotice() {
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-dashed p-3 text-sm">
+      <p className="flex items-start gap-2">
+        <CloudMoon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+        <span>
+          Tuần Tết không có bài mới. Mỗi ngày chỉ cần chạy <strong>chế độ ngày lười 10'</strong> (ôn thẻ đến hạn, đọc 1
+          tin ngắn, lưu 3 từ mới) là vẫn giữ chuỗi. Ăn Tết vui vẻ!
+        </span>
+      </p>
+      <Button asChild className="self-start">
+        <Link to="/session/lazy">
+          <CloudMoon aria-hidden="true" />
+          Sang ngày lười
+        </Link>
+      </Button>
+    </div>
+  )
+}
+
+/** Nội dung đoạn Phát âm: (tuần 1) nút làm bài đầu vào, bảng âm, các khối phát âm mới và luyện nói câu mẫu; tuần Tết chỉ có lời nhắc ngày lười. */
 export function PronunciationSection({ content }: { content: LessonContent }) {
+  if (content.lazyWeek) return <LazyWeekNotice />
   if (!content.pronunciation) return null
   return (
     <div className="flex flex-col gap-5">
@@ -24,6 +48,9 @@ export function PronunciationSection({ content }: { content: LessonContent }) {
         </Button>
       )}
       <SoundTable content={content.pronunciation} />
+      {content.pronunciation.blocks?.map((block, i) => (
+        <PronunciationBlockView key={`${block.kind}-${i}`} block={block} />
+      ))}
       <SpeakPractice sentences={content.pronunciation.sentences} />
     </div>
   )
@@ -64,6 +91,7 @@ export function GrammarSection({ content }: { content: LessonContent }) {
       {content.grammar.tenses.map((t) => (
         <TenseCard key={t.id} tense={t} unlockedSpellIds={ids} />
       ))}
+      {content.grammar.irregularVerbs && <IrregularVerbTable verbs={content.grammar.irregularVerbs} />}
       {content.grammar.review && <Review review={content.grammar.review} />}
     </div>
   )

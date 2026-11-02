@@ -8,6 +8,7 @@ import {
   applyRecognition,
   bestComparison,
   compareSpeech,
+  isDictationId,
   normalizeWords,
   numberToWords,
   pronunciationAverage,
@@ -113,6 +114,16 @@ describe('recordAttempt', () => {
     s = recordAttempt(s, 'a', 50, T(1))
     s = recordAttempt(s, 'b', 71, T(1))
     expect(pronunciationAverage(s)).toBe(61)
+  })
+
+  it('pronunciationAverage bỏ điểm chép chính tả (id <bài>-dict-<n>); chỉ có chính tả → null', () => {
+    expect(isDictationId('s1-t4-w3-dict-1')).toBe(true)
+    expect(isDictationId('s1-t4-w3-say-1')).toBe(false)
+    expect(isDictationId('s1-t3-w4-shadow-2')).toBe(false)
+    let s = recordAttempt(store(), 's1-t4-w3-dict-1', 100, T(1))
+    expect(pronunciationAverage(s)).toBeNull()
+    s = recordAttempt(s, 's1-t4-w3-say-1', 40, T(2))
+    expect(pronunciationAverage(s)).toBe(40)
   })
 })
 

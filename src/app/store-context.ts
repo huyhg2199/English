@@ -13,7 +13,12 @@ import {
   type House,
   type PartScores,
 } from '@/lib/placement'
-import { applyRecognition, readPronunciation, type SpeakOutcome } from '@/lib/pronunciation'
+import {
+  applyRecognition,
+  readPronunciation,
+  recordAttempt as recordPronunciationAttempt,
+  type SpeakOutcome,
+} from '@/lib/pronunciation'
 import {
   listAttempts as listQuizAttempts,
   readMistakes,
@@ -276,7 +281,12 @@ export function usePronunciation() {
     },
     [handle],
   )
-  return { items, apply }
+  /** Ghi điểm chép chính tả (story 10): dùng chung `pronunciation` như luyện nói, best = max. */
+  const record = useCallback(
+    (id: string, score: number, now: Date = new Date()) => handle.update((s) => recordPronunciationAttempt(s, id, score, now)),
+    [handle],
+  )
+  return { items, apply, record }
 }
 
 /**

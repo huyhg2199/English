@@ -54,10 +54,10 @@ function MistakesSummary() {
   return `${total} câu trong sổ · ${due} câu đến hạn ôn`
 }
 
-function MiniTestSummary() {
+function MiniTestSummary({ quizId, month }: { quizId: string; month: string }) {
   const { attempts } = useQuizzes()
-  const mine = attempts.filter((a) => a.quizId === 'mini-t1')
-  if (mine.length === 0) return '10 câu ôn cả 4 tuần T1. Chưa làm lần nào.'
+  const mine = attempts.filter((a) => a.quizId === quizId)
+  if (mine.length === 0) return `10 câu ôn cả 4 tuần ${month}. Chưa làm lần nào.`
   const best = Math.max(...mine.map((a) => a.score))
   return `Đã làm ${mine.length} lần · cao nhất ${best}/${mine[0].total} · lần gần nhất ${mine[0].score}/${mine[0].total}`
 }
@@ -130,7 +130,11 @@ export function Practice() {
       </PracticeLink>
 
       <PracticeLink to={quizHref('mini-t1')} icon={ClipboardCheck} title="Mini test tháng T1">
-        <MiniTestSummary />
+        <MiniTestSummary quizId="mini-t1" month="T1" />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mini-t2')} icon={ClipboardCheck} title="Mini test tháng T2">
+        <MiniTestSummary quizId="mini-t2" month="T2" />
       </PracticeLink>
 
       <SpellList />
@@ -139,7 +143,8 @@ export function Practice() {
         <CardHeader>
           <CardTitle>Sắp có</CardTitle>
           <CardDescription>
-            7 Part TOEIC và link luyện nói. Luyện phát âm đã có trong từng bài tháng T1 (đoạn Phát âm).
+            7 Part TOEIC. Luyện phát âm có trong đoạn Phát âm của từng bài tháng T1–T4; nút "Luyện nói với AI" nằm cuối
+            mỗi bài.
           </CardDescription>
         </CardHeader>
       </Card>

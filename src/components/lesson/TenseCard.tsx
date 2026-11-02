@@ -44,7 +44,7 @@ function Dialogue({ line }: { line: DialogueLine }) {
   )
 }
 
-/** Một thì: dòng thời gian, công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ thần chú. */
+/** Một thì / chủ điểm: dòng thời gian (nếu là thì), công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ thần chú. */
 export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedSpellIds: ReadonlySet<string> }) {
   const spell = getSpell(tense.spellId)
   return (
@@ -54,7 +54,7 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
         <p className="text-sm text-muted-foreground">{tense.use}</p>
       </header>
 
-      <TenseTimeline kind={tense.timeline.kind} label={tense.timeline.label} />
+      {tense.timeline && <TenseTimeline kind={tense.timeline.kind} label={tense.timeline.label} />}
 
       <div className="flex flex-col gap-2">
         <h4 className="font-semibold">Công thức</h4>

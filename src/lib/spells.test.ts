@@ -27,7 +27,7 @@ describe('unlockedSpells', () => {
     let s = empty
     for (const id of ['s1-t1-w3', 's1-t1-w1', 's1-t1-w2']) s = setLessonCompleted(s, id, true, NOW)
     expect(unlockedSpells(s).map((x) => x.name)).toEqual(['Lumos', 'Alohomora', 'Revelio'])
-    expect(SPELLS).toHaveLength(3)
+    expect(SPELLS).toHaveLength(12)
   })
 
   it('progress sai dạng → không crash, không mở gì', () => {

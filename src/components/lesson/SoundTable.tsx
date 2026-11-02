@@ -1,13 +1,10 @@
-import { useMemo } from 'react'
 import { Star } from 'lucide-react'
 
-import { useWords } from '@/app/use-words'
 import { ListenButton } from '@/components/ListenButton'
 import type { ExampleWord, PronunciationContent, Sound } from '@/data/lessons'
-import { hasDetails, type StudyWord } from '@/data/vocab'
 import { cn } from '@/lib/utils'
 
-type Lookup = (word: string) => StudyWord | undefined
+import { useNgslLookup, type NgslLookup as Lookup } from './use-ngsl'
 
 function Example({ example, lookup }: { example: ExampleWord; lookup: Lookup }) {
   const base = lookup(example.word)
@@ -74,19 +71,12 @@ function SoundItem({ sound, lookup }: { sound: Sound; lookup: Lookup }) {
 
 /** Bảng âm của đoạn Phát âm: từng âm có IPA, mẹo khẩu hình, từ ví dụ NGSL (IPA + nút nghe) và cặp dễ nhầm. */
 export function SoundTable({ content }: { content: PronunciationContent }) {
-  const state = useWords()
-  const words = state.status === 'ready' ? state.words : null
-  const byWord = useMemo(() => {
-    const map = new Map<string, StudyWord>()
-    for (const w of words ?? []) if (w.list === 'ngsl' && hasDetails(w)) map.set(w.word, w)
-    return map
-  }, [words])
-  const lookup: Lookup = (word) => byWord.get(word)
+  const { state, lookup } = useNgslLookup()
 
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted-foreground">{content.intro}</p>
-      {state.status === 'error' && (
+      {state.status === 'error' && content.groups.length > 0 && (
         <p className="text-xs text-muted-foreground">
           Chưa tải được IPA của từ ví dụ.{' '}
           <button type="button" className="text-primary underline-offset-4 hover:underline" onClick={state.retry}>

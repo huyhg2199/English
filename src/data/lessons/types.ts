@@ -49,10 +49,69 @@ export type PracticeSentence = {
   vi: string
 }
 
+/**
+ * Luật trọng âm: `index` = trọng âm ở âm tiết thứ `index` (đếm từ 0) của từ `syllables` âm tiết;
+ * `before-suffix` = trọng âm rơi vào âm tiết ngay trước hậu tố (hậu tố có `suffixSyllables` âm tiết).
+ * Âm tiết và vị trí nhấn lấy từ bộ từ NGSL (test kiểm từng từ khớp luật).
+ */
+export type StressExpectation =
+  | { kind: 'index'; index: number; syllables: number }
+  | { kind: 'before-suffix'; suffix: string; suffixSyllables: number }
+
+export type StressRule = {
+  id: string
+  title: string
+  tip: string
+  expect: StressExpectation
+  /** Từ NGSL có dữ liệu. */
+  words: readonly string[]
+}
+
+/** Khối phát âm mới (story 10), thêm sau bảng âm. Mỗi khối là dữ liệu thuần, component vẽ theo `kind`. */
+export type PronunciationBlock =
+  | { kind: 'stress'; title: string; note?: string; rules: readonly StressRule[] }
+  | {
+      kind: 'weak-forms'
+      title: string
+      note?: string
+      items: readonly { word: string; strong: string; weak: string; example: string; vi: string }[]
+    }
+  | {
+      kind: 'linking'
+      title: string
+      note?: string
+      /** `sounds` là cách nghe khi nối, ví dụ "pi-ki-tup". */
+      items: readonly { text: string; sounds: string; vi: string }[]
+    }
+  | {
+      kind: 'sentence-stress'
+      title: string
+      note?: string
+      /** `stressed`: chỉ số (từ 0) các từ được nhấn khi tách câu theo khoảng trắng. */
+      items: readonly { text: string; stressed: readonly number[]; vi: string }[]
+    }
+  | {
+      kind: 'reductions'
+      title: string
+      note?: string
+      items: readonly { reduced: string; full: string; example: string; vi: string; youglishUrl: string }[]
+    }
+  | { kind: 'shadowing'; title: string; note: string; lines: readonly PracticeSentence[] }
+  | { kind: 'dictation'; title: string; note: string; items: readonly PracticeSentence[] }
+  | { kind: 'self-read'; title: string; note: string; words: readonly string[] }
+  | {
+      kind: 'overview'
+      title: string
+      note?: string
+      /** Tóm tắt kèm link về đúng đoạn của bài. */
+      items: readonly { text: string; lessonId: string; sectionId: 'pronunciation' | 'grammar' }[]
+    }
+
 export type PronunciationContent = {
   intro: string
   groups: readonly SoundGroup[]
   sentences: readonly PracticeSentence[]
+  blocks?: readonly PronunciationBlock[]
 }
 
 /** Câu thoại nguyên văn từ transcript VOA Let's Learn English Level 1 (public domain). */
@@ -76,8 +135,22 @@ export type YouglishLine = {
 
 export type DialogueLine = VoaLine | YouglishLine
 
-/** Kiểu đánh dấu trên dòng thời gian. */
-export type TimelineKind = 'state' | 'habit' | 'habit-question'
+/**
+ * Kiểu đánh dấu trên dòng thời gian. T1: `state`, `habit`, `habit-question`.
+ * Story 10: `progress` (đang diễn ra quanh lúc nói), `past-point` (một lúc đã xong trong quá khứ),
+ * `future-point` (một lúc trong tương lai), `plan` (kế hoạch đã định từ bây giờ tới tương lai),
+ * `past-to-now` (từ quá khứ kéo tới bây giờ), `perfect-vs-past` (so hoàn thành với quá khứ đơn).
+ */
+export type TimelineKind =
+  | 'state'
+  | 'habit'
+  | 'habit-question'
+  | 'progress'
+  | 'past-point'
+  | 'future-point'
+  | 'plan'
+  | 'past-to-now'
+  | 'perfect-vs-past'
 
 export type Tense = {
   /** Ví dụ `to-be`, `present-simple`. */
@@ -85,7 +158,8 @@ export type Tense = {
   name: string
   /** Một câu: thì này dùng khi nào. */
   use: string
-  timeline: { kind: TimelineKind; label: string }
+  /** Chỉ thì mới có dòng thời gian (động từ khuyết thiếu, so sánh, bị động thì không). */
+  timeline?: { kind: TimelineKind; label: string }
   formulas: readonly { label: string; text: string }[]
   /** 3 quy tắc ngắn. */
   rules: readonly string[]
@@ -94,11 +168,17 @@ export type Tense = {
   /** Lỗi người Việt hay mắc. */
   mistakes: readonly { wrong: string; right: string; why: string }[]
   dialogues: readonly DialogueLine[]
-  spellId: string
+  /** Thần chú của thì; chủ điểm ôn/so sánh (hiện tại hoàn thành (2)) không có thần chú riêng. */
+  spellId?: string
 }
+
+/** Một động từ bất quy tắc: V1 (NGSL), V2, V3 và nghĩa tiếng Việt. */
+export type IrregularVerb = { v1: string; v2: string; v3: string; vi: string }
 
 export type GrammarContent = {
   tenses: readonly Tense[]
+  /** Bảng động từ bất quy tắc (s1-t2-w3). */
+  irregularVerbs?: readonly IrregularVerb[]
   /** Tuần ôn tập: tóm tắt các thì đã học và ghi chú mini test. */
   review?: { summary: readonly string[]; note: string; quizId?: string }
 }
@@ -109,6 +189,13 @@ export type LessonContent = {
   grammar?: GrammarContent
   /** Tuần 1: nút "Làm bài đầu vào" sang Mũ Phân Loại. */
   placementLink?: boolean
+  /** Tuần Tết: chỉ nhắc chạy chế độ ngày lười, không có nội dung mới. */
+  lazyWeek?: boolean
+  /**
+   * Tình huống roleplay cho nút "Luyện nói với AI": `scenario`, `topicEn` bằng tiếng Anh (đưa vào prompt),
+   * `vi` là tên tình huống hiện trên trang. Chỉ tình huống chung, không có thông tin cá nhân.
+   */
+  roleplay?: { scenario: string; topicEn: string; vi: string }
 }
 
 /** Thần chú lấy cảm hứng HP: mở khoá khi bài chứa thì đó được đánh dấu xong. */
@@ -118,4 +205,6 @@ export type Spell = {
   description: string
   tenseId: string
   lessonId: string
+  /** Tên chủ điểm ngữ pháp bằng tiếng Anh, dùng trong prompt luyện nói (chỉ cho AI dùng các thì đã mở). */
+  grammarEn: string
 }
