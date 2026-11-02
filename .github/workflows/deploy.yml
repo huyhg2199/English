@@ -28,19 +28,23 @@ jobs:
       - name: Check words.json khớp với scripts/vocab (không sửa tay, không quên build lại)
         run: npm run vocab:build && git diff --exit-code src/data/vocab/words.json
       - run: npm test
-      - run: npm run build
+      # Vite ưu tiên biến môi trường có sẵn hơn file .env.*, kể cả biến rỗng, nên KHÔNG đặt env cho bước build
+      # (biến rỗng sẽ đè mất giá trị trong .env.production). Cấu hình mặc định nằm ở .env.production (đã commit);
+      # nếu có Actions Variables/Secrets thì ghi vào .env.production.local (ưu tiên hơn), chỉ khi khác rỗng.
+      - name: Cấu hình Supabase từ Variables/Secrets (nếu có)
         env:
-          # Nên đặt ở Actions Variables (URL và anon key Supabase là công khai, có RLS bảo vệ); lỡ đặt ở Secrets cũng đọc được.
-          # Chưa đặt thì build ra app chạy chỉ local.
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
-      - name: Báo nếu build không có cấu hình Supabase
-        env:
-          HAS_URL: ${{ (vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL) && 'yes' || '' }}
-          HAS_KEY: ${{ (vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY) && 'yes' || '' }}
+          SB_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
+          SB_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
-          if [ -z "$HAS_URL" ] || [ -z "$HAS_KEY" ]; then
-            echo "::warning::Thiếu VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY nên app build ra sẽ bỏ qua đăng nhập. Kiểm tra Settings → Secrets and variables → Actions → tab Variables (Repository variables)."
+          : > .env.production.local
+          if [ -n "$SB_URL" ]; then echo "VITE_SUPABASE_URL=$SB_URL" >> .env.production.local; fi
+          if [ -n "$SB_KEY" ]; then echo "VITE_SUPABASE_ANON_KEY=$SB_KEY" >> .env.production.local; fi
+      - run: npm run build
+      - name: Báo nếu build không có cấu hình Supabase
+        run: |
+          if ! cat .env.production .env.production.local 2>/dev/null | grep -q '^VITE_SUPABASE_URL=..*' \
+            || ! cat .env.production .env.production.local 2>/dev/null | grep -q '^VITE_SUPABASE_ANON_KEY=..*'; then
+            echo "::warning::Thiếu VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY nên app build ra sẽ bỏ qua đăng nhập."
           fi
       - name: Check PWA files
         run: test -f dist/manifest.webmanifest && test -f dist/sw.js
