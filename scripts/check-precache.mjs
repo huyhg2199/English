@@ -28,4 +28,10 @@ if (chunks.length === 0) fail('không tìm thấy chunk words-*.js trong dist/as
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const missing = chunks.filter((f) => !new RegExp(`url:\\s*["']assets/${escape(f)}["']`).test(sw))
 if (missing.length) fail(`chunk từ vựng không có trong precache manifest của dist/sw.js: ${missing.join(', ')}`)
+// Phụ đề (story 16) phải tải lười: chunk chính (index-*.js) không được chứa dữ liệu sub (mỗi file sub ghi nguồn
+// "public domain – VOA").
+const entry = assets.filter((f) => /^index-.*\.js$/.test(f))
+if (entry.length === 0) fail('không tìm thấy chunk chính index-*.js trong dist/assets')
+const withSubs = entry.filter((f) => readFileSync(`${dist}assets/${f}`, 'utf8').includes('public domain – VOA'))
+if (withSubs.length) fail(`dữ liệu phụ đề lọt vào chunk chính: ${withSubs.join(', ')} (phải tải lười qua src/data/subs)`)
 console.log(`check-precache: OK (${chunks.join(', ')} có trong precache)`)

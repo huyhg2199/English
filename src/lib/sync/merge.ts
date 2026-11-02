@@ -7,6 +7,7 @@ import { isSavedWord } from '@/lib/saved-words'
 import { isReminders } from '@/lib/reminders/reminders'
 import { isSessionDay } from '@/lib/sessions'
 import { isSrsCard } from '@/lib/srs'
+import { isVideoPracticeItem, type VideoPracticeItem } from '@/lib/subs/practice'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
 import { isSeenEntry, type SeenEntry } from '@/lib/trophies'
@@ -16,7 +17,7 @@ import { isTimeString } from '@/lib/updated-at'
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -216,6 +217,19 @@ export function mergeReminders(local: unknown, server: unknown): unknown {
   return local ?? server
 }
 
+/**
+ * Gộp `videoPractice.items` theo từng video (story 16): `best` lấy max, `attempts` lấy max, `updatedAt` lấy mới hơn
+ * (cùng luật với điểm luyện nói).
+ */
+export function mergeVideoPracticeItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isVideoPracticeItem, (a: VideoPracticeItem, b: VideoPracticeItem) => ({
+    best: Math.max(a.best, b.best),
+    attempts: Math.max(a.attempts, b.attempts),
+    updatedAt: newer(a, b).updatedAt,
+  }))
+}
+
+export const mergeVideoPractice = mergeKeyed('items', mergeVideoPracticeItems)
 export const mergeTrophies = mergeKeyed('seen', mergeSeen)
 export const mergeNotes = mergeKeyed('items', mergeNoteItems)
 export const mergeQuizzes = mergeKeyed('attempts', mergeQuizAttempts)
@@ -237,6 +251,7 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   mistakes: mergeMistakes,
   trophies: mergeTrophies,
   reminders: mergeReminders,
+  videoPractice: mergeVideoPractice,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

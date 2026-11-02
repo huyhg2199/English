@@ -8,6 +8,7 @@ import { deleteSavedWord, readSavedWords, saveWord, savedWordId } from '@/lib/sa
 import { readSessionDays, recordSession } from '@/lib/sessions'
 import { gradeCard, readSrs } from '@/lib/srs'
 import { readSeen } from '@/lib/trophies'
+import { readVideoPractice, recordVideoPractice } from '@/lib/subs/practice'
 import { createDefaultStore, CURRENT_VERSION, migrations, runMigrations, type Store } from '@/lib/storage'
 
 import {
@@ -45,7 +46,7 @@ function roundTrip(store: Store, now = T1): Backup {
 
 describe('BACKUP_KEYS / allowlist', () => {
   it('trùng với allowlist đồng bộ', () => {
-    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders'])
+    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice'])
   })
 
   it('không có key nào giống API key / token / PAT / secret / password', () => {
@@ -327,6 +328,7 @@ describe('summarizeBackup', () => {
       notes: 0,
       quizAttempts: 0,
       mistakes: 0,
+      videoPracticeItems: 0,
     })
   })
 })
@@ -416,6 +418,22 @@ describe('reminders trong sao lưu (story 13)', () => {
       JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: T1.toISOString(), data: { reminders: { times: ['99:99'], updatedAt: 'x' } } }),
     )
     expect(bad.ok && bad.backup.data.reminders).toBeUndefined()
+  })
+})
+
+describe('videoPractice trong sao lưu (story 16)', () => {
+  it('kết quả điền từ được giữ, gộp best = max, mục sai dạng bị bỏ', () => {
+    const s = recordVideoPractice(empty(), 'WR9_nsLyaEY', 7, 10, T1)
+    const backup = roundTrip(s)
+    expect(readVideoPractice({ ...empty(), data: backup.data })).toEqual({ WR9_nsLyaEY: { best: 70, attempts: 1, updatedAt: T1.toISOString() } })
+    expect(summarizeBackup(backup).videoPracticeItems).toBe(1)
+    const other = recordVideoPractice(empty(), 'WR9_nsLyaEY', 9, 10, T0)
+    const r = restoreBackup(other, backup)
+    expect(readVideoPractice(r.store).WR9_nsLyaEY).toMatchObject({ best: 90, attempts: 1 })
+    const bad = parseBackup(
+      JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: T1.toISOString(), data: { videoPractice: { items: { v: { best: 500 } } } } }),
+    )
+    expect(bad.ok && bad.backup.data.videoPractice).toEqual({ items: {} })
   })
 })
 

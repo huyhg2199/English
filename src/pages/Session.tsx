@@ -4,11 +4,13 @@ import { Link, useSearchParams } from 'react-router'
 
 import { useSessions, useSkillBoard } from '@/app/store-context'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
+import { VideoList } from '@/components/media/VideoEmbed'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { BackToToday, LinkList, SessionDoneView, StepClock } from '@/components/session/SessionParts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { entertainmentLinks, entertainmentTask, lessonHref } from '@/data/roadmap'
+import { funStepVideos } from '@/data/videos'
 import { prioritizeSections } from '@/lib/placement'
 import { resolveSessionLesson, wordListForLesson, type SessionLesson } from '@/lib/sessions'
 import { cn } from '@/lib/utils'
@@ -86,6 +88,7 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
 
 function FunStep({ current }: { current: SessionLesson | null }) {
   const task = entertainmentTask(current?.lesson)
+  const videos = funStepVideos(current?.lesson)
   return (
     <Card className="gap-4">
       <CardHeader>
@@ -94,9 +97,14 @@ function FunStep({ current }: { current: SessionLesson | null }) {
           {task ?? 'Chọn một nguồn bạn thích: nghe nhạc điền lời, xem tin chậm, hoặc nghe từ trong video thật.'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        <LinkList links={entertainmentLinks(current?.lesson)} />
-        <p className="text-xs text-muted-foreground">Link mở tab mới. Xong thì quay lại đây bấm "Xong buổi".</p>
+      <CardContent className="flex flex-col gap-3">
+        {/* Bài có video đoạn giải trí: phát ngay trong buổi, link ngoài vẫn ở dưới làm phương án phụ. */}
+        <VideoList videos={videos} />
+        <div className="flex flex-col gap-2">
+          {videos.length > 0 && <h3 className="text-sm font-semibold">Hoặc chọn nguồn ngoài</h3>}
+          <LinkList links={entertainmentLinks(current?.lesson)} />
+          <p className="text-xs text-muted-foreground">Link mở tab mới. Xong thì quay lại đây bấm "Xong buổi".</p>
+        </div>
       </CardContent>
     </Card>
   )

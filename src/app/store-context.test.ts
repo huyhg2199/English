@@ -103,7 +103,7 @@ describe('createStoreHandle', () => {
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     handle.update(mark('s1-t1-w1'))
     const saved = JSON.parse(storage.map.get(STORAGE_KEY)!)
-    expect(saved.schemaVersion).toBe(11)
+    expect(saved.schemaVersion).toBe(12)
     expect(Object.keys(saved.data.progress.lessons)).toEqual(['old-id', 's1-t1-w1'])
     expect(readCompletedLessonIds(saved)).toEqual(['old-id', 's1-t1-w1'])
   })
@@ -139,7 +139,7 @@ describe('deliverOwlPost (story 12)', () => {
       quizId: 'mini-t1', seed: 's', startedAt: T, finishedAt: T, score: 1, total: 1,
       answers: [{ questionId: 'q', chosen: 'a', correct: true }], updatedAt: T,
     }
-    const raw = JSON.stringify({ schemaVersion: 11, data: { quizzes: { attempts: { a1: attempt } }, trophies: { seen: {} } } })
+    const raw = JSON.stringify({ schemaVersion: 12, data: { quizzes: { attempts: { a1: attempt } }, trophies: { seen: {} } } })
     const storage = fakeStorage({ [STORAGE_KEY]: raw })
     const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
     const now = new Date('2026-11-02T08:00:00.000Z')

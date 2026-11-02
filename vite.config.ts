@@ -37,6 +37,8 @@ export default defineConfig({
       },
       // Chỉ precache asset của app. Không có runtimeCaching: request tới Supabase (fetch, không phải
       // navigation) luôn đi thẳng ra mạng, không bị navigateFallback hay cache của service worker chặn.
+      // Video (story 15) cũng vậy: thumbnail i.ytimg.com, iframe youtube-nocookie.com và script/iframe YouGlish đều
+      // khác origin nên không bị cache. Nếu sau này thêm runtimeCaching thì phải loại trừ các domain này.
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
         // Chunk từ vựng (words-*.js, ~1.2 MB) phải được precache để ôn offline. Mặc định 2 MiB; vite-plugin-pwa làm

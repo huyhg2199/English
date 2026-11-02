@@ -59,6 +59,8 @@ import {
 import { unlockedSpells } from '@/lib/spells'
 import { housePoints, longestStreak, markSeen, medalProgress, unseenLevelUps, type LevelUp } from '@/lib/trophies'
 import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
+import { knownWordsFromStore } from '@/lib/subs/highlight'
+import { readVideoPractice, recordVideoPractice } from '@/lib/subs/practice'
 import type { SyncController, SyncSnapshot } from '@/lib/sync'
 
 /**
@@ -186,6 +188,23 @@ export function useSrs() {
     [handle],
   )
   return { srs, grade, markKnown }
+}
+
+/**
+ * Phụ đề video (story 16): từ NGSL/TSL đã học (thẻ SRS đã có, để tô câu và ưu tiên ẩn khi điền từ), kết quả điền từ
+ * theo video (`store.data.videoPractice`) và hàm ghi một lượt (best = max, attempts + 1, đồng bộ).
+ */
+export function useVideoPractice() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const knownWords = useMemo(() => knownWordsFromStore(store), [store])
+  const items = useMemo(() => readVideoPractice(store), [store])
+  const record = useCallback(
+    (videoId: string, correct: number, total: number, now: Date = new Date()) =>
+      handle.update((s) => recordVideoPractice(s, videoId, correct, total, now)),
+    [handle],
+  )
+  return { knownWords, items, record }
 }
 
 /**

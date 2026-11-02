@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 11
+export const CURRENT_VERSION = 12
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -120,6 +120,22 @@ export const migrations: Migrations = {
       data: {
         ...store.data,
         reminders: isPlainObject(reminders) ? reminders : reminders === undefined ? fresh : { ...fresh, legacy: reminders },
+      },
+    }
+  },
+  // v11 → v12 (story 16): kết quả điền từ theo video `videoPractice: { items: {} }`. Đã có (object) thì để nguyên; giá trị
+  // lạ thì giữ trong `legacy`. Lên v12 để app cũ (v11) không ghi đè mất key này.
+  11: (store) => {
+    const videoPractice = store.data.videoPractice
+    return {
+      schemaVersion: 12,
+      data: {
+        ...store.data,
+        videoPractice: isPlainObject(videoPractice)
+          ? videoPractice
+          : videoPractice === undefined
+            ? { items: {} }
+            : { items: {}, legacy: videoPractice },
       },
     }
   },

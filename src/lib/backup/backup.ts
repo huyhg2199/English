@@ -7,6 +7,7 @@ import { isReminders } from '@/lib/reminders/reminders'
 import { isSavedWord, readSavedWords } from '@/lib/saved-words'
 import { isSessionDay, readSessionDays } from '@/lib/sessions'
 import { isSrsCard, readCards } from '@/lib/srs'
+import { isVideoPracticeItem } from '@/lib/subs/practice'
 import { isSeenEntry } from '@/lib/trophies'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
@@ -56,6 +57,7 @@ export type BackupSummary = {
   notes: number
   quizAttempts: number
   mistakes: number
+  videoPracticeItems: number
 }
 
 /** Lấy phần allowlist của `data`; key ngoài allowlist (vd `geminiApiKey`, `token`) bị bỏ. */
@@ -104,6 +106,7 @@ const ENTRY_FIELD: Record<BackupKey, string | null> = {
   mistakes: 'items',
   trophies: 'seen',
   reminders: null,
+  videoPractice: 'items',
 }
 
 const WHOLE_VALID: Partial<Record<BackupKey, (value: unknown) => boolean>> = {
@@ -121,6 +124,7 @@ const ENTRY_VALID: Record<Exclude<BackupKey, 'reminders'>, (value: unknown) => b
   quizzes: isQuizAttempt,
   mistakes: isMistakeItem,
   trophies: isSeenEntry,
+  videoPractice: isVideoPracticeItem,
 }
 
 /** Id có thể làm hỏng object khi gán (prototype pollution). */
@@ -276,5 +280,6 @@ export function summarizeBackup(backup: Backup): BackupSummary {
     notes: Object.values(entriesOf(backup.data, 'notes')).filter((n) => isNote(n) && n.deleted !== true).length,
     quizAttempts: Object.values(entriesOf(backup.data, 'quizzes')).filter(isQuizAttempt).length,
     mistakes: Object.values(entriesOf(backup.data, 'mistakes')).filter(isMistakeItem).length,
+    videoPracticeItems: Object.values(entriesOf(backup.data, 'videoPractice')).filter(isVideoPracticeItem).length,
   }
 }

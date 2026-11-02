@@ -5,12 +5,14 @@ import { Link } from 'react-router'
 import { usePronunciation } from '@/app/store-context'
 import type { WordsState } from '@/app/use-words'
 import { ListenButton } from '@/components/ListenButton'
+import { YouglishWidget } from '@/components/media/YouglishWidget'
 import { Button } from '@/components/ui/button'
 import type { PracticeSentence, PronunciationBlock, StressRule } from '@/data/lessons'
 import { sectionHref } from '@/data/roadmap'
 import { cambridgeUrl } from '@/data/vocab'
 import { gradeDictation, type DictationResult } from '@/lib/dictation'
 import { canSpeak, speak } from '@/lib/speech'
+import { youglishPhraseFromUrl } from '@/lib/youglish'
 import { cn } from '@/lib/utils'
 
 import { SpeakPractice } from './SpeakPractice'
@@ -195,15 +197,7 @@ function ReductionsBlock({ block }: { block: Block<'reductions'> }) {
               <span className="text-muted-foreground">= {it.full}</span>
             </p>
             <ExampleLine text={it.example} vi={it.vi} />
-            <a
-              href={it.youglishUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 self-start text-xs text-primary underline-offset-4 hover:underline"
-            >
-              Nghe “{it.reduced}” trong video thật (YouGlish)
-              <ExternalLink className="size-3" aria-hidden="true" />
-            </a>
+            <YouglishWidget phrase={youglishPhraseFromUrl(it.youglishUrl) ?? it.reduced} fallbackUrl={it.youglishUrl} />
           </li>
         ))}
       </ul>

@@ -2,6 +2,7 @@ import { ExternalLink } from 'lucide-react'
 
 import { ListenButton } from '@/components/ListenButton'
 import { ReadableText } from '@/components/ReadableText'
+import { YouglishWidget } from '@/components/media/YouglishWidget'
 import { getSpell, type DialogueLine, type Tense } from '@/data/lessons'
 
 import { SpellCard } from './SpellCard'
@@ -10,12 +11,14 @@ import { TenseTimeline } from './TenseTimeline'
 function Dialogue({ line }: { line: DialogueLine }) {
   if (line.kind === 'youglish') {
     return (
-      <li className="rounded-lg border p-3 text-sm">
-        <a href={line.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary">
-          “{line.phrase}” trên YouGlish
-          <ExternalLink className="size-3.5" aria-hidden="true" />
-        </a>
-        <p className="text-xs text-muted-foreground">Nghe cụm này trong video thật.</p>
+      <li className="flex flex-col gap-2 rounded-lg border p-3 text-sm">
+        <p>
+          <span lang="en" className="font-semibold">
+            “{line.phrase}”
+          </span>{' '}
+          <span className="text-xs text-muted-foreground">· nghe cụm này trong video thật (YouGlish).</span>
+        </p>
+        <YouglishWidget phrase={line.phrase} fallbackUrl={line.sourceUrl} />
       </li>
     )
   }

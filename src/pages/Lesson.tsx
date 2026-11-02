@@ -8,12 +8,13 @@ import { RoleplayButton } from '@/components/lesson/RoleplayButton'
 import { NoteForm } from '@/components/notebook/NoteForm'
 import { ReadingSourceContext } from '@/components/reading-source'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
+import { LinkList } from '@/components/session/SessionParts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { getLessonContent } from '@/data/lessons'
 import { getQuiz, lessonQuizId, quizHref } from '@/data/questions'
-import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
+import { entertainmentLinks, resolveLessonRoute, sectionHref, type Lesson as LessonData } from '@/data/roadmap'
 import { OWL_CHECKPOINT_ID, OWL_HREF } from '@/lib/owl'
 import { prioritizeSections } from '@/lib/placement'
 
@@ -64,6 +65,21 @@ function LessonNoteButton({ lessonId }: { lessonId: string }) {
           Đã lưu ghi chú vào Sổ tay.
         </p>
       )}
+    </div>
+  )
+}
+
+/**
+ * Link ngoài của phần giải trí (story 15): phương án phụ, nằm dưới video phát trong app (nếu có).
+ * "Nguồn miễn phí" của đoạn chỉ là chữ, nên vẫn giữ link bấm được ở đây; không có link nào thì không hiện gì.
+ */
+function EntertainmentLinks({ lesson }: { lesson: LessonData }) {
+  const links = entertainmentLinks(lesson)
+  if (links.length === 0) return null
+  return (
+    <div className="flex flex-col gap-1">
+      <h3 className="font-semibold">Nguồn ngoài</h3>
+      <LinkList links={links} />
     </div>
   )
 }
@@ -154,6 +170,7 @@ export function Lesson() {
           >
             {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
             {content && section.id === 'grammar' && <GrammarSection content={content} />}
+            {section.id === 'entertainment' && <EntertainmentLinks lesson={lesson} />}
             {section.id === 'checkpoint' && lesson.checkpointId === OWL_CHECKPOINT_ID && (
               <Button asChild className="self-start">
                 <Link to={OWL_HREF}>
