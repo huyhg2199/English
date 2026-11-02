@@ -1,14 +1,17 @@
-import { useEffect } from 'react'
-import { ArrowLeft, BookOpenCheck, Check, MapPinOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowLeft, BookOpenCheck, Check, MapPinOff, NotebookPen } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
-import { useProgress, useSkillBoard } from '@/app/store-context'
+import { useNotes, useProgress, useSkillBoard } from '@/app/store-context'
 import { GrammarSection, PronunciationSection } from '@/components/lesson/LessonContentParts'
+import { NoteForm } from '@/components/notebook/NoteForm'
+import { ReadingSourceContext } from '@/components/reading-source'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { getLessonContent } from '@/data/lessons'
-import { resolveLessonRoute } from '@/data/roadmap'
+import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
 import { prioritizeSections } from '@/lib/placement'
 
 function BackLink() {
@@ -20,6 +23,45 @@ function BackLink() {
       <ArrowLeft className="size-4" aria-hidden="true" />
       Lộ trình
     </Link>
+  )
+}
+
+/** Ghi chú gắn với bài (story 8): mở Sheet có form 3 ô; lưu xong ghi chú có link về bài trong Sổ tay. */
+function LessonNoteButton({ lessonId }: { lessonId: string }) {
+  const { create } = useNotes()
+  const [open, setOpen] = useState(false)
+  const [saved, setSaved] = useState(false)
+  return (
+    <div className="flex flex-col gap-1">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button variant="outline" onClick={() => setSaved(false)}>
+            <NotebookPen aria-hidden="true" />
+            Ghi chú cho bài này
+          </Button>
+        </SheetTrigger>
+        <SheetContent className="max-h-[90dvh] overflow-y-auto">
+          <SheetTitle>Ghi chú cho bài này</SheetTitle>
+          <SheetDescription>Quy tắc, lỗi sai, câu ví dụ: điền ô nào cũng được, ít nhất một ô.</SheetDescription>
+          <NoteForm
+            lessonId={lessonId}
+            onSubmit={(input) => {
+              const reason = create(input)
+              if (!reason) {
+                setOpen(false)
+                setSaved(true)
+              }
+              return reason
+            }}
+          />
+        </SheetContent>
+      </Sheet>
+      {saved && (
+        <p role="status" className="text-xs text-muted-foreground">
+          Đã lưu ghi chú vào Sổ tay.
+        </p>
+      )}
+    </div>
   )
 }
 
@@ -94,18 +136,24 @@ export function Lesson() {
 
       {/* Đoạn của kỹ năng yếu nhất lên đầu, nhãn "Ưu tiên"; chưa đội Mũ Phân Loại thì giữ thứ tự. */}
       {prioritizeSections(lesson.sections, weakest).map(({ section, priority }) => (
-        <LessonSectionCard
+        <ReadingSourceContext.Provider
           key={section.id}
-          lesson={lesson}
-          stage={stage}
-          section={section}
-          highlighted={section.id === target}
-          priority={priority}
+          value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
         >
-          {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
-          {content && section.id === 'grammar' && <GrammarSection content={content} />}
-        </LessonSectionCard>
+          <LessonSectionCard
+            lesson={lesson}
+            stage={stage}
+            section={section}
+            highlighted={section.id === target}
+            priority={priority}
+          >
+            {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
+            {content && section.id === 'grammar' && <GrammarSection content={content} />}
+          </LessonSectionCard>
+        </ReadingSourceContext.Provider>
       ))}
+
+      <LessonNoteButton lessonId={lesson.id} />
 
       <div className="flex flex-col gap-2">
         <Button

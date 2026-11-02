@@ -1,6 +1,7 @@
 import { ExternalLink } from 'lucide-react'
 
 import { ListenButton } from '@/components/ListenButton'
+import { ReadableText } from '@/components/ReadableText'
 import { getSpell, type DialogueLine, type Tense } from '@/data/lessons'
 
 import { SpellCard } from './SpellCard'
@@ -24,7 +25,8 @@ function Dialogue({ line }: { line: DialogueLine }) {
         <ListenButton text={line.text} label={`Nghe: ${line.text}`} size="sm" />
         <div className="min-w-0">
           <p lang="en" className="break-words">
-            <span className="font-semibold">{line.speaker}:</span> {line.text}
+            <span className="font-semibold">{line.speaker}:</span>{' '}
+            <ReadableText as="span" text={line.text} className="leading-relaxed" />
           </p>
           <p className="text-xs text-muted-foreground">{line.vi}</p>
         </div>
@@ -84,9 +86,7 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
             <li key={e.en} className="flex items-start gap-2">
               <ListenButton text={e.en} label={`Nghe: ${e.en}`} size="sm" />
               <div className="min-w-0">
-                <p lang="en" className="break-words">
-                  {e.en}
-                </p>
+                <ReadableText text={e.en} className="leading-relaxed" />
                 <p className="text-xs text-muted-foreground">{e.vi}</p>
               </div>
             </li>

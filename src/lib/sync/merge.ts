@@ -1,3 +1,4 @@
+import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
 import { isLessonProgress } from '@/lib/roadmap-progress'
@@ -12,7 +13,7 @@ import { isTimeString } from '@/lib/updated-at'
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -114,7 +115,10 @@ export function mergeSessionDays(local: unknown, server: unknown): Record<string
   return mergeEntries(local, server, isSessionDay, (a, b) => (a.kind !== b.kind ? (a.kind === 'full' ? a : b) : newer(a, b)))
 }
 
-/** Gộp `savedWords.items` theo từng mục (xem `mergeEntries`). */
+/**
+ * Gộp `savedWords.items` theo từng mục (xem `mergeEntries`). Xoá là dấu `deleted` + `updatedAt` mới hơn,
+ * nên bản cũ ở máy khác không làm mục đã xoá sống lại.
+ */
 export function mergeSavedWordItems(local: unknown, server: unknown): Record<string, unknown> {
   return mergeEntries(local, server, isSavedWord)
 }
@@ -173,6 +177,12 @@ export function mergePronunciationItems(local: unknown, server: unknown): Record
   }))
 }
 
+/** Gộp `notes.items` theo từng ghi chú (cùng luật với `savedWords`, kể cả dấu xoá). */
+export function mergeNoteItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isNote)
+}
+
+export const mergeNotes = mergeKeyed('items', mergeNoteItems)
 export const mergeSessions = mergeKeyed('days', mergeSessionDays)
 export const mergePronunciation = mergeKeyed('items', mergePronunciationItems)
 export const mergeSavedWords = mergeKeyed('items', mergeSavedWordItems)
@@ -185,6 +195,7 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   savedWords: mergeSavedWords,
   placement: mergePlacement,
   pronunciation: mergePronunciation,
+  notes: mergeNotes,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

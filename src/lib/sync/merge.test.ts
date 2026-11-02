@@ -22,13 +22,13 @@ import {
 
 const T1 = '2026-11-01T10:00:00.000Z'
 const T2 = '2026-11-01T11:00:00.000Z'
-const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 7, data })
-const remote = (data: Record<string, unknown>, schemaVersion = 7) => ({ schemaVersion, data, updatedAt: T1 })
+const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 8, data })
+const remote = (data: Record<string, unknown>, schemaVersion = 8) => ({ schemaVersion, data, updatedAt: T1 })
 const lessons = (l: Record<string, unknown>) => ({ progress: { lessons: l } })
 
 describe('pickSynced / allowlist', () => {
-  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation trong allowlist', () => {
-    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation'])
+  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation, notes trong allowlist', () => {
+    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes'])
   })
 
   it('bỏ mọi key ngoài allowlist (vd API key)', () => {
@@ -113,7 +113,7 @@ describe('mergeWithRemote — I/O Matrix', () => {
   })
 
   it('server mới hơn app → outdated, không gộp', () => {
-    expect(mergeWithRemote(local({}), remote({}, 8))).toEqual({ kind: 'outdated' })
+    expect(mergeWithRemote(local({}), remote({}, 9))).toEqual({ kind: 'outdated' })
   })
 
   it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v5)', () => {

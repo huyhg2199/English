@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 import { buildSession, markKnown } from '@/lib/srs'
 
-import { cambridgeUrl, compareStudyOrder, hasDetails, loadWords, PARTS_OF_SPEECH, VOCAB_ATTRIBUTION } from './index'
+import { cambridgeUrl, compareStudyOrder, hasDetails, loadWords, PARTS_OF_SPEECH, VOCAB_ATTRIBUTION, type Word } from './index'
 
 const words = await loadWords()
 
@@ -74,7 +74,7 @@ describe('words.json', () => {
       words.filter((w) => w.list === 'ngsl').map((w) => [w.id, markKnown(undefined, new Date(2026, 10, 1, 9, 0, 0))]),
     )
     const session = buildSession({ cards }, words, now, 3)
-    expect(session.queue.map((i) => [i.kind, i.word.list, i.word.rank])).toEqual([
+    expect(session.queue.map((i) => [i.kind, (i.word as Word).list, (i.word as Word).rank])).toEqual([
       ['new', 'tsl', 1],
       ['new', 'tsl', 2],
       ['new', 'tsl', 3],

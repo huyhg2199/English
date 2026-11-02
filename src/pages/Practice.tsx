@@ -2,27 +2,27 @@ import { useMemo } from 'react'
 import { ChevronRight, HardDriveDownload, Layers, Sparkles, WandSparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useNewWordList, useSpells, useSrs } from '@/app/store-context'
+import { useNewWordList, useSavedWords, useSpells, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SPELLS } from '@/data/lessons'
 import { sectionHref } from '@/data/roadmap'
-import { buildSession } from '@/lib/srs'
+import { buildStudySession, flashcardSummary } from '@/lib/flashcard-session'
 
 function FlashcardSummary() {
   const wordsState = useWords()
   const { srs } = useSrs()
+  const { items: savedItems } = useSavedWords()
   const firstList = useNewWordList()
   const [now] = useNow()
   const session = useMemo(
-    () => (wordsState.status === 'ready' ? buildSession(srs, wordsState.words, now, undefined, firstList) : null),
-    [srs, wordsState, now, firstList],
+    () => (wordsState.status === 'ready' ? buildStudySession(srs, wordsState.words, savedItems, now, firstList) : null),
+    [srs, wordsState, savedItems, now, firstList],
   )
 
   if (!session) return wordsState.status === 'error' ? 'Chưa mở được bộ từ' : 'Đang đếm thẻ…'
-  if (session.queue.length === 0) return 'Xong hôm nay'
-  return `${session.dueCount} thẻ đến hạn · ${session.newCount} từ mới hôm nay`
+  return flashcardSummary(session)
 }
 
 /** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */

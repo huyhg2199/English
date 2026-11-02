@@ -16,7 +16,16 @@ import {
 import { applyRecognition, readPronunciation, type SpeakOutcome } from '@/lib/pronunciation'
 import type { RecognitionResult } from '@/lib/speech-recognition'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
-import { readSavedWords, saveWord, type SavedWordSource } from '@/lib/saved-words'
+import { createNote, deleteNote, noteId, readNotes, updateNote, type NoteInput } from '@/lib/notes'
+import {
+  addToSrs,
+  deleteSavedWord,
+  readSavedWords,
+  saveWord,
+  type AddToSrsResult,
+  type SavedWordSource,
+} from '@/lib/saved-words'
+import type { StudyWord } from '@/data/vocab'
 import {
   newWordListFor,
   readSessionDays,
@@ -178,7 +187,10 @@ export function useNewWordList() {
   return useMemo(() => newWordListFor(store), [store])
 }
 
-/** Từ đã lưu (`store.data.savedWords.items`) và hàm lưu từ kèm câu gốc + nguồn. */
+/**
+ * Từ/cụm đã lưu (`store.data.savedWords.items`): lưu kèm câu gốc + nguồn, xoá (dấu xoá) và
+ * "Thêm vào flashcard" (từ trong NGSL/TSL → thẻ sẵn có; cụm ngoài danh sách → thẻ riêng, cần nghĩa).
+ */
 export function useSavedWords() {
   const handle = useStoreHandle()
   const { store } = useLoadedStore()
@@ -188,7 +200,52 @@ export function useSavedWords() {
       handle.update((s) => saveWord(s, input, now)),
     [handle],
   )
-  return { items, save }
+  const remove = useCallback((id: string, now: Date = new Date()) => handle.update((s) => deleteSavedWord(s, id, now)), [handle])
+  const addToFlashcards = useCallback(
+    (id: string, opts: { vocab?: StudyWord; meaningVi?: string }, now: Date = new Date()) => {
+      let result: AddToSrsResult = { ok: false, reason: 'missing' }
+      handle.update((s) => {
+        result = addToSrs(s, id, opts, now)
+        return result.ok ? result.store : s
+      })
+      return result
+    },
+    [handle],
+  )
+  return { items, save, remove, addToFlashcards }
+}
+
+function randomPart(): string {
+  const c = globalThis.crypto
+  if (c && typeof c.randomUUID === 'function') return c.randomUUID().slice(0, 8)
+  return Math.random().toString(36).slice(2, 10)
+}
+
+/** Ghi chú kiến thức (`store.data.notes.items`): tạo / sửa / xoá (dấu xoá). Trả về lý do khi không lưu. */
+export function useNotes() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const items = useMemo(() => readNotes(store), [store])
+  const run = useCallback(
+    (fn: (s: Store) => ReturnType<typeof createNote>) => {
+      let reason: 'empty' | 'missing' | null = null
+      handle.update((s) => {
+        const r = fn(s)
+        if (r.ok) return r.store
+        reason = r.reason
+        return s
+      })
+      return reason
+    },
+    [handle],
+  )
+  const create = useCallback(
+    (input: NoteInput, now: Date = new Date()) => run((s) => createNote(s, noteId(now, randomPart()), input, now)),
+    [run],
+  )
+  const edit = useCallback((id: string, input: NoteInput, now: Date = new Date()) => run((s) => updateNote(s, id, input, now)), [run])
+  const remove = useCallback((id: string, now: Date = new Date()) => handle.update((s) => deleteNote(s, id, now)), [handle])
+  return { items, create, edit, remove }
 }
 
 /**

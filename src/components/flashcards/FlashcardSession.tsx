@@ -1,18 +1,23 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { ExternalLink, RotateCw } from 'lucide-react'
+import { BookmarkCheck, ExternalLink, RotateCw } from 'lucide-react'
+import { Link } from 'react-router'
 
-import { useNewWordList, useSrs } from '@/app/store-context'
+import { useNewWordList, useSavedWords, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { cambridgeUrl, POS_LABELS, VOCAB_ATTRIBUTION, type StudyWord, type WordList } from '@/data/vocab'
 import { ListenButton } from '@/components/ListenButton'
+import { ReadableText } from '@/components/ReadableText'
+import { buildStudySession } from '@/lib/flashcard-session'
+import { originsByWord, safeSourceHref, type Origin } from '@/lib/saved-words'
 import {
-  buildSession,
   formatDelay,
+  isCustomWord,
   limitedProgress,
   review,
+  type CustomStudyWord,
   type Grade,
   type ReviewedItem,
   type SessionItem,
@@ -70,17 +75,135 @@ export function VocabAttribution() {
   )
 }
 
+/**
+ * Link nguồn: đường dẫn trong app dùng router, `http(s)://` mở tab mới; URL khác (dữ liệu đồng bộ/khôi phục
+ * có thể chứa `javascript:`, `data:`, `//host`) chỉ hiện chữ (`safeSourceHref`).
+ */
+export function SourceLink({ source, className }: { source: Origin['source']; className?: string }) {
+  const cls = cn('inline-flex min-w-0 items-center gap-1 text-xs text-primary underline-offset-4 hover:underline', className)
+  const href = safeSourceHref(source.url)
+  if (!href) {
+    return (
+      <span className={cn('inline-flex min-w-0 text-xs text-muted-foreground', className)}>
+        <span className="truncate">{source.title}</span>
+      </span>
+    )
+  }
+  if (href.kind === 'internal') {
+    return (
+      <Link to={href.to} className={cls}>
+        <span className="truncate">{source.title}</span>
+      </Link>
+    )
+  }
+  return (
+    <a href={href.href} target="_blank" rel="noreferrer" className={cls}>
+      <span className="truncate">{source.title}</span>
+      <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
+    </a>
+  )
+}
+
+/** "Câu gốc của bạn": câu Huy đã lưu kèm nguồn. */
+function Origins({ origins }: { origins: readonly Origin[] }) {
+  if (origins.length === 0) return null
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-primary/40 p-3 text-sm">
+      <p className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+        <BookmarkCheck className="size-3.5" aria-hidden="true" />
+        Câu gốc của bạn
+      </p>
+      {origins.map((o) => (
+        <div key={o.sentence} className="flex flex-col gap-0.5">
+          <p className="break-words italic" lang="en">
+            {o.sentence}
+          </p>
+          <SourceLink source={o.source} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 type FlashcardProps = {
   item: SessionItem
   previous: unknown
   now: Date
+  origins: readonly Origin[]
   onGrade: (grade: Grade) => void
   onKnown: () => void
 }
 
-function Flashcard({ item, previous, now, onGrade, onKnown }: FlashcardProps) {
+function GradeButtons({ previous, now, onGrade }: Pick<FlashcardProps, 'previous' | 'now' | 'onGrade'>) {
+  return (
+    <div className="grid grid-cols-4 gap-2">
+      {GRADE_BUTTONS.map(({ grade, label, className }) => (
+        <Button
+          key={grade}
+          type="button"
+          variant="outline"
+          onClick={() => onGrade(grade)}
+          className={cn('h-auto min-w-0 flex-col gap-0.5 px-1 py-2', className)}
+        >
+          <span className="font-semibold">{label}</span>
+          <span className="text-[11px] font-normal text-muted-foreground">{formatDelay(review(previous, grade, now).due, now)}</span>
+        </Button>
+      ))}
+    </div>
+  )
+}
+
+/** Thẻ riêng từ Sổ tay: mặt trước cụm + nút nghe, mặt sau nghĩa Huy nhập + câu gốc + nguồn. */
+function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<FlashcardProps, 'item' | 'origins'> & {
+  word: CustomStudyWord
+  kind: SessionItem['kind']
+}) {
   const [flipped, setFlipped] = useState(false)
-  const { word, kind } = item
+  return (
+    <Card className="gap-4">
+      <CardHeader className="gap-3">
+        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{KIND_LABELS[kind]}</span>
+          <span>Sổ tay</span>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="min-w-0 text-2xl font-semibold break-words" lang="en">
+            {word.word}
+          </h2>
+          <ListenButton text={word.word} label={`Nghe "${word.word}"`} />
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {!flipped ? (
+          <Button type="button" onClick={() => setFlipped(true)}>
+            <RotateCw aria-hidden="true" />
+            Lật thẻ
+          </Button>
+        ) : (
+          <>
+            <p className="text-lg">{word.meaningVi}</p>
+            <Origins origins={word.sentence ? [{ sentence: word.sentence, source: word.source }] : []} />
+            {!word.sentence && <SourceLink source={word.source} />}
+            <GradeButtons previous={previous} now={now} onGrade={onGrade} />
+            {kind === 'new' && (
+              <Button type="button" variant="ghost" onClick={onKnown}>
+                Đã biết cụm này (ôn lại sau 2 tháng)
+              </Button>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function Flashcard({ item, previous, now, origins, onGrade, onKnown }: FlashcardProps) {
+  const [flipped, setFlipped] = useState(false)
+  const { word: sessionWord, kind } = item
+  if (isCustomWord(sessionWord)) {
+    return <CustomFlashcard word={sessionWord} kind={kind} previous={previous} now={now} onGrade={onGrade} onKnown={onKnown} />
+  }
+  const word = sessionWord
 
   return (
     <Card className="gap-4">
@@ -124,13 +247,17 @@ function Flashcard({ item, previous, now, onGrade, onKnown }: FlashcardProps) {
             <p className="text-lg">{word.meaningVi}</p>
             <div className="rounded-lg border bg-secondary/40 p-3 text-sm">
               <div className="flex items-start justify-between gap-2">
-                <p className="min-w-0 break-words italic" lang="en">
-                  {word.exampleEn}
-                </p>
+                <ReadableText
+                  as="p"
+                  text={word.exampleEn}
+                  source={{ title: `Flashcard “${word.word}”`, url: '/practice/flashcards' }}
+                  className="min-w-0 leading-relaxed italic"
+                />
                 <ListenButton text={word.exampleEn} label="Nghe câu ví dụ" size="sm" />
               </div>
               <p className="mt-1 text-muted-foreground">{word.exampleVi}</p>
             </div>
+            <Origins origins={origins} />
             <a
               href={cambridgeUrl(word.word)}
               target="_blank"
@@ -141,22 +268,7 @@ function Flashcard({ item, previous, now, onGrade, onKnown }: FlashcardProps) {
               <ExternalLink className="size-3.5" aria-hidden="true" />
             </a>
 
-            <div className="grid grid-cols-4 gap-2">
-              {GRADE_BUTTONS.map(({ grade, label, className }) => (
-                <Button
-                  key={grade}
-                  type="button"
-                  variant="outline"
-                  onClick={() => onGrade(grade)}
-                  className={cn('h-auto min-w-0 flex-col gap-0.5 px-1 py-2', className)}
-                >
-                  <span className="font-semibold">{label}</span>
-                  <span className="text-[11px] font-normal text-muted-foreground">
-                    {formatDelay(review(previous, grade, now).due, now)}
-                  </span>
-                </Button>
-              ))}
-            </div>
+            <GradeButtons previous={previous} now={now} onGrade={onGrade} />
             {kind === 'new' && (
               <Button type="button" variant="ghost" onClick={onKnown}>
                 Đã biết từ này (ôn lại sau 2 tháng)
@@ -198,6 +310,9 @@ type FlashcardSessionProps = {
 export function FlashcardSession({ limit, preferNew = false, firstList: firstListProp, renderDone, errorExtra }: FlashcardSessionProps) {
   const wordsState = useWords()
   const { srs, grade, markKnown } = useSrs()
+  const { items: savedItems } = useSavedWords()
+  // "Câu gốc" cho từ có sẵn, từ các mục Sổ tay đã thêm vào flashcard (thẻ riêng: trong `buildStudySession`).
+  const origins = useMemo(() => originsByWord(savedItems), [savedItems])
   const currentList = useNewWordList()
   const firstList = firstListProp ?? currentList
   // Thời điểm tính phiên; cập nhật sau mỗi lần chấm, mỗi phút và khi app hiện lại (không gọi giờ máy trong render).
@@ -206,8 +321,8 @@ export function FlashcardSession({ limit, preferNew = false, firstList: firstLis
 
   const session = useMemo(
     () =>
-      wordsState.status === 'ready' ? buildSession(srs, wordsState.words, now, undefined, firstList) : null,
-    [srs, wordsState, now, firstList],
+      wordsState.status === 'ready' ? buildStudySession(srs, wordsState.words, savedItems, now, firstList) : null,
+    [srs, wordsState, savedItems, now, firstList],
   )
   const progress = useMemo(
     () => limitedProgress(session?.queue ?? [], reviewed, { limit, preferNew }),
@@ -254,6 +369,7 @@ export function FlashcardSession({ limit, preferNew = false, firstList: firstLis
           item={current}
           previous={srs.cards[current.word.id]}
           now={now}
+          origins={origins.get(current.word.word.toLowerCase()) ?? []}
           onGrade={(g) => advance(current, (at) => grade(current.word.id, g, at))}
           onKnown={() => advance(current, (at) => markKnown(current.word.id, at))}
         />

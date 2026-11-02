@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 7
+export const CURRENT_VERSION = 8
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -73,6 +73,19 @@ export const migrations: Migrations = {
       pronunciation: isPlainObject(store.data.pronunciation) ? store.data.pronunciation : { items: {} },
     },
   }),
+  // v7 → v8 (story 8): ghi chú kiến thức `notes: { items: {} }`. Đã có (object) thì để nguyên; giá trị lạ
+  // không phải object thì giữ trong `notes.legacy` (migration không xoá dữ liệu). Mục `savedWords` thêm field tuỳ chọn
+  // (`meaningVi`, `inSrs`, `deleted`) nên mục cũ hợp lệ không cần đổi. Lên v8 để app cũ (v7) không ghi đè mất `notes`.
+  7: (store) => {
+    const notes = store.data.notes
+    return {
+      schemaVersion: 8,
+      data: {
+        ...store.data,
+        notes: isPlainObject(notes) ? notes : notes === undefined ? { items: {} } : { items: {}, legacy: notes },
+      },
+    }
+  },
 }
 
 export function createDefaultStore(version: number = CURRENT_VERSION): Store {

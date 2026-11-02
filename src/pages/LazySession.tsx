@@ -4,77 +4,28 @@ import { Check, Coffee, ExternalLink, WifiOff } from 'lucide-react'
 import { useSavedWords, useSessions } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
+import { ReadableText } from '@/components/ReadableText'
 import { BackToToday, SessionDoneView, StepClock } from '@/components/session/SessionParts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { fetchLazyNews, type LazyNews } from '@/lib/news'
-import { normalizeWord, savedWordsOn, tokenize } from '@/lib/saved-words'
+import { savedWordsOn } from '@/lib/saved-words'
 import { isSessionDay, localDayKey } from '@/lib/sessions'
-import { cn } from '@/lib/utils'
 
 /** Số từ cần lưu (hoặc số thẻ khi offline) để xong buổi lười. */
 const WORDS_NEEDED = 3
 
 type NewsState = { status: 'loading' } | { status: 'ready'; news: LazyNews } | { status: 'offline' }
 
-/** Đoạn văn chạm-để-lưu: mỗi từ là một nút; từ đã lưu sáng lên. */
-function TappableText({
-  text,
-  saved,
-  onTap,
-  className,
-}: {
-  text: string
-  saved: ReadonlySet<string>
-  onTap: (word: string, sentence: string) => void
-  className?: string
-}) {
-  const sentences = useMemo(() => tokenize(text), [text])
-  return (
-    <p className={cn('leading-loose break-words', className)} lang="en">
-      {sentences.map((sentence, si) => (
-        <span key={si}>
-          {si > 0 && ' '}
-          {sentence.parts.map((part, pi) =>
-            part.word ? (
-              <button
-                key={pi}
-                type="button"
-                onClick={() => onTap(part.word!, sentence.text)}
-                aria-pressed={saved.has(part.word)}
-                className={cn(
-                  '-mx-0.5 rounded px-0.5 underline decoration-dotted decoration-muted-foreground/60 underline-offset-4 transition-colors hover:bg-accent',
-                  saved.has(part.word) &&
-                    'bg-primary text-primary-foreground no-underline shadow-[0_0_10px_var(--candle-glow)] hover:bg-primary',
-                )}
-              >
-                {part.text}
-              </button>
-            ) : (
-              <span key={pi}>{part.text}</span>
-            ),
-          )}
-        </span>
-      ))}
-    </p>
-  )
-}
-
 function NewsCard({ news, onDone }: { news: LazyNews; onDone: () => void }) {
-  const { items, save } = useSavedWords()
+  const { items } = useSavedWords()
   const [now, setNow] = useNow()
   // Mọi từ đã lưu hôm nay đều tính vào 3 từ (tin khác hay tin đổi sau khi tải lại vẫn tính), và sáng lên nếu có trong tin.
   const savedHere = useMemo(() => savedWordsOn(items, now), [items, now])
-  const savedSet = useMemo(() => new Set(savedHere.map((w) => w.word)), [savedHere])
   const count = savedHere.length
   const enough = count >= WORDS_NEEDED
 
-  function tap(word: string, sentence: string) {
-    if (savedSet.has(normalizeWord(word))) return
-    const at = new Date()
-    save({ word, sentence, source: { title: news.title, url: news.url } }, at)
-    setNow(at)
-  }
+  const source = useMemo(() => ({ title: news.title, url: news.url }), [news])
 
   return (
     <>
@@ -82,11 +33,11 @@ function NewsCard({ news, onDone }: { news: LazyNews; onDone: () => void }) {
         <CardHeader>
           <CardDescription>{news.sourceName}</CardDescription>
           <CardTitle className="text-lg">
-            <TappableText text={news.title} saved={savedSet} onTap={tap} />
+            <ReadableText text={news.title} source={source} onSaved={setNow} />
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          {news.summary && <TappableText text={news.summary} saved={savedSet} onTap={tap} className="text-sm" />}
+          {news.summary && <ReadableText text={news.summary} source={source} onSaved={setNow} className="text-sm" />}
           <a
             href={news.url}
             target="_blank"
@@ -101,7 +52,7 @@ function NewsCard({ news, onDone }: { news: LazyNews; onDone: () => void }) {
 
       <div className="flex flex-col gap-2">
         <p className="text-sm text-muted-foreground" aria-live="polite">
-          Chạm vào từ mới để lưu kèm câu gốc · đã lưu {Math.min(count, WORDS_NEEDED)}/{WORDS_NEEDED}
+          Chạm vào từ mới (hoặc bôi đen một cụm) để lưu kèm câu gốc · đã lưu {Math.min(count, WORDS_NEEDED)}/{WORDS_NEEDED}
         </p>
         {savedHere.length > 0 && (
           <ul className="flex flex-wrap gap-1.5" aria-label="Từ đã lưu">

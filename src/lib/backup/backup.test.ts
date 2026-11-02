@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
-import { readSavedWords, saveWord } from '@/lib/saved-words'
+import { createNote, deleteNote, listNotes, readNotes } from '@/lib/notes'
+import { deleteSavedWord, readSavedWords, saveWord, savedWordId } from '@/lib/saved-words'
 import { readSessionDays, recordSession } from '@/lib/sessions'
 import { gradeCard, readSrs } from '@/lib/srs'
 import { createDefaultStore, CURRENT_VERSION, migrations, runMigrations, type Store } from '@/lib/storage'
@@ -41,7 +42,7 @@ function roundTrip(store: Store, now = T1): Backup {
 
 describe('BACKUP_KEYS / allowlist', () => {
   it('trùng với allowlist đồng bộ', () => {
-    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation'])
+    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes'])
   })
 
   it('không có key nào giống API key / token / PAT / secret / password', () => {
@@ -320,7 +321,49 @@ describe('summarizeBackup', () => {
       savedWords: 1,
       placementAttempts: 0,
       pronunciationItems: 0,
+      notes: 0,
     })
+  })
+})
+
+describe('notes trong sao lưu (story 8)', () => {
+  const src = { title: 'Tin', url: 'https://example.com' }
+  function withNotes(): Store {
+    let s = empty()
+    const a = createNote(s, 'live', { rule: 'am / is / are', mistake: '', example: '' }, T0)
+    if (!a.ok) throw new Error('note')
+    s = a.store
+    const b = createNote(s, 'gone', { rule: '', mistake: 'She work', example: '' }, T0)
+    if (!b.ok) throw new Error('note')
+    s = deleteNote(b.store, 'gone', T1)
+    s = saveWord(s, { word: 'model', sentence: 'x', source: src }, T0)
+    s = saveWord(s, { word: 'data', sentence: 'y', source: src }, T0)
+    return deleteSavedWord(s, savedWordId('data', T0), T1)
+  }
+
+  it('summarizeBackup: 1 ghi chú (bỏ ghi chú đã xoá), từ đã lưu không tính mục đã xoá', () => {
+    const summary = summarizeBackup(roundTrip(withNotes(), T2))
+    expect(summary.notes).toBe(1)
+    expect(summary.savedWords).toBe(1)
+  })
+
+  it('khôi phục lên máy trống: ghi chú còn sống trở lại (tính vào added), dấu xoá vẫn giữ', () => {
+    const r = restoreBackup(empty(), roundTrip(withNotes(), T2))
+    expect(listNotes(readNotes(r.store)).map((n) => n.id)).toEqual(['live'])
+    expect(readNotes(r.store).gone).toMatchObject({ deleted: true })
+    // 2 ghi chú (kể cả mục đã xoá, giữ dấu xoá) + 2 mục lưu.
+    expect(r.added).toBe(4)
+  })
+
+  it('ghi chú sai dạng trong file bị bỏ', () => {
+    const backup = createBackup(withNotes(), T2)
+    ;(backup.data.notes as { items: Record<string, unknown> }).items.bad = { rule: 1 }
+    const parsed = parseBackup(serializeBackup(backup))
+    if (!parsed.ok) throw new Error(parsed.message)
+    const items = (parsed.backup.data.notes as { items: Record<string, unknown> }).items
+    expect(Object.keys(items).sort()).toEqual(['gone', 'live'])
+    const r = restoreBackup(empty(), parsed.backup)
+    expect(Object.hasOwn(readNotes(r.store), 'bad')).toBe(false)
   })
 })
 
