@@ -62,9 +62,11 @@ describe('status.json', () => {
   const withDays = (days: Record<string, unknown>): Store => ({ ...empty(), data: { sessions: { days } } })
 
   it('xong buổi hôm nay → studied true, kind, streak; chỉ có 5 field', () => {
-    let s = recordSession(empty(), 'full', local(20, 0, 1))
-    s = recordSession(s, 'lazy', local(9))
-    const now = local(10)
+    // Mốc tuyệt đối (giờ VN = UTC+7) để không phụ thuộc múi giờ máy chạy test (CI chạy UTC):
+    // buổi full 20:00 VN ngày 1/11, buổi lười 09:00 VN ngày 2/11, kiểm lúc 10:00 VN ngày 2/11.
+    let s = recordSession(empty(), 'full', new Date('2026-11-01T13:00:00Z'))
+    s = recordSession(s, 'lazy', new Date('2026-11-02T02:00:00Z'))
+    const now = new Date('2026-11-02T03:00:00Z')
     expect(statusFor(s, now)).toEqual({ date: '2026-11-02', studied: true, kind: 'lazy', streak: 2, updatedAt: now.toISOString() })
     expect(Object.keys(statusFor(s, now)).sort()).toEqual(['date', 'kind', 'streak', 'studied', 'updatedAt'])
   })

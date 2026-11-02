@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/check-precache.mjs",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "TZ=Asia/Ho_Chi_Minh vitest run",
     "lint": "eslint .",
     "vocab:build": "node scripts/vocab/build.mjs"
   },
