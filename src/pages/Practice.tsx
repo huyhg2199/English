@@ -1,9 +1,20 @@
 import { useMemo } from 'react'
-import { BookX, ChevronRight, ClipboardCheck, HardDriveDownload, Layers, Mail, Sparkles, WandSparkles, type LucideIcon } from 'lucide-react'
+import {
+  BookX,
+  ChevronRight,
+  ClipboardCheck,
+  GraduationCap,
+  HardDriveDownload,
+  Layers,
+  Mail,
+  Sparkles,
+  WandSparkles,
+  type LucideIcon,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { useMistakes, useNewWordList, useQuizzes, useSavedWords, useSpells, useSrs } from '@/app/store-context'
+import { useMistakes, useNewWordList, useOwl, useQuizzes, useSavedWords, useSpells, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +22,7 @@ import { SPELLS } from '@/data/lessons'
 import { MISTAKES_HREF, quizHref } from '@/data/questions'
 import { sectionHref } from '@/data/roadmap'
 import { buildStudySession, flashcardSummary } from '@/lib/flashcard-session'
+import { OWL_HREF, partPercent } from '@/lib/owl'
 import { listMistakes, reviewableDue } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
 
@@ -60,6 +72,15 @@ function MiniTestSummary({ quizId, month }: { quizId: string; month: string }) {
   if (mine.length === 0) return `10 câu ôn cả 4 tuần ${month}. Chưa làm lần nào.`
   const best = Math.max(...mine.map((a) => a.score))
   return `Đã làm ${mine.length} lần · cao nhất ${best}/${mine[0].total} · lần gần nhất ${mine[0].score}/${mine[0].total}`
+}
+
+function OwlSummary() {
+  const [now] = useNow()
+  const { attempts } = useOwl(now)
+  if (attempts.length === 0) return 'Kỳ thi qua cửa chặng 1: 30 từ đọc theo IPA + 20 câu thì. Chưa thi lần nào.'
+  const last = attempts[0]
+  const passes = attempts.filter((a) => a.passed).length
+  return `Đã thi ${attempts.length} lần${passes > 0 ? ` · qua ${passes} lần` : ''} · gần nhất ${last.passed ? 'qua' : 'chưa qua'} (phát âm ${partPercent(last.details.pronunciation)}%, thì ${partPercent(last.details.tenses)}%${last.details.selfGraded ? ', có phần tự chấm' : ''})`
 }
 
 /** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */
@@ -135,6 +156,10 @@ export function Practice() {
 
       <PracticeLink to={quizHref('mini-t2')} icon={ClipboardCheck} title="Mini test tháng T2">
         <MiniTestSummary quizId="mini-t2" month="T2" />
+      </PracticeLink>
+
+      <PracticeLink to={OWL_HREF} icon={GraduationCap} title="O.W.L. 1">
+        <OwlSummary />
       </PracticeLink>
 
       <SpellList />

@@ -31,6 +31,10 @@ export type QuizAttempt = {
   skipped?: boolean
   /** Qua cửa hay không (story 14 ghi cho `kind: 'owl'`). */
   passed?: boolean
+  /** Kỳ qua cửa của lần làm (story 14: `owl-1`). */
+  checkpointId?: string
+  /** Chi tiết lần thi O.W.L. (điểm từng phần, phần ETS, kế hoạch ôn); `@/lib/owl` đọc và kiểm dạng. */
+  owl?: Record<string, unknown>
 }
 
 /** Loại lần làm app này hiểu (thiếu `kind` = test thường; `owl` = O.W.L., story 14). */
@@ -52,10 +56,13 @@ function isAnswer(value: unknown): value is AttemptAnswer {
 
 export function isQuizAttempt(value: unknown): value is QuizAttempt {
   if (!isPlainObject(value)) return false
-  const { quizId, seed, startedAt, finishedAt, score, total, answers, updatedAt, kind, skipped, passed } = value
+  const { quizId, seed, startedAt, finishedAt, score, total, answers, updatedAt, kind, skipped, passed, checkpointId, owl } =
+    value
   return (
     (kind === undefined || typeof kind === 'string') &&
     (passed === undefined || typeof passed === 'boolean') &&
+    (checkpointId === undefined || typeof checkpointId === 'string') &&
+    (owl === undefined || isPlainObject(owl)) &&
     (skipped === undefined || skipped === false || (skipped === true && kind === 'comeback' && total === 0)) &&
     typeof quizId === 'string' &&
     typeof seed === 'string' &&
@@ -163,6 +170,9 @@ export type AttemptInput = {
   answers: readonly AttemptAnswer[]
   kind?: AttemptKind
   skipped?: boolean
+  passed?: boolean
+  checkpointId?: string
+  owl?: Record<string, unknown>
 }
 
 /**
@@ -187,6 +197,9 @@ export function recordAttempt(
     updatedAt: now.toISOString(),
     ...(input.kind ? { kind: input.kind } : {}),
     ...(input.skipped ? { skipped: true } : {}),
+    ...(input.passed !== undefined ? { passed: input.passed } : {}),
+    ...(input.checkpointId !== undefined ? { checkpointId: input.checkpointId } : {}),
+    ...(input.owl !== undefined ? { owl: input.owl } : {}),
   }
   const quizzes = isPlainObject(store.data.quizzes) ? store.data.quizzes : {}
   let next: Store = {

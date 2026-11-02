@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Eye, GraduationCap, Loader2, MessageCircleQuestion, RotateCw } from 'lucide-react'
 
 import { useMistakes } from '@/app/store-context'
+import { ListenButton } from '@/components/ListenButton'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { getQuestion } from '@/data/questions'
@@ -32,6 +33,8 @@ export function MistakeCard({ entry, now }: { entry: MistakeEntry; now: Date }) 
   const [revealed, setRevealed] = useState(false)
   const controller = useRef<AbortController | null>(null)
   const question = getQuestion(entry.id)
+  // Từ đọc chưa đúng ở O.W.L. (story 14): không có câu trong ngân hàng; mục lưu chữ thật và IPA.
+  const word = question ? undefined : entry.word
   const mastered = isMastered(entry)
   const due = Date.parse(entry.card.due) <= now.getTime()
   const showAnswer = !due || revealed
@@ -101,9 +104,22 @@ export function MistakeCard({ entry, now }: { entry: MistakeEntry; now: Date }) 
     <Card className="gap-2 py-4">
       <CardContent className="flex flex-col gap-2 text-sm">
         <div className="flex items-start justify-between gap-2">
-          <p className="min-w-0 text-base break-words" lang={question?.kind === 'choice' ? 'en' : undefined}>
-            {promptText}
-          </p>
+          {word ? (
+            <p className="min-w-0 text-base break-words">
+              Đọc to từ{' '}
+              <span lang="en" className="font-semibold">
+                {word.text}
+              </span>{' '}
+              <span lang="en" className="text-muted-foreground">
+                /{word.ipa}/
+              </span>
+            </p>
+          ) : (
+            <p className="min-w-0 text-base break-words" lang={question?.kind === 'choice' ? 'en' : undefined}>
+              {promptText}
+            </p>
+          )}
+          {word && <ListenButton text={word.text} label={`Nghe mẫu: ${word.text}`} />}
           <TagBadge tag={entry.tag} />
         </div>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">

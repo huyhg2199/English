@@ -25,6 +25,7 @@ import {
 import { QUESTION_BANK } from '@/data/questions'
 import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
+import { activeReviewPlan, listOwlAttempts, recordOwlAttempt, type OwlAttemptInput } from '@/lib/owl'
 import { planFor } from '@/lib/schedule'
 import {
   attemptId,
@@ -358,6 +359,22 @@ export function useQuizzes() {
     [handle],
   )
   return { attempts, record }
+}
+
+/**
+ * O.W.L. 1 (story 14): các lần thi (mới nhất trước), kế hoạch ôn đang chạy tại `now` (null khi không có) và hàm ghi
+ * một lần thi làm xong (đẩy câu sai / từ đọc chưa đúng vào Sổ lỗi, trượt thì kèm kế hoạch ôn).
+ */
+export function useOwl(now: Date) {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const attempts = useMemo(() => listOwlAttempts(store), [store])
+  const activePlan = useMemo(() => activeReviewPlan(store, now), [store, now])
+  const record = useCallback(
+    (input: OwlAttemptInput, at: Date = new Date()) => handle.update((s) => recordOwlAttempt(s, input, at)),
+    [handle],
+  )
+  return { attempts, activePlan, record }
 }
 
 /** Lịch gốc, số tuần trễ và ngày dự kiến đạt 750 (story 11) tại thời điểm `now`. */

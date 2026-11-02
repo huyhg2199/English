@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, BookOpenCheck, Check, ClipboardCheck, MapPinOff, NotebookPen } from 'lucide-react'
+import { ArrowLeft, BookOpenCheck, Check, ClipboardCheck, GraduationCap, MapPinOff, NotebookPen } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
 import { useNotes, useProgress, useSkillBoard } from '@/app/store-context'
@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 import { getLessonContent } from '@/data/lessons'
 import { getQuiz, lessonQuizId, quizHref } from '@/data/questions'
 import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
+import { OWL_CHECKPOINT_ID, OWL_HREF } from '@/lib/owl'
 import { prioritizeSections } from '@/lib/placement'
 
 function BackLink() {
@@ -153,6 +154,14 @@ export function Lesson() {
           >
             {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
             {content && section.id === 'grammar' && <GrammarSection content={content} />}
+            {section.id === 'checkpoint' && lesson.checkpointId === OWL_CHECKPOINT_ID && (
+              <Button asChild className="self-start">
+                <Link to={OWL_HREF}>
+                  <GraduationCap aria-hidden="true" />
+                  Vào thi {stage.checkpoint.name}
+                </Link>
+              </Button>
+            )}
           </LessonSectionCard>
         </ReadingSourceContext.Provider>
       ))}

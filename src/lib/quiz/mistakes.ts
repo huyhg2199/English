@@ -20,6 +20,9 @@ export type MistakeExplanation = {
   updatedAt: string
 }
 
+/** Từ đọc chưa đúng (O.W.L., story 14): chữ thật và IPA để ôn bằng tự chấm (không có câu trong ngân hàng). */
+export type MistakeWord = { text: string; ipa: string }
+
 export type MistakeItem = {
   tag: MistakeTag
   lessonId: string
@@ -34,6 +37,8 @@ export type MistakeItem = {
   explanation: MistakeExplanation | null
   /** Lần sửa gần nhất; không bao giờ lùi. */
   updatedAt: string
+  /** Chỉ có ở mục là một từ cần đọc (ôn bằng tự chấm). */
+  word?: MistakeWord
 }
 
 export type MistakeEntry = MistakeItem & { id: string }
@@ -52,10 +57,15 @@ export function isMistakeExplanation(value: unknown): value is MistakeExplanatio
   )
 }
 
+export function isMistakeWord(value: unknown): value is MistakeWord {
+  return isPlainObject(value) && typeof value.text === 'string' && value.text !== '' && typeof value.ipa === 'string'
+}
+
 export function isMistakeItem(value: unknown): value is MistakeItem {
   if (!isPlainObject(value)) return false
-  const { tag, lessonId, sectionId, wrongCount, lastWrongAt, lastChosen, card, explanation, updatedAt } = value
+  const { tag, lessonId, sectionId, wrongCount, lastWrongAt, lastChosen, card, explanation, updatedAt, word } = value
   return (
+    (word === undefined || isMistakeWord(word)) &&
     isMistakeTag(tag) &&
     typeof lessonId === 'string' &&
     typeof sectionId === 'string' &&
@@ -98,7 +108,10 @@ function freshCard(now: Date, previous: unknown): SrsCard {
  * Câu sai ở một test: chưa có trong sổ → `wrongCount 1`, đến hạn ôn ngay; đã có → `wrongCount + 1`, lịch rút lại
  * (chấm "Quên"). Lời giải thích đã lưu giữ nguyên.
  */
-export function recordMistake(store: Store, question: Question, chosen: string, now: Date): Store {
+/** Phần của câu mà Sổ lỗi cần (câu trong ngân hàng, hoặc mục khác như từ đọc chưa đúng ở O.W.L.). */
+export type MistakeSource = Pick<Question, 'id' | 'tag' | 'lessonId' | 'sectionId'> & { word?: MistakeWord }
+
+export function recordMistake(store: Store, question: MistakeSource, chosen: string, now: Date): Store {
   const previous = readMistakes(store)[question.id]
   const old = isMistakeItem(previous) ? previous : null
   const item: MistakeItem = {
@@ -112,6 +125,8 @@ export function recordMistake(store: Store, question: Question, chosen: string, 
     explanation: old?.explanation ?? null,
     updatedAt: nextUpdatedAt(isPlainObject(previous) ? previous.updatedAt : undefined, now),
   }
+  const word = question.word ?? old?.word
+  if (word) item.word = { text: word.text, ipa: word.ipa }
   return writeMistake(store, question.id, item)
 }
 
@@ -186,7 +201,8 @@ export function dueMistakes(items: Record<string, unknown>, now: Date): MistakeE
 
 /**
  * Câu đến hạn ôn được trên máy này (dùng chung cho Luyện tập và trang Sổ lỗi): bỏ câu không còn trong ngân hàng
- * câu, và bỏ câu nghe khi không có TTS (`skippedListening` đếm số câu nghe đến hạn bị bỏ).
+ * câu (trừ mục là một từ cần đọc, ôn bằng tự chấm), và bỏ câu nghe khi không có TTS (`skippedListening` đếm số câu
+ * nghe đến hạn bị bỏ).
  */
 export function reviewableDue(
   items: Record<string, unknown>,
@@ -197,6 +213,10 @@ export function reviewableDue(
   const due: MistakeEntry[] = []
   let skippedListening = 0
   for (const m of dueMistakes(items, now)) {
+    if (m.word) {
+      due.push(m)
+      continue
+    }
     const q = lookup(m.id)
     if (!q) continue
     if (q.kind === 'listening' && !opts.canSpeak) skippedListening++
@@ -227,8 +247,10 @@ export function mergeMistakeItem(a: MistakeItem, b: MistakeItem): MistakeItem {
     explanation = b.explanation
   }
   const base = Date.parse(b.updatedAt) > Date.parse(a.updatedAt) ? b : a
+  const word = base.word ?? a.word ?? b.word
   return {
     ...base,
+    ...(word ? { word } : {}),
     wrongCount: Math.max(a.wrongCount, b.wrongCount),
     lastWrongAt,
     lastChosen: wrongSide.lastChosen,

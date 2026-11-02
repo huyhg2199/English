@@ -7,6 +7,7 @@ import { LazySession } from '@/pages/LazySession'
 import { Lesson } from '@/pages/Lesson'
 import { Mistakes } from '@/pages/Mistakes'
 import { Notebook } from '@/pages/Notebook'
+import { Owl } from '@/pages/Owl'
 import { OwlPostPage } from '@/pages/OwlPost'
 import { Practice } from '@/pages/Practice'
 import { Quiz } from '@/pages/Quiz'
@@ -40,6 +41,8 @@ export const routes: RouteObject[] = [
       // Trang làm bài test (mini test T1, …) và Sổ lỗi sai của Snape; tab Luyện tập vẫn sáng.
       { path: 'practice/quiz/:quizId', element: <Quiz /> },
       { path: 'practice/mistakes', element: <Mistakes /> },
+      // Kỳ thi O.W.L. 1 (story 14); tab Luyện tập vẫn sáng.
+      { path: 'practice/owl', element: <Owl /> },
       // Sao lưu / khôi phục file JSON; tab Luyện tập vẫn sáng (`alsoActiveFor`).
       { path: 'backup', element: <Backup /> },
       // Owl Post & sao lưu: Gist tự động, giờ nhắc, lịch .ics, Telegram (story 13); tab Luyện tập vẫn sáng.

@@ -20,6 +20,7 @@ import {
   readMistakes,
   reviewableDue,
   recordAttempt,
+  recordMistake,
   reviewMistake,
   setMistakeExplanation,
   shuffleOptions,
@@ -287,5 +288,31 @@ describe('gộp Sổ lỗi giữa hai máy', () => {
     const back = mergeMistakeItems(readMistakes(b), readMistakes(a))[id] as MistakeItem
     expect(back.explanation?.text).toBe('giải thích')
     expect(back.card).toEqual(item(b, id).card)
+  })
+})
+
+describe('mục sổ là một từ cần đọc (O.W.L., story 14)', () => {
+  const src = { id: 'owl-ipa-tsl-o-clock', tag: 'phát âm' as const, lessonId: 's1-t1-w1', sectionId: 'pronunciation' as const }
+
+  it('lưu chữ + IPA, ôn được bằng tự chấm dù không có câu trong ngân hàng', () => {
+    const store = recordMistake(empty(), { ...src, word: { text: "o'clock", ipa: 'əˈklɑːk' } }, 'tự chấm: chưa đúng', T0)
+    expect(item(store, src.id).word).toEqual({ text: "o'clock", ipa: 'əˈklɑːk' })
+    expect(reviewableDue(readMistakes(store), T0, { canSpeak: false }).due.map((m) => m.id)).toEqual([src.id])
+    const again = reviewMistake(store, src.id, false, 'tự chấm: chưa đúng', T1)
+    expect(item(again, src.id).wrongCount).toBe(2)
+    expect(item(again, src.id).word?.text).toBe("o'clock")
+  })
+
+  it('mục không có câu và không có từ vẫn bị bỏ khỏi ôn; word sai dạng thì mục không hợp lệ', () => {
+    const store = recordMistake(empty(), src, 'x', T0)
+    expect(reviewableDue(readMistakes(store), T0, { canSpeak: true }).due).toEqual([])
+    expect(isMistakeItem({ ...item(store, src.id), word: { text: '', ipa: 'x' } })).toBe(false)
+  })
+
+  it('gộp giữ chữ của từ', () => {
+    const withWord = recordMistake(empty(), { ...src, word: { text: "o'clock", ipa: 'ə' } }, 'x', T0)
+    const without = recordMistake(empty(), src, 'x', T1)
+    const merged = mergeMistakeItems(readMistakes(without), readMistakes(withWord))[src.id] as MistakeItem
+    expect(merged.word?.text).toBe("o'clock")
   })
 })

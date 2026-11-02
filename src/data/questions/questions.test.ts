@@ -153,3 +153,12 @@ describe('QUIZZES', () => {
     }
   })
 })
+
+describe('câu nhãn thì chặng 1 (O.W.L. 1, story 14)', () => {
+  it('có ít nhất 30 câu trắc nghiệm nhãn thì trong chặng 1 để chọn ngẫu nhiên 20 câu', () => {
+    const pool = QUESTION_BANK.filter(
+      (q) => q.tag === 'thì' && q.kind === 'choice' && getLesson(q.lessonId)?.stageId === 's1',
+    )
+    expect(pool.length).toBeGreaterThanOrEqual(30)
+  })
+})

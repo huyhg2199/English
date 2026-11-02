@@ -7,11 +7,13 @@ import { useNow } from '@/app/use-now'
 import { GeminiSettings } from '@/components/quiz/GeminiSettings'
 import { MistakeCard } from '@/components/quiz/MistakeCard'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
+import { WordReviewCard } from '@/components/quiz/WordReviewCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getQuestion, MISTAKE_TAGS, type MistakeTag } from '@/data/questions'
 import { readGeminiKey } from '@/lib/ai'
-import { filterMistakes, listMistakes, reviewableDue, shuffleOptions } from '@/lib/quiz'
+import { OWL_SELF_NO, OWL_SELF_OK } from '@/lib/owl'
+import { filterMistakes, isMistakeItem, listMistakes, reviewableDue, shuffleOptions } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
 import { cn } from '@/lib/utils'
 
@@ -41,8 +43,40 @@ function ReviewSession({ ids, onDone }: { ids: readonly string[]; onDone: () => 
   )
   const id = ids[index]
   const question = getQuestion(id)
-  if (!question) return null
   const last = index === ids.length - 1
+  const nextButton = (
+    <Button
+      onClick={() => {
+        if (last) onDone()
+        else {
+          setIndex((i) => i + 1)
+          setChosen(null)
+        }
+      }}
+    >
+      {last ? 'Xong' : 'Câu tiếp'}
+    </Button>
+  )
+  const entry = items[id]
+  if (!question) {
+    // Từ đọc chưa đúng ở O.W.L.: ôn bằng tự chấm (đúng = Nhớ, chưa đúng = Quên).
+    if (!isMistakeItem(entry) || !entry.word) return null
+    return (
+      <WordReviewCard
+        key={id}
+        word={entry.word}
+        tag={entry.tag}
+        heading={`Ôn sổ · câu ${index + 1}/${ids.length}`}
+        graded={chosen === null ? null : chosen === OWL_SELF_OK}
+        onGrade={(correct) => {
+          const label = correct ? OWL_SELF_OK : OWL_SELF_NO
+          setChosen(label)
+          review(id, correct, label)
+        }}
+        footer={nextButton}
+      />
+    )
+  }
   return (
     <QuestionCard
       key={id}
@@ -54,19 +88,7 @@ function ReviewSession({ ids, onDone }: { ids: readonly string[]; onDone: () => 
         review(id, option === question.answer, option)
       }}
       heading={`Ôn sổ · câu ${index + 1}/${ids.length}`}
-      footer={
-        <Button
-          onClick={() => {
-            if (last) onDone()
-            else {
-              setIndex((i) => i + 1)
-              setChosen(null)
-            }
-          }}
-        >
-          {last ? 'Xong' : 'Câu tiếp'}
-        </Button>
-      }
+      footer={nextButton}
     />
   )
 }
