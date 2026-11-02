@@ -1,24 +1,27 @@
-import { useMemo, useState } from 'react'
-import { ArrowLeft, ClipboardCheck, MapPinOff } from 'lucide-react'
-import { Link, useParams } from 'react-router'
+import { useMemo, useState, type ReactNode } from 'react'
+import { ArrowLeft, ClipboardCheck, Compass, MapPinOff } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router'
 
-import { useQuizzes } from '@/app/store-context'
+import { useComeback, useLoadedStore, useQuizzes } from '@/app/store-context'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { QuizResult } from '@/components/quiz/QuizResult'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
-import { getQuiz, QUESTION_BANK, type QuizDef } from '@/data/questions'
-import { attemptId, gradeAttempt, pickQuiz, shuffleOptions, type GradedAttempt } from '@/lib/quiz'
+import { getQuiz, QUESTION_BANK, type Question, type QuizDef } from '@/data/questions'
+import { getLesson, lessonHref, SECTION_TITLES, sectionHref, type SectionId } from '@/data/roadmap'
+import { COMEBACK_QUIZ_ID, pickComebackTest, weakestSectionFrom } from '@/lib/comeback'
+import { attemptId, gradeAttempt, pickQuiz, shuffleOptions, type AttemptKind, type GradedAttempt } from '@/lib/quiz'
+import { currentLessonId } from '@/lib/schedule'
 import { canSpeak } from '@/lib/speech'
 
-function BackLink() {
+function BackLink({ to = '/practice', label = 'Luyện tập' }: { to?: string; label?: string }) {
   return (
     <Link
-      to="/practice"
+      to={to}
       className="inline-flex items-center gap-1 self-start text-sm text-muted-foreground hover:text-foreground"
     >
       <ArrowLeft className="size-4" aria-hidden="true" />
-      Luyện tập
+      {label}
     </Link>
   )
 }
@@ -35,18 +38,35 @@ function newRun(): Run {
   return { seed: randomPart(), startedAt: new Date() }
 }
 
+type RunProps = {
+  quizId: string
+  questions: readonly Question[]
+  run: Run
+  kind?: AttemptKind
+  /** Màn kết quả sau khi chấm (lần làm đã được ghi). */
+  renderResult: (graded: GradedAttempt) => ReactNode
+}
+
 /**
- * Một lần làm: câu chọn theo seed của lần làm, chọn xong hiện đúng/sai ngay.
+ * Một lần làm: câu đã chọn sẵn theo seed của lần làm, chọn xong hiện đúng/sai ngay.
  * Chỉ ghi lần làm (và đẩy câu sai vào Sổ lỗi) khi làm xong câu cuối; rời trang giữa chừng thì không ghi gì.
  */
-function QuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () => void }) {
+function QuizRun({ quizId, questions, run, kind, renderResult }: RunProps) {
   const { record } = useQuizzes()
-  const questions = useMemo(() => pickQuiz(QUESTION_BANK, quiz, run.seed, { canSpeak: canSpeak() }), [quiz, run.seed])
   const [index, setIndex] = useState(0)
   const [chosen, setChosen] = useState<Record<string, string>>({})
   const [graded, setGraded] = useState<GradedAttempt | null>(null)
 
-  if (graded) return <QuizResult quiz={quiz} questions={questions} graded={graded} onRetry={onRetry} />
+  if (graded) return renderResult(graded)
+  if (questions.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardDescription>Chưa có câu hỏi phù hợp cho bài test này.</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
 
   const question = questions[index]
   const last = index === questions.length - 1
@@ -54,7 +74,14 @@ function QuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () 
     const result = gradeAttempt(questions, chosen)
     const now = new Date()
     record(
-      { id: attemptId(quiz.id, now, randomPart()), quizId: quiz.id, seed: run.seed, startedAt: run.startedAt, answers: result.answers },
+      {
+        id: attemptId(quizId, now, randomPart()),
+        quizId,
+        seed: run.seed,
+        startedAt: run.startedAt,
+        answers: result.answers,
+        ...(kind ? { kind } : {}),
+      },
       now,
     )
     setGraded(result)
@@ -92,11 +119,124 @@ function QuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () 
   )
 }
 
+/** Bài test định nghĩa sẵn (`QUIZZES`): chọn câu theo `pickQuiz`. */
+function DefinedQuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () => void }) {
+  const questions = useMemo(() => pickQuiz(QUESTION_BANK, quiz, run.seed, { canSpeak: canSpeak() }), [quiz, run.seed])
+  return (
+    <QuizRun
+      quizId={quiz.id}
+      questions={questions}
+      run={run}
+      renderResult={(graded) => (
+        <QuizResult homeLessonId={quiz.homeLessonId} questions={questions} graded={graded} onRetry={onRetry} />
+      )}
+    />
+  )
+}
+
+/** "Học tiếp ở đây": đoạn có nhiều câu sai nhất; không sai câu nào thì bài hiện tại. */
+function ComebackNext({ graded, homeLessonId }: { graded: GradedAttempt; homeLessonId: string | null }) {
+  const weak = weakestSectionFrom(graded)
+  const lesson = weak ? getLesson(weak.lessonId) : homeLessonId ? getLesson(homeLessonId) : undefined
+  const href = weak ? sectionHref(weak.lessonId, weak.sectionId) : homeLessonId ? lessonHref(homeLessonId) : '/roadmap'
+  const label = weak
+    ? `${lesson?.title ?? weak.lessonId} · ${SECTION_TITLES[weak.sectionId as SectionId] ?? weak.sectionId}`
+    : (lesson?.title ?? 'Lộ trình')
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-primary/50 p-3 text-left">
+      <p className="text-sm text-muted-foreground">
+        {weak
+          ? `Chỗ cần ôn nhất: ${weak.wrong} câu sai ở đoạn này. Ôn lại rồi học tiếp bài hiện tại nhé.`
+          : 'Vẫn nhớ tốt! Học tiếp bài hiện tại thôi.'}
+      </p>
+      <Button asChild className="h-auto min-h-9 justify-start whitespace-normal text-left">
+        <Link to={href}>
+          <Compass aria-hidden="true" />
+          Học tiếp: {label}
+        </Link>
+      </Button>
+    </div>
+  )
+}
+
+/** Test quay lại sau nghỉ 5' (story 11): đề chốt lúc bắt đầu, lưu `kind: 'comeback'`, kết quả chỉ tới đoạn hổng. */
+function ComebackRun({ run }: { run: Run }) {
+  const { store } = useLoadedStore()
+  const [now] = useState(() => new Date())
+  const { skip } = useComeback(now)
+  const navigate = useNavigate()
+  // Chốt đề và bài hiện tại lúc bắt đầu: ghi lần làm (câu sai vào Sổ lỗi) không đổi đề đang làm.
+  const [{ questions, homeLessonId }] = useState(() => ({
+    questions: pickComebackTest(store, QUESTION_BANK, run.seed, { canSpeak: canSpeak() }),
+    homeLessonId: currentLessonId(store),
+  }))
+  if (questions.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardDescription>Chưa có câu hỏi nào để dựng test quay lại. Học tiếp bài hiện tại là được.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          <Button asChild>
+            <Link to="/">Về Hôm nay</Link>
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              skip()
+              navigate('/')
+            }}
+          >
+            Bỏ qua test lần này
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-sm text-muted-foreground">
+        {questions.length} câu từ các bài gần đây và Sổ lỗi sai. Sai cũng không sao: app chỉ dùng để tìm chỗ cần ôn, tiến độ
+        giữ nguyên.
+      </p>
+      <QuizRun
+        quizId={COMEBACK_QUIZ_ID}
+        kind="comeback"
+        questions={questions}
+        run={run}
+        renderResult={(graded) => (
+          <QuizResult
+            homeLessonId={homeLessonId}
+            questions={questions}
+            graded={graded}
+            next={<ComebackNext graded={graded} homeLessonId={homeLessonId} />}
+          />
+        )}
+      />
+    </div>
+  )
+}
+
 /** Trang làm bài test dùng chung (mini test T1; sau này các test khác cùng engine). */
 export function Quiz() {
   const { quizId } = useParams()
   const quiz = getQuiz(quizId)
   const [run, setRun] = useState<Run>(newRun)
+
+  if (quizId === COMEBACK_QUIZ_ID) {
+    return (
+      <section className="flex flex-col gap-6">
+        <BackLink to="/" label="Hôm nay" />
+        <header className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <ClipboardCheck className="size-7 shrink-0 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
+            <h1 className="text-2xl font-semibold tracking-wide">Test quay lại 5'</h1>
+          </div>
+        </header>
+        <ComebackRun key={run.seed} run={run} />
+      </section>
+    )
+  }
 
   if (!quiz) {
     return (
@@ -130,7 +270,7 @@ export function Quiz() {
         </div>
         <p className="text-sm text-muted-foreground">{quiz.description}</p>
       </header>
-      <QuizRun key={run.seed} quiz={quiz} run={run} onRetry={() => setRun(newRun())} />
+      <DefinedQuizRun key={run.seed} quiz={quiz} run={run} onRetry={() => setRun(newRun())} />
     </section>
   )
 }

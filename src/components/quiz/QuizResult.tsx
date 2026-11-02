@@ -1,24 +1,29 @@
+import type { ReactNode } from 'react'
 import { BookX, RotateCw, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { lessonHref } from '@/data/roadmap'
-import { MISTAKES_HREF, type Question, type QuizDef } from '@/data/questions'
+import { MISTAKES_HREF, type Question } from '@/data/questions'
 import type { GradedAttempt } from '@/lib/quiz'
 import { cn } from '@/lib/utils'
 
 import { SourceSectionLink, TagBadge } from './QuestionCard'
 
 type Props = {
-  quiz: QuizDef
+  /** Bài cho nút "Về bài học"; null = về Lộ trình. */
+  homeLessonId: string | null
   questions: readonly Question[]
   graded: GradedAttempt
-  onRetry: () => void
+  /** Không truyền thì không có nút "Làm lại" (vd test quay lại). */
+  onRetry?: () => void
+  /** Khối hiện ngay dưới điểm (vd "Học tiếp ở đây" của test quay lại). */
+  next?: ReactNode
 }
 
 /** Kết quả: điểm, từng câu sai kèm đáp án, giải thích và link về đúng đoạn bài nguồn. */
-export function QuizResult({ quiz, questions, graded, onRetry }: Props) {
+export function QuizResult({ homeLessonId, questions, graded, onRetry, next }: Props) {
   const byId = new Map(questions.map((q) => [q.id, q]))
   const wrong = graded.answers.filter((a) => !a.correct)
   const perfect = wrong.length === 0
@@ -37,10 +42,13 @@ export function QuizResult({ quiz, questions, graded, onRetry }: Props) {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex w-full flex-col gap-2">
-          <Button onClick={onRetry}>
-            <RotateCw aria-hidden="true" />
-            Làm lại (đề mới)
-          </Button>
+          {next}
+          {onRetry && (
+            <Button onClick={onRetry}>
+              <RotateCw aria-hidden="true" />
+              Làm lại (đề mới)
+            </Button>
+          )}
           {!perfect && (
             <Button asChild variant="outline">
               <Link to={MISTAKES_HREF}>
@@ -50,7 +58,7 @@ export function QuizResult({ quiz, questions, graded, onRetry }: Props) {
             </Button>
           )}
           <Button asChild variant="ghost">
-            <Link to={lessonHref(quiz.homeLessonId)}>Về bài học</Link>
+            <Link to={homeLessonId ? lessonHref(homeLessonId) : '/roadmap'}>{homeLessonId ? 'Về bài học' : 'Về Lộ trình'}</Link>
           </Button>
         </CardContent>
       </Card>

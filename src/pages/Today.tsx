@@ -2,8 +2,10 @@ import { useMemo } from 'react'
 import { BookOpenCheck, Check, Coffee, Flame, Play, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { usePlacement, useSessions, useSkillBoard } from '@/app/store-context'
+import { useComeback, usePlacement, useSchedule, useSessions, useSkillBoard } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
+import { ComebackCard } from '@/components/ComebackCard'
+import { ScheduleCard } from '@/components/ScheduleCard'
 import { SkillGapCard } from '@/components/SkillGapCard'
 import { StudyClock } from '@/components/StudyClock'
 import { Button } from '@/components/ui/button'
@@ -32,12 +34,17 @@ function SortingHatInvite() {
   )
 }
 
-/** Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại, streak, Mũ Phân Loại / bảng kỹ năng. */
+/**
+ * Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại, streak, ngày dự kiến đạt 750,
+ * thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, Mũ Phân Loại / bảng kỹ năng.
+ */
 export function Today() {
   const { days, current } = useSessions()
   const { done: placed } = usePlacement()
   const { board, weakest } = useSkillBoard()
   const [now] = useNow()
+  const plan = useSchedule(now)
+  const comeback = useComeback(now)
   const streak = useMemo(() => computeStreak(days, now), [days, now])
   const hours = useMemo(() => studyHours(days, now), [days, now])
   const todayEntry = days[localDayKey(now)]
@@ -49,6 +56,10 @@ export function Today() {
         <Flame className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
         <h1 className="text-2xl font-semibold tracking-wide">Hôm nay</h1>
       </header>
+
+      {comeback.pending && comeback.questionCount > 0 && (
+        <ComebackCard pending={comeback.pending} questionCount={comeback.questionCount} onSkip={comeback.skip} />
+      )}
 
       <Card className="gap-3">
         <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
@@ -116,6 +127,8 @@ export function Today() {
           )}
         </CardHeader>
       </Card>
+
+      <ScheduleCard plan={plan} />
 
       {placed ? (
         <>

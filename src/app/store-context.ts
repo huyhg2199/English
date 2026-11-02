@@ -19,8 +19,13 @@ import {
   recordAttempt as recordPronunciationAttempt,
   type SpeakOutcome,
 } from '@/lib/pronunciation'
+import { QUESTION_BANK } from '@/data/questions'
+import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
+import { canSpeak } from '@/lib/speech'
+import { planFor } from '@/lib/schedule'
 import {
-  listAttempts as listQuizAttempts,
+  attemptId,
+  listGradedAttempts,
   readMistakes,
   recordAttempt,
   reviewMistake,
@@ -311,16 +316,45 @@ export function useBackup() {
   return { exportBackup, restore }
 }
 
-/** Lần làm test (`store.data.quizzes.attempts`) và hàm ghi một lần làm xong (đẩy câu sai vào Sổ lỗi). */
+/** Lần làm test có chấm điểm (`store.data.quizzes.attempts`, bỏ lần "Để sau") và hàm ghi một lần làm xong (đẩy câu sai vào Sổ lỗi). */
 export function useQuizzes() {
   const handle = useStoreHandle()
   const { store } = useLoadedStore()
-  const attempts = useMemo(() => listQuizAttempts(store), [store])
+  const attempts = useMemo(() => listGradedAttempts(store), [store])
   const record = useCallback(
     (input: AttemptInput, now: Date = new Date()) => handle.update((s) => recordAttempt(s, input, now)),
     [handle],
   )
   return { attempts, record }
+}
+
+/** Lịch gốc, số tuần trễ và ngày dự kiến đạt 750 (story 11) tại thời điểm `now`. */
+export function useSchedule(now: Date) {
+  const { store } = useLoadedStore()
+  return useMemo(() => planFor(store, now), [store, now])
+}
+
+/**
+ * Test quay lại sau nghỉ (story 11): đợt nghỉ đang chờ (null khi không cần), số câu dựng được cho test
+ * (0 → không mời) và "Để sau" (ghi một lần làm `comeback` rỗng có cờ `skipped`, đồng bộ được).
+ * `skip` chỉ ghi khi đợt nghỉ còn đang chờ, nên bấm hai lần không ghi hai lần.
+ */
+export function useComeback(now: Date) {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const pending = useMemo(() => pendingComeback(store, now), [store, now])
+  const questionCount = useMemo(
+    () => (pending ? pickComebackTest(store, QUESTION_BANK, 'probe', { canSpeak: canSpeak() }).length : 0),
+    [store, pending],
+  )
+  const skip = useCallback(
+    () =>
+      handle.update((s) =>
+        pendingComeback(s, now) ? skipComeback(s, attemptId(COMEBACK_QUIZ_ID, now, randomPart()), now) : s,
+      ),
+    [handle, now],
+  )
+  return { pending, questionCount, skip }
 }
 
 /** Sổ lỗi sai của Snape (`store.data.mistakes.items`): ôn một câu, lưu lời giải thích "Vì sao sai?". */
