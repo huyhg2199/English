@@ -10,7 +10,8 @@
     "test": "TZ=Asia/Ho_Chi_Minh vitest run",
     "lint": "eslint .",
     "vocab:build": "node scripts/vocab/build.mjs",
-    "videos:check": "node scripts/videos/check.mjs"
+    "videos:check": "node scripts/videos/check.mjs",
+    "subs:fetch": "node scripts/subs/fetch-captions.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

@@ -1,17 +1,35 @@
-import { useEffect, useRef, useState } from 'react'
-import { ExternalLink, Play, WifiOff } from 'lucide-react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { Captions, ExternalLink, Play, WifiOff } from 'lucide-react'
 
 import { useOnline } from '@/app/use-online'
+import { hasSubs } from '@/data/subs'
 import { embedUrl, thumbnailUrl, watchUrl, type LessonVideo } from '@/data/videos'
+
+/** Chunk phụ đề không tải được (offline, hash cũ sau khi deploy): video vẫn xem bình thường. */
+function SubsUnavailable() {
+  return (
+    <p role="status" className="text-xs text-muted-foreground">
+      Chưa tải được phụ đề. Video vẫn xem bình thường.
+    </p>
+  )
+}
+
+/** Phần phụ đề (story 16) là chunk riêng, chỉ tải khi video có sub được bấm phát. Lỗi tải thì không làm sập app. */
+const SubtitledVideo = lazy(() => import('./SubtitledVideo').catch(() => ({ default: SubsUnavailable })))
 
 /**
  * Player nhẹ (story 15): ban đầu chỉ có thumbnail + nút phát; bấm mới tạo iframe youtube-nocookie và phát
  * ngay trong trang (không rời PWA). Offline thì không tạo iframe, chỉ báo cần mạng (iframe đã mở thì giữ nguyên). Luôn có link mở trên YouTube.
+ * Video VOA có file sub (story 16): iframe bật IFrame API và bên dưới có phụ đề Anh–Việt, transcript, điền từ.
+ * Video không có sub giữ nguyên như story 15.
  */
 export function VideoEmbed({ video }: { video: LessonVideo }) {
   const online = useOnline()
   const [playing, setPlaying] = useState(false)
+  const subtitled = hasSubs(video.id)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  // "Thử lại" kết nối phụ đề: dựng iframe mới (key mới) để gắn player mới, không gắn lần hai vào iframe cũ.
+  const [iframeKey, setIframeKey] = useState(0)
   // Nút phát biến mất khi bấm: chuyển focus sang iframe để bàn phím / trình đọc màn hình không bị mất chỗ.
   useEffect(() => {
     if (playing) iframeRef.current?.focus()
@@ -21,8 +39,9 @@ export function VideoEmbed({ video }: { video: LessonVideo }) {
       <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
         {playing ? (
           <iframe
+            key={iframeKey}
             ref={iframeRef}
-            src={embedUrl(video)}
+            src={embedUrl(video, subtitled ? { jsapiOrigin: window.location.origin } : {})}
             title={video.title}
             allow="autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
@@ -60,12 +79,23 @@ export function VideoEmbed({ video }: { video: LessonVideo }) {
       {playing && (
         <p className="text-xs text-muted-foreground">Nếu video chưa chạy, chạm nút phát trên video.</p>
       )}
+      {playing && subtitled && (
+        <Suspense fallback={<p className="text-xs text-muted-foreground">Đang tải phụ đề…</p>}>
+          <SubtitledVideo key={iframeKey} video={video} iframe={iframeRef} onRetryPlayer={() => setIframeKey((k) => k + 1)} />
+        </Suspense>
+      )}
       <figcaption className="flex flex-col gap-0.5 text-xs">
         <span lang="en" className="line-clamp-2 font-medium break-words text-foreground">
           {video.title}
         </span>
         <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground">
           {video.channel}
+          {subtitled && (
+            <span className="inline-flex items-center gap-1 text-primary">
+              <Captions className="size-3.5" aria-hidden="true" />
+              Phụ đề Anh–Việt
+            </span>
+          )}
           <a
             href={watchUrl(video)}
             target="_blank"

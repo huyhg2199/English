@@ -34,10 +34,16 @@ export function funStepVideos(lesson: Pick<Lesson, 'id'> | null | undefined): re
 /**
  * URL iframe (youtube-nocookie). Chỉ dùng sau khi người dùng bấm phát nên có `autoplay=1`;
  * `playsinline=1` để iPhone phát ngay trong trang, `rel=0` để video gợi ý cuối chỉ cùng kênh.
+ * `jsapiOrigin`: thêm `enablejsapi=1&origin=…` cho video có phụ đề.
  */
-export function embedUrl(video: Pick<LessonVideo, 'id' | 'startSec'>): string {
+export function embedUrl(video: Pick<LessonVideo, 'id' | 'startSec'>, opts: { jsapiOrigin?: string } = {}): string {
   const params = new URLSearchParams({ autoplay: '1', playsinline: '1', rel: '0' })
   if (video.startSec) params.set('start', String(video.startSec))
+  // Video có phụ đề (story 16): bật IFrame Player API để đọc thời gian phát; `origin` là origin của app.
+  if (opts.jsapiOrigin) {
+    params.set('enablejsapi', '1')
+    params.set('origin', opts.jsapiOrigin)
+  }
   return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.id)}?${params}`
 }
 

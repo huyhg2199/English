@@ -40,7 +40,7 @@ import {
 } from './index'
 
 const T0 = new Date(2027, 1, 26, 9, 0, 0)
-const empty = (): Store => ({ schemaVersion: 11, data: {} })
+const empty = (): Store => ({ schemaVersion: 12, data: {} })
 
 function word(list: 'ngsl' | 'tsl', rank: number, details = true): Word {
   const text = `${list}w${rank}`

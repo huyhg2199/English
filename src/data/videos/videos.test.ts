@@ -89,6 +89,14 @@ describe('URL video', () => {
     expect(url.searchParams.get('start')).toBe('45')
   })
 
+  it('video có phụ đề: bật enablejsapi kèm origin của app (story 16)', () => {
+    const url = new URL(embedUrl({ id: 'WR9_nsLyaEY' }, { jsapiOrigin: 'https://huy.github.io' }))
+    expect(url.origin).toBe('https://www.youtube-nocookie.com')
+    expect(url.searchParams.get('enablejsapi')).toBe('1')
+    expect(url.searchParams.get('origin')).toBe('https://huy.github.io')
+    expect(new URL(embedUrl({ id: 'WR9_nsLyaEY' })).searchParams.has('enablejsapi')).toBe(false)
+  })
+
   it('link YouTube và thumbnail', () => {
     expect(watchUrl({ id: 'WR9_nsLyaEY' })).toBe('https://www.youtube.com/watch?v=WR9_nsLyaEY')
     expect(watchUrl({ id: 'WR9_nsLyaEY', startSec: 45 })).toBe('https://www.youtube.com/watch?v=WR9_nsLyaEY&t=45s')
