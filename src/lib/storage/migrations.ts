@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 8
+export const CURRENT_VERSION = 9
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -84,6 +84,17 @@ export const migrations: Migrations = {
         ...store.data,
         notes: isPlainObject(notes) ? notes : notes === undefined ? { items: {} } : { items: {}, legacy: notes },
       },
+    }
+  },
+  // v8 → v9 (story 9): lần làm test `quizzes: { attempts: {} }` và Sổ lỗi sai `mistakes: { items: {} }`.
+  // Đã có (object) thì để nguyên; giá trị lạ thì giữ trong `legacy`. Lên v9 để app cũ (v8) không ghi đè mất hai key này.
+  8: (store) => {
+    const { quizzes, mistakes } = store.data
+    const keep = (value: unknown, field: string) =>
+      isPlainObject(value) ? value : value === undefined ? { [field]: {} } : { [field]: {}, legacy: value }
+    return {
+      schemaVersion: 9,
+      data: { ...store.data, quizzes: keep(quizzes, 'attempts'), mistakes: keep(mistakes, 'items') },
     }
   },
 }

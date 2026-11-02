@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { useSpells } from '@/app/store-context'
 import { Button } from '@/components/ui/button'
 import type { GrammarContent, LessonContent } from '@/data/lessons'
+import { quizHref } from '@/data/questions'
 
 import { SoundTable } from './SoundTable'
 import { SpeakPractice } from './SpeakPractice'
@@ -41,6 +42,14 @@ function Review({ review }: { review: NonNullable<GrammarContent['review']> }) {
         <ClipboardCheck className="size-4 shrink-0" aria-hidden="true" />
         {review.note}
       </p>
+      {review.quizId && (
+        <Button asChild className="self-start">
+          <Link to={quizHref(review.quizId)}>
+            <ClipboardCheck aria-hidden="true" />
+            Làm mini test
+          </Link>
+        </Button>
+      )}
     </div>
   )
 }

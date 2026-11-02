@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
+import { getQuestion } from '@/data/questions'
+import { gradeAttempt, listAttempts, readMistakes, recordAttempt } from '@/lib/quiz'
 import { createNote, deleteNote, listNotes, readNotes } from '@/lib/notes'
 import { deleteSavedWord, readSavedWords, saveWord, savedWordId } from '@/lib/saved-words'
 import { readSessionDays, recordSession } from '@/lib/sessions'
@@ -42,7 +44,7 @@ function roundTrip(store: Store, now = T1): Backup {
 
 describe('BACKUP_KEYS / allowlist', () => {
   it('trùng với allowlist đồng bộ', () => {
-    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes'])
+    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'])
   })
 
   it('không có key nào giống API key / token / PAT / secret / password', () => {
@@ -322,6 +324,8 @@ describe('summarizeBackup', () => {
       placementAttempts: 0,
       pronunciationItems: 0,
       notes: 0,
+      quizAttempts: 0,
+      mistakes: 0,
     })
   })
 })
@@ -364,6 +368,23 @@ describe('notes trong sao lưu (story 8)', () => {
     expect(Object.keys(items).sort()).toEqual(['gone', 'live'])
     const r = restoreBackup(empty(), parsed.backup)
     expect(Object.hasOwn(readNotes(r.store), 'bad')).toBe(false)
+  })
+})
+
+describe('quizzes / mistakes trong sao lưu (story 9)', () => {
+  it('lần làm và Sổ lỗi khôi phục đủ; mục sai dạng bị bỏ', () => {
+    const question = getQuestion('q-s1-t1-w1-01')!
+    const graded = gradeAttempt([question], { [question.id]: 'are' })
+    const store = recordAttempt(empty(), { id: 'a1', quizId: 'mini-t1', seed: 's', startedAt: T0, answers: graded.answers }, T0)
+    const backup = createBackup(store, T1)
+    ;(backup.data.mistakes as { items: Record<string, unknown> }).items.bad = { wrongCount: 'x' }
+    const parsed = parseBackup(serializeBackup(backup))
+    if (!parsed.ok) throw new Error(parsed.message)
+    expect(summarizeBackup(parsed.backup)).toMatchObject({ quizAttempts: 1, mistakes: 1 })
+    const r = restoreBackup(empty(), parsed.backup)
+    expect(listAttempts(r.store).map((a) => a.id)).toEqual(['a1'])
+    expect(Object.keys(readMistakes(r.store))).toEqual([question.id])
+    expect(r.added).toBe(2)
   })
 })
 

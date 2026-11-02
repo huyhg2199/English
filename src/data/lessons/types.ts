@@ -100,7 +100,7 @@ export type Tense = {
 export type GrammarContent = {
   tenses: readonly Tense[]
   /** Tuần ôn tập: tóm tắt các thì đã học và ghi chú mini test. */
-  review?: { summary: readonly string[]; note: string }
+  review?: { summary: readonly string[]; note: string; quizId?: string }
 }
 
 export type LessonContent = {

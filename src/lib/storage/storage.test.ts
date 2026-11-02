@@ -104,6 +104,8 @@ describe('loadStore — I/O Matrix', () => {
       placement: { attempts: {}, house: null, startLessonId: null, updatedAt: OLD },
       pronunciation: { items: {} },
       notes: { items: {} },
+      quizzes: { attempts: {} },
+      mistakes: { items: {} },
     }
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['Date'] })
@@ -114,7 +116,7 @@ describe('loadStore — I/O Matrix', () => {
     })
 
     it('v1: giữ dữ liệu cũ, thêm progress.lessons rỗng và ghi lại', () => {
-      expect(CURRENT_VERSION).toBe(8)
+      expect(CURRENT_VERSION).toBe(9)
       const storage = fakeStorage({
         [STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, data: { streak: 7, notes: ['a'] } }),
       })
@@ -123,7 +125,7 @@ describe('loadStore — I/O Matrix', () => {
       expect(result.status).toBe('migrated')
       expect(result.mode).toBe('persistent')
       expect(result.store).toEqual({
-        schemaVersion: 8,
+        schemaVersion: 9,
         data: { streak: 7, progress: { lessons: {} }, srs: { cards: {} }, ...V5, notes: { items: {}, legacy: ['a'] } },
       })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
@@ -149,7 +151,7 @@ describe('loadStore — I/O Matrix', () => {
 
       expect(result.status).toBe('migrated')
       expect(result.store).toEqual({
-        schemaVersion: 8,
+        schemaVersion: 9,
         data: {
           streak: 2,
           progress: {
@@ -187,7 +189,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 3, data: { streak: 1, progress } }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 8, data: { streak: 1, progress, srs: { cards: {} }, ...V5 } })
+      expect(result.store).toEqual({ schemaVersion: 9, data: { streak: 1, progress, srs: { cards: {} }, ...V5 } })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
@@ -202,7 +204,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 4, data }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 8, data: { ...data, ...V5 } })
+      expect(result.store).toEqual({ schemaVersion: 9, data: { ...data, ...V5 } })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
@@ -220,7 +222,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 5, data }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 8, data: { ...data, placement: V5.placement, pronunciation: V5.pronunciation, notes: V5.notes } })
+      expect(result.store).toEqual({ schemaVersion: 9, data: { ...data, placement: V5.placement, pronunciation: V5.pronunciation, notes: V5.notes, quizzes: V5.quizzes, mistakes: V5.mistakes } })
     })
 
     it('v6 → v7: thêm pronunciation rỗng, giữ nguyên mọi field khác', () => {
@@ -228,7 +230,7 @@ describe('loadStore — I/O Matrix', () => {
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 6, data }) })
       const result = loadStore({ storage, warn })
       expect(result.status).toBe('migrated')
-      expect(result.store).toEqual({ schemaVersion: 8, data: { ...data, pronunciation: { items: {} }, notes: { items: {} } } })
+      expect(result.store).toEqual({ schemaVersion: 9, data: { ...data, pronunciation: { items: {} }, notes: { items: {} }, quizzes: V5.quizzes, mistakes: V5.mistakes } })
       expect(JSON.parse(storage.map.get(STORAGE_KEY)!)).toEqual(result.store)
     })
 
@@ -236,6 +238,20 @@ describe('loadStore — I/O Matrix', () => {
       const pronunciation = { items: { x: { best: 80, attempts: 2, updatedAt: NOW } }, extra: 1 }
       const storage = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 6, data: { pronunciation } }) })
       expect(loadStore({ storage, warn }).store.data.pronunciation).toEqual(pronunciation)
+    })
+
+    it('v8 → v9: thêm quizzes / mistakes rỗng; đã có thì giữ nguyên; giá trị lạ giữ trong legacy', () => {
+      const notes = { items: {} }
+      const fresh = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 8, data: { notes } }) })
+      expect(loadStore({ storage: fresh, warn }).store).toEqual({
+        schemaVersion: 9,
+        data: { notes, quizzes: { attempts: {} }, mistakes: { items: {} } },
+      })
+      const quizzes = { attempts: { a: 1 }, extra: true }
+      const kept = fakeStorage({ [STORAGE_KEY]: JSON.stringify({ schemaVersion: 8, data: { quizzes, mistakes: 'x' } }) })
+      const data = loadStore({ storage: kept, warn }).store.data
+      expect(data.quizzes).toEqual(quizzes)
+      expect(data.mistakes).toEqual({ items: {}, legacy: 'x' })
     })
 
     it('v5 → v6: placement đã có thì giữ nguyên', () => {

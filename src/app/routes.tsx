@@ -5,8 +5,10 @@ import { Backup } from '@/pages/Backup'
 import { Flashcards } from '@/pages/Flashcards'
 import { LazySession } from '@/pages/LazySession'
 import { Lesson } from '@/pages/Lesson'
+import { Mistakes } from '@/pages/Mistakes'
 import { Notebook } from '@/pages/Notebook'
 import { Practice } from '@/pages/Practice'
+import { Quiz } from '@/pages/Quiz'
 import { Roadmap } from '@/pages/Roadmap'
 import { Session } from '@/pages/Session'
 import { SortingHat } from '@/pages/SortingHat'
@@ -34,6 +36,9 @@ export const routes: RouteObject[] = [
       { path: 'practice', element: <Practice /> },
       // Phiên ôn flashcard; tab Luyện tập vẫn sáng (NavLink /practice không `end`).
       { path: 'practice/flashcards', element: <Flashcards /> },
+      // Trang làm bài test (mini test T1, …) và Sổ lỗi sai của Snape; tab Luyện tập vẫn sáng.
+      { path: 'practice/quiz/:quizId', element: <Quiz /> },
+      { path: 'practice/mistakes', element: <Mistakes /> },
       // Sao lưu / khôi phục file JSON; tab Luyện tập vẫn sáng (`alsoActiveFor`).
       { path: 'backup', element: <Backup /> },
       { path: 'notebook', element: <Notebook /> },

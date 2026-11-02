@@ -1,14 +1,18 @@
 import { useMemo } from 'react'
-import { ChevronRight, HardDriveDownload, Layers, Sparkles, WandSparkles } from 'lucide-react'
+import { BookX, ChevronRight, ClipboardCheck, HardDriveDownload, Layers, Sparkles, WandSparkles, type LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { useNewWordList, useSavedWords, useSpells, useSrs } from '@/app/store-context'
+import { useMistakes, useNewWordList, useQuizzes, useSavedWords, useSpells, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SPELLS } from '@/data/lessons'
+import { MISTAKES_HREF, quizHref } from '@/data/questions'
 import { sectionHref } from '@/data/roadmap'
 import { buildStudySession, flashcardSummary } from '@/lib/flashcard-session'
+import { listMistakes, reviewableDue } from '@/lib/quiz'
+import { canSpeak } from '@/lib/speech'
 
 function FlashcardSummary() {
   const wordsState = useWords()
@@ -23,6 +27,39 @@ function FlashcardSummary() {
 
   if (!session) return wordsState.status === 'error' ? 'Chưa mở được bộ từ' : 'Đang đếm thẻ…'
   return flashcardSummary(session)
+}
+
+/** Thẻ link một mục của Luyện tập. */
+function PracticeLink({ to, icon: Icon, title, children }: { to: string; icon: LucideIcon; title: string; children: ReactNode }) {
+  return (
+    <Link to={to} className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+      <Card className="transition-shadow hover:shadow-[0_0_20px_var(--candle-glow)]">
+        <CardHeader className="grid-cols-[auto_1fr_auto] items-center gap-x-3">
+          <Icon className="row-span-2 size-8 text-primary" aria-hidden="true" />
+          <CardTitle className="text-lg">{title}</CardTitle>
+          <ChevronRight className="row-span-2 size-5 text-muted-foreground" aria-hidden="true" />
+          <CardDescription>{children}</CardDescription>
+        </CardHeader>
+      </Card>
+    </Link>
+  )
+}
+
+function MistakesSummary() {
+  const { items } = useMistakes()
+  const [now] = useNow()
+  const total = useMemo(() => listMistakes(items).length, [items])
+  const due = useMemo(() => reviewableDue(items, now, { canSpeak: canSpeak() }).due.length, [items, now])
+  if (total === 0) return 'Sổ còn trống. Câu sai ở bài test sẽ tự vào đây.'
+  return `${total} câu trong sổ · ${due} câu đến hạn ôn`
+}
+
+function MiniTestSummary() {
+  const { attempts } = useQuizzes()
+  const mine = attempts.filter((a) => a.quizId === 'mini-t1')
+  if (mine.length === 0) return '10 câu ôn cả 4 tuần T1. Chưa làm lần nào.'
+  const best = Math.max(...mine.map((a) => a.score))
+  return `Đã làm ${mine.length} lần · cao nhất ${best}/${mine[0].total} · lần gần nhất ${mine[0].score}/${mine[0].total}`
 }
 
 /** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */
@@ -88,13 +125,21 @@ export function Practice() {
         </Card>
       </Link>
 
+      <PracticeLink to={MISTAKES_HREF} icon={BookX} title="Sổ lỗi sai của Snape">
+        <MistakesSummary />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mini-t1')} icon={ClipboardCheck} title="Mini test tháng T1">
+        <MiniTestSummary />
+      </PracticeLink>
+
       <SpellList />
 
       <Card>
         <CardHeader>
           <CardTitle>Sắp có</CardTitle>
           <CardDescription>
-            Ôn Sổ lỗi, 7 Part TOEIC và link luyện nói. Luyện phát âm đã có trong từng bài tháng T1 (đoạn Phát âm).
+            7 Part TOEIC và link luyện nói. Luyện phát âm đã có trong từng bài tháng T1 (đoạn Phát âm).
           </CardDescription>
         </CardHeader>
       </Card>

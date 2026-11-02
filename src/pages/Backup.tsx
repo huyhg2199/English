@@ -165,6 +165,10 @@ function RestoreCard() {
               <dd className="text-right">{summary.pronunciationItems}</dd>
               <dt className="text-muted-foreground">Ghi chú</dt>
               <dd className="text-right">{summary.notes}</dd>
+              <dt className="text-muted-foreground">Lần làm test</dt>
+              <dd className="text-right">{summary.quizAttempts}</dd>
+              <dt className="text-muted-foreground">Câu trong Sổ lỗi</dt>
+              <dd className="text-right">{summary.mistakes}</dd>
             </dl>
             <div className="flex gap-2">
               <Button className="flex-1" onClick={() => onRestore(state.backup)}>

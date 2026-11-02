@@ -1,6 +1,7 @@
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem } from '@/lib/pronunciation'
+import { isMistakeItem, isQuizAttempt } from '@/lib/quiz'
 import { isLessonProgress, readCompletedLessonIds } from '@/lib/roadmap-progress'
 import { isSavedWord, readSavedWords } from '@/lib/saved-words'
 import { isSessionDay, readSessionDays } from '@/lib/sessions'
@@ -51,6 +52,8 @@ export type BackupSummary = {
   placementAttempts: number
   pronunciationItems: number
   notes: number
+  quizAttempts: number
+  mistakes: number
 }
 
 /** Lấy phần allowlist của `data`; key ngoài allowlist (vd `geminiApiKey`, `token`) bị bỏ. */
@@ -92,6 +95,8 @@ const ENTRY_FIELD: Record<BackupKey, string> = {
   placement: 'attempts',
   pronunciation: 'items',
   notes: 'items',
+  quizzes: 'attempts',
+  mistakes: 'items',
 }
 
 const ENTRY_VALID: Record<BackupKey, (value: unknown) => boolean> = {
@@ -102,6 +107,8 @@ const ENTRY_VALID: Record<BackupKey, (value: unknown) => boolean> = {
   placement: isPlacementAttempt,
   pronunciation: isPronunciationItem,
   notes: isNote,
+  quizzes: isQuizAttempt,
+  mistakes: isMistakeItem,
 }
 
 /** Id có thể làm hỏng object khi gán (prototype pollution). */
@@ -238,5 +245,7 @@ export function summarizeBackup(backup: Backup): BackupSummary {
     placementAttempts: Object.values(entriesOf(backup.data, 'placement')).filter(isPlacementAttempt).length,
     pronunciationItems: Object.values(entriesOf(backup.data, 'pronunciation')).filter(isPronunciationItem).length,
     notes: Object.values(entriesOf(backup.data, 'notes')).filter((n) => isNote(n) && n.deleted !== true).length,
+    quizAttempts: Object.values(entriesOf(backup.data, 'quizzes')).filter(isQuizAttempt).length,
+    mistakes: Object.values(entriesOf(backup.data, 'mistakes')).filter(isMistakeItem).length,
   }
 }

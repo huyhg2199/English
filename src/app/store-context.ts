@@ -14,6 +14,14 @@ import {
   type PartScores,
 } from '@/lib/placement'
 import { applyRecognition, readPronunciation, type SpeakOutcome } from '@/lib/pronunciation'
+import {
+  listAttempts as listQuizAttempts,
+  readMistakes,
+  recordAttempt,
+  reviewMistake,
+  setMistakeExplanation,
+  type AttemptInput,
+} from '@/lib/quiz'
 import type { RecognitionResult } from '@/lib/speech-recognition'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { createNote, deleteNote, noteId, readNotes, updateNote, type NoteInput } from '@/lib/notes'
@@ -291,6 +299,36 @@ export function useBackup() {
     [handle],
   )
   return { exportBackup, restore }
+}
+
+/** Lần làm test (`store.data.quizzes.attempts`) và hàm ghi một lần làm xong (đẩy câu sai vào Sổ lỗi). */
+export function useQuizzes() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const attempts = useMemo(() => listQuizAttempts(store), [store])
+  const record = useCallback(
+    (input: AttemptInput, now: Date = new Date()) => handle.update((s) => recordAttempt(s, input, now)),
+    [handle],
+  )
+  return { attempts, record }
+}
+
+/** Sổ lỗi sai của Snape (`store.data.mistakes.items`): ôn một câu, lưu lời giải thích "Vì sao sai?". */
+export function useMistakes() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const items = useMemo(() => readMistakes(store), [store])
+  const review = useCallback(
+    (id: string, correct: boolean, chosen: string, now: Date = new Date()) =>
+      handle.update((s) => reviewMistake(s, id, correct, chosen, now)),
+    [handle],
+  )
+  const saveExplanation = useCallback(
+    (id: string, text: string, model: string, chosen: string, now: Date = new Date()) =>
+      handle.update((s) => setMistakeExplanation(s, id, text, model, chosen, now)),
+    [handle],
+  )
+  return { items, review, saveExplanation }
 }
 
 /** Thần chú đã mở khoá (theo tiến độ bài, không có key riêng). */

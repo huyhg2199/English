@@ -155,6 +155,7 @@ export const GRAMMAR_W4: GrammarContent = {
       "Hỏi và phủ định hiện tại đơn: do / does + động từ nguyên mẫu (Does she work? She doesn't work.).",
       'Không trộn: không nói "I am work", không nói "Does she be…".',
     ],
-    note: 'Mini test sẽ có ở bài kiểm tra.',
+    note: 'Mini test 10 câu ôn cả 4 tuần T1. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
+    quizId: 'mini-t1',
   },
 }

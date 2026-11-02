@@ -110,3 +110,30 @@ html[data-house='slytherin'] {
     font-family: ui-serif, Georgia, 'Times New Roman', serif;
   }
 }
+
+/* Trả lời đúng: hiệu ứng "Lumos" nhẹ — ánh nến loé lên rồi dịu lại (hp-theme.md). */
+@keyframes lumos-flare {
+  0% {
+    box-shadow: 0 0 0 0 var(--candle-glow);
+    filter: brightness(1);
+  }
+  35% {
+    box-shadow: 0 0 28px 8px var(--candle-glow);
+    filter: brightness(1.25);
+  }
+  100% {
+    box-shadow: 0 0 12px 2px var(--candle-glow);
+    filter: brightness(1);
+  }
+}
+
+.lumos {
+  animation: lumos-flare 900ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lumos {
+    animation: none;
+    box-shadow: 0 0 12px 2px var(--candle-glow);
+  }
+}

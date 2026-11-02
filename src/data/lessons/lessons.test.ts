@@ -148,11 +148,12 @@ describe('nội dung bài T1', () => {
     }
   })
 
-  it('tuần 4 ôn tập: có tóm tắt và ghi chú mini test, không thì mới', () => {
+  it('tuần 4 ôn tập: có tóm tắt, ghi chú và link mini test, không thì mới', () => {
     const g = content('s1-t1-w4').grammar!
     expect(g.tenses).toHaveLength(0)
     expect(g.review!.summary.length).toBeGreaterThan(0)
-    expect(g.review!.note).toBe('Mini test sẽ có ở bài kiểm tra.')
+    expect(g.review!.note).toMatch(/Mini test 10 câu/)
+    expect(g.review!.quizId).toBe('mini-t1')
   })
 
   it('tuần 1 có link "Làm bài đầu vào"', () => {

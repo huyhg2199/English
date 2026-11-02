@@ -1,6 +1,7 @@
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
+import { isMistakeItem, isQuizAttempt, mergeMistakeItem } from '@/lib/quiz'
 import { isLessonProgress } from '@/lib/roadmap-progress'
 import { isSavedWord } from '@/lib/saved-words'
 import { isSessionDay } from '@/lib/sessions'
@@ -13,7 +14,7 @@ import { isTimeString } from '@/lib/updated-at'
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -182,7 +183,22 @@ export function mergeNoteItems(local: unknown, server: unknown): Record<string, 
   return mergeEntries(local, server, isNote)
 }
 
+/** Gộp `quizzes.attempts` theo id lần làm (lần làm không sửa sau khi ghi; không bao giờ bỏ lần nào). */
+export function mergeQuizAttempts(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isQuizAttempt)
+}
+
+/**
+ * Gộp `mistakes.items` theo id câu: `wrongCount` lấy max, lịch SRS và lời giải thích theo `updatedAt` mới hơn
+ * (xem `mergeMistakeItem`).
+ */
+export function mergeMistakeItems(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isMistakeItem, mergeMistakeItem)
+}
+
 export const mergeNotes = mergeKeyed('items', mergeNoteItems)
+export const mergeQuizzes = mergeKeyed('attempts', mergeQuizAttempts)
+export const mergeMistakes = mergeKeyed('items', mergeMistakeItems)
 export const mergeSessions = mergeKeyed('days', mergeSessionDays)
 export const mergePronunciation = mergeKeyed('items', mergePronunciationItems)
 export const mergeSavedWords = mergeKeyed('items', mergeSavedWordItems)
@@ -196,6 +212,8 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   placement: mergePlacement,
   pronunciation: mergePronunciation,
   notes: mergeNotes,
+  quizzes: mergeQuizzes,
+  mistakes: mergeMistakes,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */
