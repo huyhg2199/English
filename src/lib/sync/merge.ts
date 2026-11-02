@@ -4,17 +4,19 @@ import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation
 import { isMistakeItem, isQuizAttempt, mergeMistakeItem } from '@/lib/quiz'
 import { isLessonProgress } from '@/lib/roadmap-progress'
 import { isSavedWord } from '@/lib/saved-words'
+import { isReminders } from '@/lib/reminders/reminders'
 import { isSessionDay } from '@/lib/sessions'
 import { isSrsCard } from '@/lib/srs'
 import { CURRENT_VERSION, isPlainObject, migrations as defaultMigrations, runMigrations } from '@/lib/storage'
 import type { Migrations, Store } from '@/lib/storage'
+import { isSeenEntry, type SeenEntry } from '@/lib/trophies'
 import { isTimeString } from '@/lib/updated-at'
 
 /**
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -196,6 +198,25 @@ export function mergeMistakeItems(local: unknown, server: unknown): Record<strin
   return mergeEntries(local, server, isMistakeItem, mergeMistakeItem)
 }
 
+/** Gộp `trophies.seen` theo mục: giữ mọi mục có sẵn ở hai bên; trùng thì thời điểm báo sớm hơn thắng. */
+export function mergeSeen(local: unknown, server: unknown): Record<string, unknown> {
+  return mergeEntries(local, server, isSeenEntry, (a: SeenEntry, b: SeenEntry) => (time(b) < time(a) ? b : a))
+}
+
+/**
+ * Gộp `reminders` (giờ nhắc, story 13) cả object: `updatedAt` mới hơn thắng, bằng nhau thì giữ local.
+ * Một bên sai dạng thì lấy bên hợp lệ; cả hai sai dạng thì giữ local (hoặc server nếu local không có).
+ */
+export function mergeReminders(local: unknown, server: unknown): unknown {
+  const lOk = isReminders(local)
+  const sOk = isReminders(server)
+  if (lOk && sOk) return newer(local, server)
+  if (lOk) return local
+  if (sOk) return server
+  return local ?? server
+}
+
+export const mergeTrophies = mergeKeyed('seen', mergeSeen)
 export const mergeNotes = mergeKeyed('items', mergeNoteItems)
 export const mergeQuizzes = mergeKeyed('attempts', mergeQuizAttempts)
 export const mergeMistakes = mergeKeyed('items', mergeMistakeItems)
@@ -214,6 +235,8 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   notes: mergeNotes,
   quizzes: mergeQuizzes,
   mistakes: mergeMistakes,
+  trophies: mergeTrophies,
+  reminders: mergeReminders,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

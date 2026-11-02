@@ -2,9 +2,25 @@ import { describe, expect, it } from 'vitest'
 
 import { getLesson, getSection } from '@/data/roadmap'
 
-import { getQuestion, getQuiz, MISTAKE_TAGS, QUESTION_BANK, QUIZZES, quizHref, type Question } from './index'
+import { getLessonContent } from '@/data/lessons'
+import { pickQuiz } from '@/lib/quiz'
+
+import {
+  getQuestion,
+  getQuiz,
+  LESSON_QUIZ_SIZE,
+  lessonQuizId,
+  MISTAKE_TAGS,
+  QUESTION_BANK,
+  QUIZZES,
+  quizHref,
+  type Question,
+} from './index'
 
 const T1 = ['s1-t1-w1', 's1-t1-w2', 's1-t1-w3', 's1-t1-w4']
+const T2 = ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3', 's1-t2-w4']
+/** 11 bài có nội dung T2–T4 (trừ tuần Tết s1-t4-w2). */
+const T2_T4 = [...T2, 's1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4', 's1-t4-w1', 's1-t4-w3', 's1-t4-w4']
 
 describe('ngân hàng câu hỏi', () => {
   it('id duy nhất và ổn định dạng q-<bài>-NN', () => {
@@ -55,6 +71,31 @@ describe('ngân hàng câu hỏi', () => {
     }
   })
 
+  it('T2–T4: 66 câu, mỗi bài có nội dung đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
+    const later = QUESTION_BANK.filter((q) => !T1.includes(q.lessonId))
+    expect(later).toHaveLength(66)
+    for (const id of T2_T4) {
+      const of = later.filter((q) => q.lessonId === id)
+      expect(of, id).toHaveLength(6)
+      expect(of.filter((q) => q.kind !== 'listening').length, id).toBeGreaterThanOrEqual(2)
+      expect(getLessonContent(id), id).toBeDefined()
+    }
+  })
+
+  it('mỗi bài có tối đa 1 câu nghe (bài kiểm tra 5 câu vẫn đủ khi không có TTS)', () => {
+    for (const id of [...T1, ...T2_T4]) {
+      expect(QUESTION_BANK.filter((q) => q.lessonId === id && q.kind === 'listening').length, id).toBeLessThanOrEqual(1)
+    }
+    expect(QUESTION_BANK.some((q) => q.lessonId === 's1-t4-w2')).toBe(false)
+  })
+
+  it('câu ngữ pháp gắn đoạn Ngữ pháp nếu bài có đoạn đó; tuần O.W.L. gắn đoạn Phát âm (phần ôn tổng)', () => {
+    for (const q of QUESTION_BANK.filter((x) => x.lessonId === 's1-t4-w4')) expect(q.sectionId, q.id).toBe('pronunciation')
+    for (const q of QUESTION_BANK.filter((x) => x.kind === 'choice' && x.lessonId !== 's1-t4-w4')) {
+      expect(q.sectionId, q.id).toBe('grammar')
+    }
+  })
+
   it('có câu chọn vị trí trọng âm (dạng phát âm)', () => {
     const stress = QUESTION_BANK.filter((q) => q.kind === 'pronunciation' && /trọng âm/.test(q.prompt))
     expect(stress.length).toBeGreaterThanOrEqual(1)
@@ -75,6 +116,34 @@ describe('QUIZZES', () => {
     expect(quizHref('mini-t1')).toBe('/practice/quiz/mini-t1')
   })
 
+  it('mini test T2: 10 câu từ 4 bài T2, mỗi bài ≥ 2 câu, bài nhà là s1-t2-w4', () => {
+    const quiz = getQuiz('mini-t2')!
+    expect(quiz).toMatchObject({ size: 10, minPerLesson: 2, homeLessonId: 's1-t2-w4' })
+    expect(quiz.lessonIds).toEqual(T2)
+    for (const seed of ['a', 'b', 'c', 'd']) {
+      for (const canSpeak of [true, false]) {
+        const picked = pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak })
+        expect(picked).toHaveLength(10)
+        expect(new Set(picked.map((q) => q.id)).size).toBe(10)
+        for (const id of T2) expect(picked.filter((q) => q.lessonId === id).length, id).toBeGreaterThanOrEqual(2)
+      }
+    }
+  })
+
+  it('mỗi bài có câu hỏi đều có bài kiểm tra riêng 5 câu, bài nhà là chính bài đó', () => {
+    for (const id of [...T1, ...T2_T4]) {
+      const quiz = getQuiz(lessonQuizId(id))!
+      expect(quiz, id).toMatchObject({ lessonIds: [id], size: LESSON_QUIZ_SIZE, homeLessonId: id })
+      for (const canSpeak of [true, false]) {
+        const picked = pickQuiz(QUESTION_BANK, quiz, 'x', { canSpeak })
+        expect(picked, id).toHaveLength(LESSON_QUIZ_SIZE)
+        expect(picked.every((q) => q.lessonId === id)).toBe(true)
+      }
+    }
+    expect(getQuiz(lessonQuizId('s1-t4-w2'))).toBeUndefined()
+    expect(new Set(QUIZZES.map((q) => q.id)).size).toBe(QUIZZES.length)
+  })
+
   it('mỗi bài test đủ câu cho số câu và số câu tối thiểu mỗi bài', () => {
     for (const quiz of QUIZZES) {
       expect(getLesson(quiz.homeLessonId)).toBeDefined()
@@ -82,5 +151,14 @@ describe('QUIZZES', () => {
       expect(pool.length).toBeGreaterThanOrEqual(quiz.size)
       expect(quiz.lessonIds.length * quiz.minPerLesson).toBeLessThanOrEqual(quiz.size)
     }
+  })
+})
+
+describe('câu nhãn thì chặng 1 (O.W.L. 1, story 14)', () => {
+  it('có ít nhất 30 câu trắc nghiệm nhãn thì trong chặng 1 để chọn ngẫu nhiên 20 câu', () => {
+    const pool = QUESTION_BANK.filter(
+      (q) => q.tag === 'thì' && q.kind === 'choice' && getLesson(q.lessonId)?.stageId === 's1',
+    )
+    expect(pool.length).toBeGreaterThanOrEqual(30)
   })
 })

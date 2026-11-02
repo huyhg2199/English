@@ -20,6 +20,9 @@ function Cross({ x, faded }: { x: number; faded?: boolean }) {
  * Dòng thời gian tự vẽ (SVG co theo bề rộng): quá khứ – hiện tại – tương lai.
  * `state`: một dải trạng thái phủ quanh "bây giờ". `habit`: các dấu × lặp lại đều đặn.
  * `habit-question`: các dấu × mờ kèm dấu "?" ở hiện tại (hỏi / phủ định thói quen).
+ * `progress`: đường sóng quanh "bây giờ" (đang diễn ra). `past-point` / `future-point`: một dấu × trước / sau "bây giờ".
+ * `plan`: từ "bây giờ" có mũi tên nét đứt tới dấu × ở tương lai (kế hoạch đã định).
+ * `past-to-now`: dải từ quá khứ chạy tới "bây giờ". `perfect-vs-past`: × mờ (V2, đã xong) so với dải kéo tới bây giờ.
  */
 export function TenseTimeline({ kind, label }: { kind: TimelineKind; label: string }) {
   return (
@@ -57,7 +60,56 @@ export function TenseTimeline({ kind, label }: { kind: TimelineKind; label: stri
             opacity={0.85}
           />
         )}
-        {kind !== 'state' && HABIT_XS.map((x) => <Cross key={x} x={x} faded={kind === 'habit-question'} />)}
+        {(kind === 'habit' || kind === 'habit-question') &&
+          HABIT_XS.map((x) => <Cross key={x} x={x} faded={kind === 'habit-question'} />)}
+
+        {kind === 'progress' && (
+          <path
+            d={`M ${NOW_X - 50} ${AXIS_Y} q 6.25 -10 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0`}
+            fill="none"
+            stroke="var(--primary)"
+            strokeWidth={3}
+            strokeLinecap="round"
+          />
+        )}
+        {kind === 'past-point' && <Cross x={70} />}
+        {kind === 'future-point' && <Cross x={230} />}
+        {kind === 'plan' && (
+          <>
+            <circle cx={NOW_X} cy={AXIS_Y} r={4} fill="var(--primary)" />
+            <path
+              d={`M ${NOW_X} ${AXIS_Y - 4} Q ${(NOW_X + 230) / 2} ${AXIS_Y - 30} 226 ${AXIS_Y - 7}`}
+              fill="none"
+              stroke="var(--primary)"
+              strokeWidth={2}
+              strokeDasharray="4 3"
+            />
+            <Cross x={230} />
+          </>
+        )}
+        {kind === 'past-to-now' && (
+          <>
+            <rect x={50} y={AXIS_Y - 4} width={NOW_X - 50} height={8} rx={4} fill="var(--primary)" opacity={0.35} />
+            <Cross x={90} />
+            <path d={`M ${NOW_X - 8} ${AXIS_Y - 9} L ${NOW_X} ${AXIS_Y} L ${NOW_X - 8} ${AXIS_Y + 9}`} fill="none" stroke="var(--primary)" strokeWidth={2} />
+          </>
+        )}
+        {kind === 'perfect-vs-past' && (
+          <>
+            <Cross x={45} faded />
+            <rect x={80} y={AXIS_Y - 4} width={NOW_X - 80} height={8} rx={4} fill="var(--primary)" opacity={0.85} />
+          </>
+        )}
+        {kind === 'perfect-vs-past' && (
+          <>
+            <text x={45} y={AXIS_Y - 14} fontSize={10} textAnchor="middle" fill="var(--muted-foreground)">
+              V2
+            </text>
+            <text x={(80 + NOW_X) / 2} y={AXIS_Y - 14} fontSize={10} textAnchor="middle" fill="var(--primary)">
+              have + V3
+            </text>
+          </>
+        )}
         {kind === 'habit-question' && (
           <text x={NOW_X + 8} y={AXIS_Y - 14} fontSize={18} fontWeight={700} fill="var(--primary)">
             ?

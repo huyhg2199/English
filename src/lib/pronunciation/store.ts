@@ -53,9 +53,19 @@ export function recordAttempt(store: Store, sentenceId: string, score: number, n
   return { ...store, data: { ...store.data, pronunciation: { ...p, items: { ...items, [sentenceId]: item } } } }
 }
 
-/** Trung bình điểm tốt nhất của các câu đã thử (làm tròn); chưa thử câu nào thì null. */
+/**
+ * Điểm chép chính tả (story 10) dùng chung `pronunciation` nhưng là điểm gõ, không phải điểm nói.
+ * Id câu chính tả có dạng `<bài>-dict-<n>`.
+ */
+export function isDictationId(id: string): boolean {
+  return /-dict-\d+$/.test(id)
+}
+
+/** Trung bình điểm tốt nhất của các câu NÓI đã thử (làm tròn, bỏ câu chép chính tả); chưa thử câu nào thì null. */
 export function pronunciationAverage(store: Store): number | null {
-  const tried = Object.values(readPronunciation(store)).filter((i) => i.attempts > 0)
+  const tried = Object.entries(readPronunciation(store))
+    .filter(([id, i]) => i.attempts > 0 && !isDictationId(id))
+    .map(([, i]) => i)
   if (tried.length === 0) return null
   return Math.round(tried.reduce((sum, i) => sum + i.best, 0) / tried.length)
 }

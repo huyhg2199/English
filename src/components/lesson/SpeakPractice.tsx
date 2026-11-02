@@ -109,7 +109,16 @@ function SentenceRow({
  * Luyện nói câu mẫu: nghe mẫu (TTS en-US), bấm nói, trình duyệt nhận dạng và app so từng từ.
  * Logic lưu điểm / lỗi / huỷ nằm ở `applyRecognition` (hàm thuần). Không có nhận giọng nói thì ẩn nút nói, giữ nút nghe.
  */
-export function SpeakPractice({ sentences }: { sentences: readonly PracticeSentence[] }) {
+export function SpeakPractice({
+  sentences,
+  title = 'Luyện nói câu mẫu',
+  onListeningChange,
+}: {
+  sentences: readonly PracticeSentence[]
+  title?: string
+  /** Báo micro bắt đầu / thôi nghe (vd để khối shadowing tắt nút "Nghe cả đoạn"). */
+  onListeningChange?: (listening: boolean) => void
+}) {
   const { items, apply } = usePronunciation()
   const [supported, setSupported] = useState(() => canRecognize())
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -117,6 +126,7 @@ export function SpeakPractice({ sentences }: { sentences: readonly PracticeSente
   const controller = useRef<AbortController | null>(null)
 
   useEffect(() => () => controller.current?.abort(), [])
+  useEffect(() => onListeningChange?.(activeId !== null), [activeId, onListeningChange])
 
   async function speakSentence(sentence: PracticeSentence) {
     controller.current?.abort()
@@ -145,7 +155,7 @@ export function SpeakPractice({ sentences }: { sentences: readonly PracticeSente
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="font-semibold">Luyện nói câu mẫu</h3>
+      <h3 className="font-semibold">{title}</h3>
       {supported ? (
         <p className="text-xs text-muted-foreground">
           Nghe mẫu, rồi bấm nói. Từ thiếu hoặc lệch sẽ tô đỏ. App chỉ lưu điểm; âm thanh do dịch vụ nhận giọng nói

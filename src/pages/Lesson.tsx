@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, BookOpenCheck, Check, MapPinOff, NotebookPen } from 'lucide-react'
+import { ArrowLeft, BookOpenCheck, Check, ClipboardCheck, GraduationCap, MapPinOff, NotebookPen } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
 import { useNotes, useProgress, useSkillBoard } from '@/app/store-context'
 import { GrammarSection, PronunciationSection } from '@/components/lesson/LessonContentParts'
+import { RoleplayButton } from '@/components/lesson/RoleplayButton'
 import { NoteForm } from '@/components/notebook/NoteForm'
 import { ReadingSourceContext } from '@/components/reading-source'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
@@ -11,7 +12,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { getLessonContent } from '@/data/lessons'
+import { getQuiz, lessonQuizId, quizHref } from '@/data/questions'
 import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
+import { OWL_CHECKPOINT_ID, OWL_HREF } from '@/lib/owl'
 import { prioritizeSections } from '@/lib/placement'
 
 function BackLink() {
@@ -108,8 +111,10 @@ export function Lesson() {
 
   const { lesson, month, stage } = entry
   const done = completedLessonIds.includes(lesson.id)
-  // Bài đã soạn nội dung (T1) thì gắn vào đoạn Phát âm / Ngữ pháp; bài khác giữ như cũ.
+  // Bài đã soạn nội dung (T1–T4) thì gắn vào đoạn Phát âm / Ngữ pháp; bài khác giữ như cũ.
   const content = getLessonContent(lesson.id)
+  // Câu hỏi kiểm tra bài (story 10): mọi bài có đủ câu trong ngân hàng.
+  const quiz = getQuiz(lessonQuizId(lesson.id))
 
   return (
     <section className="flex flex-col gap-6">
@@ -149,9 +154,28 @@ export function Lesson() {
           >
             {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
             {content && section.id === 'grammar' && <GrammarSection content={content} />}
+            {section.id === 'checkpoint' && lesson.checkpointId === OWL_CHECKPOINT_ID && (
+              <Button asChild className="self-start">
+                <Link to={OWL_HREF}>
+                  <GraduationCap aria-hidden="true" />
+                  Vào thi {stage.checkpoint.name}
+                </Link>
+              </Button>
+            )}
           </LessonSectionCard>
         </ReadingSourceContext.Provider>
       ))}
+
+      {quiz && (
+        <Button asChild variant="outline" className="self-start">
+          <Link to={quizHref(quiz.id)}>
+            <ClipboardCheck aria-hidden="true" />
+            Kiểm tra bài ({quiz.size} câu)
+          </Link>
+        </Button>
+      )}
+
+      {content?.roleplay && <RoleplayButton lesson={{ lessonId: lesson.id, roleplay: content.roleplay }} />}
 
       <LessonNoteButton lessonId={lesson.id} />
 

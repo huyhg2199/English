@@ -3,12 +3,15 @@ import { Outlet, ScrollRestoration } from 'react-router'
 
 import { BottomNav } from '@/components/BottomNav'
 import { SyncBadge } from '@/components/SyncBadge'
+import { OwlPost } from '@/components/trophies/OwlPost'
 import { storageNotice } from '@/app/storage-notice'
-import { useLoadedStore, usePlacement } from '@/app/store-context'
+import { useLoadedStore, useOwlPost, usePlacement } from '@/app/store-context'
 
 export function AppShell() {
   const notice = storageNotice(useLoadedStore())
   const { house } = usePlacement().placement
+  // Cú đưa thư: khi mở app (sau lượt đồng bộ đầu) và mỗi lần app hiện lại (story 12).
+  const owl = useOwlPost()
 
   // Màu nhấn theo Nhà: biến CSS dưới `html[data-house]` (index.css).
   // Layout effect: đặt trước khi trình duyệt vẽ để không nháy màu mặc định.
@@ -40,6 +43,7 @@ export function AppShell() {
       >
         <Outlet />
       </main>
+      <OwlPost letters={owl.letters} onClose={owl.dismiss} />
       <BottomNav />
       <ScrollRestoration />
     </div>

@@ -22,7 +22,24 @@ export type QuizAttempt = {
   total: number
   answers: AttemptAnswer[]
   updatedAt: string
+  /**
+   * Loại lần làm (story 11). Thiếu = test thường; `comeback` = test quay lại sau nghỉ 5'.
+   * Chuỗi lạ (do bản app mới hơn ghi) vẫn hợp lệ để không mất khi gộp; nơi đọc bỏ qua loại không biết.
+   */
+  kind?: string
+  /** Lần làm rỗng ghi "Để sau" cho test quay lại (chỉ với `kind: 'comeback'`, `total: 0`; không tính điểm). */
+  skipped?: boolean
+  /** Qua cửa hay không (story 14 ghi cho `kind: 'owl'`). */
+  passed?: boolean
+  /** Kỳ qua cửa của lần làm (story 14: `owl-1`). */
+  checkpointId?: string
+  /** Chi tiết lần thi O.W.L. (điểm từng phần, phần ETS, kế hoạch ôn); `@/lib/owl` đọc và kiểm dạng. */
+  owl?: Record<string, unknown>
 }
+
+/** Loại lần làm app này hiểu (thiếu `kind` = test thường; `owl` = O.W.L., story 14). */
+export const KNOWN_ATTEMPT_KINDS = ['comeback', 'owl'] as const
+export type AttemptKind = (typeof KNOWN_ATTEMPT_KINDS)[number]
 
 export type QuizAttemptEntry = QuizAttempt & { id: string }
 
@@ -39,8 +56,14 @@ function isAnswer(value: unknown): value is AttemptAnswer {
 
 export function isQuizAttempt(value: unknown): value is QuizAttempt {
   if (!isPlainObject(value)) return false
-  const { quizId, seed, startedAt, finishedAt, score, total, answers, updatedAt } = value
+  const { quizId, seed, startedAt, finishedAt, score, total, answers, updatedAt, kind, skipped, passed, checkpointId, owl } =
+    value
   return (
+    (kind === undefined || typeof kind === 'string') &&
+    (passed === undefined || typeof passed === 'boolean') &&
+    (checkpointId === undefined || typeof checkpointId === 'string') &&
+    (owl === undefined || isPlainObject(owl)) &&
+    (skipped === undefined || skipped === false || (skipped === true && kind === 'comeback' && total === 0)) &&
     typeof quizId === 'string' &&
     typeof seed === 'string' &&
     isTimeString(startedAt) &&
@@ -129,12 +152,27 @@ export function listAttempts(store: Store, quizId?: string): QuizAttemptEntry[] 
     .sort((a, b) => Date.parse(b.finishedAt) - Date.parse(a.finishedAt) || (a.id < b.id ? 1 : -1))
 }
 
+/**
+ * Lần làm có chấm điểm để hiện lịch sử / điểm tốt nhất: bỏ lần "Để sau" (`skipped`) và loại lần làm không biết.
+ * Lọc theo bài test nếu truyền `quizId`.
+ */
+export function listGradedAttempts(store: Store, quizId?: string): QuizAttemptEntry[] {
+  return listAttempts(store, quizId).filter(
+    (a) => !a.skipped && (a.kind === undefined || (KNOWN_ATTEMPT_KINDS as readonly string[]).includes(a.kind)),
+  )
+}
+
 export type AttemptInput = {
   id: string
   quizId: string
   seed: string
   startedAt: Date
   answers: readonly AttemptAnswer[]
+  kind?: AttemptKind
+  skipped?: boolean
+  passed?: boolean
+  checkpointId?: string
+  owl?: Record<string, unknown>
 }
 
 /**
@@ -157,6 +195,11 @@ export function recordAttempt(
     total: answers.length,
     answers,
     updatedAt: now.toISOString(),
+    ...(input.kind ? { kind: input.kind } : {}),
+    ...(input.skipped ? { skipped: true } : {}),
+    ...(input.passed !== undefined ? { passed: input.passed } : {}),
+    ...(input.checkpointId !== undefined ? { checkpointId: input.checkpointId } : {}),
+    ...(input.owl !== undefined ? { owl: input.owl } : {}),
   }
   const quizzes = isPlainObject(store.data.quizzes) ? store.data.quizzes : {}
   let next: Store = {

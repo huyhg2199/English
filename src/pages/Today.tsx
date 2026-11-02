@@ -1,15 +1,27 @@
-import { useMemo } from 'react'
-import { BookOpenCheck, Check, Coffee, Flame, Play, Sparkles } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Bell, BookOpenCheck, Check, Coffee, Flame, Play, Sparkles, X } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { usePlacement, useSessions, useSkillBoard } from '@/app/store-context'
+import {
+  useComeback,
+  useLoadedStore,
+  useOwl,
+  usePlacement,
+  useSchedule,
+  useSessions,
+  useSkillBoard,
+} from '@/app/store-context'
 import { useNow } from '@/app/use-now'
+import { ComebackCard } from '@/components/ComebackCard'
+import { OwlPlanCard } from '@/components/owl/ReviewPlan'
+import { ScheduleCard } from '@/components/ScheduleCard'
 import { SkillGapCard } from '@/components/SkillGapCard'
 import { StudyClock } from '@/components/StudyClock'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { lessonHref } from '@/data/roadmap'
 import { studyHours } from '@/lib/placement'
+import { readDismissedDay, saveDismissedDay, showReminderBanner } from '@/lib/reminders'
 import { computeStreak, isSessionDay, localDayKey } from '@/lib/sessions'
 
 /** Mời đội Mũ Phân Loại khi chưa làm. */
@@ -32,12 +44,45 @@ function SortingHatInvite() {
   )
 }
 
-/** Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại, streak, Mũ Phân Loại / bảng kỹ năng. */
+/** Dải nhắc nhẹ (story 13): qua giờ nhắc đầu tiên mà hôm nay chưa học. Đóng thì ẩn tới mai (nhớ trên máy này). */
+function ReminderBanner({ now }: { now: Date }) {
+  const { store } = useLoadedStore()
+  const [dismissed, setDismissed] = useState(() => readDismissedDay())
+  if (!showReminderBanner(store, now, dismissed)) return null
+  return (
+    <div role="status" className="flex items-center gap-3 rounded-xl border border-primary/50 bg-accent/40 px-3 py-2 text-sm">
+      <Bell className="size-5 shrink-0 text-primary" aria-hidden="true" />
+      <p className="min-w-0 flex-1">
+        Cú đưa thư nhắc: hôm nay chưa học đó. Lười thì <Link to="/session/lazy" className="font-medium underline">10 phút thôi</Link>.
+      </p>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Đóng nhắc hôm nay"
+        onClick={() => {
+          const day = localDayKey(now)
+          saveDismissedDay(day)
+          setDismissed(day)
+        }}
+      >
+        <X aria-hidden="true" />
+      </Button>
+    </div>
+  )
+}
+
+/**
+ * Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại, streak, ngày dự kiến đạt 750,
+ * thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, kế hoạch ôn O.W.L. 1 khi trượt, Mũ Phân Loại / bảng kỹ năng.
+ */
 export function Today() {
   const { days, current } = useSessions()
   const { done: placed } = usePlacement()
   const { board, weakest } = useSkillBoard()
   const [now] = useNow()
+  const plan = useSchedule(now)
+  const comeback = useComeback(now)
+  const { activePlan } = useOwl(now)
   const streak = useMemo(() => computeStreak(days, now), [days, now])
   const hours = useMemo(() => studyHours(days, now), [days, now])
   const todayEntry = days[localDayKey(now)]
@@ -49,6 +94,14 @@ export function Today() {
         <Flame className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
         <h1 className="text-2xl font-semibold tracking-wide">Hôm nay</h1>
       </header>
+
+      <ReminderBanner now={now} />
+
+      {comeback.pending && comeback.questionCount > 0 && (
+        <ComebackCard pending={comeback.pending} questionCount={comeback.questionCount} onSkip={comeback.skip} />
+      )}
+
+      {activePlan && <OwlPlanCard active={activePlan} />}
 
       <Card className="gap-3">
         <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
@@ -116,6 +169,8 @@ export function Today() {
           )}
         </CardHeader>
       </Card>
+
+      <ScheduleCard plan={plan} />
 
       {placed ? (
         <>

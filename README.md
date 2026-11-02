@@ -39,7 +39,7 @@ Không có biến `VITE_SUPABASE_*` thì app bỏ qua đăng nhập và chạy c
 
 Dữ liệu học lưu ở `localStorage` (key `lumos-english:store`) qua `src/lib/storage`, có `schemaVersion` và migration tuần tự. Dữ liệu hỏng, bị chặn hay do bản app mới hơn ghi sẽ không bị ghi đè.
 
-**Đồng bộ Supabase (local-first, `src/lib/sync`):** app luôn đọc/ghi localStorage trước nên học được khi offline. Đã đăng nhập thì mỗi lần sửa sẽ đẩy lên (debounce), còn khi mở app, khi có mạng lại và khi quay lại app thì kéo bản trên server về và gộp. Tiến độ gộp theo từng bài (`progress.lessons[id] = { done, updatedAt }`, bản mới hơn thắng; bỏ đánh dấu là `done: false` nên máy khác không làm sống lại). App xuống nền hoặc đăng xuất thì đẩy ngay phần còn chờ. Đăng nhập tài khoản khác trên cùng máy thì tiến độ trên máy được thay bằng bản của tài khoản mới (máy nhớ user đồng bộ gần nhất ở key `lumos-english:sync-user`), không gộp dữ liệu của tài khoản cũ sang. Chỉ các key trong `SYNCED_KEYS` (hiện là `progress`) được đẩy lên; API key, PAT, token không bao giờ rời máy. Bản trên server do app mới hơn ghi thì app không ghi đè và báo "Cần cập nhật app".
+**Đồng bộ Supabase (local-first, `src/lib/sync`):** app luôn đọc/ghi localStorage trước nên học được khi offline. Đã đăng nhập thì mỗi lần sửa sẽ đẩy lên (debounce), còn khi mở app, khi có mạng lại và khi quay lại app thì kéo bản trên server về và gộp. Tiến độ gộp theo từng bài (`progress.lessons[id] = { done, updatedAt }`, bản mới hơn thắng; bỏ đánh dấu là `done: false` nên máy khác không làm sống lại). App xuống nền hoặc đăng xuất thì đẩy ngay phần còn chờ. Đăng nhập tài khoản khác trên cùng máy thì tiến độ trên máy được thay bằng bản của tài khoản mới (máy nhớ user đồng bộ gần nhất ở key `lumos-english:sync-user`), không gộp dữ liệu của tài khoản cũ sang. Chỉ các key trong `SYNCED_KEYS` (dữ liệu học, gồm cả giờ nhắc `reminders`) được đẩy lên; API key, PAT, token không bao giờ rời máy. Bản trên server do app mới hơn ghi thì app không ghi đè và báo "Cần cập nhật app".
 
 ## Cài đặt Supabase (một lần)
 
@@ -117,9 +117,57 @@ select count(*) from public.user_store;
 rollback;
 ```
 
+## Owl Post (Telegram) và bản sao Gist
+
+App tự ghi một **secret gist** của bạn (story 13): `lumos-backup.json` (đúng file sao lưu, chỉ dữ liệu học) và `status.json` (`{ date, studied, kind, streak, updatedAt }`). Ghi ngay khi xong buổi và khi app xuống nền (nếu dữ liệu đổi, tối đa 1 lần mỗi 10 phút). Workflow `.github/workflows/owl-post.yml` đọc `status.json` lúc **12:00, 15:30, 21:30 giờ Việt Nam**; hôm nay chưa học thì gửi tin Telegram, đã học thì im lặng. Đọc Gist lỗi thì không gửi (chỉ cảnh báo trong log).
+
+> **Secret gist không phải riêng tư:** GitHub chỉ không liệt kê nó công khai, nhưng **ai có gist id / URL đều đọc được bản sao dữ liệu học**. Coi gist id như thông tin nhạy cảm: chỉ dán vào GitHub Secrets, không đăng hay commit ở đâu.
+
+### 1. Tạo PAT chỉ quyền gist
+
+1. GitHub → **Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token (classic)** (hoặc mở `https://github.com/settings/tokens/new?scopes=gist`).
+2. Chỉ tick **gist**. Chọn hạn dùng (ví dụ 1 năm; hết hạn thì tạo PAT mới và bấm "Thay PAT" trong app, cập nhật cả secret `GIST_TOKEN`).
+3. Trong app: **Luyện tập → Owl Post & sao lưu** → dán PAT → **Kết nối**. App tạo secret gist và hiện **Gist id** (nút chép). PAT chỉ nằm ở localStorage của máy đó (`lumos-english:gist-token`), không đồng bộ, không vào bản sao.
+4. Máy thứ hai: dán PAT và điền **Gist id có sẵn** để nối vào cùng gist, tránh tạo gist mới. App kiểm PAT ghi được gist đó (đúng tài khoản chủ gist, có quyền gist) và bản sao đọc được, gộp bản sao về rồi mới ghi. Mỗi lần ghi sau đó app cũng đọc gist và gộp dữ liệu của máy khác trước, nên hai máy không đè mất dữ liệu của nhau.
+5. **Thay PAT** (PAT hết hạn) giữ nguyên gist id. Nếu ngắt kết nối rồi tạo gist mới thì gist id đổi: **nhớ cập nhật secret `GIST_ID`**, nếu không Owl Post vẫn đọc gist cũ (và sẽ nhắc dù bạn đã học).
+
+### 2. Tạo bot Telegram
+
+1. Trong Telegram, nhắn **@BotFather** → `/newbot` → đặt tên → nhận **bot token** (dạng `123456:ABC…`).
+2. Mở chat với bot vừa tạo và bấm **Start** (bot chỉ nhắn được cho người đã nhắn nó trước).
+3. Lấy **chat id**: mở `https://api.telegram.org/bot<bot token>/getUpdates` trong trình duyệt sau khi đã nhắn bot, tìm `"chat":{"id":…}`. Không dán link này (có token) vào đâu khác.
+
+### 3. Thêm 4 GitHub Secrets
+
+Repo → **Settings → Secrets and variables → Actions → tab Secrets → New repository secret**:
+
+| Secret | Giá trị |
+|---|---|
+| `GIST_ID` | Gist id chép từ app |
+| `GIST_TOKEN` | PAT chỉ quyền gist (có thể dùng chung PAT với app) |
+| `TELEGRAM_BOT_TOKEN` | Token từ BotFather |
+| `TELEGRAM_CHAT_ID` | Chat id ở bước 2 |
+
+Đây là **Secrets** (không phải Variables). Workflow chỉ đọc chúng qua `env`, không `echo`; script không in secret và tự che chuỗi secret nếu lỡ có trong thông báo lỗi.
+
+### 4. Bật và thử workflow
+
+1. Tab **Actions** → nếu GitHub hỏi thì bấm bật workflow. Chọn **Owl Post (nhắc học qua Telegram)** → **Run workflow** để thử tay.
+2. Hôm nay chưa học → nhận tin trên Telegram. Học xong một buổi (app ghi `status.json`) rồi chạy lại → không nhận tin.
+3. Lỗi lâu dài (Gist trả 401/404 vì PAT hết hạn hoặc gist bị xoá; Telegram trả 400/401/403/404 vì token / chat id sai hoặc bot bị chặn) → run **đỏ** và GitHub gửi email để bạn sửa secret. Lỗi tạm (mạng, GitHub 5xx/429) hoặc thiếu secret → run xanh kèm cảnh báo vàng. Log không có giá trị secret.
+4. Thử tại máy, không gọi mạng: `node scripts/owl-post/send.mjs --dry-run --status-json '{"date":"2026-11-01","studied":true,"kind":"full","streak":3}' --now 2026-11-02T14:30:00Z`.
+
+Lưu ý: cron của GitHub có thể chạy trễ vài phút tới vài chục phút; GitHub tự tắt workflow theo lịch nếu repo không có commit nào trong 60 ngày (vào Actions bật lại).
+
+### 5. Lịch nhắc (.ics)
+
+- **Subscribe** (giờ cố định 12:00 và 21:30): iPhone → **Cài đặt → Lịch → Tài khoản → Thêm tài khoản → Khác → Thêm lịch đã đăng ký**, dán `https://huyhg2199.github.io/English/lumos-reminders.ics`. Google Calendar: **Khác → Từ URL**. File chỉ có giờ và link app, không có dữ liệu cá nhân.
+- **Theo giờ bạn chọn**: trong app chỉnh giờ nhắc rồi bấm **Tải lịch .ics theo giờ này** và mở file để thêm vào Lịch.
+- Giờ nhắc trong app (đồng bộ giữa các máy) còn dùng cho dải nhắc trên trang Hôm nay: qua giờ nhắc đầu tiên mà chưa học thì hiện, bấm đóng thì ẩn tới mai. Không có web push (Đợt 2).
+
 ## Bí mật
 
-Repo public. Không commit API key, PAT, token bot, gist id hay dữ liệu cá nhân. Những thứ này chỉ nằm ở localStorage trên máy hoặc GitHub Secrets. Riêng URL và anon key Supabase là công khai (bảo vệ bằng RLS) nên để ở GitHub Actions Variables; không bao giờ có `service_role` key trong repo hay app.
+Repo public. Không commit API key, PAT, token bot, gist id, chat id hay dữ liệu cá nhân. Những thứ này chỉ nằm ở localStorage trên máy (key Gemini, PAT, gist id) hoặc GitHub Secrets (`GIST_ID`, `GIST_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`). Bản sao trên Gist chỉ chứa key trong allowlist, không bao giờ có PAT hay key. Riêng URL và anon key Supabase là công khai (bảo vệ bằng RLS) nên để ở GitHub Actions Variables; không bao giờ có `service_role` key trong repo hay app.
 
 ## Bản quyền theme
 

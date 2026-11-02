@@ -2,7 +2,9 @@ import { useMemo } from 'react'
 import { Map } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useProgress } from '@/app/store-context'
+import { useProgress, useSchedule } from '@/app/store-context'
+import { useNow } from '@/app/use-now'
+import { ScheduleLine } from '@/components/ScheduleCard'
 import { StageMap } from '@/components/roadmap/StageMap'
 import { Button } from '@/components/ui/button'
 import { allLessons, getLesson, lessonHref, SCORE_ESTIMATE_NOTE, STAGES } from '@/data/roadmap'
@@ -14,6 +16,8 @@ export function Roadmap() {
     () => computeRoadmapProgress(allLessons(), completedLessonIds, startLessonId),
     [completedLessonIds, startLessonId],
   )
+  const [now] = useNow()
+  const plan = useSchedule(now)
   const next = progress.nextLessonId ? getLesson(progress.nextLessonId) : undefined
 
   return (
@@ -24,6 +28,7 @@ export function Roadmap() {
       </header>
 
       <div className="flex flex-col gap-3">
+        <ScheduleLine plan={plan} />
         <p className="text-sm text-muted-foreground">
           Bản đồ 3 Năm học từ 0 tới TOEIC 750+. Đã qua {progress.completed.size}/{allLessons().length} trạm.
         </p>

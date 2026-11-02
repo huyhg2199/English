@@ -6,3 +6,6 @@ scripts/vocab/source/*.csv -text
 
 # Sinh bằng npm run vocab:build
 src/data/vocab/words.json linguist-generated=true
+
+# Lịch nhắc học: RFC 5545 bắt buộc xuống dòng CRLF, giữ nguyên byte
+public/*.ics -text

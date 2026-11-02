@@ -1,9 +1,20 @@
 import { useMemo } from 'react'
-import { BookX, ChevronRight, ClipboardCheck, HardDriveDownload, Layers, Sparkles, WandSparkles, type LucideIcon } from 'lucide-react'
+import {
+  BookX,
+  ChevronRight,
+  ClipboardCheck,
+  GraduationCap,
+  HardDriveDownload,
+  Layers,
+  Mail,
+  Sparkles,
+  WandSparkles,
+  type LucideIcon,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { useMistakes, useNewWordList, useQuizzes, useSavedWords, useSpells, useSrs } from '@/app/store-context'
+import { useMistakes, useNewWordList, useOwl, useQuizzes, useSavedWords, useSpells, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +22,7 @@ import { SPELLS } from '@/data/lessons'
 import { MISTAKES_HREF, quizHref } from '@/data/questions'
 import { sectionHref } from '@/data/roadmap'
 import { buildStudySession, flashcardSummary } from '@/lib/flashcard-session'
+import { OWL_HREF, partPercent } from '@/lib/owl'
 import { listMistakes, reviewableDue } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
 
@@ -54,12 +66,21 @@ function MistakesSummary() {
   return `${total} câu trong sổ · ${due} câu đến hạn ôn`
 }
 
-function MiniTestSummary() {
+function MiniTestSummary({ quizId, month }: { quizId: string; month: string }) {
   const { attempts } = useQuizzes()
-  const mine = attempts.filter((a) => a.quizId === 'mini-t1')
-  if (mine.length === 0) return '10 câu ôn cả 4 tuần T1. Chưa làm lần nào.'
+  const mine = attempts.filter((a) => a.quizId === quizId)
+  if (mine.length === 0) return `10 câu ôn cả 4 tuần ${month}. Chưa làm lần nào.`
   const best = Math.max(...mine.map((a) => a.score))
   return `Đã làm ${mine.length} lần · cao nhất ${best}/${mine[0].total} · lần gần nhất ${mine[0].score}/${mine[0].total}`
+}
+
+function OwlSummary() {
+  const [now] = useNow()
+  const { attempts } = useOwl(now)
+  if (attempts.length === 0) return 'Kỳ thi qua cửa chặng 1: 30 từ đọc theo IPA + 20 câu thì. Chưa thi lần nào.'
+  const last = attempts[0]
+  const passes = attempts.filter((a) => a.passed).length
+  return `Đã thi ${attempts.length} lần${passes > 0 ? ` · qua ${passes} lần` : ''} · gần nhất ${last.passed ? 'qua' : 'chưa qua'} (phát âm ${partPercent(last.details.pronunciation)}%, thì ${partPercent(last.details.tenses)}%${last.details.selfGraded ? ', có phần tự chấm' : ''})`
 }
 
 /** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */
@@ -130,7 +151,15 @@ export function Practice() {
       </PracticeLink>
 
       <PracticeLink to={quizHref('mini-t1')} icon={ClipboardCheck} title="Mini test tháng T1">
-        <MiniTestSummary />
+        <MiniTestSummary quizId="mini-t1" month="T1" />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mini-t2')} icon={ClipboardCheck} title="Mini test tháng T2">
+        <MiniTestSummary quizId="mini-t2" month="T2" />
+      </PracticeLink>
+
+      <PracticeLink to={OWL_HREF} icon={GraduationCap} title="O.W.L. 1">
+        <OwlSummary />
       </PracticeLink>
 
       <SpellList />
@@ -139,7 +168,8 @@ export function Practice() {
         <CardHeader>
           <CardTitle>Sắp có</CardTitle>
           <CardDescription>
-            7 Part TOEIC và link luyện nói. Luyện phát âm đã có trong từng bài tháng T1 (đoạn Phát âm).
+            7 Part TOEIC. Luyện phát âm có trong đoạn Phát âm của từng bài tháng T1–T4; nút "Luyện nói với AI" nằm cuối
+            mỗi bài.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -154,6 +184,20 @@ export function Practice() {
             <CardTitle className="text-lg">Sao lưu dữ liệu</CardTitle>
             <ChevronRight className="row-span-2 size-5 text-muted-foreground" aria-hidden="true" />
             <CardDescription>Xuất file JSON để tự giữ, hoặc khôi phục từ file.</CardDescription>
+          </CardHeader>
+        </Card>
+      </Link>
+
+      <Link
+        to="/owl-post"
+        className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <Card className="transition-shadow hover:shadow-[0_0_20px_var(--candle-glow)]">
+          <CardHeader className="grid-cols-[auto_1fr_auto] items-center gap-x-3">
+            <Mail className="row-span-2 size-8 text-primary" aria-hidden="true" />
+            <CardTitle className="text-lg">Owl Post &amp; sao lưu</CardTitle>
+            <ChevronRight className="row-span-2 size-5 text-muted-foreground" aria-hidden="true" />
+            <CardDescription>Bản sao Gist tự động, giờ nhắc, lịch .ics và nhắc qua Telegram.</CardDescription>
           </CardHeader>
         </Card>
       </Link>
