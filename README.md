@@ -58,6 +58,7 @@ Dữ liệu học lưu ở `localStorage` (key `lumos-english:store`) qua `src/l
 5. **Authentication → URL Configuration**: Site URL = `https://huyhg2199.github.io/English/`.
 6. **Project Settings → API**: lấy **Project URL** và **anon / publishable key**. Tuyệt đối không dùng `service_role` key ở đâu trong repo hay app.
 7. GitHub repo → **Settings → Secrets and variables → Actions → Variables** (tab Variables, không phải Secrets vì anon key là công khai): thêm `VITE_SUPABASE_URL` và `VITE_SUPABASE_ANON_KEY`. Lần deploy sau app sẽ yêu cầu đăng nhập.
+   Cách khác (đang dùng): ghi hai giá trị vào file `.env.production` ở gốc repo rồi commit. Vite đọc file này khi `npm run build`, cả trên máy lẫn GitHub Actions. Chỉ được để URL và anon key ở đây, không bao giờ để `service_role` / secret key.
 8. Mở app, đăng nhập một lần bằng email của bạn để tạo tài khoản. Sau đó vào **Authentication → Sign In / Providers** (mục User Signups) **tắt "Allow new users to sign up"**: anon key công khai nên ai cũng gọi được API tạo tài khoản và làm tốn quota email. RLS vẫn chặn họ đọc dữ liệu của bạn, nhưng tắt sign-up thì không ai tạo thêm tài khoản được. Tài khoản đã có vẫn đăng nhập bằng mã như thường.
 
 ### Giới hạn gói free
