@@ -8,3 +8,6 @@ dev-dist/
 .env.*
 !.env.example
 .DS_Store
+
+# Cấu hình build công khai (chỉ URL + anon key Supabase)
+!.env.production
