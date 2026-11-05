@@ -135,7 +135,7 @@ export function Today() {
 
       <div className="flex flex-col gap-3">
         <Button asChild size="lg" className="h-16 text-lg shadow-[0_0_24px_var(--candle-glow)]">
-          <Link to={current ? `/session?lesson=${encodeURIComponent(current.lesson.id)}` : '/session'}>
+          <Link to="/session">
             <Play className="size-6" aria-hidden="true" />
             Bắt đầu buổi 30'
           </Link>

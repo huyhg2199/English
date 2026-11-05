@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router'
 
@@ -24,8 +24,20 @@ const SCREEN_TITLES: Record<Screen['kind'], string> = {
  * "Xem đáp án" từng câu, hoặc "Bỏ qua, sang Áp dụng") mới "Tiếp". Màn Áp dụng hiện lần đầu trong lượt thì ghi xong viên
  * (`completeBrick`); thoát giữa chừng không lưu gì, mở lại bắt đầu từ màn 1. Không ghi Sổ lỗi, quiz, điểm Nhà, buổi học.
  * Nội dung màn nằm ở `BrickScreen`/`CheckScreen`, tách khỏi điều hướng (story 30 chia hai cột).
+ *
+ * `variant`: `page` (trang `/foundation/:id`, mặc định) hoặc `session` (chạy trong buổi 30', story 21): không có link
+ * "Bức tường", tiêu đề là `h2`, màn cuối hiện `endSlot` (vd nút "Học tiếp viên sau") thay cho nút "Về bức tường".
  */
-export function BrickPlayer({ brick }: { brick: Brick }) {
+export function BrickPlayer({
+  brick,
+  variant = 'page',
+  endSlot,
+}: {
+  brick: Brick
+  variant?: 'page' | 'session'
+  endSlot?: ReactNode
+}) {
+  const inSession = variant === 'session'
   const { completeBrick } = useFoundation()
   const [index, setIndex] = useState(0)
   const [flow, setFlow] = useState<CheckFlow>(startCheck)
@@ -61,17 +73,23 @@ export function BrickPlayer({ brick }: { brick: Brick }) {
 
   return (
     <div ref={top} className="flex scroll-mt-4 flex-col gap-4">
-      <Link
-        to="/foundation"
-        className="inline-flex items-center gap-1 self-start text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        Bức tường
-      </Link>
+      {!inSession && (
+        <Link
+          to="/foundation"
+          className="inline-flex items-center gap-1 self-start text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Bức tường
+        </Link>
+      )}
 
       <header className="flex flex-col gap-2">
         <p className="text-xs font-semibold tracking-widest text-primary uppercase">Sân ga 9¾ · Viên {brick.id}</p>
-        <h1 className="text-2xl leading-tight font-semibold break-words">{brick.title}</h1>
+        {inSession ? (
+          <h2 className="text-2xl leading-tight font-semibold break-words">{brick.title}</h2>
+        ) : (
+          <h1 className="text-2xl leading-tight font-semibold break-words">{brick.title}</h1>
+        )}
         <div className="flex items-center gap-3">
           <div
             className="h-2 flex-1 overflow-hidden rounded-full bg-muted"
@@ -134,9 +152,13 @@ export function BrickPlayer({ brick }: { brick: Brick }) {
           <span />
         )}
         {isLast ? (
-          <Button asChild>
-            <Link to="/foundation">Về bức tường</Link>
-          </Button>
+          inSession ? (
+            endSlot
+          ) : (
+            <Button asChild>
+              <Link to="/foundation">Về bức tường</Link>
+            </Button>
+          )
         ) : (
           <Button type="button" onClick={() => go(index + 1)} disabled={!canNext}>
             Tiếp

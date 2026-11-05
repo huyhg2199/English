@@ -63,3 +63,9 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
   summary: Khi các hàng chưa có kết quả cuối cùng được xong bằng cách học hết viên (`completeBrick`) chứ không qua kiểm tra hàng, Soát vé vẫn `pending` dù `nextPlacementRow` là null.
   evidence: `recordRowTest` giờ đóng Soát vé ở mọi chế độ, nhưng `completeBrick` (story 18/19) không xét Soát vé. Hiện không lộ ra giao diện (thẻ mời ẩn, `/foundation/soat-ve` chuyển hướng) vì UI dựa vào `placementRow`; story 21/22 khi đọc `needsPlacement` nên dùng `placementRow !== null` hoặc cho `completeBrick` gọi `finishPlacement('done')` khi hết hàng.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/21-session-plan-theory-first.md`
+  summary: Hôm nay vẫn hiện thẻ "Bài hiện tại" (bài lộ trình, `useSessions().current`) trong khi nút "Bắt đầu buổi 30'" giờ mở buổi Sân ga, nên lúc ở Sân ga thẻ và buổi không khớp.
+  evidence: `src/pages/Today.tsx` thẻ "Bài hiện tại" đọc `sessionLesson`; story 21 đổi nút sang `/session` (chọn buổi Sân ga khi `isInFoundation`). Intent story 21 cấm sửa Hôm nay ngoài nút; story 22 (thẻ Sân ga, ẩn thẻ) cần thay thẻ này bằng thẻ viên gạch khi đang ở Sân ga.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/21-session-plan-theory-first.md`
+  summary: Bài test quay lại có thể trỏ "Học tiếp" tới route hỏng `sectionHref('f03', 'pronunciation')` khi câu sai nhiều nhất là câu viên gạch (`q-fNN`) lấy từ Sổ lỗi.
+  evidence: `weakestSectionFrom` trả `{ lessonId: 'f03', sectionId: 'pronunciation' }` (test ở `comeback.test.ts`), `ComebackNext` trong `src/pages/Quiz.tsx` dựng `sectionHref(weak.lessonId, …)` không kiểm id viên; `pickComebackTest` lấy câu từ Sổ lỗi theo `QUESTION_BANK` (có câu `q-fNN` từ story 20). Nên dùng `brickIdFromLessonId` để trỏ `/foundation/F03` (hoặc bỏ câu viên khỏi `weakestSectionFrom`).

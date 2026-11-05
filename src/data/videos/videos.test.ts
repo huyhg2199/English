@@ -1,9 +1,18 @@
 import { describe, expect, it } from 'vitest'
 
 import { LESSON_CONTENTS } from '@/data/lessons'
-import { getLesson, STAGES } from '@/data/roadmap'
+import { FOUNDATION_FUN_LINKS, getLesson, STAGES } from '@/data/roadmap'
 
-import { embedUrl, funStepVideos, LESSON_VIDEOS, thumbnailUrl, videosFor, watchUrl } from './index'
+import {
+  embedUrl,
+  FOUNDATION_FUN_VIDEO_IDS,
+  foundationFunVideos,
+  funStepVideos,
+  LESSON_VIDEOS,
+  thumbnailUrl,
+  videosFor,
+  watchUrl,
+} from './index'
 
 /** Kênh miễn phí, uy tín trong `nguon-hoc-mien-phi.md`. */
 const CHANNELS = ['VOA Learning English', 'BBC Learning English', "Rachel's English", 'TED-Ed']
@@ -101,5 +110,31 @@ describe('URL video', () => {
     expect(watchUrl({ id: 'WR9_nsLyaEY' })).toBe('https://www.youtube.com/watch?v=WR9_nsLyaEY')
     expect(watchUrl({ id: 'WR9_nsLyaEY', startSec: 45 })).toBe('https://www.youtube.com/watch?v=WR9_nsLyaEY&t=45s')
     expect(thumbnailUrl({ id: 'WR9_nsLyaEY' })).toBe('https://i.ytimg.com/vi/WR9_nsLyaEY/hqdefault.jpg')
+  })
+})
+
+describe('giải trí nhẹ của buổi Sân ga (story 21)', () => {
+  it("mỗi id có trong LESSON_VIDEOS, kênh VOA Learning English, là Let's Learn English", () => {
+    expect(FOUNDATION_FUN_VIDEO_IDS).toEqual(['WR9_nsLyaEY', '1-U7o9xjWQc'])
+    for (const id of FOUNDATION_FUN_VIDEO_IDS) {
+      const v = LESSON_VIDEOS.find((x) => x.id === id)
+      expect(v, id).toBeDefined()
+      expect(v!.channel).toBe('VOA Learning English')
+      expect(v!.title).toMatch(/Let's Learn English/)
+    }
+  })
+
+  it('foundationFunVideos giữ thứ tự, mỗi id một lần', () => {
+    expect(foundationFunVideos().map((v) => v.id)).toEqual([...FOUNDATION_FUN_VIDEO_IDS])
+  })
+
+  it('id không còn trong dữ liệu bị bỏ qua (không có video → chỉ link)', () => {
+    const second = LESSON_VIDEOS.find((v) => v.id === FOUNDATION_FUN_VIDEO_IDS[1])!
+    expect(foundationFunVideos([second]).map((v) => v.id)).toEqual([second.id])
+    expect(foundationFunVideos([])).toEqual([])
+  })
+
+  it('FOUNDATION_FUN_LINKS là VOA Learning English', () => {
+    expect(FOUNDATION_FUN_LINKS).toEqual([{ name: 'VOA Learning English', url: 'https://learningenglish.voanews.com/' }])
   })
 })

@@ -1,4 +1,4 @@
-import { allLessons, STAGES, type Section, type SkillTag, type Stage } from '@/data/roadmap'
+import { allLessons, STAGES, type Section, type SectionId, type SkillTag, type Stage } from '@/data/roadmap'
 import { PRONUNCIATION_TARGET_PERCENT, pronunciationAverage } from '@/lib/pronunciation'
 import { isSessionDay, localDayKey, sessionLesson } from '@/lib/sessions'
 import { isSrsCard, readCards } from '@/lib/srs'
@@ -136,10 +136,16 @@ export function weakestForStore(store: Store): GapSkill | null {
   return hasPlacement(store) ? weakestSkill(skillGaps(store).rows) : null
 }
 
+/** Đoạn lý thuyết của bài: luôn đứng trước các đoạn luyện, giữ nguyên thứ tự (`learning-rules.md`, Buổi học). */
+export const THEORY_SECTION_IDS: readonly SectionId[] = ['pronunciation', 'grammar']
+
 /**
- * Đưa đoạn mang tag của kỹ năng yếu nhất lên đầu (giữ thứ tự tương đối), gắn cờ `priority`.
- * Đoạn giải trí 10' không bao giờ được ưu tiên (giữ nguyên chỗ).
- * `weakest` null (chưa đội Mũ) → giữ nguyên thứ tự, không đoạn nào ưu tiên.
+ * Thứ tự đoạn theo luật "lý thuyết trước": [đoạn lý thuyết, giữ nguyên thứ tự] + [đoạn luyện mang tag của kỹ năng yếu
+ * nhất] + [đoạn luyện còn lại], mỗi nhóm giữ thứ tự tương đối. Chỉ đoạn luyện (`vocabulary`, `checkpoint`, `main`, …)
+ * được đẩy lên; đoạn lý thuyết không bao giờ bị đẩy xuống dưới đoạn luyện.
+ * Cờ `priority` ("Ưu tiên") gắn cho mọi đoạn mang tag kỹ năng yếu nhất (kể cả đoạn lý thuyết), trừ đoạn giải trí 10'
+ * (không bao giờ ưu tiên, giữ nguyên chỗ trong nhóm còn lại).
+ * `weakest` null (chưa đội Mũ) → không đoạn nào ưu tiên; thứ tự chỉ đổi nếu dữ liệu có đoạn luyện đứng trước lý thuyết.
  */
 export function prioritizeSections<T extends Pick<Section, 'id' | 'tags'>>(
   sections: readonly T[],
@@ -149,7 +155,9 @@ export function prioritizeSections<T extends Pick<Section, 'id' | 'tags'>>(
     section,
     priority: weakest !== null && section.id !== 'entertainment' && section.tags.includes(weakest),
   }))
-  return [...marked.filter((m) => m.priority), ...marked.filter((m) => !m.priority)]
+  const isTheory = (m: (typeof marked)[number]) => THEORY_SECTION_IDS.includes(m.section.id)
+  const practice = marked.filter((m) => !isTheory(m))
+  return [...marked.filter(isTheory), ...practice.filter((m) => m.priority), ...practice.filter((m) => !m.priority)]
 }
 
 /** Mục tiêu giờ học mỗi năm (CAP-7). */

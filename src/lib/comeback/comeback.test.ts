@@ -235,3 +235,20 @@ describe('weakestSectionFrom', () => {
     expect(weakestSectionFrom({ answers: [] })).toBeNull()
   })
 })
+
+describe('lessonId dạng fNN (buổi Sân ga, câu viên gạch)', () => {
+  it('nhật ký buổi có lessonId f03 vẫn tính là đã học (nghỉ 8 ngày → mời test)', () => {
+    const s = recordSession(empty(), 'full', at(2, 20), { lessonId: 'f03' })
+    expect(pendingComeback(s, at(10, 7))).toEqual({ lastStudied: new Date(2026, 10, 2), days: 8 })
+    expect(needsComeback(s, at(3, 7))).toBe(false)
+  })
+
+  it('weakestSectionFrom: câu viên gạch (f03) hoà với câu bài → bài trên lộ trình thắng, không lỗi', () => {
+    const brickQ = getQuestion('q-f03-01')!
+    expect(brickQ.lessonId).toBe('f03')
+    const lessonQ = QUESTION_BANK.find((x) => x.lessonId === 's1-t1-w3' && x.sectionId === 'grammar')!
+    const answer = (questionId: string) => ({ questionId, chosen: '', correct: false })
+    expect(weakestSectionFrom({ answers: [answer(brickQ.id), answer(lessonQ.id)] })).toMatchObject({ lessonId: 's1-t1-w3' })
+    expect(weakestSectionFrom({ answers: [answer(brickQ.id)] })).toEqual({ lessonId: 'f03', sectionId: 'pronunciation', wrong: 1 })
+  })
+})

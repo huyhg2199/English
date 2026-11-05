@@ -599,3 +599,16 @@ describe('foundation (story 18)', () => {
     expect(mergeWithRemote(l, remote({ foundation: { bricks: {} } }, 14))).toEqual({ kind: 'outdated' })
   })
 })
+
+describe('sessions — lessonId dạng fNN (buổi Sân ga, story 21)', () => {
+  it('mergeSessionDays giữ lessonId f03; buổi f03 (sau) thắng buổi bài cùng loại', () => {
+    const DAY = new Date(2026, 10, 6, 9)
+    const LATER = new Date(2026, 10, 6, 20)
+    const lesson = readSessionDays(recordSession(local({}), 'full', DAY, { lessonId: 's1-t1-w1' }))
+    const brick = readSessionDays(recordSession(local({}), 'full', LATER, { lessonId: 'f03' }))
+    const key = Object.keys(brick)[0]
+    expect(mergeSessionDays(lesson, brick)[key]).toMatchObject({ kind: 'full', lessonId: 'f03' })
+    expect(mergeSessionDays(brick, lesson)[key]).toMatchObject({ kind: 'full', lessonId: 'f03' })
+    expect(mergeSessionDays(brick, {})[key]).toEqual(brick[key])
+  })
+})

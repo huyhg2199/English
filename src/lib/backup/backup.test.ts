@@ -595,3 +595,14 @@ describe('shareOrDownload', () => {
     expect(link.click).not.toHaveBeenCalled()
   })
 })
+
+describe('sessions — lessonId dạng fNN (buổi Sân ga, story 21)', () => {
+  it('buổi lessonId f03 qua sao lưu / khôi phục giữ nguyên', () => {
+    const s = recordSession(empty(), 'full', T0, { lessonId: 'f03' })
+    const backup = roundTrip(s)
+    const restored = restoreBackup(empty(), backup).store
+    expect(Object.values(readSessionDays(restored))).toEqual([
+      expect.objectContaining({ kind: 'full', minutes: 25, lessonId: 'f03' }),
+    ])
+  })
+})

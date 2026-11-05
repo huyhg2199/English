@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { allLessons, getLesson, STAGES } from '@/data/roadmap'
+import { allLessons, getLesson, STAGES, type SectionId, type SkillTag } from '@/data/roadmap'
 import { recordAttempt as recordPronunciationAttempt } from '@/lib/pronunciation'
 import { computeRoadmapProgress, readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { localDayKey, recordSession, sessionLesson } from '@/lib/sessions'
@@ -27,6 +27,7 @@ import {
   skillGaps,
   stageGoal,
   studyHours,
+  THEORY_SECTION_IDS,
   validateAttempt,
   vocabularyTargetFor,
   weakestSkill,
@@ -206,7 +207,7 @@ describe('skillGaps / weakestSkill', () => {
     expect(p).toMatchObject({ current: null, gap: null })
   })
 
-  it('ngữ pháp có khoảng cách lớn nhất → kỹ năng yếu nhất là ngữ pháp, đoạn ngữ pháp lên đầu "Ưu tiên"', () => {
+  it('ngữ pháp có khoảng cách lớn nhất → kỹ năng yếu nhất là ngữ pháp; giữ thứ tự (lý thuyết trước), ngữ pháp "Ưu tiên"', () => {
     // L/R cao, P5+P6 thấp, từ vựng đủ.
     const parts: PartScores = { p1: 6, p2: 25, p3: 39, p4: 30, p5: 5, p6: 2, p7: 54 }
     let s = recordAttempt(store(), parts, NOW, 's1-t1-w1').store
@@ -216,7 +217,10 @@ describe('skillGaps / weakestSkill', () => {
 
     const lesson = getLesson('s1-t1-w1')!
     const ordered = prioritizeSections(lesson.sections, 'grammar')
-    expect(ordered[0]).toMatchObject({ section: { id: 'grammar' }, priority: true })
+    // Ngữ pháp là đoạn lý thuyết: không đảo lên trên phát âm, chỉ gắn nhãn "Ưu tiên".
+    expect(ordered.map((o) => o.section.id)).toEqual(lesson.sections.map((x) => x.id))
+    expect(ordered.slice(0, 2).map((o) => o.section.id)).toEqual(['pronunciation', 'grammar'])
+    expect(ordered[1]).toMatchObject({ section: { id: 'grammar' }, priority: true })
     expect(ordered.filter((o) => o.priority)).toHaveLength(1)
   })
 
@@ -306,6 +310,72 @@ describe('weakestForStore', () => {
   })
 })
 
+describe('prioritizeSections — lý thuyết trước', () => {
+  const sec = (id: SectionId, tags: SkillTag[]) => ({ id, tags })
+
+  it('THEORY_SECTION_IDS = phát âm, ngữ pháp', () => {
+    expect(THEORY_SECTION_IDS).toEqual(['pronunciation', 'grammar'])
+  })
+
+  it('s1-t1-w1, yếu nhất vocabulary → thứ tự giữ nguyên, đoạn từ vựng "Ưu tiên"', () => {
+    const lesson = getLesson('s1-t1-w1')!
+    const ordered = prioritizeSections(lesson.sections, 'vocabulary')
+    expect(ordered.map((o) => o.section.id)).toEqual(lesson.sections.map((x) => x.id))
+    expect(ordered.filter((o) => o.priority).map((o) => o.section.id)).toEqual(['vocabulary'])
+  })
+
+  it('bài có checkpoint, yếu nhất vocabulary → từ vựng lên trước checkpoint nhưng vẫn sau lý thuyết', () => {
+    // Đoạn checkpoint mang tag Part (như chặng 2–3), không có tag từ vựng.
+    const sections = [
+      sec('pronunciation', ['pronunciation', 'listening']),
+      sec('grammar', ['grammar']),
+      sec('checkpoint', ['listening', 'reading']),
+      sec('vocabulary', ['vocabulary']),
+      sec('entertainment', ['listening', 'vocabulary']),
+    ]
+    const ordered = prioritizeSections(sections, 'vocabulary')
+    expect(ordered.map((o) => o.section.id)).toEqual(['pronunciation', 'grammar', 'vocabulary', 'checkpoint', 'entertainment'])
+    expect(ordered.filter((o) => o.priority).map((o) => o.section.id)).toEqual(['vocabulary'])
+  })
+
+  it('bài checkpoint thật (O.W.L. 1), yếu nhất vocabulary → lý thuyết vẫn đứng đầu, đoạn luyện ưu tiên ngay sau', () => {
+    const lesson = allLessons().find((l) => l.sections.some((x) => x.id === 'checkpoint') && l.stageId === 's1')
+    expect(lesson).toBeDefined()
+    if (!lesson) return
+    const result = prioritizeSections(lesson.sections, 'vocabulary')
+    const ordered = result.map((o) => o.section.id)
+    const theory = lesson.sections.filter((x) => THEORY_SECTION_IDS.includes(x.id)).map((x) => x.id)
+    expect(ordered.slice(0, theory.length)).toEqual(theory)
+    expect(ordered.indexOf('vocabulary')).toBeGreaterThan(Math.max(...theory.map((id) => ordered.indexOf(id))))
+    // Checkpoint O.W.L. 1 mang cả 5 tag → cũng "Ưu tiên" và vẫn đứng trước từ vựng.
+    const priority = result.filter((o) => o.priority).map((o) => o.section.id)
+    expect(priority).toEqual(expect.arrayContaining(['checkpoint', 'vocabulary']))
+    expect(ordered.indexOf('checkpoint')).toBeLessThan(ordered.indexOf('vocabulary'))
+    // Chưa có kỹ năng yếu nhất → giữ nguyên thứ tự dữ liệu, không đoạn nào "Ưu tiên".
+    const plain = prioritizeSections(lesson.sections, null)
+    expect(plain.map((o) => o.section.id)).toEqual(lesson.sections.map((x) => x.id))
+    expect(plain.some((o) => o.priority)).toBe(false)
+  })
+
+  it('đoạn luyện đứng trước lý thuyết trong dữ liệu → lý thuyết vẫn lên đầu', () => {
+    const sections = [sec('vocabulary', ['vocabulary']), sec('grammar', ['grammar']), sec('pronunciation', ['pronunciation'])]
+    expect(prioritizeSections(sections, 'vocabulary').map((o) => o.section.id)).toEqual([
+      'grammar',
+      'pronunciation',
+      'vocabulary',
+    ])
+  })
+
+  it('không bao giờ ưu tiên đoạn giải trí', () => {
+    for (const weakest of ['listening', 'reading', 'grammar', 'vocabulary', 'pronunciation'] as const) {
+      for (const lesson of allLessons()) {
+        const fun = prioritizeSections(lesson.sections, weakest).find((o) => o.section.id === 'entertainment')
+        expect(fun?.priority ?? false).toBe(false)
+      }
+    }
+  })
+})
+
 describe('prioritizeSections — đoạn giải trí', () => {
   it('kỹ năng yếu nhất là listening → đoạn giải trí không được ưu tiên, giữ nguyên chỗ', () => {
     const lesson = getLesson('s1-t1-w1')!
@@ -360,5 +430,15 @@ describe('decidePlacementSave', () => {
     const d = decidePlacementSave({ values: { p1: ' ' }, answers: {}, done: true, currentHouse: 'gryffindor' })
     expect(d.ok).toBe(false)
     if (!d.ok) expect(Object.keys(d.errors)).toEqual(['form'])
+  })
+})
+
+describe('lessonId dạng fNN (buổi Sân ga, story 21)', () => {
+  it('studyHours cộng 25 phút cho buổi f03; skillGaps không lỗi', () => {
+    const s = recordSession(store(), 'full', NOW, { lessonId: 'f03' })
+    const days = (s.data.sessions as { days: Record<string, unknown> }).days
+    expect(studyHours(days, NOW).minutes).toBe(25)
+    expect(() => skillGaps(s)).not.toThrow()
+    expect(skillGaps(s).stage.number).toBe(1)
   })
 })
