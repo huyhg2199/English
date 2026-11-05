@@ -1,3 +1,5 @@
+import { isBrickId, ROW_IDS } from '@/data/foundation'
+import { createDefaultFoundation, isBrickProgress, isRowResult } from '@/lib/foundation'
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem } from '@/lib/pronunciation'
@@ -107,6 +109,7 @@ const ENTRY_FIELD: Record<BackupKey, string | null> = {
   trophies: 'seen',
   reminders: null,
   videoPractice: 'items',
+  foundation: 'bricks',
 }
 
 const WHOLE_VALID: Partial<Record<BackupKey, (value: unknown) => boolean>> = {
@@ -125,6 +128,7 @@ const ENTRY_VALID: Record<Exclude<BackupKey, 'reminders'>, (value: unknown) => b
   mistakes: isMistakeItem,
   trophies: isSeenEntry,
   videoPractice: isVideoPracticeItem,
+  foundation: isBrickProgress,
 }
 
 /** Id có thể làm hỏng object khi gán (prototype pollution). */
@@ -154,6 +158,12 @@ export function sanitizeBackupData(data: Record<string, unknown>): Record<string
     const field = ENTRY_FIELD[key] as string
     const clean = safeEntries(value, (v) => v !== undefined)
     clean[field] = isPlainObject(value[field]) ? safeEntries(value[field], ENTRY_VALID[key]) : {}
+    if (key === 'foundation') {
+      // Viên: chỉ id có trong danh mục (F01–F18). Kết quả kiểm tra hàng: chỉ khoá A–D với mục hợp lệ.
+      clean.bricks = Object.fromEntries(Object.entries(clean.bricks as Record<string, unknown>).filter(([id]) => isBrickId(id)))
+      const rows = isPlainObject(value.rows) ? safeEntries(value.rows, isRowResult) : {}
+      clean.rows = Object.fromEntries(Object.entries(rows).filter(([id]) => (ROW_IDS as readonly string[]).includes(id)))
+    }
     out[key] = clean
   }
   return out
@@ -217,6 +227,14 @@ function without(obj: Record<string, unknown>, field: string): Record<string, un
   return out
 }
 
+/**
+ * Giá trị mặc định của các field ngoài map (vd Sân ga vừa migrate: Soát vé `pending`, chưa có hàng nào): file chỉ có
+ * mặc định thì không tính là "thêm" khi khôi phục vào máy trống.
+ */
+const EMPTY_REST: Partial<Record<BackupKey, Record<string, unknown>>> = {
+  foundation: createDefaultFoundation(),
+}
+
 /** Key sổ sách nội bộ (vd huy chương đã báo): vẫn khôi phục nhưng không đếm vào số mục thêm / cập nhật. */
 const UNCOUNTED_KEYS: ReadonlySet<BackupKey> = new Set<BackupKey>(['trophies'])
 
@@ -252,7 +270,11 @@ export function restoreBackup(store: Store, backup: Backup): RestoreResult {
     const afterRest = without(after, field)
     if (!deepEqual(beforeRest, afterRest)) {
       if (Object.keys(beforeRest).length > 0) updated++
-      else if (Object.entries(afterRest).some(([k, v]) => k !== 'updatedAt' && v !== null)) added++
+      else if (
+        Object.entries(afterRest).some(([k, v]) => k !== 'updatedAt' && v !== null && !deepEqual(v, EMPTY_REST[key]?.[k]))
+      ) {
+        added++
+      }
     }
   }
   const changed = BACKUP_KEYS.some((key) => !deepEqual(store.data[key], merged[key]))

@@ -42,3 +42,6 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/16-bilingual-subtitles.md`
   summary: Máy trạng thái lượt điền từ trong `SubtitledVideo.tsx` (đếm, flush khi hết video / đổi chế độ / rời trang) chưa có test.
   evidence: Chưa có môi trường test component; nên tách thành reducer thuần trong `src/lib/subs`.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/18-foundation-data-store-v13.md`
+  summary: Luật nội dung viên gạch trong `src/data/foundation/types.ts` (đúng một `___` ở `faded.en` và `RuleCard.cloze`, `syllables` ghép lại đúng `word`, `tapSyllable.answer` trong khoảng, 2–5 câu `check`, thứ tự màn explain → … → apply) chỉ nằm trong chú thích, chưa có validator/test.
+  evidence: Story 18 chỉ định kiểu; story 19–26 viết nội dung màn nên cần thêm hàm kiểm (vd `brickContentIssues`) và test duyệt mọi viên khi nội dung đầu tiên được thêm.

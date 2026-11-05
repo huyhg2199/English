@@ -139,7 +139,7 @@ describe('sync engine', () => {
     await flush()
     expect(engine.getStatus()).toBe('idle')
     expect(readCompletedLessonIds({ schemaVersion: 3, data: state.rows.get('u1')!.data })).toEqual(['s1-t1-w1'])
-    expect(state.rows.get('u1')!.schemaVersion).toBe(12)
+    expect(state.rows.get('u1')!.schemaVersion).toBe(13)
   })
 
   it('máy A đánh dấu 3 bài, máy B đăng nhập cùng user → B có đúng 3 bài (ghi cả local)', async () => {
@@ -208,14 +208,14 @@ describe('sync engine', () => {
 
   it('server mới hơn app → outdated, không ghi đè server, giữ local', async () => {
     const { engine, mark, state, remote, savedIds } = setup()
-    state.rows.set('u1', { schemaVersion: 13, data: { progress: { future: true } }, updatedAt: T1 })
+    state.rows.set('u1', { schemaVersion: 14, data: { progress: { future: true } }, updatedAt: T1 })
     mark('a')
     engine.start('u1')
     await flush()
     expect(engine.getStatus()).toBe('outdated')
     expect(remote.update).not.toHaveBeenCalled()
     expect(remote.insert).not.toHaveBeenCalled()
-    expect(state.rows.get('u1')!.schemaVersion).toBe(13)
+    expect(state.rows.get('u1')!.schemaVersion).toBe(14)
     expect(savedIds()).toEqual(['a'])
 
     // Sửa tiếp vẫn không đẩy
@@ -354,7 +354,7 @@ describe('sync engine', () => {
 
   it('đang outdated: sửa local không lên lịch kéo, badge không nhấp nháy', async () => {
     const { engine, mark, state, remote } = setup()
-    state.rows.set('u1', { schemaVersion: 13, data: {}, updatedAt: T1 })
+    state.rows.set('u1', { schemaVersion: 14, data: {}, updatedAt: T1 })
     engine.start('u1')
     await flush()
     const calls = vi.mocked(remote.fetch).mock.calls.length
@@ -381,7 +381,7 @@ describe('sync engine', () => {
 
   it('outdated tách lý do: server mới hơn vs local mới hơn', async () => {
     const server = setup()
-    server.state.rows.set('u1', { schemaVersion: 13, data: {}, updatedAt: T1 })
+    server.state.rows.set('u1', { schemaVersion: 14, data: {}, updatedAt: T1 })
     server.engine.start('u1')
     await flush()
     expect(server.engine.getStatus()).toBe('outdated')

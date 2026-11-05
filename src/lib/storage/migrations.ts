@@ -1,7 +1,7 @@
 import type { Migrations, Store } from './types'
 
 /** Version schema hiện tại. Tăng lên khi thêm migration mới. */
-export const CURRENT_VERSION = 12
+export const CURRENT_VERSION = 13
 
 /** Mốc `updatedAt` cho tiến độ có từ trước v3 (migration 2→3). */
 export const LEGACY_UPDATED_AT = '1970-01-01T00:00:00.000Z'
@@ -136,6 +136,31 @@ export const migrations: Migrations = {
           : videoPractice === undefined
             ? { items: {} }
             : { items: {}, legacy: videoPractice },
+      },
+    }
+  },
+  // v12 → v13 (story 18): tiến độ Sân ga 9¾ `foundation` (viên gạch, kiểm tra hàng, Soát vé, bỏ qua / quay lại).
+  // Mặc định: đang ở Sân ga, Soát vé `pending`, `updatedAt` mốc cũ cố định để mọi lần sửa thật đều thắng khi gộp.
+  // Đã có (object) thì để nguyên; giá trị lạ thì giữ trong `legacy`. Key khác (kể cả `placement` của Mũ Phân Loại)
+  // không đổi. Lên v13 để app cũ (v12) không ghi đè mất key này.
+  12: (store) => {
+    const foundation = store.data.foundation
+    const fresh = {
+      bricks: {},
+      rows: {},
+      placement: 'pending',
+      completedAt: null,
+      skippedAt: null,
+      resumedAt: null,
+      pausedDays: 0,
+      welcomeSeenAt: null,
+      updatedAt: LEGACY_UPDATED_AT,
+    }
+    return {
+      schemaVersion: 13,
+      data: {
+        ...store.data,
+        foundation: isPlainObject(foundation) ? foundation : foundation === undefined ? fresh : { ...fresh, legacy: foundation },
       },
     }
   },

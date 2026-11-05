@@ -1,3 +1,4 @@
+import { mergeFoundation } from '@/lib/foundation'
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
@@ -17,7 +18,7 @@ import { isTimeString } from '@/lib/updated-at'
  * Các key của `store.data` được đồng bộ lên Supabase. Story sau muốn đồng bộ key mới
  * phải thêm vào đây (và viết luật gộp nếu cần). Không bao giờ thêm key chứa API key/PAT/token.
  */
-export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice'] as const
+export const SYNCED_KEYS = ['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice', 'foundation'] as const
 
 /** Bản lưu trên server (một hàng `user_store`). */
 export type RemoteStore = {
@@ -252,6 +253,8 @@ const MERGERS: Record<(typeof SYNCED_KEYS)[number], (local: unknown, server: unk
   trophies: mergeTrophies,
   reminders: mergeReminders,
   videoPractice: mergeVideoPractice,
+  // Sân ga 9¾ (story 18): luật ở `mergeFoundation` (`@/lib/foundation`).
+  foundation: mergeFoundation,
 }
 
 /** Gộp phần allowlist của server vào data local. Key ngoài allowlist của server bị bỏ qua. */

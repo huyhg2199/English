@@ -180,6 +180,9 @@ describe('withoutSyncedKeys', () => {
     expect(withoutSyncedKeys(s)).toEqual({ schemaVersion: 3, data: { apiKey: 'k' } })
     const empty = { schemaVersion: 3, data: { apiKey: 'k' } }
     expect(withoutSyncedKeys(empty)).toBe(empty)
+    // Sân ga 9¾ (story 18): đổi tài khoản thì bỏ cả `foundation`; đọc lại ra mặc định.
+    const withFoundation = { schemaVersion: 13, data: { foundation: { bricks: {}, rows: {}, placement: 'done' }, apiKey: 'k' } }
+    expect(withoutSyncedKeys(withFoundation)).toEqual({ schemaVersion: 13, data: { apiKey: 'k' } })
   })
 })
 

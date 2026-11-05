@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { completeBrick, finishPlacement, foundationState, markRowTested, readFoundation, skipFoundation } from '@/lib/foundation'
 import { readCompletedLessonIds } from '@/lib/roadmap-progress'
 import { readSavedWords, saveWord, savedWordsOn } from '@/lib/saved-words'
 import { computeStreak, readSessionDays, recordSession, todaySession } from '@/lib/sessions'
@@ -26,13 +27,13 @@ import {
 
 const T1 = '2026-11-01T10:00:00.000Z'
 const T2 = '2026-11-01T11:00:00.000Z'
-const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 12, data })
-const remote = (data: Record<string, unknown>, schemaVersion = 12) => ({ schemaVersion, data, updatedAt: T1 })
+const local = (data: Record<string, unknown>): Store => ({ schemaVersion: 13, data })
+const remote = (data: Record<string, unknown>, schemaVersion = 13) => ({ schemaVersion, data, updatedAt: T1 })
 const lessons = (l: Record<string, unknown>) => ({ progress: { lessons: l } })
 
 describe('pickSynced / allowlist', () => {
-  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation, notes, quizzes, mistakes, trophies, reminders, videoPractice trong allowlist', () => {
-    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice'])
+  it('chỉ có progress, srs, sessions, savedWords, placement, pronunciation, notes, quizzes, mistakes, trophies, reminders, videoPractice, foundation trong allowlist', () => {
+    expect(SYNCED_KEYS).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice', 'foundation'])
   })
 
   it('bỏ mọi key ngoài allowlist (vd API key)', () => {
@@ -117,7 +118,7 @@ describe('mergeWithRemote — I/O Matrix', () => {
   })
 
   it('server mới hơn app → outdated, không gộp', () => {
-    expect(mergeWithRemote(local({}), remote({}, 13))).toEqual({ kind: 'outdated' })
+    expect(mergeWithRemote(local({}), remote({}, 14))).toEqual({ kind: 'outdated' })
   })
 
   it('server cũ hơn (v2) → migrate bằng runMigrations rồi gộp, đẩy lên bằng version hiện tại (v5)', () => {
@@ -499,5 +500,102 @@ describe('videoPractice (story 16)', () => {
     expect(res).toMatchObject({ kind: 'merged', push: true, store: { data: { videoPractice: { items: { v: item(90, 2, T2) } } } } })
     const old = mergeWithRemote(local({ videoPractice: { items: { v: item(70, 1, T1) } } }), remote({}, 11))
     expect(old).toMatchObject({ kind: 'merged', push: true, store: { data: { videoPractice: { items: { v: item(70, 1, T1) } } } } })
+  })
+})
+
+describe('foundation (story 18)', () => {
+  const at = (d: number, h = 20) => new Date(2026, 10, d, h)
+  const merged = (r: ReturnType<typeof mergeWithRemote>) => {
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    return r
+  }
+
+  it('Gộp viên: firstDoneAt sớm nhất, lastDoneAt muộn nhất, updatedAt mới hơn; mục sai dạng lấy bên hợp lệ', () => {
+    const l = local({ foundation: { bricks: { F02: { firstDoneAt: T2, lastDoneAt: T2, updatedAt: T2 }, F03: 'x' }, updatedAt: T2 } })
+    const r = merged(
+      mergeWithRemote(l, remote({ foundation: { bricks: { F02: { firstDoneAt: T1, lastDoneAt: T1, updatedAt: T1 }, F03: { firstDoneAt: T1, lastDoneAt: T1, updatedAt: T1 } }, updatedAt: T1 } })),
+    )
+    expect(readFoundation(r.store).bricks).toEqual({
+      F02: { firstDoneAt: T1, lastDoneAt: T2, updatedAt: T2 },
+      F03: { firstDoneAt: T1, lastDoneAt: T1, updatedAt: T1 },
+    })
+    expect(r.push).toBe(true)
+  })
+
+  it('Gộp hàng: local mới hơn trượt 50, server cũ đạt 75 → đạt, 75', () => {
+    const l = local({ foundation: { rows: { A: { passed: false, best: 50, updatedAt: T2 } }, updatedAt: T2 } })
+    const r = merged(mergeWithRemote(l, remote({ foundation: { rows: { A: { passed: true, best: 75, updatedAt: T1 } }, updatedAt: T1 } })))
+    expect(readFoundation(r.store).rows.A).toEqual({ passed: true, best: 75, updatedAt: T2 })
+  })
+
+  it('Gộp ngày & Soát vé: local pending skippedAt T2, server done skippedAt T1 → done, T1', () => {
+    const l = local({ foundation: { placement: 'pending', skippedAt: T2, updatedAt: T2 } })
+    const r = merged(mergeWithRemote(l, remote({ foundation: { placement: 'done', skippedAt: T1, updatedAt: T1 } })))
+    expect(readFoundation(r.store)).toMatchObject({ placement: 'done', skippedAt: T1 })
+  })
+
+  it('hai máy mỗi máy làm một phần → đồng bộ hai chiều cho cùng foundation, lần sau không đẩy', () => {
+    let a = local({})
+    a = markRowTested(a, 'A', 8, 8, at(5))
+    a = markRowTested(a, 'B', 6, 8, at(5, 21))
+    a = finishPlacement(a, 'done', at(5, 22))
+    a = completeBrick(a, 'F13', at(6))
+    let b = local({})
+    b = markRowTested(b, 'C', 7, 8, at(7))
+    b = completeBrick(b, 'F17', at(7, 21))
+    b = completeBrick(b, 'F18', at(8))
+
+    // A đẩy trước; B kéo về, gộp và đẩy lên.
+    const onB = merged(mergeWithRemote(b, remote(pickSynced(a.data))))
+    expect(onB.push).toBe(true)
+    const server = pickSynced(onB.store.data)
+    // A kéo bản đã gộp: nhận đủ, không cần đẩy.
+    const onA = merged(mergeWithRemote(a, remote(server)))
+    expect(onA.changedLocal).toBe(true)
+    expect(onA.push).toBe(false)
+    expect(onA.store.data.foundation).toEqual(onB.store.data.foundation)
+
+    const state = foundationState(onA.store)
+    expect(state.rowsDone).toEqual(['A', 'B', 'C', 'D'])
+    expect(state.status).toBe('completed')
+    expect(state.doneBrickIds).toEqual(['F13', 'F17', 'F18'])
+    expect(readFoundation(onA.store).placement).toBe('done')
+    // Trước khi gộp không máy nào đủ 4 hàng (A có hàng A, B; B có hàng C, D) nên cả hai `completedAt` trống: giá trị
+    // đến từ luật "hai nửa qua tường" = `updatedAt` mới hơn, tức lần ghi cuối của máy B (F18 lúc 8/11).
+    expect(readFoundation(onA.store).completedAt).toBe(at(8).toISOString())
+
+    // Đồng bộ lặp: không đổi, không đẩy.
+    expect(mergeWithRemote(onA.store, remote(server))).toEqual({ kind: 'merged', store: onA.store, changedLocal: false, push: false })
+    expect(mergeWithRemote(onB.store, remote(pickSynced(onA.store.data)))).toMatchObject({ changedLocal: false, push: false })
+  })
+
+  it('Hai nửa qua tường: A đạt hàng A, B; B đạt hàng C, D → completedAt = updatedAt mới hơn; gộp lại không đẩy', () => {
+    const a = markRowTested(markRowTested(local({}), 'A', 8, 8, at(5)), 'B', 8, 8, at(5))
+    const b = markRowTested(markRowTested(local({}), 'C', 8, 8, at(6)), 'D', 8, 8, at(6))
+    const onA = merged(mergeWithRemote(a, remote(pickSynced(b.data))))
+    expect(readFoundation(onA.store).completedAt).toBe(readFoundation(b).updatedAt)
+    expect(onA.push).toBe(true)
+    const onB = merged(mergeWithRemote(b, remote(pickSynced(onA.store.data))))
+    expect(onB.push).toBe(false)
+    expect(onB.store.data.foundation).toEqual(onA.store.data.foundation)
+    expect(mergeWithRemote(onA.store, remote(pickSynced(onB.store.data)))).toMatchObject({ changedLocal: false, push: false })
+  })
+
+  it('server app cũ (v12) không có foundation, local có → giữ foundation local, đẩy lên', () => {
+    const l = skipFoundation(completeBrick(local({}), 'F01', at(3)), at(4))
+    const r = merged(mergeWithRemote(l, remote({ progress: { lessons: {} } }, 12)))
+    expect(r.push).toBe(true)
+    expect(r.store.data.foundation).toEqual(l.data.foundation)
+  })
+
+  it('local chưa có foundation, server v12 → nhận foundation mặc định sau migrate', () => {
+    const r = merged(mergeWithRemote(local({}), remote({}, 12)))
+    expect(readFoundation(r.store)).toMatchObject({ placement: 'pending', completedAt: null, updatedAt: LEGACY_UPDATED_AT })
+    expect(r.push).toBe(true)
+  })
+
+  it('server v14 → outdated, không gộp', () => {
+    const l = completeBrick(local({}), 'F01', at(3))
+    expect(mergeWithRemote(l, remote({ foundation: { bricks: {} } }, 14))).toEqual({ kind: 'outdated' })
   })
 })
