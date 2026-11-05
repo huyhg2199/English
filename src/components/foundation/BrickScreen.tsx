@@ -169,16 +169,24 @@ export function BrickScreen({ brick, screen, seed }: { brick: Brick; screen: Exc
   }
 }
 
-/** Mở lại giải thích + so sánh ngay tại chỗ (lời mời < 60%). */
-function ReviewExplain({ brick }: { brick: Brick }) {
+/**
+ * Tóm tắt lý thuyết của viên: màn giải thích, kèm màn so sánh Việt–Anh khi `contrast`. Dùng cho lời mời < 60% (cả hai)
+ * và ngày lười ở Sân ga (ôn nhanh: cả hai; xem trước: chỉ giải thích).
+ */
+export function BrickRecap({ brick, contrast }: { brick: Brick; contrast: boolean }) {
   const explain = brick.screens.find((s): s is ScreenOf<'explain'> => s.kind === 'explain')
-  const contrast = brick.screens.find((s): s is ScreenOf<'contrast'> => s.kind === 'contrast')
+  const contrastScreen = contrast ? brick.screens.find((s): s is ScreenOf<'contrast'> => s.kind === 'contrast') : undefined
   return (
     <div className="flex flex-col gap-4 rounded-lg border p-3">
       {explain && <ExplainBody screen={explain} />}
-      {contrast && <ContrastBody screen={contrast} />}
+      {contrastScreen && <ContrastBody screen={contrastScreen} />}
     </div>
   )
+}
+
+/** Mở lại giải thích + so sánh ngay tại chỗ (lời mời < 60%). */
+function ReviewExplain({ brick }: { brick: Brick }) {
+  return <BrickRecap brick={brick} contrast />
 }
 
 /**

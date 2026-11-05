@@ -33,8 +33,8 @@ describe('NAV_ITEMS', () => {
     expect('/practice/flashcards'.startsWith(`${practice.path}/`)).toBe(true)
   })
 
-  it('/session, /session/lazy, /sorting-hat là route thật, tab Hôm nay sáng; các tab khác không', () => {
-    for (const path of ['/session', '/session/lazy', '/sorting-hat']) {
+  it('/session, /session/lazy, /sorting-hat, /welcome, /do-trinh-do là route thật, tab Hôm nay sáng; các tab khác không', () => {
+    for (const path of ['/session', '/session/lazy', '/sorting-hat', '/welcome', '/do-trinh-do']) {
       const leaf = matchRoutes(routes, path)!.at(-1)!.route
       expect(leaf.path).not.toBe('*')
       expect(NAV_ITEMS.filter((item) => isNavItemActive(item, path)).map((i) => i.label)).toEqual(['Hôm nay'])

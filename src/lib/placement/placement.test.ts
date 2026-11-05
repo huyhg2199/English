@@ -9,7 +9,7 @@ import type { Store } from '@/lib/storage'
 
 import {
   applyStartLesson,
-  decidePlacementSave,
+  decideHouseSave,
   HOUSE_QUESTIONS,
   recordPlacementAttempt,
   weakestForStore,
@@ -393,43 +393,32 @@ describe('recordPlacementAttempt', () => {
   })
 })
 
-describe('decidePlacementSave', () => {
+describe('decideHouseSave — Mũ 4 câu (story 22)', () => {
   const allAnswers = Object.fromEntries(HOUSE_QUESTIONS.map((q) => [q.id, 'code' as const]))
 
-  it('lần đầu: có điểm nhưng chưa trả lời Nhà → chặn', () => {
-    const d = decidePlacementSave({ values: raw(mid), answers: {}, done: false, currentHouse: null })
-    expect(d.ok).toBe(false)
-    if (!d.ok) expect(d.errors.house).toBeDefined()
+  it('đủ 4 câu → lưu Nhà, không hỏi điểm ETS', () => {
+    expect(decideHouseSave(allAnswers)).toEqual({ ok: true, house: 'ravenclaw' })
+    const mixed = { 'free-time': 'film', 'before-sleep': 'film', 'learn-from': 'music', weekend: 'news' } as const
+    expect(decideHouseSave(mixed)).toEqual({ ok: true, house: 'gryffindor' })
   })
 
-  it('lần đầu đủ cả hai → lưu điểm và Nhà', () => {
-    expect(decidePlacementSave({ values: raw(mid), answers: allAnswers, done: false, currentHouse: null })).toEqual({
-      ok: true,
-      parts: mid,
-      house: 'ravenclaw',
+  it('thiếu câu → lỗi house "còn n câu", không lưu', () => {
+    expect(decideHouseSave({})).toEqual({
+      ok: false,
+      errors: { house: 'Trả lời đủ 4 câu hỏi để Mũ chọn Nhà (còn 4 câu).' },
+    })
+    const three = Object.fromEntries(HOUSE_QUESTIONS.slice(0, 3).map((q) => [q.id, 'music' as const]))
+    expect(decideHouseSave(three)).toEqual({
+      ok: false,
+      errors: { house: 'Trả lời đủ 4 câu hỏi để Mũ chọn Nhà (còn 1 câu).' },
     })
   })
 
-  it('quay lại: chỉ nhập điểm → lưu điểm, không đổi Nhà', () => {
-    expect(decidePlacementSave({ values: raw(zero), answers: {}, done: true, currentHouse: 'gryffindor' })).toEqual({
-      ok: true,
-      parts: zero,
-      house: null,
-    })
-  })
-
-  it('quay lại: chỉ trả lời Nhà → không kiểm điểm', () => {
-    expect(decidePlacementSave({ values: {}, answers: allAnswers, done: true, currentHouse: 'gryffindor' })).toEqual({
-      ok: true,
-      parts: null,
-      house: 'ravenclaw',
-    })
-  })
-
-  it('quay lại: không nhập gì → lỗi form', () => {
-    const d = decidePlacementSave({ values: { p1: ' ' }, answers: {}, done: true, currentHouse: 'gryffindor' })
-    expect(d.ok).toBe(false)
-    if (!d.ok) expect(Object.keys(d.errors)).toEqual(['form'])
+  it('id câu lạ hoặc đáp án lạ không được tính', () => {
+    const odd = { ...Object.fromEntries(HOUSE_QUESTIONS.slice(0, 3).map((q) => [q.id, 'code' as const])), other: 'code' as const }
+    expect(decideHouseSave(odd).ok).toBe(false)
+    const bad = { ...allAnswers, weekend: 'chess' } as unknown as Record<string, 'code'>
+    expect(decideHouseSave(bad).ok).toBe(false)
   })
 })
 

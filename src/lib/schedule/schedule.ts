@@ -1,12 +1,15 @@
 import { allLessons } from '@/data/roadmap'
+import { isInFoundation, readFoundation, scheduleStartDate } from '@/lib/foundation'
 import { readPlacement } from '@/lib/placement/store'
 import { computeRoadmapProgress, readCompletedLessonIds } from '@/lib/roadmap-progress'
 import { isSessionDay, readSessionDays } from '@/lib/sessions'
 import type { Store } from '@/lib/storage'
 
 /**
- * Lịch gốc, trễ và ngày dự kiến đạt 750 (story 11, CAP-5). Hàm thuần: thời gian qua `now`, ngày theo giờ máy.
+ * Lịch gốc, trễ và ngày dự kiến đạt 750 (story 11 + 22, CAP-5). Hàm thuần: thời gian qua `now`, ngày theo giờ máy.
  * Không phạt, không khoá: trễ chỉ làm mốc dự kiến lùi lại, tiến độ bài giữ nguyên.
+ * Lịch 12 tháng chỉ bắt đầu khi qua hoặc bỏ qua Sân ga 9¾ (`scheduleStartDate` của `@/lib/foundation`), nên thời gian ở
+ * Sân ga không bao giờ thành trễ. Module này import `@/lib/foundation`; chiều ngược lại không có (không vòng import).
  */
 
 export const DAY_MS = 24 * 60 * 60 * 1000
@@ -46,14 +49,22 @@ export function sessionDates(store: Store): Date[] {
 }
 
 /**
- * Ngày bắt đầu lộ trình = ngày sớm nhất trong nhật ký buổi học (chưa có buổi nào thì là hôm nay); nếu bài bắt đầu
- * (Mũ Phân Loại) được áp dụng muộn hơn thì lấy ngày áp dụng (`placement.updatedAt`), để xếp lớp không làm trễ ngay.
+ * Ngày bắt đầu lịch 12 tháng = `scheduleStartDate` (ngày bỏ qua / qua bức tường Sân ga, cộng số ngày tạm dừng; khi đang
+ * quay lại Sân ga thì trượt theo từng ngày quay lại). Nếu bài bắt đầu (xếp lớp ETS) được áp dụng muộn hơn thì lấy ngày
+ * áp dụng (`placement.updatedAt`), để xếp lớp không làm trễ ngay. Ngày áp dụng cũng trượt theo cùng số ngày tạm dừng,
+ * để thời gian quay lại Sân ga không bao giờ thành trễ (store không lưu từng lần tạm dừng, nên lần tạm dừng trước ngày
+ * áp dụng cũng được cộng: chỉ làm mốc rộng hơn, không bao giờ trễ hơn). Lịch chưa bắt đầu (chưa qua / bỏ qua Sân ga) → null.
  */
-export function roadmapStartDate(store: Store, now: Date): Date {
-  const first = sessionDates(store)[0] ?? startOfLocalDay(now)
+export function roadmapStartDate(store: Store, now: Date): Date | null {
+  const start = scheduleStartDate(store, now)
+  if (start === null) return null
+  const first = startOfLocalDay(start)
   const placement = readPlacement(store)
   if (placement.startLessonId === null) return first
-  const applied = startOfLocalDay(new Date(placement.updatedAt))
+  const f = readFoundation(store)
+  const raw = Math.min(...[f.skippedAt, f.completedAt].filter((t): t is string => t !== null).map((t) => Date.parse(t)))
+  const paused = Math.max(0, daysBetween(new Date(raw), first))
+  const applied = addDays(startOfLocalDay(new Date(placement.updatedAt)), paused)
   return applied.getTime() > first.getTime() ? applied : first
 }
 
@@ -73,8 +84,10 @@ export function currentLessonId(store: Store): string | null {
   return computeRoadmapProgress(allLessons(), readCompletedLessonIds(store), readPlacement(store).startLessonId).nextLessonId
 }
 
-export type Plan = {
-  /** Ngày bắt đầu lộ trình (nửa đêm giờ máy). */
+/** Lịch đã bắt đầu: `running` (sau Sân ga) hoặc `paused` (đang quay lại Sân ga sau khi bỏ qua; số tuần trễ đứng yên). */
+export type ActivePlan = {
+  status: 'running' | 'paused'
+  /** Ngày bắt đầu lịch (nửa đêm giờ máy). */
   startDate: Date
   /** Mốc gốc đạt 750 = hạn của bài cuối lộ trình theo lịch gốc. */
   baselineGoal: Date
@@ -92,6 +105,9 @@ export type Plan = {
   done: boolean
 }
 
+/** Lịch 12 tháng: chưa bắt đầu (đang ở Sân ga, chưa từng bỏ qua) hoặc đã bắt đầu (`ActivePlan`). */
+export type Plan = { status: 'not-started' } | ActivePlan
+
 /**
  * Lịch gốc tính từ bài bắt đầu (Mũ Phân Loại, mặc định bài đầu): bài thứ k (0-based) hạn = ngày bắt đầu + 7 × (k + 1).
  *
@@ -100,17 +116,24 @@ export type Plan = {
  * (= mốc gốc − 7 × (số bài còn lại − 1)); khi học tuần tự thì trùng hạn gốc của bài hiện tại.
  * Số tuần trễ = số tuần (làm tròn lên) của phần quá hạn vượt 7 ngày; ngày dự kiến = mốc gốc + 7 × số tuần trễ.
  * Ví dụ: bắt đầu 02/11, bài 1 hạn 09/11, hôm nay 17/11 (quá 8 ngày) → lùi 1 tuần.
+ *
+ * Trạng thái: chưa có ngày bắt đầu (`roadmapStartDate` null) → `{ status: 'not-started' }` (không ngày, không trễ);
+ * đã bắt đầu mà đang ở Sân ga (quay lại sau khi bỏ qua) → `paused`; còn lại → `running`. Lúc `paused` ngày bắt đầu
+ * trượt cùng hôm nay nên số tuần trễ đứng yên.
  */
 export function planFor(store: Store, now: Date): Plan {
+  const startDate = roadmapStartDate(store, now)
+  if (startDate === null) return { status: 'not-started' }
+  const status = isInFoundation(store) ? 'paused' : 'running'
   const route = routeLessons(store)
   const completed = new Set(readCompletedLessonIds(store))
-  const startDate = roadmapStartDate(store, now)
   const today = startOfLocalDay(now)
   const baselineGoal = addDays(startDate, WEEK_DAYS * route.length)
 
   const currentIndex = route.findIndex((l) => !completed.has(l.id))
   if (currentIndex < 0) {
     return {
+      status,
       startDate,
       baselineGoal,
       projectedGoal: baselineGoal,
@@ -126,6 +149,7 @@ export function planFor(store: Store, now: Date): Plan {
   const overdue = daysBetween(effectiveDue, today)
   const weeksLate = overdue > WEEK_DAYS ? Math.ceil((overdue - WEEK_DAYS) / WEEK_DAYS) : 0
   return {
+    status,
     startDate,
     baselineGoal,
     projectedGoal: addDays(baselineGoal, WEEK_DAYS * weeksLate),
@@ -149,14 +173,16 @@ export function formatMonth(date: Date): string {
   return `${pad(date.getMonth() + 1)}/${date.getFullYear()}`
 }
 
-/** Nhãn trạng thái ngắn: "đúng hạn" / "lùi N tuần". */
-export function planStatusLabel(plan: Plan): string {
+/** Nhãn trạng thái ngắn: "tạm dừng" (đang quay lại Sân ga) / "đúng hạn" / "lùi N tuần". */
+export function planStatusLabel(plan: ActivePlan): string {
+  if (plan.status === 'paused') return 'tạm dừng'
   return plan.weeksLate > 0 ? `lùi ${plan.weeksLate} tuần` : 'đúng hạn'
 }
 
-/** Hệ quả bằng lời nhẹ nhàng, không cảnh báo. */
-export function planConsequence(plan: Plan): string {
+/** Hệ quả bằng lời nhẹ nhàng, không cảnh báo. Lúc `paused` không nhắc tới trễ (thời gian ở Sân ga không tính). */
+export function planConsequence(plan: ActivePlan): string {
   if (plan.done) return 'Đã xong lộ trình. Sẵn sàng thì đăng ký thi thật thôi!'
+  if (plan.status === 'paused') return 'Lịch đang tạm dừng trong lúc bạn ở Sân ga 9¾. Qua hoặc bỏ qua Sân ga là lịch chạy tiếp.'
   if (plan.weeksLate > 0) {
     const month = formatMonth(plan.projectedGoal)
     const moved =

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
 import { OWL_POST_DEADLINE_MS, owlPostReady } from '@/app/owl-post-gate'
+import { shouldShowWelcome } from '@/app/today-view'
 import { createBackup, restoreBackup, type Backup } from '@/lib/backup'
 import type { GistWriter, MergeCounts } from '@/lib/gist'
 import { readReminders, setReminderTimes } from '@/lib/reminders'
@@ -25,7 +26,14 @@ import {
 import { QUESTION_BANK } from '@/data/questions'
 import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
-import { completeBrick, foundationState, needsPlacement, resumeFoundation, skipFoundation } from '@/lib/foundation'
+import {
+  completeBrick,
+  foundationState,
+  markWelcomeSeen,
+  needsPlacement,
+  resumeFoundation,
+  skipFoundation,
+} from '@/lib/foundation'
 import {
   nextPlacementRow,
   placementStarted,
@@ -436,7 +444,10 @@ export function useOwl(now: Date) {
   return { attempts, activePlan, record }
 }
 
-/** Lịch gốc, số tuần trễ và ngày dự kiến đạt 750 (story 11) tại thời điểm `now`. */
+/**
+ * Lịch 12 tháng (story 11 + 22) tại thời điểm `now`: `not-started` khi chưa qua / bỏ qua Sân ga; `paused` khi đang quay
+ * lại Sân ga; `running` kèm lịch gốc, số tuần trễ và ngày dự kiến đạt 750.
+ */
 export function useSchedule(now: Date) {
   const { store } = useLoadedStore()
   return useMemo(() => planFor(store, now), [store, now])
@@ -515,20 +526,43 @@ export function deliverOwlPost(handle: StoreHandle, now: Date = new Date()): Lev
 }
 
 /**
- * Cú đưa thư (story 12): khi mở app thì chờ lượt đồng bộ đầu xong (xem `owlPostReady`, hạn chót tính từ lúc mở app)
- * rồi kiểm tra; mỗi lần app hiện lại (`visibilitychange`) kiểm tra lại để báo huy chương nhận trong lúc mở app.
+ * Lượt đồng bộ đầu đã xong chưa (xem `owlPostReady`): chờ engine đồng bộ chạy xong lượt đầu, trừ khi không đồng bộ
+ * (không cấu hình / chưa đăng nhập) hoặc đã quá `OWL_POST_DEADLINE_MS` tính từ lúc component mount. Dùng cho cú đưa thư
+ * và Thư nhập học, để máy thứ hai kịp kéo dữ liệu của máy kia về rồi mới quyết.
  */
-export function useOwlPost() {
-  const handle = useStoreHandle()
+export function useFirstSyncReady(): boolean {
   const sync = useSync()
   const [deadlinePassed, setDeadlinePassed] = useState(false)
-  const [letters, setLetters] = useState<LevelUp[]>([])
-  const ready = owlPostReady(sync, deadlinePassed)
 
   useEffect(() => {
     const timer = setTimeout(() => setDeadlinePassed(true), OWL_POST_DEADLINE_MS)
     return () => clearTimeout(timer)
   }, [])
+
+  return owlPostReady(sync, deadlinePassed)
+}
+
+/**
+ * Thư nhập học (story 22): `show` khi chưa xem và lượt đồng bộ đầu đã xong (`useFirstSyncReady`); `markSeen` ghi
+ * `welcomeSeenAt` (chỉ lần đầu, đồng bộ) — trang thư gọi ngay khi hiện nên thư chỉ hiện một lần.
+ */
+export function useWelcome() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const ready = useFirstSyncReady()
+  const show = shouldShowWelcome(store, ready)
+  const markSeen = useCallback((now: Date = new Date()) => handle.update((s) => markWelcomeSeen(s, now)), [handle])
+  return { show, markSeen }
+}
+
+/**
+ * Cú đưa thư (story 12): khi mở app thì chờ lượt đồng bộ đầu xong (`useFirstSyncReady`, hạn chót tính từ lúc mở app)
+ * rồi kiểm tra; mỗi lần app hiện lại (`visibilitychange`) kiểm tra lại để báo huy chương nhận trong lúc mở app.
+ */
+export function useOwlPost() {
+  const handle = useStoreHandle()
+  const [letters, setLetters] = useState<LevelUp[]>([])
+  const ready = useFirstSyncReady()
 
   useEffect(() => {
     if (!ready) return

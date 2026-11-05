@@ -141,42 +141,21 @@ export function recordPlacementAttempt(store: Store, parts: PartScores, now: Dat
   return recordAttempt(store, parts, now, placementFor(estimateScores(parts).total).lessonId)
 }
 
-export type PlacementFormErrors = Partial<Record<PartKey | 'house' | 'form', string>>
-
-export type PlacementFormInput = {
-  values: Partial<Record<PartKey, string>>
-  /** Đáp án theo id câu hỏi (`HOUSE_QUESTIONS`). */
-  answers: Readonly<Record<string, Interest | undefined>>
-  /** Đã có ít nhất một lần nhập điểm. */
-  done: boolean
-  currentHouse: House | null
-}
-
-export type PlacementFormDecision =
-  | { ok: false; errors: PlacementFormErrors }
-  | { ok: true; parts: PartScores | null; house: House | null }
+export type HouseSaveDecision = { ok: true; house: House } | { ok: false; errors: { house: string } }
 
 /**
- * Luật lưu form Mũ Phân Loại. Lần đầu cần cả điểm và đủ câu hỏi Nhà. Các lần sau: có ô điểm nào thì kiểm điểm;
- * có đáp án nào (hoặc chưa có Nhà) thì cần đủ câu; không nhập gì thì báo lỗi form. Lỗi bất kỳ → không lưu gì.
+ * Luật lưu Mũ Phân Loại (story 22: chỉ 4 câu chọn Nhà, không hỏi điểm ETS). Đủ 4 câu → Nhà theo `houseFor`;
+ * thiếu câu nào → lỗi `house`, không lưu gì. Điểm ETS nhập ở trang Đo trình độ (`validateAttempt`).
  */
-export function decidePlacementSave({ values, answers, done, currentHouse }: PlacementFormInput): PlacementFormDecision {
-  const anyScore = PART_KEYS.some((k) => (values[k] ?? '').trim() !== '')
-  const answered = HOUSE_QUESTIONS.filter((q) => answers[q.id]).length
-  const errors: PlacementFormErrors = {}
-  let parts: PartScores | null = null
-  if (anyScore || !done) {
-    const result = validateAttempt(values)
-    if (result.ok) parts = result.parts
-    else Object.assign(errors, result.errors)
+export function decideHouseSave(answers: Readonly<Record<string, Interest | undefined>>): HouseSaveDecision {
+  const picked = HOUSE_QUESTIONS.map((q) => (Object.hasOwn(answers, q.id) ? answers[q.id] : undefined))
+  const answered = picked.filter((a): a is Interest => a !== undefined && Object.hasOwn(INTEREST_HOUSE, a))
+  if (answered.length < HOUSE_QUESTIONS.length) {
+    const left = HOUSE_QUESTIONS.length - answered.length
+    return {
+      ok: false,
+      errors: { house: `Trả lời đủ ${HOUSE_QUESTIONS.length} câu hỏi để Mũ chọn Nhà (còn ${left} câu).` },
+    }
   }
-  if ((answered > 0 || !currentHouse) && answered < HOUSE_QUESTIONS.length) {
-    errors.house = `Trả lời đủ ${HOUSE_QUESTIONS.length} câu hỏi để Mũ chọn Nhà (còn ${HOUSE_QUESTIONS.length - answered} câu).`
-  }
-  if (done && !anyScore && answered === 0) {
-    errors.form = 'Chưa nhập gì mới: điền điểm lần làm mới hoặc trả lời lại câu hỏi Nhà.'
-  }
-  if (Object.keys(errors).length > 0) return { ok: false, errors }
-  const house = answered === HOUSE_QUESTIONS.length ? houseFor(HOUSE_QUESTIONS.map((q) => answers[q.id]!)) : null
-  return { ok: true, parts, house }
+  return { ok: true, house: houseFor(answered) }
 }

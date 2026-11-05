@@ -72,6 +72,26 @@ function foundationBrick(store: Store, hasContent: HasContent): { brickId: Brick
   return first ? { brickId: first.id, review: true } : { brickId: null, review: false }
 }
 
+/** Viên của ngày lười ở Sân ga: `review` = ôn nhanh (giải thích + so sánh Việt–Anh), `preview` = xem trước phần giải thích. */
+export type LazyFoundationBrick = { brickId: BrickId; mode: 'review' | 'preview' }
+
+/**
+ * Viên cho ngày lười khi đang ở Sân ga (story 22, `learning-rules.md` mục Buổi học): ôn nhanh viên có nội dung xong gần
+ * nhất (`lastDoneAt` muộn nhất); chưa xong viên nào thì xem trước viên tiếp theo; không có viên tiếp theo thì ôn nhanh
+ * viên có nội dung đầu tiên của hàng đã xong (viên đã qua, giống "Ôn lại" của `sessionPlan`); không có gì → null.
+ * Chỉ chọn viên, không ghi gì (không `completeBrick`).
+ */
+export function lazyFoundationBrick(store: Store, hasContent: HasContent): LazyFoundationBrick | null {
+  const latest = latestDoneBrick(store, hasContent)
+  if (latest) return { brickId: latest, mode: 'review' }
+  const state = foundationState(store)
+  const next = nextBrickIdFromState(state, hasContent)
+  if (next) return { brickId: next, mode: 'preview' }
+  const rowsDone = new Set<string>(state.rowsDone)
+  const first = BRICKS.find((b) => rowsDone.has(b.row) && hasContent(b.id))
+  return first ? { brickId: first.id, mode: 'review' } : null
+}
+
 /** Kế hoạch tính từ store: đang ở Sân ga (`isInFoundation`) → buổi Sân ga; không thì buổi bài (`sessionLesson`). */
 export function sessionPlan(store: Store, hasContent: HasContent): SessionPlan {
   if (isInFoundation(store)) return { mode: 'foundation', ...foundationBrick(store, hasContent), steps: FOUNDATION_STEPS }

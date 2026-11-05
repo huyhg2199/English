@@ -84,8 +84,8 @@ export function SkillGapCard({ board, weakest }: Props) {
           })}
         </ul>
         <p className="text-xs text-muted-foreground">* {ESTIMATE_NOTE}</p>
-        <Link to="/sorting-hat" className="self-start text-sm text-primary underline-offset-4 hover:underline">
-          Nhập điểm lần mới / đổi Nhà
+        <Link to="/do-trinh-do" className="self-start text-sm text-primary underline-offset-4 hover:underline">
+          Đo trình độ lần mới
         </Link>
       </CardContent>
     </Card>

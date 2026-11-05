@@ -9,6 +9,7 @@ import { CURRENT_VERSION, type Store } from '@/lib/storage'
 import {
   FOUNDATION_STEPS,
   followUpBrickId,
+  lazyFoundationBrick,
   LEGACY_STEP_MAP,
   LESSON_STEPS,
   lockTheory,
@@ -318,5 +319,36 @@ describe('sessionWordList', () => {
     const s = skipFoundation(empty(), day(1))
     expect(sessionWordList(sessionPlan(s, hasContent))).toBe('ngsl')
     expect(sessionWordList({ mode: 'lesson', lesson: null, steps: LESSON_STEPS })).toBe('tsl')
+  })
+})
+
+describe('lazyFoundationBrick — ngày lười ở Sân ga (story 22)', () => {
+  it('Ngày lười Sân ga: ôn — F01, F02 xong, F02 lastDoneAt muộn nhất → ôn nhanh F02', () => {
+    const s = done(['F01', 'F02'])
+    expect(lazyFoundationBrick(s, hasContent)).toEqual({ brickId: 'F02', mode: 'review' })
+    // F01 học lại muộn hơn → F01.
+    expect(lazyFoundationBrick(completeBrick(s, 'F01', day(3)), hasContent)).toEqual({ brickId: 'F01', mode: 'review' })
+  })
+
+  it('viên xong gần nhất chưa có nội dung bị bỏ qua', () => {
+    const s = completeBrick(done(['F01']), 'F07', day(4))
+    expect(lazyFoundationBrick(s, hasContent)).toEqual({ brickId: 'F01', mode: 'review' })
+  })
+
+  it('Ngày lười Sân ga: xem trước — chưa xong viên nào → xem trước F01, không ghi gì', () => {
+    const s = empty()
+    expect(lazyFoundationBrick(s, hasContent)).toEqual({ brickId: 'F01', mode: 'preview' })
+    expect(s).toEqual(empty())
+  })
+
+  it('hàng A qua bằng Soát vé, F07+ đang soạn → ôn nhanh viên có nội dung đầu tiên của hàng đã xong (F01, viên đã qua)', () => {
+    expect(lazyFoundationBrick(passRows(['A']), hasContent)).toEqual({ brickId: 'F01', mode: 'review' })
+    // Giống thẻ Sân ga / buổi 30' ("Ôn lại: F01"), không gọi viên đã qua là "viên tiếp theo".
+    expect(sessionPlan(passRows(['A']), hasContent)).toMatchObject({ brickId: 'F01', review: true })
+  })
+
+  it('không viên nào có nội dung → null (thẻ "đang soạn")', () => {
+    expect(lazyFoundationBrick(empty(), none)).toBeNull()
+    expect(lazyFoundationBrick(passRows(['A']), none)).toBeNull()
   })
 })

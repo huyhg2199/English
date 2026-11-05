@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import { hasBrickContent } from '@/data/foundation/content'
 import { FOUNDATION_QUESTIONS, foundationQuiz, type Question } from '@/data/questions'
+import { statusFor } from '@/lib/gist'
 import { listAttempts, listMistakes, pickQuiz, readMistakes, type AttemptAnswer } from '@/lib/quiz'
+import { setReminderTimes, showReminderBanner } from '@/lib/reminders'
+import { computeStreak, readSessionDays } from '@/lib/sessions'
 import { CURRENT_VERSION, type Store } from '@/lib/storage'
 
 import {
@@ -30,6 +33,7 @@ import {
   type RowTestContext,
 } from './row-test'
 import type { RowId } from '@/data/foundation'
+import { housePoints } from '@/lib/trophies'
 
 const day = (d: number, h = 20) => new Date(2026, 10, d, h)
 const empty = (): Store => ({ schemaVersion: CURRENT_VERSION, data: {} })
@@ -288,5 +292,21 @@ describe('tiện ích route', () => {
     expect(rowTestHref('A')).toBe('/foundation/kiem-tra/A')
     expect(rowBrickRange('A')).toBe('F01–F06')
     expect(rowBrickRange('D')).toBe('F17–F18')
+  })
+})
+
+describe('Soát vé không là buổi học (story 22, learning-rules mục Sân ga)', () => {
+  it('làm đủ 4 hàng Soát vé trong một ngày, chưa học buổi nào → không streak, không điểm Nhà, chưa "đã học hôm nay"', () => {
+    const now = day(6, 21)
+    let store = setReminderTimes(empty(), ['19:00'], day(6, 8))
+    for (const [i, row] of (['A', 'B', 'C', 'D'] as const).entries()) {
+      store = test(store, row, i % 2 === 0 ? 7 : 3, 'placement', day(6, 9 + i))
+    }
+    expect(readFoundation(store).placement).toBe('done')
+    expect(Object.keys(readSessionDays(store))).toEqual([])
+    expect(computeStreak(readSessionDays(store), now)).toBe(0)
+    expect(housePoints(readSessionDays(store)).total).toBe(0)
+    expect(statusFor(store, now).studied).toBe(false)
+    expect(showReminderBanner(store, now, null)).toBe(true)
   })
 })

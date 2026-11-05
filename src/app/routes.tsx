@@ -8,6 +8,7 @@ import { FoundationBrick } from '@/pages/FoundationBrick'
 import { FoundationRowTest } from '@/pages/FoundationRowTest'
 import { FoundationTicket } from '@/pages/FoundationTicket'
 import { LazySession } from '@/pages/LazySession'
+import { Measure } from '@/pages/Measure'
 import { Lesson } from '@/pages/Lesson'
 import { Mistakes } from '@/pages/Mistakes'
 import { Notebook } from '@/pages/Notebook'
@@ -20,6 +21,7 @@ import { Session } from '@/pages/Session'
 import { SortingHat } from '@/pages/SortingHat'
 import { Today } from '@/pages/Today'
 import { TrophyRoom } from '@/pages/TrophyRoom'
+import { Welcome } from '@/pages/Welcome'
 
 /**
  * Hash routing (`/English/#/notebook`) vì GitHub Pages không có rewrite cho SPA:
@@ -34,8 +36,11 @@ export const routes: RouteObject[] = [
       // Buổi 30' và ngày lười 10'; tab Hôm nay vẫn sáng (`alsoActiveFor` trong nav-items).
       { path: 'session', element: <Session /> },
       { path: 'session/lazy', element: <LazySession /> },
-      // Mũ Phân Loại: nhập điểm đề mẫu + câu hỏi Nhà; tab Hôm nay vẫn sáng (`alsoActiveFor`).
+      // Thư nhập học (story 22), Mũ Phân Loại (4 câu chọn Nhà) và Đo trình độ (điểm đề mẫu ETS, tuỳ chọn);
+      // tab Hôm nay vẫn sáng (`alsoActiveFor`).
+      { path: 'welcome', element: <Welcome /> },
       { path: 'sorting-hat', element: <SortingHat /> },
+      { path: 'do-trinh-do', element: <Measure /> },
       { path: 'roadmap', element: <Roadmap /> },
       // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
       { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson /> },
