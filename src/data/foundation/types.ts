@@ -1,3 +1,5 @@
+import type { PracticeSentence, TimelineKind } from '@/data/lessons'
+
 /**
  * Sân ga 9¾ (CAP-23): khoá lý thuyết vỡ lòng 18 viên gạch, 4 hàng, nằm trước bài `s1-t1-w1`.
  * Story 18 chỉ có danh mục (meta) để biết viên thuộc hàng nào, dạy khái niệm gì. Nội dung màn (`screens`,
@@ -116,6 +118,8 @@ export type Screen =
       enRequires: string
       /** Cặp ví dụ minh hoạ (tuỳ chọn). */
       examples?: readonly { vi: string; en: string }[]
+      /** Dòng thời gian minh hoạ (dùng `TenseTimeline`). */
+      timeline?: BrickTimeline
     }
   | {
       kind: 'worked'
@@ -124,6 +128,8 @@ export type Screen =
       vi: string
       /** Chỉ ra chỗ cần để ý (tiếng Việt). */
       noteVi?: string
+      /** Dòng thời gian minh hoạ (dùng `TenseTimeline`). */
+      timeline?: BrickTimeline
     }
   | {
       kind: 'faded'
@@ -135,8 +141,10 @@ export type Screen =
     }
   | {
       kind: 'check'
-      /** 2–5 câu luyện. */
+      /** 2–5 câu luyện (tính điểm theo lần trả lời đầu). */
       items: readonly CheckItem[]
+      /** Đúng 2 câu dễ hơn, chạy khi đúng lần đầu dưới 60% (không tính điểm). */
+      easier: readonly CheckItem[]
     }
   | {
       kind: 'apply'
@@ -144,7 +152,14 @@ export type Screen =
       promptVi: string
       /** Câu mẫu gợi ý. */
       sampleEn?: string
+      /** Một câu chọn để áp dụng (tuỳ chọn, không tính điểm, sai thì giải thích và làm lại). */
+      item?: CheckItem
+      /** Câu nói theo mẫu (dùng `SpeakPractice`, id dạng `f01-say-1`). */
+      speak?: readonly PracticeSentence[]
     }
+
+/** Dòng thời gian minh hoạ một màn (như `TenseCard`). */
+export type BrickTimeline = { kind: TimelineKind; label: string }
 
 type CheckBase = {
   id: string

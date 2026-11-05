@@ -3,6 +3,8 @@ import { Navigate, type RouteObject } from 'react-router'
 import { AppShell } from '@/app/AppShell'
 import { Backup } from '@/pages/Backup'
 import { Flashcards } from '@/pages/Flashcards'
+import { Foundation } from '@/pages/Foundation'
+import { FoundationBrick } from '@/pages/FoundationBrick'
 import { LazySession } from '@/pages/LazySession'
 import { Lesson } from '@/pages/Lesson'
 import { Mistakes } from '@/pages/Mistakes'
@@ -35,6 +37,9 @@ export const routes: RouteObject[] = [
       { path: 'roadmap', element: <Roadmap /> },
       // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
       { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson /> },
+      // Sân ga 9¾ (story 19): bức tường 18 viên và trình phát viên gạch; tab Lộ trình vẫn sáng (`alsoActiveFor`).
+      { path: 'foundation', element: <Foundation /> },
+      { path: 'foundation/:brickId', element: <FoundationBrick /> },
       { path: 'practice', element: <Practice /> },
       // Phiên ôn flashcard; tab Luyện tập vẫn sáng (NavLink /practice không `end`).
       { path: 'practice/flashcards', element: <Flashcards /> },

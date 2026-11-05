@@ -60,4 +60,13 @@ describe('NAV_ITEMS', () => {
     expect(leaf.path).toBe('owl-post')
     expect(NAV_ITEMS.filter((item) => isNavItemActive(item, '/owl-post')).map((i) => i.label)).toEqual(['Luyện tập'])
   })
+
+  it('/foundation, /foundation/F01 là route thật, tab Lộ trình sáng; /foundationx không', () => {
+    expect(matchRoutes(routes, '/foundation')!.at(-1)!.route.path).toBe('foundation')
+    expect(matchRoutes(routes, '/foundation/F01')!.at(-1)!.route.path).toBe('foundation/:brickId')
+    const active = (p: string) => NAV_ITEMS.filter((item) => isNavItemActive(item, p)).map((i) => i.label)
+    expect(active('/foundation')).toEqual(['Lộ trình'])
+    expect(active('/foundation/F01')).toEqual(['Lộ trình'])
+    expect(active('/foundationx')).toEqual([])
+  })
 })

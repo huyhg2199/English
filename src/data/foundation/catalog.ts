@@ -170,6 +170,14 @@ export const BRICKS: readonly BrickMeta[] = [
   },
 ]
 
+/** Tên 4 hàng của bức tường. */
+export const ROW_TITLES: Readonly<Record<RowId, string>> = {
+  A: 'Nghe & đọc được chữ',
+  B: 'Viên gạch của câu',
+  C: 'Câu đầu tiên',
+  D: 'Cầu sang Năm 1',
+}
+
 const BY_ID: ReadonlyMap<string, BrickMeta> = new Map(BRICKS.map((b) => [b.id, b]))
 
 /** Meta của viên `id`; id không có trong danh mục → `undefined`. */

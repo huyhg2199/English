@@ -25,6 +25,7 @@ import {
 import { QUESTION_BANK } from '@/data/questions'
 import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
+import { completeBrick, foundationState, resumeFoundation, skipFoundation } from '@/lib/foundation'
 import { activeReviewPlan, listOwlAttempts, recordOwlAttempt, type OwlAttemptInput } from '@/lib/owl'
 import { planFor } from '@/lib/schedule'
 import {
@@ -188,6 +189,23 @@ export function useSrs() {
     [handle],
   )
   return { srs, grade, markKnown }
+}
+
+/**
+ * Sân ga 9¾ (story 19): trạng thái (`status`, `rowsDone`, `taughtCount` cho "x/18", `doneBrickIds`), xong viên (đi tới
+ * màn Áp dụng), "Bỏ qua Sân ga" và "Quay lại Sân ga". Ghi qua `handle.update` nên lưu local và đồng bộ.
+ */
+export function useFoundation() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const state = useMemo(() => foundationState(store), [store])
+  const complete = useCallback(
+    (brickId: string, now: Date = new Date()) => handle.update((s) => completeBrick(s, brickId, now)),
+    [handle],
+  )
+  const skip = useCallback((now: Date = new Date()) => handle.update((s) => skipFoundation(s, now)), [handle])
+  const resume = useCallback((now: Date = new Date()) => handle.update((s) => resumeFoundation(s, now)), [handle])
+  return { state, completeBrick: complete, skip, resume }
 }
 
 /**

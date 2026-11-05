@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 import { useProgress, useSchedule } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { ScheduleLine } from '@/components/ScheduleCard'
+import { FoundationBand } from '@/components/roadmap/FoundationBand'
 import { StageMap } from '@/components/roadmap/StageMap'
 import { Button } from '@/components/ui/button'
 import { allLessons, getLesson, lessonHref, SCORE_ESTIMATE_NOTE, STAGES } from '@/data/roadmap'
@@ -43,6 +44,8 @@ export function Roadmap() {
           </Button>
         )}
       </div>
+
+      <FoundationBand />
 
       {STAGES.map((stage) => (
         <StageMap key={stage.id} stage={stage} progress={progress} />

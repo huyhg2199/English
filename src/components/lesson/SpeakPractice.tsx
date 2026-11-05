@@ -13,10 +13,14 @@ import { cn } from '@/lib/utils'
 /** Kết quả hiện dưới câu: chỉ hai loại này (huỷ thì xoá, không hỗ trợ thì ẩn cả phần nói). */
 type Shown = Extract<SpeakOutcome, { kind: 'result' } | { kind: 'error' }>
 
-function Result({ outcome }: { outcome: Shown }) {
+/** `gentle`: không dùng màu đỏ (Sân ga 9¾: từ lệch gạch chân nét đứt, điểm thấp màu trung tính). */
+type Tone = 'default' | 'gentle'
+
+function Result({ outcome, tone }: { outcome: Shown; tone: Tone }) {
+  const off = tone === 'gentle' ? 'text-muted-foreground' : 'text-destructive'
   if (outcome.kind === 'error') {
     return (
-      <p role="alert" className="text-sm text-destructive">
+      <p role="alert" className={cn('text-sm', off)}>
         {outcome.message}
       </p>
     )
@@ -28,7 +32,13 @@ function Result({ outcome }: { outcome: Shown }) {
         {comparison.words.map((w, i) => (
           <span
             key={i}
-            className={cn(w.ok ? 'text-foreground' : 'font-semibold text-destructive underline decoration-wavy')}
+            className={cn(
+              w.ok
+                ? 'text-foreground'
+                : tone === 'gentle'
+                  ? 'font-semibold underline decoration-dashed'
+                  : 'font-semibold text-destructive underline decoration-wavy',
+            )}
             title={w.ok ? undefined : 'Thiếu hoặc lệch'}
           >
             {w.text}
@@ -36,7 +46,7 @@ function Result({ outcome }: { outcome: Shown }) {
         ))}
       </p>
       <p>
-        <span className={cn('font-semibold', comparison.score >= 70 ? 'text-primary' : 'text-destructive')}>
+        <span className={cn('font-semibold', comparison.score >= 70 ? 'text-primary' : off)}>
           {comparison.score}% đúng
         </span>
         <span className="text-muted-foreground"> · nghe được: “{comparison.heard}”</span>
@@ -58,6 +68,7 @@ function SentenceRow({
   outcome,
   onSpeak,
   onStop,
+  tone,
 }: {
   sentence: PracticeSentence
   best: number | null
@@ -69,6 +80,7 @@ function SentenceRow({
   outcome: Shown | undefined
   onSpeak: () => void
   onStop: () => void
+  tone: Tone
 }) {
   return (
     <li className="flex flex-col gap-2 rounded-lg border p-3">
@@ -100,7 +112,7 @@ function SentenceRow({
           </span>
         )}
       </div>
-      {outcome && <Result outcome={outcome} />}
+      {outcome && <Result outcome={outcome} tone={tone} />}
     </li>
   )
 }
@@ -113,9 +125,12 @@ export function SpeakPractice({
   sentences,
   title = 'Luyện nói câu mẫu',
   onListeningChange,
+  tone = 'default',
 }: {
   sentences: readonly PracticeSentence[]
   title?: string
+  /** `gentle`: không tô đỏ từ lệch / điểm thấp / lỗi micro (dùng ở viên gạch Sân ga 9¾). */
+  tone?: Tone
   /** Báo micro bắt đầu / thôi nghe (vd để khối shadowing tắt nút "Nghe cả đoạn"). */
   onListeningChange?: (listening: boolean) => void
 }) {
@@ -158,7 +173,7 @@ export function SpeakPractice({
       <h3 className="font-semibold">{title}</h3>
       {supported ? (
         <p className="text-xs text-muted-foreground">
-          Nghe mẫu, rồi bấm nói. Từ thiếu hoặc lệch sẽ tô đỏ. App chỉ lưu điểm; âm thanh do dịch vụ nhận giọng nói
+          Nghe mẫu, rồi bấm nói. Từ thiếu hoặc lệch sẽ {tone === 'gentle' ? 'được gạch chân' : 'tô đỏ'}. App chỉ lưu điểm; âm thanh do dịch vụ nhận giọng nói
           của trình duyệt xử lý (Chrome gửi lên máy chủ Google).
         </p>
       ) : (
@@ -180,6 +195,7 @@ export function SpeakPractice({
             outcome={outcomes[s.id]}
             onSpeak={() => void speakSentence(s)}
             onStop={() => controller.current?.abort()}
+            tone={tone}
           />
         ))}
       </ul>
