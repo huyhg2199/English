@@ -124,3 +124,148 @@
   description: >-
     Trên các video của story 15: phụ đề Anh + Việt chạy theo thời gian player, chú thích idiom/nói tắt/nghĩa ngữ cảnh, highlight câu liên quan bài, chế độ ẩn sub để điền từ (CAP-12, stack.md: sub do Claude làm lúc build, lưu JSON tĩnh).
   spec_checkpoint: true
+# Đợt 1b — Sân ga 9¾ + máy tính, xem mvp-phases.md.
+- id: "17"
+  title: "Cập nhật spec: Sân ga 9¾, thứ tự lý thuyết trước, giao diện máy tính"
+  description: |-
+    Chỉ sửa tài liệu, không đụng code.
+    - SPEC.md: thêm CAP-23 'Sân ga 9¾ · Lý thuyết vỡ lòng trước Năm 1', thêm nguyên tắc 'không dùng hay kiểm tra kiến thức chưa dạy', sửa dòng điều hướng 'bottom nav đúng 5 mục' thành 'dưới 1024px bottom nav; từ 1024px cùng 5 mục trên thanh trên cùng; 375px không đổi'.
+    - learning-rules.md: thứ tự buổi (Sân ga: Lý thuyết → Ôn & từ mới → Giải trí; sau Sân ga: Bài chính → Ôn → Giải trí), số từ mới 5/8/10 có giảm tải khi tồn ôn nhiều, hư từ dạy như ngữ pháp, Mũ Phân Loại ngày 1 chỉ chọn Nhà, ETS thành 'Đo trình độ' tuỳ chọn, lỗi trong bài luyện nhỏ không ghi Sổ lỗi.
+    - hp-theme.md: thêm Sân ga, viên gạch, bức tường, Soát vé, lên tàu, huy chương, điểm Nhà mỗi viên.
+    - mvp-phases.md: chèn Đợt 1b. stack.md: số từ mới theo giai đoạn, bố cục máy tính.
+    - Chỉnh mục 17–31 trong stories.yaml cho khớp quyết định của Huy (không tạo file story 18–31).
+  spec_checkpoint: true
+- id: "18"
+  title: "Mô hình dữ liệu Sân ga, store v13, sync và lib/foundation"
+  description: |-
+    Chưa có UI.
+    - Tạo src/data/foundation/types.ts: Brick, Screen, CheckItem (choice, listen, tapSyllable, order, sort), RuleCard, ConceptId, cùng teaches và uses.
+    - Migration v12→v13 trong src/lib/storage/migrations.ts thêm `foundation: { bricks, rows, placement, completedAt, skippedAt, resumedAt, pausedDays, welcomeSeenAt, updatedAt }` (rows = kết quả kiểm tra theo hàng A–D gồm `passed` và điểm cao nhất, placement = trạng thái Soát vé `pending|done|skipped`), giá trị lạ đưa vào legacy. Store cũ (đang học T1) nhận placement `pending`, các ngày `null`, pausedDays 0: tức là đang ở Sân ga (learning-rules mục Sân ga, Dữ liệu cũ).
+    - Thêm 'foundation' vào SYNCED_KEYS (src/lib/sync/merge.ts), gộp theo stack.md dòng Sân ga 9¾: viên theo updatedAt, hàng đạt rồi thì giữ đạt, ngày lấy sớm nhất, placement done/skipped thắng pending.
+    - Tạo src/lib/foundation thuần: foundationState, completeBrick, markRowTested, needsPlacement, isInFoundation, isBrickTaught (xong viên, hàng qua kiểm tra, hoặc đã từng bỏ qua), scheduleStartDate (ngày bỏ qua đầu hoặc ngày qua tường + pausedDays), skipFoundation/resumeFoundation, isGateOpen.
+    - Test: migration, merge (hàng đạt không bị bên trượt mới hơn đè), backup/restore giữ được key foundation.
+  spec_checkpoint: true
+- id: "19"
+  title: "BrickPlayer, route /foundation, bức tường và viên F01"
+  description: |-
+    - Route `foundation` và `foundation/:brickId`.
+    - Trang Foundation.tsx: bức tường 18 ô; viên chưa có nội dung hiện "Đang soạn"; hàng đã đạt (học hết hoặc qua kiểm tra) hiện là xong.
+    - BrickPlayer chạy explain → contrast → worked → faded → check (gợi ý, làm lại, không màn đỏ, không ghi Sổ lỗi) → apply. Đúng dưới 60% thì mời 'Xem lại giải thích' và thêm 2 câu dễ hơn.
+    - Dùng lại speech.ts, TenseTimeline, SpeakPractice.
+    - Thêm dải 'Sân ga 9¾' trên Lộ trình phía trên Chặng 1, có link bỏ qua và quay lại.
+    - Viết nội dung F01.
+    - foundation.test.ts: id không trùng, đáp án nằm trong options, wordIds có trong words.json.
+  spec_checkpoint: true
+- id: "20"
+  title: "Nội dung hàng A (F02–F06), Soát vé 4 hàng và quiz-f-a…d"
+  description: |-
+    - Tự viết F02 bảng chữ cái (chuỗi TTS đọc theo phiên âm vì iOS hay đọc sai chữ cái đơn), F03 IPA là gì, F04 âm tiết và trọng âm, F05 âm cuối, F06 số/giá/giờ/ngày. Mỗi viên có màn giải thích, câu kiểm tra, phần áp dụng, thẻ quy tắc và 5 từ chủ đề.
+    - Viết cả 4 QuizDef quiz-f-a, quiz-f-b, quiz-f-c, quiz-f-d, mỗi bài 8 câu, trong Quiz engine hiện có, dùng tag lỗi sẵn có.
+    - Màn Soát vé hiện khi `placement` còn `pending`: làm lần lượt A→D, dừng giữa chừng được, có nút "Bỏ qua, học từ viên 1". Hàng đạt 70% trở lên tính là xong.
+    - Nút 'Tôi biết rồi' dùng cùng quiz của hàng: đạt 70% trở lên thì cả hàng tính là xong.
+    - Câu sai ở Soát vé và 'Tôi biết rồi' không ghi Sổ lỗi; câu sai trong quiz hàng chỉ ghi Sổ lỗi khi đã học hết các viên của hàng đó.
+    - Thêm helper questionSourceHref cho lessonId dạng fNN.
+  spec_checkpoint: true
+- id: "21"
+  title: "Buổi học theo sessionPlan: lý thuyết trước, nội dung bài hiện ngay trong buổi"
+  description: |-
+    - Tạo hàm thuần `sessionPlan(store)` trong src/lib/sessions:
+      - Khi đang ở Sân ga: Lý thuyết 12' (1 viên/buổi, BrickPlayer hiện trong buổi, xong viên có nút 'Học tiếp viên sau' khi còn viên tiếp theo) → Ôn & từ mới 8' → Giải trí nhẹ 10' (VOA LLE L1–L3).
+      - Viên tiếp theo bỏ qua viên 'Đang soạn'; không còn viên nào thì ôn viên xong gần nhất. Kế hoạch chốt lúc bắt đầu buổi.
+      - Sau Sân ga: Bài chính → Ôn → Giải trí.
+    - Tách phần hiển thị nội dung bài từ Lesson.tsx thành LessonSectionContent để Session.tsx dùng lại.
+    - prioritizeSections không được đẩy phần lý thuyết xuống.
+    - Thêm bảng ánh xạ cho các URL ?step= cũ.
+    - record() nhận lessonId dạng fNN. Rà mọi chỗ gọi getLessonEntry (StudyClock, trophies, skill board, Owl, comeback) để chịu được id fNN.
+  spec_checkpoint: true
+- id: "22"
+  title: "Hôm nay, Thư nhập học, Mũ Phân Loại chỉ chọn Nhà, lịch và ngày lười"
+  description: |-
+    - Hôm nay khi đang ở Sân ga: thẻ chính FoundationHero; ẩn Bài hiện tại, ScheduleCard, lời mời Đo trình độ, SkillGapCard. Chưa có Nhà thì vẫn hiện lời mời Mũ Phân Loại (4 câu).
+    - Trang Welcome.tsx 3 màn, chỉ hiện một lần (cả với dữ liệu cũ sau nâng cấp, nhớ bằng foundation.welcomeSeenAt); màn cuối dẫn tới Mũ khi chưa có Nhà.
+    - Tách SortingHat: ngày 1 chỉ 4 câu chọn Nhà; form ETS thành 'Đo trình độ' tuỳ chọn, gợi ý sau Sân ga.
+    - src/lib/schedule: ngày bắt đầu lộ trình = scheduleStartDate (story 18); trước khi lịch bắt đầu thì planFor trả trạng thái chưa bắt đầu; quay lại Sân ga sau khi bỏ qua thì lịch tạm dừng, không về chưa bắt đầu. Có test cho 'không lùi sau 3 tuần Sân ga', 'bỏ qua rồi quay lại không mất ngày bắt đầu', 'bỏ qua rồi qua tường giữ ngày bỏ qua'.
+    - Ngày lười khi đang ở Sân ga: ôn 1 viên gạch (viên xong gần nhất; chưa xong viên nào thì xem giải thích của viên tiếp theo) + 3 từ thay cho tin tức.
+    - Soát vé không tính là buổi học (streak, điểm Nhà, trạng thái đã học hôm nay).
+  spec_checkpoint: true
+- id: "23"
+  title: "SRS phần 1: số từ mới mỗi ngày, thẻ Làm quen, từ chủ đề, ẩn hiện IPA/trọng âm/từ loại"
+  description: |-
+    - buildSession nhận object options gồm newPerDay, preferIds, introMode.
+    - newPerDayFor(store, now) cho 5/8/10; tồn ôn hơn 40 thì chỉ 3 từ, kèm lời nhắn nhẹ.
+    - Danh sách starter-words (số, thứ, gia đình, nghề, đồ lớp học) và từ của viên gạch được ưu tiên trước thứ hạng NGSL.
+    - Thẻ 'Làm quen' với nút 'Đã xem', lên lịch qua review(card, 'good').
+    - FlashcardSession: IPA chỉ hiện sau F03, trọng âm và âm tiết sau F04, nhãn từ loại sau F07 (dùng isBrickTaught: hàng qua kiểm tra hoặc bỏ qua Sân ga cũng mở); 'NGSL #n' đổi thành 'Từ phổ biến #n'.
+    - Thuật toán và lịch của thẻ cũ giữ nguyên. Có test.
+  spec_checkpoint: true
+- id: "24"
+  title: "SRS phần 2: chặn hư từ, thẻ điền quy tắc, ví dụ thay thế"
+  description: |-
+    - FUNCTION_WORD_GATES: các hư từ trong 300 hạng NGSL đầu, mỗi từ gắn với viên gạch hoặc bài Chặng 1 đầu tiên dạy nó; từ không có viên/bài nào dạy thì mở khi qua hoặc bỏ qua Sân ga. Cổng viên gạch dùng isBrickTaught (bỏ qua Sân ga là mở).
+    - src/lib/srs/eligibility.ts: từ bị khoá thì để dành, không mất, và giữ thứ tự NGSL khi mở.
+    - Thẻ quy tắc `rule:fNN-n` dạng điền chỗ trống; hư từ chỉ ôn bằng thẻ điền câu.
+    - exampleOverrides: câu ví dụ tự viết cho từ có ví dụ AI dùng ngữ pháp chưa học. Script gắn nhãn ví dụ, rà tay hạng 1–500.
+    - Bản app cũ phải bỏ qua được thẻ rule:. Có test.
+  spec_checkpoint: true
+- id: "25"
+  title: "Nội dung hàng B (F07–F12) và rà quiz-f-b"
+  description: |-
+    - Tự viết F07 từ loại, F08 S+V(+O) và câu mệnh lệnh, F09 đại từ I/me/my, F10 số nhiều, F11 a/an/the và đếm được, F12 this/that và 's. Mỗi viên có câu kiểm tra, phần áp dụng, thẻ quy tắc, từ chủ đề.
+    - Rà lại quiz-f-b (story 20) cho khớp nội dung F07–F12.
+    - Mở các cổng hư từ tương ứng (đại từ, mạo từ, this/that).
+  spec_checkpoint: true
+- id: "26"
+  title: "Nội dung hàng C–D (F13–F18), rà quiz-f-c/d, thuật ngữ và qua bức tường"
+  description: |-
+    - Tự viết F13–F18; rà lại quiz-f-c, quiz-f-d (story 20).
+    - TO_BE trong t1-grammar.ts có tiêu đề 'Ôn lại: viên gạch F13–F14'.
+    - Bảng thuật ngữ khoảng 30 mục và TermChip bấm vào được trong TenseCard và SoundTable, mở thẻ tóm tắt của viên gạch.
+    - Màn 'Qua bức tường', huy chương 'Lên tàu Năm 1' (một lần, không cấp) và +5 điểm Nhà lần đầu xong mỗi viên (medals.ts và points.ts, chỉ thêm, không sửa logic cũ; hp-theme.md).
+  spec_checkpoint: true
+- id: "27"
+  title: "Vá T1 và lọc câu hỏi chưa dạy"
+  description: |-
+    - Bỏ 'Làm bài đầu vào · 12 nguyên âm đơn' (stage-1.ts) và nút `content.placementLink` 'Làm bài đầu vào (Mũ Phân Loại)' (LessonContentParts.tsx).
+    - 'Anki' đổi thành 'flashcard trong app' (sections.ts).
+    - Câu quá khứ ở W4 (`s1-t1-w4-say-3`, `s1-t1-w4-say-4` trong t1-pronunciation.ts) và câu -ed trong src/data/questions/t1.ts viết lại thành hiện tại -s.
+    - Sửa giải thích của `q-s1-t1-w1-03` và `q-s1-t1-w1-06` (src/data/questions/t1.ts).
+    - Câu hỏi có thêm `requires`. Quiz bài và mini test bỏ câu chưa đủ nền, còn dưới 4 câu thì hiện thông báo, không chặn việc xong bài.
+    - Test tiên quyết khai báo tay: uses của mỗi câu phải nằm trong các khái niệm đã dạy trước đó, áp dụng cho viên gạch và cho T1.
+  spec_checkpoint: true
+- id: "28"
+  title: "Chia bài T1 theo ngày và gợi ý ôn khi sai lặp lại"
+  description: |-
+    - LessonContent có thêm `parts`: s1-t1-w1 chia 12 nguyên âm thành 3 ngày, mỗi ngày 4 âm (gần tiếng Việt trước, /ɝː ɚ/ cuối); W2 chia nguyên âm đôi thành 2 phần; W3 chia phụ âm thành 4 nhóm 6 âm. Mỗi phần có câu luyện nói chỉ dùng kiến thức đã học.
+    - Lưu những phần đã xem; buổi học lấy phần tiếp theo.
+    - Hôm nay mời 'Ôn viên gạch X n'?' theo learning-rules mục Sổ lỗi (2 câu sai trong 14 ngày cùng khái niệm viên X dạy, n = số phút của viên, ẩn khi ôn xong hoặc 'Để sau'). Chỉ là lời mời, không chặn gì.
+  spec_checkpoint: true
+- id: "29"
+  title: "Khung máy tính D1: thanh trên cùng, cột rộng hơn, script giữ 375px"
+  description: |-
+    - index.css: biến thể pointer-fine; trong khối @media 64rem đặt --nav-height: 0, --topbar-height và scroll-padding-top; body overflow-x đổi sang clip.
+    - TopBar.tsx mới dùng lại NAV_ITEMS và isNavItemActive. BottomNav thêm lg:hidden. SyncBadge có variant inline.
+    - AppShell: chọn độ rộng theo handle.layout qua useMatches() (route-handle.ts và layoutFor, có test). Manifest đặt orientation 'any'.
+    - scripts/layout: mobile-guard (chặn thay đổi class không có tiền tố) và check bằng Chrome CDP không thêm thư viện, chạy ở 375/1023/1024/1280/1920: không cuộn ngang, đúng một nav hiện, ảnh 375px khớp develop.
+  spec_checkpoint: true
+- id: "30"
+  title: "Máy tính D2: Viên gạch, Bài học, Buổi học hai cột"
+  description: |-
+    Làm sau story 21.
+    - SplitLayout dùng chung.
+    - BrickPlayer: lý thuyết trái, luyện phải (dính).
+    - Lesson: rail phải gồm LessonToc sinh từ dữ liệu, các nút việc, NoteForm mở sẵn ở lg (Sheet vẫn dùng dưới lg).
+    - Session: stepper dọc sinh từ sessionPlan, nút Tiếp dính.
+    - Giới hạn độ rộng TenseTimeline; SoundTable 2 cột; PronunciationBlocks 3 cột.
+    - Chỉ thêm class lg:/xl:, wrapper có gap bằng gap của cha.
+  spec_checkpoint: true
+- id: "31"
+  title: "Máy tính D3: phím tắt và lưới cho Hôm nay, Lộ trình"
+  description: |-
+    - Tạo use-hotkeys và shouldHandleKey có unit test: bỏ qua khi đang gõ IME (isComposing, keyCode 229), ở ô nhập liệu, mở dialog, đang chọn chữ, giữ phím bổ trợ, phím giữ lặp (e.repeat); Space/Enter khi đang focus nút, link hay contenteditable thì để trình duyệt xử lý.
+    - FlashcardSession: Space lật thẻ, 1–4 chấm (chỉ khi thẻ đã lật và không phải thẻ 'Làm quen'), K đã biết, L nghe.
+    - QuestionCard và BrickPlayer: 1–4 chọn, Enter sang câu tiếp.
+    - Session: → và ←.
+    - Gợi ý <kbd> chỉ hiện với pointer-fine.
+    - Hôm nay lưới 2 cột; Lộ trình xếp tháng thành 2 cột.
+    - Script kiểm tra có thêm bước gõ 'chào' vào ô tìm kiếm của Sổ tay để chắc không phím tắt nào chạy.
+  spec_checkpoint: true

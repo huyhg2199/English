@@ -23,22 +23,22 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
 
 - **CAP-1**
   - **intent:** Huy xem lộ trình 3 chặng (0→300, 300→550, 550→750+) dạng bản đồ. Mỗi chặng có danh sách bài, việc cụ thể từng bài, target Can-do và điểm TOEIC ước tính.
-  - **success:** Bản đồ hiển thị đủ 3 chặng với nội dung và Can-do khớp `lo-trinh-toeic-12-thang.md`; trạm đã qua sáng lên.
+  - **success:** Bản đồ hiển thị dải Sân ga 9¾ (CAP-23) và đủ 3 chặng với nội dung và Can-do khớp `lo-trinh-toeic-12-thang.md`; trạm đã qua sáng lên.
 - **CAP-2**
-  - **intent:** Trang Hôm nay chỉ có 1 nút lớn để bắt đầu buổi 30' (5' ôn SRS → 15' bài chính → 10' phim/nhạc/tin gắn bài). Nút "Hôm nay lười" đổi sang buổi 10' (1 tin hot ngắn + 3 từ mới).
-  - **success:** Từ trang Hôm nay, 1 chạm vào được buổi chuẩn và chạy đúng 3 phần. Hoàn thành buổi lười vẫn giữ streak.
+  - **intent:** Trang Hôm nay chỉ có 1 nút lớn để bắt đầu buổi 30'. Lý thuyết luôn đi trước luyện. Khi đang ở Sân ga 9¾ (CAP-23): 12' lý thuyết (1 viên gạch, hiện ngay trong buổi) → 8' ôn & từ mới → 10' giải trí nhẹ. Sau Sân ga: 15' bài chính (nội dung bài hiện ngay trong buổi) → 5' ôn SRS → 10' phim/nhạc/tin gắn bài. Nút "Hôm nay lười" đổi sang buổi 10': ở Sân ga là ôn 1 viên gạch + 3 từ, sau Sân ga là 1 tin hot ngắn + 3 từ mới. Chi tiết trong `learning-rules.md`.
+  - **success:** Từ trang Hôm nay, 1 chạm vào được buổi chuẩn và chạy đúng 3 phần theo thứ tự của giai đoạn đang học. Hoàn thành buổi lười vẫn giữ streak.
 - **CAP-3**
-  - **intent:** Test đầu vào (Mũ Phân Loại) xếp trình độ, gán Nhà theo sở thích và lưu điểm làm mốc.
-  - **success:** Sau test, Huy được đặt vào đúng chặng/bài và thấy điểm mốc theo kỹ năng trên bảng ở CAP-7.
+  - **intent:** Ngày 1, Mũ Phân Loại chỉ gán Nhà qua 4 câu hỏi sở thích. Chỗ bắt đầu lúc đầu do Soát vé của Sân ga 9¾ xếp (CAP-23). Nhập điểm đề mẫu ETS thành mục tuỳ chọn "Đo trình độ", chỉ được gợi ý sau khi qua hoặc bỏ qua Sân ga, và lưu điểm làm mốc.
+  - **success:** Ngày 1 không phải làm đề ETS: chọn Nhà xong là vào được Sân ga. Sau khi làm "Đo trình độ", Huy được đặt vào đúng chặng/bài và thấy điểm mốc theo kỹ năng trên bảng ở CAP-7.
 - **CAP-4**
   - **intent:** Cuối mỗi chặng có test "qua cửa" (O.W.L. 1, O.W.L. 2, N.E.W.T.). Mỗi câu gắn tag bài nguồn. Chưa đạt thì được gợi ý ôn phần yếu.
   - **success:** Câu sai có link về đúng đoạn của bài nguồn. Ngưỡng qua cửa theo `lo-trinh-toeic-12-thang.md`. Trượt chỉ sinh kế hoạch ôn phần yếu, không reset chặng.
 - **CAP-5**
-  - **intent:** Khi Huy trễ tiến độ, hệ thống gia hạn và tính lại ngày dự kiến đạt 750 kèm hệ quả.
-  - **success:** Trễ N tuần thì mốc lùi N tuần, ngày dự kiến mới hiển thị, không mất tiến độ.
+  - **intent:** Khi Huy trễ tiến độ, hệ thống gia hạn và tính lại ngày dự kiến đạt 750 kèm hệ quả. Lịch 12 tháng bắt đầu đếm từ ngày qua (hoặc bỏ qua) Sân ga 9¾ (CAP-23).
+  - **success:** Trễ N tuần thì mốc lùi N tuần, ngày dự kiến mới hiển thị, không mất tiến độ. Thời gian ở Sân ga không tính là trễ: app không bao giờ hiện "lùi N tuần" vì Sân ga.
 - **CAP-6**
   - **intent:** Quay lại sau thời gian nghỉ thì làm test 5' rồi học tiếp đúng chỗ hổng.
-  - **success:** Sau hơn 1 tuần không học, mở app sẽ thấy test 5'. Kết quả test đưa Huy tới bài chứa lỗ hổng, không về bài 1.
+  - **success:** Sau hơn 1 tuần không học, mở app sẽ thấy test 5'. Kết quả test đưa Huy tới bài chứa lỗ hổng, không về bài 1. Khi đang ở Sân ga, test chỉ lấy câu từ các viên đã xong (`learning-rules.md`).
 - **CAP-7**
   - **intent:** Bảng khoảng cách tới mục tiêu theo từng kỹ năng tự đẩy bài vào kỹ năng yếu nhất. Đồng hồ cộng giờ học tích luỹ: giờ chủ động, cộng giờ phim/nhạc có mục đích tính ×½.
   - **success:** Bảng hiển thị điểm hiện tại so với mục tiêu theo từng kỹ năng. Bài kế tiếp thuộc kỹ năng có khoảng cách lớn nhất. Đồng hồ hiển thị giờ tích luỹ so với mốc 450 giờ/năm.
@@ -46,11 +46,11 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
   - **intent:** Module 7 Part TOEIC L&R, mỗi Part có mẹo và các câu bẫy hay gặp.
   - **success:** Cả 7 Part đều có trang mẹo kèm ví dụ câu bẫy, truy cập được từ Luyện tập.
 - **CAP-9**
-  - **intent:** Flashcard lặp lại ngắt quãng (SRS) tự build, từ xếp theo tần suất (NGSL → TSL). Mỗi thẻ có từ, IPA, câu ngữ cảnh từ phim/nhạc/tin, nghĩa tiếng Việt.
-  - **success:** Phiên ôn chỉ hiện thẻ đến hạn. Lịch ôn giãn ra khi nhớ, rút lại khi quên. Thẻ thêm từ ngữ cảnh lưu kèm câu gốc.
+  - **intent:** Flashcard lặp lại ngắt quãng (SRS) tự build, từ xếp theo tần suất (NGSL → TSL). Mỗi thẻ có từ, IPA, câu ngữ cảnh từ phim/nhạc/tin, nghĩa tiếng Việt. Số từ mới mỗi ngày và thứ tự mở từ (từ chủ đề, từ khởi đầu, hư từ) theo `learning-rules.md`.
+  - **success:** Phiên ôn chỉ hiện thẻ đến hạn. Lịch ôn giãn ra khi nhớ, rút lại khi quên. Thẻ thêm từ ngữ cảnh lưu kèm câu gốc. Số từ mới mỗi ngày đúng theo giai đoạn đang học, hư từ chỉ mở sau viên gạch hoặc bài dạy nó.
 - **CAP-10**
-  - **intent:** Mỗi từ hiển thị IPA, đánh dấu trọng âm và có nút nghe. Huy nói câu mẫu và nhận kết quả so khớp.
-  - **success:** Nghe được audio mẫu. Câu nói của Huy được nhận dạng và đối chiếu với câu mẫu, chỉ rõ từ lệch.
+  - **intent:** Mỗi từ hiển thị IPA, đánh dấu trọng âm và có nút nghe. IPA và trọng âm chỉ hiện sau viên gạch dạy chúng (F03, F04, `learning-rules.md`). Huy nói câu mẫu và nhận kết quả so khớp.
+  - **success:** Nghe được audio mẫu. Trước khi xong F03 thẻ từ không hiện IPA, trước khi xong F04 không tô trọng âm. Câu nói của Huy được nhận dạng và đối chiếu với câu mẫu, chỉ rõ từ lệch.
 - **CAP-11**
   - **intent:** Học các thì qua dòng thời gian trực quan kèm cảnh phim minh hoạ. Thì đã học trở thành "thần chú" được mở khoá.
   - **success:** Mỗi thì trong chặng 1 có hình dòng thời gian và ít nhất 1 câu thoại phim. Hoàn thành bài thì sẽ mở khoá thần chú tương ứng.
@@ -77,7 +77,7 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
   - **success:** Mục đã lưu hiển thị trong Sổ tay kèm nguồn và câu gốc, còn nguyên sau khi tải lại app.
 - **CAP-19**
   - **intent:** Sổ lỗi sai ("của Snape") gom các câu sai, phân loại lỗi và đưa vào ôn SRS. Nút "Vì sao sai?" gọi AI giải thích kèm 2 ví dụ đúng.
-  - **success:** Mỗi câu sai ở bất kỳ test nào đều tự vào sổ, có nhãn loại lỗi. Bấm "Vì sao sai?" trả về giải thích tiếng Việt kèm 2 ví dụ đúng.
+  - **success:** Mỗi câu sai ở test về phần đã dạy (quiz bài, mini test, test quay lại, O.W.L./N.E.W.T., kiểm tra hàng của Sân ga khi đã học hết các viên của hàng đó) đều tự vào sổ, có nhãn loại lỗi. Ngoại lệ không vào sổ: câu luyện trong viên gạch, Soát vé, kiểm tra "Tôi biết rồi" (`learning-rules.md`). Bấm "Vì sao sai?" trả về giải thích tiếng Việt kèm 2 ví dụ đúng.
 - **CAP-20**
   - **intent:** Theme Harry Potter là cấu trúc lộ trình: chặng là Năm học, có Phòng Cúp huy chương nhiều cấp, streak là điểm Nhà, có hiệu ứng khi đúng hoặc khi nhận thưởng. Chi tiết trong `hp-theme.md`.
   - **success:** Mọi ánh xạ trong `hp-theme.md` đều hiện trong app. Huy chương được trao đúng điều kiện.
@@ -85,19 +85,23 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
   - **intent:** Nhắc học qua nhiều kênh: browser notification, PWA web push, lịch iCloud/Google qua .ics hoặc lịch subscribe, Telegram bot "Owl Post". Telegram nhắc theo giờ cố định các buổi trong ngày (trưa, giữa giờ, trước ngủ) và kiểm tra hôm nay đã học chưa trước khi nhắc.
   - **success:** Cả 4 kênh đều nhận được nhắc trên iPhone kể cả khi tab đã đóng (trừ kênh browser notification). Ngày đã hoàn thành buổi học thì Telegram không nhắc lại "chưa học".
 - **CAP-22**
-  - **intent:** Huy sao lưu và khôi phục toàn bộ dữ liệu học (tiến độ, streak, SRS, sổ tay, sổ lỗi, huy chương) bằng file JSON. App cũng tự giữ một bản sao ngoài máy.
+  - **intent:** Huy sao lưu và khôi phục toàn bộ dữ liệu học (tiến độ, Sân ga 9¾, streak, SRS, sổ tay, sổ lỗi, huy chương) bằng file JSON. App cũng tự giữ một bản sao ngoài máy.
   - **success:** Xoá dữ liệu trình duyệt rồi nhập lại file backup (hoặc kéo bản sao tự động về) thì khôi phục đúng trạng thái. Bản backup không bao giờ chứa API key hay token.
+- **CAP-23**
+  - **intent:** Sân ga 9¾ · Lý thuyết vỡ lòng trước Năm 1. Trước bài đầu tiên của Năm 1 (`s1-t1-w1`) có một khoá riêng gồm 18 viên gạch F01–F18 tự soạn, mỗi viên 6–10 phút, xếp 4 hàng A–D (`learning-rules.md`). Mỗi viên đi theo thứ tự: giải thích tiếng Việt → so sánh Việt–Anh → ví dụ mẫu → ví dụ một chỗ trống → câu luyện có Gợi ý → Áp dụng. Lần đầu vào Sân ga, app mời Soát vé: 4 bài kiểm tra ngắn, mỗi hàng 8 câu; hàng đạt ≥ 70% tính là xong và Huy chỉ học những hàng chưa đạt. Soát vé bỏ qua được. Sân ga bỏ qua và quay lại được bất cứ lúc nào. Trên Lộ trình, Sân ga là một dải nằm trước Chặng 1.
+  - **success:** Trang Sân ga hiện bức tường 18 viên, viên đã xong sáng lên. Làm Soát vé xong thì đúng những hàng đạt ≥ 70% được đánh dấu xong. Không khoá, không phạt, không reset: viên nào cũng mở được và học lại được. Xong cả 4 hàng thì có màn ăn mừng "Qua bức tường" và huy chương "Lên tàu Năm 1" (`hp-theme.md`). Lịch 12 tháng đếm từ ngày qua hoặc bỏ qua Sân ga (CAP-5). Tiến độ 48 bài, id bài, streak, thẻ SRS cũ và dữ liệu đồng bộ giữ nguyên; Sân ga không khoá bài nào của T1.
 
 ## Constraints
 
 - Front-end (React + shadcn/ui), không backend tự viết, không Edge Function. Dữ liệu học local-first: luôn đọc/ghi localStorage và chạy được offline; Supabase (Auth đăng nhập bằng mã OTP email + một bảng có RLS) là nơi lưu chính, đồng bộ hai chiều khi có mạng và là bản chuẩn khi đổi máy. Chỉ các key trong allowlist được đồng bộ, không bao giờ đẩy API key/PAT/token. GitHub vẫn dùng cho Gist (trạng thái "đã học hôm nay" cho cron, CAP-21) và Actions chạy cron. Chi tiết trong `stack.md`.
 - Không dùng proxy. Nguồn không gọi trực tiếp được từ trình duyệt thì chỉ link ra ngoài.
-- Thứ tự làm theo `mvp-phases.md`. Luật học và luật chấm điểm theo `learning-rules.md`.
-- PWA host miễn phí trên GitHub Pages, dùng chính trên iPhone qua "Thêm vào MH chính". Vì vậy app mobile-first, bottom nav đúng 5 mục: Hôm nay / Lộ trình / Luyện tập / Sổ tay / Phòng Cúp.
+- Thứ tự làm theo `mvp-phases.md`. Luật học và luật chấm điểm theo `learning-rules.md`. Chỗ nào `lo-trinh-toeic-12-thang.md` nói khác về Sân ga 9¾ trước Chặng 1 và ngày bắt đầu lịch 12 tháng thì SPEC và `learning-rules.md` thắng.
+- PWA host miễn phí trên GitHub Pages, dùng chính trên iPhone qua "Thêm vào MH chính". Vì vậy app mobile-first. Điều hướng chính có đúng 5 mục theo thứ tự Hôm nay / Lộ trình / Luyện tập / Sổ tay / Phòng Cúp: dưới 1024px là bottom nav; từ 1024px trở lên là thanh điều hướng trên cùng, cùng 5 mục, cùng thứ tự. Giao diện 375px không đổi khi thêm bố cục máy tính (`stack.md`).
 - AI theo kiểu BYOK: Huy tự nhập key, key lưu ở localStorage, không bao giờ commit hay deploy kèm key.
 - Không khoá, không phạt, không xoá hay reset tiến độ. Khi sai nhiều, app mở thêm gợi ý và chia nhỏ bài.
+- Không dùng hay kiểm tra kiến thức chưa dạy: lời giải thích, ví dụ, câu luyện và câu kiểm tra chỉ dùng khái niệm đã dạy ở viên gạch hoặc bài trước đó. Ngoại lệ: Soát vé và kiểm tra "Tôi biết rồi" của Sân ga (tuỳ chọn, câu sai không ghi Sổ lỗi), "Đo trình độ" (đề ETS làm ngoài app). Nội dung giải trí (video, nhạc, tin) không thuộc luật này.
 - Mọi lỗi đều giải thích bằng tiếng Việt, kèm quy tắc và ví dụ.
-- Test nào cũng bám bài: mỗi câu gắn tag bài nguồn, sai thì có link về đúng đoạn bài đó.
+- Test nào cũng bám bài: mỗi câu gắn tag bài nguồn (viên gạch `fNN` của Sân ga cũng là bài nguồn), sai thì có link về đúng đoạn bài đó.
 - Nội dung chỉ lấy từ nguồn miễn phí, uy tín (`nguon-hoc-mien-phi.md`). Chỉ NGSL/TSL (CC BY-SA 4.0) được đóng gói vào app, có ghi nguồn. Oxford 3000/5000 và ETS chỉ được link. Mini test tự build chỉ theo khuôn format ETS, không copy nội dung đề.
 - Repo public trên GitHub Pages, nên asset Harry Potter chỉ được tự vẽ hoặc AI-gen "lấy cảm hứng". Không dùng logo hay nhân vật gốc.
 - Không commit API key, PAT, token bot, gist id hay dữ liệu học cá nhân. Những thứ này chỉ nằm ở localStorage hoặc GitHub Secrets.
@@ -111,6 +115,7 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
 - TOEIC Speaking & Writing trước khi đạt 750 L&R.
 - Nguồn hay nội dung trả phí (đã loại Newsela).
 - Chép tay từ vựng (sổ tay chỉ dành cho kiến thức và ngữ cảnh).
+- Thanh điều hướng bên trái và bố cục master–detail cho Sổ lỗi/Sổ tay trên máy tính (để sau, nếu Huy thấy cần).
 
 ## Success signal
 
