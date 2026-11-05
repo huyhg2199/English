@@ -116,8 +116,8 @@ export type Screen =
       viSays: string
       /** "Tiếng Anh bắt buộc…" */
       enRequires: string
-      /** Cặp ví dụ minh hoạ (tuỳ chọn). */
-      examples?: readonly { vi: string; en: string }[]
+      /** Cặp ví dụ minh hoạ (tuỳ chọn). `audioText`: chuỗi TTS đọc thay `en` (vd "H-U-Y" đọc "aitch, you, why"). */
+      examples?: readonly { vi: string; en: string; audioText?: string }[]
       /** Dòng thời gian minh hoạ (dùng `TenseTimeline`). */
       timeline?: BrickTimeline
     }
@@ -125,6 +125,8 @@ export type Screen =
       kind: 'worked'
       /** Ví dụ mẫu tiếng Anh. */
       en: string
+      /** Chuỗi TTS đọc thay `en` (tuỳ chọn, vd "/siː/" → "sea"). */
+      audioText?: string
       vi: string
       /** Chỉ ra chỗ cần để ý (tiếng Việt). */
       noteVi?: string
@@ -152,6 +154,8 @@ export type Screen =
       promptVi: string
       /** Câu mẫu gợi ý. */
       sampleEn?: string
+      /** Chuỗi TTS đọc thay `sampleEn` (tuỳ chọn). */
+      sampleAudioText?: string
       /** Một câu chọn để áp dụng (tuỳ chọn, không tính điểm, sai thì giải thích và làm lại). */
       item?: CheckItem
       /** Câu nói theo mẫu (dùng `SpeakPractice`, id dạng `f01-say-1`). */

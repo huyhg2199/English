@@ -1,16 +1,20 @@
 import { getLesson } from '@/data/roadmap'
 
+import { FOUNDATION_QUESTIONS } from './foundation'
 import { T1_QUESTIONS } from './t1'
 import { T2_T4_QUESTIONS } from './t2-t4'
 import type { Question } from './types'
 
 export * from './types'
+export { FOUNDATION_QUESTIONS, FOUNDATION_QUIZZES, foundationQuiz, ROW_QUIZ_ID, ROW_QUIZ_SIZE } from './foundation'
 
 /** Toàn bộ ngân hàng câu: T1 (story 9) và T2–T4 (story 10). */
 export const QUESTION_BANK: readonly Question[] = [...T1_QUESTIONS, ...T2_T4_QUESTIONS]
 
-const byId = new Map(QUESTION_BANK.map((q) => [q.id, q]))
+// Tra cả câu Sân ga (không nằm trong `QUESTION_BANK`) để Sổ lỗi hiện được câu của kiểm tra cuối hàng.
+const byId = new Map([...QUESTION_BANK, ...FOUNDATION_QUESTIONS].map((q) => [q.id, q]))
 
+/** Câu theo id, trong `QUESTION_BANK` hoặc ngân hàng Sân ga. */
 export function getQuestion(id: string): Question | undefined {
   return byId.get(id)
 }

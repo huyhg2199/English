@@ -69,4 +69,15 @@ describe('NAV_ITEMS', () => {
     expect(active('/foundation/F01')).toEqual(['Lộ trình'])
     expect(active('/foundationx')).toEqual([])
   })
+
+  it('/foundation/soat-ve, /foundation/kiem-tra/A là route thật (không rơi vào :brickId), tab Lộ trình sáng', () => {
+    expect(matchRoutes(routes, '/foundation/soat-ve')!.at(-1)!.route.path).toBe('foundation/soat-ve')
+    const rowTest = matchRoutes(routes, '/foundation/kiem-tra/A')!.at(-1)!
+    expect(rowTest.route.path).toBe('foundation/kiem-tra/:row')
+    expect(rowTest.params.row).toBe('A')
+    expect(matchRoutes(routes, '/foundation/F02')!.at(-1)!.route.path).toBe('foundation/:brickId')
+    const active = (p: string) => NAV_ITEMS.filter((item) => isNavItemActive(item, p)).map((i) => i.label)
+    expect(active('/foundation/soat-ve')).toEqual(['Lộ trình'])
+    expect(active('/foundation/kiem-tra/A')).toEqual(['Lộ trình'])
+  })
 })

@@ -1,8 +1,12 @@
-import { Check, Hammer } from 'lucide-react'
+import { Check, ClipboardCheck, Hammer } from 'lucide-react'
 import { Link } from 'react-router'
 
+import { Button } from '@/components/ui/button'
 import { brickHref, type WallRow, type WallTile } from '@/lib/foundation'
+import { rowTestHref } from '@/lib/foundation/row-test'
 import { cn } from '@/lib/utils'
+
+const ROW_TEST_LABELS = { know: 'Tôi biết rồi', final: 'Kiểm tra cuối hàng' } as const
 
 function TileFace({ tile }: { tile: WallTile }) {
   return (
@@ -75,16 +79,26 @@ export function BrickWall({ rows }: { rows: readonly WallRow[] }) {
               <h2 id={headingId} className="text-base font-semibold">
                 Hàng {row.row} · {row.title}
               </h2>
-              {row.done ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
-                  <Check className="size-3" strokeWidth={3} aria-hidden="true" />
-                  Xong
-                </span>
-              ) : (
-                <span className="text-xs text-muted-foreground">
-                  {lit}/{row.tiles.length} viên
-                </span>
-              )}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                {row.done ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                    <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                    Xong
+                  </span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    {lit}/{row.tiles.length} viên
+                  </span>
+                )}
+                {row.test && (
+                  <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                    <Link to={rowTestHref(row.row)} aria-label={`${ROW_TEST_LABELS[row.test]}: kiểm tra hàng ${row.row}`}>
+                      <ClipboardCheck aria-hidden="true" />
+                      {ROW_TEST_LABELS[row.test]}
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
             <ol className="grid grid-cols-3 gap-2">
               {row.tiles.map((tile) => (

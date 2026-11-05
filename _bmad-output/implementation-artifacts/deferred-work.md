@@ -48,3 +48,18 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/19-brick-player-foundation-wall.md`
   summary: Việc BrickPlayer gọi `completeBrick` đúng một lần khi màn Áp dụng hiện (và không ghi gì nếu thoát trước) chỉ kiểm bằng headless Chrome, chưa có test tự động.
   evidence: Vitest chạy env `node`, chỉ `src/**/*.test.ts`, không có jsdom/RTL; xoá effect hoặc đổi điều kiện sang `check` vẫn pass 86 test. Cần harness test component (cùng giới hạn đã defer ở story 8, 15, 16).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: `SourceSectionLink` (Sổ lỗi, màn kết quả kiểm tra hàng) chuyển sang `questionSourceHref` nhưng chưa có test component; quay lại `sectionHref` thì link "Xem lại: Viên gạch Fxx" sai mà không test nào đỏ.
+  evidence: `source-label.test.ts` chỉ test hàm thuần; Vitest env `node`, không có jsdom/RTL (cùng giới hạn đã defer ở story 8, 15, 16, 19). AC 3 hiện chỉ có kiểm tra headless Chrome.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: Việc `BrickScreen` truyền `audioText` / `sampleAudioText` cho nút nghe (F02 đọc "aitch, you, why" thay "H-U-Y") chưa có test; test F02 chỉ kiểm dữ liệu.
+  evidence: Bỏ `speech={ex.audioText}` trong `ContrastBody` thì test dữ liệu F02 vẫn pass. Cách rẻ: helper thuần `spokenText(screen)` trong `src/data/foundation` dùng chung cho `BrickScreen` và test, hoặc harness test component.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: (chưa kiểm chứng, medium) Thẻ quy tắc `f03-rule-1` và `f05-rule-2` có đáp án `iː`, không gõ được trên bàn phím điện thoại; `f02-rule-2` "W = ___ you" có chữ W đứng một mình nếu sau này máy đọc thẻ.
+  evidence: Thẻ quy tắc chưa vào SRS ở story 20. Story 23 quyết định cách ôn thẻ (gõ hay chạm, có đọc TTS không); nếu là gõ thì đổi đáp án sang ASCII hoặc chấm bỏ dấu ː, nếu có TTS thì đọc qua `spellForSpeech`.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: (chưa kiểm chứng, medium) Tên chữ cái cho TTS `A: 'ay'` và `E: 'ee'` có thể bị giọng iOS/Android đọc sai ("ay" thành /aɪ/ như chữ I, "ee" bị đánh vần), đúng lỗi A/I mà F02 dạy.
+  evidence: Headless Chrome chỉ xác nhận chuỗi được gửi tới TTS, không nghe được âm. Cần nghe trên iPhone thật (Safari/PWA) và một máy Android các ví dụ F02 "A, E, I", "H-U-Y", câu nghe J-E; nếu sai thì đổi chuỗi (R đã đổi sang 'are').
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: Khi các hàng chưa có kết quả cuối cùng được xong bằng cách học hết viên (`completeBrick`) chứ không qua kiểm tra hàng, Soát vé vẫn `pending` dù `nextPlacementRow` là null.
+  evidence: `recordRowTest` giờ đóng Soát vé ở mọi chế độ, nhưng `completeBrick` (story 18/19) không xét Soát vé. Hiện không lộ ra giao diện (thẻ mời ẩn, `/foundation/soat-ve` chuyển hướng) vì UI dựa vào `placementRow`; story 21/22 khi đọc `needsPlacement` nên dùng `placementRow !== null` hoặc cho `completeBrick` gọi `finishPlacement('done')` khi hết hàng.

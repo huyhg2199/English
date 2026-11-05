@@ -14,10 +14,11 @@ import { CheckItemView } from './CheckItemView'
 
 type ScreenOf<K extends Screen['kind']> = Extract<Screen, { kind: K }>
 
-function EnLine({ text, size = 'base' }: { text: string; size?: 'base' | 'lg' }) {
+/** Một dòng tiếng Anh có nút nghe. `speech`: chuỗi TTS đọc thay `text` (vd "H-U-Y" đọc "aitch, you, why"). */
+function EnLine({ text, speech, size = 'base' }: { text: string; speech?: string; size?: 'base' | 'lg' }) {
   return (
     <div className="flex items-start gap-2">
-      <ListenButton text={text} label={`Nghe: ${text}`} rate={0.85} />
+      <ListenButton text={speech ?? text} label={`Nghe: ${text}`} rate={0.85} />
       <p className={cn('min-w-0 font-medium break-words', size === 'lg' ? 'text-lg' : 'text-base')} lang="en">
         {text}
       </p>
@@ -44,7 +45,7 @@ function ContrastBody({ screen }: { screen: ScreenOf<'contrast'> }) {
         <ul className="flex flex-col gap-2">
           {screen.examples.map((ex) => (
             <li key={ex.en} className="rounded-lg border p-2">
-              <EnLine text={ex.en} />
+              <EnLine text={ex.en} speech={ex.audioText} />
               <p className="pl-11 text-sm text-muted-foreground">{ex.vi}</p>
             </li>
           ))}
@@ -58,7 +59,7 @@ function ContrastBody({ screen }: { screen: ScreenOf<'contrast'> }) {
 function WorkedBody({ screen }: { screen: ScreenOf<'worked'> }) {
   return (
     <div className="flex flex-col gap-3">
-      <EnLine text={screen.en} size="lg" />
+      <EnLine text={screen.en} speech={screen.audioText} size="lg" />
       <p className="text-muted-foreground">{screen.vi}</p>
       {screen.noteVi && <p className="rounded-lg bg-accent/30 p-3 text-sm break-words">{screen.noteVi}</p>}
       {screen.timeline && <TenseTimeline kind={screen.timeline.kind} label={screen.timeline.label} />}
@@ -143,7 +144,7 @@ function ApplyBody({ brick, screen, seed }: { brick: Brick; screen: ScreenOf<'ap
       {screen.sampleEn && (
         <div className="rounded-lg border p-3">
           <p className="mb-1 text-xs text-muted-foreground">Câu mẫu</p>
-          <EnLine text={screen.sampleEn} />
+          <EnLine text={screen.sampleEn} speech={screen.sampleAudioText} />
         </div>
       )}
       {screen.item && <CheckItemView key={screen.item.id} item={screen.item} heading="Áp dụng" seed={seed} />}

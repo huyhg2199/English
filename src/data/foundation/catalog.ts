@@ -1,4 +1,4 @@
-import type { BrickId, BrickMeta, RowId } from './types'
+import { BRICK_IDS, type BrickId, type BrickMeta, type RowId } from './types'
 
 /**
  * Danh mục 18 viên gạch (chỉ meta) theo bảng trong `learning-rules.md`, mục Sân ga 9¾.
@@ -193,4 +193,16 @@ export function isBrickId(id: unknown): id is BrickId {
 /** Các viên của hàng `row`, theo thứ tự F01 → F18. */
 export function bricksOfRow(row: RowId): readonly BrickMeta[] {
   return BRICKS.filter((b) => b.row === row)
+}
+
+/** Id bài (`lessonId`) của câu hỏi Sân ga: viên viết thường (`F02` → `f02`). */
+export function brickLessonId(id: BrickId): string {
+  return id.toLowerCase()
+}
+
+/** Viên của `lessonId` dạng `fNN` (`f02` → `F02`); id lạ (kể cả `F02` viết hoa, `f99`) → null. */
+export function brickIdFromLessonId(lessonId: string): BrickId | null {
+  if (!/^f\d{2}$/.test(lessonId)) return null
+  const id = lessonId.toUpperCase()
+  return (BRICK_IDS as readonly string[]).includes(id) ? (id as BrickId) : null
 }

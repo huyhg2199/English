@@ -267,4 +267,20 @@ describe('route /foundation/:brickId', () => {
     expect(resolveBrickRoute('__proto__', onlyF01)).toEqual({ kind: 'unknown' })
     expect(brickHref('F01')).toBe('/foundation/F01')
   })
+
+  it('nút kiểm tra hàng: chưa xong → know; mọi viên xong → final; qua bằng kiểm tra mà chưa học hết viên → null', () => {
+    const tests = (store: Store) => wallRows(foundationState(store), all).map((r) => r.test)
+    expect(tests(empty())).toEqual(['know', 'know', 'know', 'know'])
+    const passedA = markRowTested(empty(), 'A', 6, 8, day(6))
+    expect(tests(passedA)).toEqual([null, 'know', 'know', 'know'])
+    let rowA = empty()
+    for (const id of ['F01', 'F02', 'F03', 'F04', 'F05', 'F06']) rowA = completeBrick(rowA, id, day(6))
+    expect(tests(rowA)).toEqual(['final', 'know', 'know', 'know'])
+    // Qua bằng kiểm tra rồi học hết viên → final.
+    let both = passedA
+    for (const id of ['F01', 'F02', 'F03', 'F04', 'F05', 'F06']) both = completeBrick(both, id, day(7))
+    expect(tests(both)[0]).toBe('final')
+    // Hàng chưa đạt kiểm tra (có kết quả) vẫn là know.
+    expect(tests(markRowTested(empty(), 'B', 2, 8, day(6)))[1]).toBe('know')
+  })
 })

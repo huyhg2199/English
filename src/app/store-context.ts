@@ -25,7 +25,14 @@ import {
 import { QUESTION_BANK } from '@/data/questions'
 import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
-import { completeBrick, foundationState, resumeFoundation, skipFoundation } from '@/lib/foundation'
+import { completeBrick, foundationState, needsPlacement, resumeFoundation, skipFoundation } from '@/lib/foundation'
+import {
+  nextPlacementRow,
+  placementStarted,
+  recordRowTest,
+  skipPlacement,
+  type RowTestInput,
+} from '@/lib/foundation/row-test'
 import { activeReviewPlan, listOwlAttempts, recordOwlAttempt, type OwlAttemptInput } from '@/lib/owl'
 import { planFor } from '@/lib/schedule'
 import {
@@ -192,20 +199,35 @@ export function useSrs() {
 }
 
 /**
- * Sân ga 9¾ (story 19): trạng thái (`status`, `rowsDone`, `taughtCount` cho "x/18", `doneBrickIds`), xong viên (đi tới
- * màn Áp dụng), "Bỏ qua Sân ga" và "Quay lại Sân ga". Ghi qua `handle.update` nên lưu local và đồng bộ.
+ * Sân ga 9¾ (story 19, 20): trạng thái (`status`, `rowsDone`, `taughtCount` cho "x/18", `doneBrickIds`), xong viên (đi tới
+ * màn Áp dụng), "Bỏ qua Sân ga" và "Quay lại Sân ga"; Soát vé (`needsPlacement`, hàng tiếp theo `placementRow`, đã làm
+ * hàng nào chưa `placementStarted`), ghi một lần kiểm tra hàng (`recordRowTest`) và "Bỏ qua, học từ viên 1"
+ * (`skipPlacement`). Ghi qua `handle.update` nên lưu local và đồng bộ.
  */
 export function useFoundation() {
   const handle = useStoreHandle()
   const { store } = useLoadedStore()
   const state = useMemo(() => foundationState(store), [store])
+  const placement = useMemo(
+    () => ({
+      needsPlacement: needsPlacement(store),
+      placementRow: nextPlacementRow(store),
+      placementStarted: placementStarted(store),
+    }),
+    [store],
+  )
+  const recordRow = useCallback(
+    (input: RowTestInput, now: Date = new Date()) => handle.update((s) => recordRowTest(s, input, now)),
+    [handle],
+  )
+  const skipTicket = useCallback((now: Date = new Date()) => handle.update((s) => skipPlacement(s, now)), [handle])
   const complete = useCallback(
     (brickId: string, now: Date = new Date()) => handle.update((s) => completeBrick(s, brickId, now)),
     [handle],
   )
   const skip = useCallback((now: Date = new Date()) => handle.update((s) => skipFoundation(s, now)), [handle])
   const resume = useCallback((now: Date = new Date()) => handle.update((s) => resumeFoundation(s, now)), [handle])
-  return { state, completeBrick: complete, skip, resume }
+  return { state, ...placement, completeBrick: complete, skip, resume, recordRowTest: recordRow, skipPlacement: skipTicket }
 }
 
 /**

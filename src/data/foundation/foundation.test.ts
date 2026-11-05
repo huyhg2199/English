@@ -12,6 +12,8 @@ const wordById = new Map(words.map((w) => [w.id, w]))
 const bricks = Object.values(BRICK_CONTENT) as Brick[]
 const SCREEN_ORDER: Screen['kind'][] = ['explain', 'contrast', 'worked', 'faded', 'check', 'apply']
 const CONTENT_POS = new Set(['noun', 'verb', 'adjective', 'adverb'])
+/** Chữ cái hoa đứng một mình (trừ "I"): iOS đọc sai, F02 phải dùng `spellForSpeech`. */
+const SINGLE_LETTER = /(^|[^A-Za-z])[A-HJ-Z]([^A-Za-z]|$)/
 
 /** Đếm chữ: tách theo khoảng trắng, chỉ tính mảnh có chữ cái hoặc số (bỏ "→", "–"). */
 function countWords(text: string): number {
@@ -41,10 +43,12 @@ function blanks(text: string): number {
 }
 
 describe('nội dung viên gạch', () => {
-  it('có ít nhất F01; sổ đăng ký tra đúng id', () => {
-    expect(hasBrickContent('F01')).toBe(true)
-    expect(getBrick('F01')?.id).toBe('F01')
-    expect(hasBrickContent('F02')).toBe(false)
+  it('F01–F06 có nội dung; sổ đăng ký tra đúng id', () => {
+    for (const id of ['F01', 'F02', 'F03', 'F04', 'F05', 'F06']) {
+      expect(hasBrickContent(id), id).toBe(true)
+      expect(getBrick(id)?.id).toBe(id)
+    }
+    expect(hasBrickContent('F07')).toBe(false)
     expect(hasBrickContent('f01')).toBe(false)
     expect(hasBrickContent('__proto__')).toBe(false)
     expect(getBrick('toString')).toBeUndefined()
@@ -53,6 +57,32 @@ describe('nội dung viên gạch', () => {
   it('F01: câu check có ít nhất choice, listen, order', () => {
     const kinds = new Set(screenOf(getBrick('F01')!, 'check').items.map((i) => i.kind))
     for (const k of ['choice', 'listen', 'order'] as const) expect(kinds.has(k), k).toBe(true)
+  })
+
+  it('F04 có ít nhất một câu tapSyllable', () => {
+    expect(allItems(getBrick('F04')!).some((i) => i.kind === 'tapSyllable')).toBe(true)
+  })
+
+  it('từ chủ đề không trùng giữa các viên', () => {
+    const ids = bricks.flatMap((b) => b.themeWordIds)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('F02: không chuỗi đọc nào chứa chữ cái đứng một mình (trừ I)', () => {
+    const f02 = getBrick('F02')!
+    const contrast = screenOf(f02, 'contrast')
+    const worked = screenOf(f02, 'worked')
+    const apply = screenOf(f02, 'apply')
+    // Chuỗi máy thật sự đọc: audioText nếu có, không thì chữ hiện trên màn hình.
+    const spoken = [
+      ...allItems(f02).flatMap((i) => (i.kind === 'listen' ? [i.audioText] : [])),
+      ...(contrast.examples ?? []).map((ex) => ex.audioText ?? ex.en),
+      worked.audioText ?? worked.en,
+      ...(apply.sampleEn !== undefined ? [apply.sampleAudioText ?? apply.sampleEn] : []),
+      ...(apply.speak ?? []).map((s) => s.text),
+    ]
+    expect(spoken.length).toBeGreaterThan(0)
+    for (const text of spoken) expect(SINGLE_LETTER.test(text), text).toBe(false)
   })
 
   it('id câu luyện, thẻ quy tắc, câu nói không trùng trong toàn bộ nội dung', () => {
@@ -142,6 +172,23 @@ describe('nội dung viên gạch', () => {
         expect(s.id).toMatch(new RegExp(`^${id.toLowerCase()}-say-\\d+$`))
         expect(s.text.trim(), s.id).not.toBe('')
       }
+    })
+
+    it('có ít nhất một câu listen', () => {
+      expect(allItems(brick).some((i) => i.kind === 'listen')).toBe(true)
+    })
+
+    it('audioText / sampleAudioText nếu có thì không rỗng', () => {
+      const contrast = screenOf(brick, 'contrast')
+      const worked = screenOf(brick, 'worked')
+      const apply = screenOf(brick, 'apply')
+      const texts = [
+        ...(contrast.examples ?? []).map((ex) => ex.audioText),
+        worked.audioText,
+        apply.sampleAudioText,
+      ].filter((t): t is string => t !== undefined)
+      for (const t of texts) expect(t.trim()).not.toBe('')
+      if (apply.sampleAudioText !== undefined) expect(apply.sampleEn, 'sampleAudioText cần sampleEn').toBeDefined()
     })
 
     it('faded có đáp án không rỗng', () => {

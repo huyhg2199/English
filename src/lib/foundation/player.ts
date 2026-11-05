@@ -181,26 +181,41 @@ export type WallTile = {
   hasContent: boolean
 }
 
-export type WallRow = { row: RowId; title: string; done: boolean; tiles: WallTile[] }
+export type WallRow = {
+  row: RowId
+  title: string
+  done: boolean
+  /**
+   * Nút kiểm tra ở tiêu đề hàng: `know` ("Tôi biết rồi") khi hàng chưa xong; `final` ("Kiểm tra cuối hàng") khi mọi
+   * viên của hàng đã xong; null khi hàng qua bằng kiểm tra mà chưa học hết viên.
+   */
+  test: 'know' | 'final' | null
+  tiles: WallTile[]
+}
 
 /** Bức tường 4 hàng A–D, 18 ô. */
 export function wallRows(state: FoundationState, hasContent: (id: BrickId) => boolean): WallRow[] {
   const done = new Set<string>(state.doneBrickIds)
   const rowsDone = new Set<string>(state.rowsDone)
   const nextId = nextBrickIdFromState(state, hasContent)
-  return ROW_IDS.map((row) => ({
-    row,
-    title: ROW_TITLES[row],
-    done: rowsDone.has(row),
-    tiles: BRICKS.filter((b) => b.row === row).map((b) => ({
-      id: b.id,
-      title: b.title,
-      minutes: b.minutes,
-      lit: done.has(b.id) || rowsDone.has(row),
-      next: b.id === nextId,
-      hasContent: hasContent(b.id),
-    })),
-  }))
+  return ROW_IDS.map((row) => {
+    const bricks = BRICKS.filter((b) => b.row === row)
+    const allBricksDone = bricks.every((b) => done.has(b.id))
+    return {
+      row,
+      title: ROW_TITLES[row],
+      done: rowsDone.has(row),
+      test: allBricksDone ? 'final' : rowsDone.has(row) ? null : 'know',
+      tiles: bricks.map((b) => ({
+        id: b.id,
+        title: b.title,
+        minutes: b.minutes,
+        lit: done.has(b.id) || rowsDone.has(row),
+        next: b.id === nextId,
+        hasContent: hasContent(b.id),
+      })),
+    }
+  })
 }
 
 // --- Route `/foundation/:brickId` ---

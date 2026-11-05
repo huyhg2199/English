@@ -1,4 +1,9 @@
 import { F01_CONTENT } from './bricks/f01'
+import { F02_CONTENT } from './bricks/f02'
+import { F03_CONTENT } from './bricks/f03'
+import { F04_CONTENT } from './bricks/f04'
+import { F05_CONTENT } from './bricks/f05'
+import { F06_CONTENT } from './bricks/f06'
 import { getBrickMeta } from './catalog'
 import type { Brick, BrickId } from './types'
 
@@ -14,6 +19,11 @@ function withMeta(id: BrickId, content: Pick<Brick, 'screens' | 'ruleCards' | 't
 
 export const BRICK_CONTENT: Readonly<Partial<Record<BrickId, Brick>>> = {
   F01: withMeta('F01', F01_CONTENT),
+  F02: withMeta('F02', F02_CONTENT),
+  F03: withMeta('F03', F03_CONTENT),
+  F04: withMeta('F04', F04_CONTENT),
+  F05: withMeta('F05', F05_CONTENT),
+  F06: withMeta('F06', F06_CONTENT),
 }
 
 /** Viên có nội dung theo id (đúng hoa thường như danh mục); chưa soạn / id lạ → `undefined`. */
