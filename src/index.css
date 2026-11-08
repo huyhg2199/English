@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
+/* Chuột/trackpad (story 29, dùng từ story 31): hover, phím tắt chỉ cho con trỏ chính xác. */
+@custom-variant pointer-fine (@media (pointer: fine));
 
 /*
  * Theme tối kiểu lâu đài: nền đá đậm, chữ ngà, nhấn vàng nến.
@@ -28,6 +30,24 @@
   --ring: #e0a33a;
   --candle-glow: rgb(245 198 107 / 0.35);
   --nav-height: 4rem;
+}
+
+/*
+ * Máy tính (story 29): từ 1024px (= Tailwind `lg`) thanh điều hướng lên trên cùng, bottom nav ẩn.
+ * `--nav-height` về 0px (cần đơn vị vì nằm trong calc()) nên padding đáy `main`, thanh "Lưu vào Sổ tay" và thư cú tự hạ.
+ * `scroll-padding-top` để link sâu (scrollIntoView) không bị TopBar dính che. Dưới 1024px không quy tắc nào ở đây chạy.
+ */
+@media (min-width: 64rem) {
+  :root {
+    --nav-height: 0px;
+    --topbar-height: 3.5rem;
+  }
+  html {
+    scroll-padding-top: calc(var(--topbar-height) + 0.75rem);
+  }
+  body {
+    overflow-x: clip;
+  }
 }
 
 /*

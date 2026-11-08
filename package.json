@@ -12,7 +12,9 @@
     "vocab:build": "node scripts/vocab/build.mjs",
     "vocab:label-examples": "node scripts/vocab/label-examples.mjs",
     "videos:check": "node scripts/videos/check.mjs",
-    "subs:fetch": "node scripts/subs/fetch-captions.mjs"
+    "subs:fetch": "node scripts/subs/fetch-captions.mjs",
+    "layout:guard": "node scripts/layout/mobile-guard.mjs",
+    "layout:check": "node scripts/layout/check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
