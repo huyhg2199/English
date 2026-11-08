@@ -42,13 +42,13 @@ function FlashcardSummary() {
   const firstList = useNewWordList()
   const [now] = useNow()
   // Cùng quota / id ưu tiên với phiên ôn (`FlashcardSession`) để số từ mới khớp.
-  const { newPerDay, preferIds } = useNewWordOptions(now)
+  const { newPerDay, preferIds, lockedIds, rules } = useNewWordOptions(now)
   const session = useMemo(
     () =>
       wordsState.status === 'ready'
-        ? buildStudySession(srs, wordsState.words, savedItems, now, firstList, { newPerDay, preferIds })
+        ? buildStudySession(srs, wordsState.words, savedItems, now, firstList, { newPerDay, preferIds, lockedIds, rules })
         : null,
-    [srs, wordsState, savedItems, now, firstList, newPerDay, preferIds],
+    [srs, wordsState, savedItems, now, firstList, newPerDay, preferIds, lockedIds, rules],
   )
 
   if (!session) return wordsState.status === 'error' ? 'Chưa mở được bộ từ' : 'Đang đếm thẻ…'

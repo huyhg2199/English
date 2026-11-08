@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { Word } from '@/data/vocab'
+import type { StudyWord, Word } from '@/data/vocab'
 import type { Store } from '@/lib/storage'
 
 import {
@@ -11,6 +11,8 @@ import {
   formatDelay,
   NEW_PER_DAY,
   gradeCard,
+  isRuleCardId,
+  isRuleWord,
   isSrsCard,
   KNOWN_INTERVAL_DAYS,
   markCardKnown,
@@ -18,6 +20,7 @@ import {
   readSrs,
   review,
   startOfLocalDay,
+  type RuleStudyWord,
   type SrsCard,
 } from './index'
 
@@ -360,6 +363,121 @@ describe('buildSession — options (story 23)', () => {
     const before = buildSession({ cards }, NGSL, NOW, { newPerDay: 0 })
     const after = buildSession({ cards }, NGSL, NOW, { newPerDay: 0, preferIds: ['ngsl-w1'], introMode: true })
     expect(after.queue).toEqual(before.queue)
+  })
+})
+
+describe('buildSession — khoá hư từ, thẻ quy tắc (story 24)', () => {
+  const ids = (s: { queue: { word: { id: string } }[] }) => s.queue.map((i) => i.word.id)
+  const rule = (n: number, brick = 'F01'): RuleStudyWord => ({
+    id: `rule:${brick.toLowerCase()}-${n}`,
+    rule: true,
+    word: `ans${n}`,
+    brickId: brick,
+    cloze: `Câu ___ ${n}.`,
+    answer: `ans${n}`,
+    vi: `Quy tắc ${n}`,
+  })
+  const locked = new Set(['ngsl-w1', 'ngsl-w3', 'ngsl-w20'])
+
+  it('từ khoá không vào từ mới, kể cả khi nằm trong preferIds; phần còn lại không đổi', () => {
+    const s = buildSession({ cards: {} }, NGSL, NOW, { newPerDay: 4, preferIds: ['ngsl-w20', 'ngsl-w9'], lockedIds: locked })
+    expect(ids(s)).toEqual(['ngsl-w9', 'ngsl-w2', 'ngsl-w4', 'ngsl-w5'])
+    expect(s.newCount).toBe(4)
+  })
+
+  it('mở khoá → từ về đúng hạng (không có thứ tự riêng)', () => {
+    const cards: Record<string, SrsCard> = {}
+    ;['ngsl-w2', 'ngsl-w4'].forEach((id) => (cards[id] = card({ due: at(5).toISOString() })))
+    const lockedNow = buildSession({ cards }, NGSL, NOW, { newPerDay: 3, lockedIds: locked })
+    expect(ids(lockedNow)).toEqual(['ngsl-w5', 'ngsl-w6', 'ngsl-w7'])
+    const opened = buildSession({ cards }, NGSL, NOW, { newPerDay: 3, lockedIds: new Set(['ngsl-w20']) })
+    expect(ids(opened)).toEqual(['ngsl-w1', 'ngsl-w3', 'ngsl-w5'])
+  })
+
+  it('dựng phiên không tạo thẻ cho từ khoá; thẻ cũ của từ khoá vẫn ôn theo lịch', () => {
+    const cards = { 'ngsl-w1': card() }
+    const s = buildSession({ cards }, NGSL, NOW, { newPerDay: 2, lockedIds: locked })
+    expect(s.queue.map((i) => [i.word.id, i.kind])).toEqual([
+      ['ngsl-w1', 'review'],
+      ['ngsl-w2', 'new'],
+      ['ngsl-w4', 'new'],
+    ])
+    expect(Object.keys(cards)).toEqual(['ngsl-w1'])
+  })
+
+  it('thẻ quy tắc mới: sau từ mới (Làm quen), trước thẻ added và thẻ riêng; không tính quota, không intro', () => {
+    let store: Store = { schemaVersion: 4, data: {} }
+    store = addCard(store, 'ngsl-w9', NOW)
+    const custom = [{ id: 'saved-x', custom: true as const, word: 'x y', meaningVi: 'a', sentence: '', source: { title: 't', url: '/' } }]
+    const s = buildSession(readSrs(store), NGSL, NOW, { newPerDay: 2, custom, introMode: true, rules: [rule(1), rule(2)] })
+    expect(s.queue.map((i) => [i.word.id, i.kind, i.intro === true])).toEqual([
+      ['ngsl-w1', 'new', true],
+      ['ngsl-w2', 'new', true],
+      ['rule:f01-1', 'new', false],
+      ['rule:f01-2', 'new', false],
+      ['ngsl-w9', 'new', false],
+      ['saved-x', 'new', false],
+    ])
+    expect(s.newCount).toBe(6)
+    expect(s.introducedToday).toBe(0)
+  })
+
+  it('chấm thẻ quy tắc → SrsCard lịch như từ mới; introducedToday không cộng; hôm sau là thẻ ôn', () => {
+    const store = gradeCard({ schemaVersion: 4, data: {} }, 'rule:f01-1', 'good', NOW)
+    const c = readSrs(store).cards['rule:f01-1']
+    expect(isSrsCard(c)).toBe(true)
+    expect(c).toMatchObject({ learning: false, interval: 1, due: startOfLocalDay(NOW, 1).toISOString() })
+    const today = buildSession(readSrs(store), NGSL, NOW, { newPerDay: 2, rules: [rule(1)] })
+    expect(today.introducedToday).toBe(0)
+    expect(today.newCount).toBe(2)
+    expect(ids(today)).toEqual(['ngsl-w1', 'ngsl-w2'])
+    const next = buildSession(readSrs(store), NGSL, at(1), { newPerDay: 0, rules: [rule(1)] })
+    expect(next.queue).toEqual([{ word: rule(1), kind: 'review' }])
+    expect(next.dueCount).toBe(1)
+  })
+
+  it('thẻ ôn đến hạn: từ danh sách → thẻ quy tắc → thẻ riêng khi cùng giờ đến hạn', () => {
+    const due = at(-1).toISOString()
+    const cards = { 'saved-x': card({ due }), 'rule:f01-1': card({ due }), 'ngsl-w5': card({ due }) }
+    const custom = [{ id: 'saved-x', custom: true as const, word: 'x y', meaningVi: 'a', sentence: '', source: { title: 't', url: '/' } }]
+    const s = buildSession({ cards }, NGSL, NOW, { newPerDay: 0, custom, rules: [rule(1)] })
+    expect(ids(s)).toEqual(['ngsl-w5', 'rule:f01-1', 'saved-x'])
+  })
+
+  it('thẻ quy tắc trùng id → chỉ một', () => {
+    const s = buildSession({ cards: {} }, NGSL, NOW, { newPerDay: 0, rules: [rule(1), rule(1)] })
+    expect(ids(s)).toEqual(['rule:f01-1'])
+  })
+
+  it('"app cũ" (không rules, có thẻ rule:) → y như store không có thẻ đó', () => {
+    const base: Record<string, SrsCard> = { 'ngsl-w1': card(), 'ngsl-w2': card({ introducedAt: at(0, 8).toISOString(), due: at(1, 0).toISOString() }) }
+    const withRules = {
+      ...base,
+      'rule:f01-1': card(),
+      'rule:f01-2': card({ introducedAt: at(0, 8).toISOString(), due: at(1, 0).toISOString() }),
+      'rule:f99-1': card({ learning: true, due: at(0, 10).toISOString() }),
+    }
+    for (const now of [NOW, at(1), at(10)]) {
+      expect(buildSession({ cards: withRules }, NGSL, now)).toEqual(buildSession({ cards: base }, NGSL, now))
+      expect(buildSession({ cards: withRules }, NGSL, now, { newPerDay: 5, introMode: true })).toEqual(
+        buildSession({ cards: base }, NGSL, now, { newPerDay: 5, introMode: true }),
+      )
+    }
+  })
+
+  it('thẻ rule: mồ côi (không có trong rules) không hiện, không đếm', () => {
+    const cards = { 'rule:f99-1': card(), 'rule:f01-1': card() }
+    const s = buildSession({ cards }, NGSL, NOW, { newPerDay: 0, rules: [rule(1)] })
+    expect(ids(s)).toEqual(['rule:f01-1'])
+    expect(s.dueCount).toBe(1)
+  })
+
+  it('isRuleCardId / isRuleWord', () => {
+    expect(isRuleCardId('rule:f01-1')).toBe(true)
+    expect(isRuleCardId('ngsl-rule')).toBe(false)
+    expect(isRuleCardId('saved-rule:x')).toBe(false)
+    expect(isRuleWord(rule(1))).toBe(true)
+    expect(isRuleWord(NGSL[0] as StudyWord)).toBe(false)
   })
 })
 

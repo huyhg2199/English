@@ -1,7 +1,7 @@
 import { allLessons, STAGES, type Section, type SectionId, type SkillTag, type Stage } from '@/data/roadmap'
 import { PRONUNCIATION_TARGET_PERCENT, pronunciationAverage } from '@/lib/pronunciation'
 import { isSessionDay, localDayKey, sessionLesson } from '@/lib/sessions'
-import { isSrsCard, readCards } from '@/lib/srs'
+import { isRuleCardId, isSrsCard, readCards } from '@/lib/srs'
 import type { Store } from '@/lib/storage'
 
 import { estimateScores, type ScoreEstimate } from './scoring'
@@ -43,9 +43,9 @@ export function normalizedGap(current: number, target: number): number {
   return Math.min(1, Math.max(0, (target - current) / target))
 }
 
-/** Số thẻ SRS đã học (hợp lệ, không phải "Đã biết"). */
+/** Số thẻ SRS đã học (hợp lệ, không phải "Đã biết"). Thẻ quy tắc viên gạch (`rule:…`) không phải từ nên không tính. */
 export function learnedCardCount(store: Store): number {
-  return Object.values(readCards(store.data.srs)).filter((c) => isSrsCard(c) && !c.known).length
+  return Object.entries(readCards(store.data.srs)).filter(([id, c]) => !isRuleCardId(id) && isSrsCard(c) && !c.known).length
 }
 
 /** Mục tiêu từ vựng của bài: `cumulativeWords`, hoặc 1000 + 60 × số tuần tính từ đầu chặng 2 (kể cả tuần này). */

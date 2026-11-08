@@ -134,14 +134,14 @@ export const F01_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
     {
       id: 'f01-rule-1',
       brickId: 'F01',
-      cloze: 'Yesterday I ___ to school.',
+      cloze: 'Yesterday I ___ to school. (go)',
       answer: 'went',
       vi: 'Nói về hôm qua thì động từ đổi dạng: go → went.',
     },
     {
       id: 'f01-rule-2',
       brickId: 'F01',
-      cloze: 'I read two ___.',
+      cloze: 'I read two ___. (book)',
       answer: 'books',
       vi: 'Hai trở lên thì đuôi từ đổi: book → books.',
     },

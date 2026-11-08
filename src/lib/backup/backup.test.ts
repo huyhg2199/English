@@ -146,6 +146,16 @@ describe('restoreBackup — I/O Matrix', () => {
     expect(twice).toMatchObject({ added: 0, updated: 0 })
   })
 
+  it('thẻ quy tắc rule:f01-1 (story 24) qua sao lưu / khôi phục y nguyên, file vẫn schema 13', () => {
+    const fileStore = gradeCard(gradeCard(empty(), 'rule:f01-1', 'good', T0), 'ngsl-day', 'good', T0)
+    const backup = roundTrip(fileStore)
+    expect(backup.schemaVersion).toBe(13)
+    const r = restoreBackup(empty(), backup)
+    expect(readSrs(r.store).cards['rule:f01-1']).toEqual(readSrs(fileStore).cards['rule:f01-1'])
+    expect(r.store.schemaVersion).toBe(13)
+    expect(r).toMatchObject({ added: 2, updated: 0 })
+  })
+
   it('nhật ký ngày học và từ đã lưu cũng được gộp', () => {
     let s = recordSession(empty(), 'lazy', T0)
     s = saveWord(s, { word: 'deadline', sentence: 'The deadline is Friday.', source: { title: 'HN', url: 'https://y' } }, T0)

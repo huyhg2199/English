@@ -6,6 +6,7 @@
 export type WordList = 'ngsl' | 'tsl'
 
 export { STARTER_WORD_IDS } from './starter-words'
+export { FUNCTION_WORD_GATES, functionWordGate, type FunctionWordGate } from './function-words'
 
 export const PARTS_OF_SPEECH = [
   'noun',
@@ -94,13 +95,47 @@ export const VOCAB_ATTRIBUTION = {
   licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
 } as const
 
+/** Câu ví dụ tự viết thay câu AI (story 24): `exampleEn` + `exampleVi`. */
+export type ExampleOverride = { exampleEn: string; exampleVi: string }
+
+/**
+ * `example-overrides.json`: `overrides` = câu thay thế theo id thẻ; `accepted` = câu bị máy gắn nhãn nhưng giữ nguyên
+ * (kèm lý do: báo nhầm, hoặc chính hư từ được mở sau bài dạy nó). Xem `npm run vocab:label-examples`.
+ */
+export type ExampleOverrides = {
+  overrides: Readonly<Record<string, ExampleOverride>>
+  accepted: Readonly<Record<string, string>>
+}
+
+/**
+ * Áp câu ví dụ thay thế lên bộ từ (thuần): trả mảng mới, mục có override là object mới, mảng và mục gốc không đổi. Id
+ * không có trong bộ từ bị bỏ qua; mục chưa có dữ liệu AI không được thêm câu.
+ */
+export function withExampleOverrides(
+  words: readonly Word[],
+  overrides: Readonly<Record<string, ExampleOverride>>,
+): readonly Word[] {
+  return words.map((w) => {
+    if (!Object.hasOwn(overrides, w.id) || typeof w.exampleEn !== 'string') return w
+    const { exampleEn, exampleVi } = overrides[w.id]
+    return { ...w, exampleEn, exampleVi }
+  })
+}
+
 let cache: Promise<readonly Word[]> | null = null
 
-/** Nạp bộ từ bằng dynamic import: `words.json` thành chunk riêng, không vào bundle chính. */
+/**
+ * Nạp bộ từ bằng dynamic import: `words.json` và `example-overrides.json` cùng lúc, thành chunk riêng, không vào bundle
+ * chính. Câu override được áp ở đây (không sửa `words.json`) nên mọi nơi dùng bộ từ thấy cùng câu.
+ */
 export function loadWords(): Promise<readonly Word[]> {
-  cache ??= import('./words.json').then((mod) => mod.default as readonly Word[]).catch((error: unknown) => {
-    cache = null
-    throw error
-  })
+  cache ??= Promise.all([import('./words.json'), import('./example-overrides.json')])
+    .then(([words, examples]) =>
+      withExampleOverrides(words.default as readonly Word[], (examples.default as ExampleOverrides).overrides),
+    )
+    .catch((error: unknown) => {
+      cache = null
+      throw error
+    })
   return cache
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { hasDetails, loadWords } from '@/data/vocab'
+import { ruleCardId } from '@/lib/flashcard-session'
 
 import { BRICKS, getBrickMeta } from './catalog'
 import { BRICK_CONTENT, getBrick, hasBrickContent } from './content'
@@ -41,6 +42,25 @@ function taughtUpTo(id: string): Set<ConceptId> {
 function blanks(text: string): number {
   return text.split('___').length - 1
 }
+
+describe('thẻ quy tắc → id SRS (story 24)', () => {
+  const rules = bricks.flatMap((b) => b.ruleCards)
+
+  it('id dạng fNN-rule-n, tiền tố đúng viên', () => {
+    expect(rules.length).toBeGreaterThan(0)
+    for (const r of rules) {
+      expect(r.id).toMatch(/^f\d{2}-rule-\d+$/)
+      expect(r.id.slice(0, 3)).toBe(r.brickId.toLowerCase())
+    }
+  })
+
+  it('ruleCardId không trùng trên toàn bộ nội dung, dạng rule:fNN-n', () => {
+    const ids = rules.map(ruleCardId)
+    expect(new Set(ids).size).toBe(ids.length)
+    for (const id of ids) expect(id).toMatch(/^rule:f\d{2}-\d+$/)
+    expect(ruleCardId({ id: 'f01-rule-2' })).toBe('rule:f01-2')
+  })
+})
 
 describe('nội dung viên gạch', () => {
   it('F01–F06 có nội dung; sổ đăng ký tra đúng id', () => {

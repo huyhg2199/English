@@ -17,6 +17,7 @@ import {
   formatHours,
   hasPlacement,
   houseFor,
+  learnedCardCount,
   listAttempts,
   PART_LIMITS,
   placementFor,
@@ -256,6 +257,14 @@ describe('skillGaps / weakestSkill', () => {
     expect(vocabularyTargetFor('s1-t4-w4')).toBe(1000)
     expect(vocabularyTargetFor('s2-t5-w1')).toBe(1060)
     expect(vocabularyTargetFor('s2-t5-w2')).toBe(1120)
+  })
+
+  it('từ vựng: thẻ quy tắc viên gạch (rule:…) không tính là từ đã học', () => {
+    let s = gradeCard(store(), 'ngsl-day', 'good', NOW)
+    s = gradeCard(s, 'ngsl-week', 'good', NOW)
+    for (const id of ['rule:f01-1', 'rule:f01-2', 'rule:f02-1']) s = gradeCard(s, id, 'good', NOW)
+    expect(learnedCardCount(s)).toBe(2)
+    expect(skillGaps(s).rows.find((r) => r.skill === 'vocabulary')?.current).toBe(2)
   })
 
   it('chặng hiện tại theo bài bắt đầu: xếp chặng 2 → mục tiêu 550', () => {

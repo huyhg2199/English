@@ -7,20 +7,24 @@ import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { isBrickId } from '@/data/foundation'
 import { cambridgeUrl, POS_LABELS, VOCAB_ATTRIBUTION, type StudyWord, type WordList } from '@/data/vocab'
 import { ListenButton } from '@/components/ListenButton'
 import { ReadableText } from '@/components/ReadableText'
-import { buildStudySession, rankLabel, type FlashcardGates } from '@/lib/flashcard-session'
-import { FOUNDATION_GATES } from '@/lib/foundation'
+import { buildStudySession, functionWordCloze, rankLabel, type FlashcardGates } from '@/lib/flashcard-session'
+import { brickHref, FOUNDATION_GATES } from '@/lib/foundation'
 import { originsByWord, safeSourceHref, type Origin } from '@/lib/saved-words'
 import {
   formatDelay,
   isCustomWord,
+  isRuleWord,
   limitedProgress,
   review,
+  type ClozeParts,
   type CustomStudyWord,
   type Grade,
   type ReviewedItem,
+  type RuleStudyWord,
   type SessionItem,
 } from '@/lib/srs'
 import { cn } from '@/lib/utils'
@@ -34,6 +38,13 @@ const GRADE_BUTTONS: { grade: Grade; label: string; className: string }[] = [
 
 const KIND_LABELS: Record<SessionItem['kind'], string> = {
   new: 'Từ mới',
+  review: 'Ôn lại',
+  learning: 'Học lại',
+}
+
+/** Nhãn loại thẻ trên thẻ quy tắc (không phải "từ"). */
+const RULE_KIND_LABELS: Record<SessionItem['kind'], string> = {
+  new: 'Thẻ mới',
   review: 'Ôn lại',
   learning: 'Học lại',
 }
@@ -203,6 +214,80 @@ function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<F
   )
 }
 
+/** Tiêu đề thẻ là câu có chỗ trống: `___` thay cho đáp án (mặt trước), hoặc câu đủ với đáp án in đậm (mặt sau). */
+function ClozeSentence({ parts, revealed, className }: { parts: ClozeParts; revealed: boolean; className?: string }) {
+  return (
+    <h2 className={cn('text-xl leading-relaxed break-words', className)} lang="en">
+      {parts.before}
+      {revealed ? (
+        <strong className="font-semibold text-primary">{parts.answer}</strong>
+      ) : (
+        <>
+          <span aria-hidden="true" className="tracking-widest text-primary">
+            ___
+          </span>
+          <span className="sr-only" lang="vi">
+            (chỗ trống)
+          </span>
+        </>
+      )}
+      {parts.after}
+    </h2>
+  )
+}
+
+/** Tách câu `cloze` của thẻ quy tắc quanh `___` đầu tiên. */
+function ruleParts(word: RuleStudyWord): ClozeParts {
+  const at = word.cloze.indexOf('___')
+  if (at < 0) return { before: `${word.cloze} `, answer: word.answer, after: '' }
+  return { before: word.cloze.slice(0, at), answer: word.answer, after: word.cloze.slice(at + 3) }
+}
+
+/**
+ * Thẻ quy tắc viên gạch (story 24): mặt trước nhãn "Thẻ quy tắc · Fnn" + câu có chỗ trống; lật thẻ thấy câu đã điền (đáp
+ * án in đậm), dòng quy tắc tiếng Việt, link xem lại viên và 4 nút chấm. Không có "Đã biết", không đọc TTS (câu có thể
+ * chứa IPA).
+ */
+function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardProps, 'previous' | 'now' | 'onGrade'> & {
+  word: RuleStudyWord
+  kind: SessionItem['kind']
+}) {
+  const [flipped, setFlipped] = useState(false)
+  const parts = ruleParts(word)
+  return (
+    <Card className="gap-4">
+      <CardHeader className="gap-3">
+        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{RULE_KIND_LABELS[kind]}</span>
+          <span>Thẻ quy tắc · {word.brickId}</span>
+        </div>
+        <ClozeSentence parts={parts} revealed={flipped} className="min-w-0" />
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {!flipped ? (
+          <Button type="button" onClick={() => setFlipped(true)}>
+            <RotateCw aria-hidden="true" />
+            Lật thẻ
+          </Button>
+        ) : (
+          <>
+            <p className="text-base">{word.vi}</p>
+            {isBrickId(word.brickId) && (
+              <Link
+                to={brickHref(word.brickId)}
+                className="self-start py-1 text-sm text-primary underline-offset-4 hover:underline"
+              >
+                Xem lại viên {word.brickId}
+              </Link>
+            )}
+            <GradeButtons previous={previous} now={now} onGrade={onGrade} />
+          </>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 /**
  * IPA (sau F03), âm tiết tô âm nhấn (sau F04), nhãn từ loại (sau F07). IPA còn ẩn thì có một dòng mờ mời học F03
  * (chỉ là lời mời, không chặn gì).
@@ -236,7 +321,20 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
   if (isCustomWord(sessionWord)) {
     return <CustomFlashcard word={sessionWord} kind={kind} previous={previous} now={now} onGrade={onGrade} onKnown={onKnown} />
   }
+  if (isRuleWord(sessionWord)) {
+    return <RuleFlashcard word={sessionWord} kind={kind} previous={previous} now={now} onGrade={onGrade} />
+  }
   const word = sessionWord
+  // Hư từ (story 24): mặt trước là câu ví dụ có chỗ trống + nghĩa câu, không bao giờ hiện từ đứng một mình.
+  const cloze = functionWordCloze(word)
+  const wordTitle = (
+    <div className="flex items-center justify-between gap-3">
+      <h2 className="min-w-0 text-3xl font-semibold break-words" lang="en">
+        {word.word}
+      </h2>
+      <ListenButton text={word.word} label={`Nghe "${word.word}"`} />
+    </div>
+  )
 
   return (
     <Card className="gap-4">
@@ -247,12 +345,17 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
           </span>
           <span>{rankLabel(word)}</span>
         </div>
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="min-w-0 text-3xl font-semibold break-words" lang="en">
-            {word.word}
-          </h2>
-          <ListenButton text={word.word} label={`Nghe "${word.word}"`} />
-        </div>
+        {cloze ? (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-start justify-between gap-2">
+              <ClozeSentence parts={cloze} revealed={flipped} className="min-w-0" />
+              {flipped && <ListenButton text={word.exampleEn} label="Nghe câu ví dụ" size="sm" />}
+            </div>
+            <p className="text-sm text-muted-foreground">{word.exampleVi}</p>
+          </div>
+        ) : (
+          wordTitle
+        )}
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
@@ -270,20 +373,24 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
           </div>
         ) : (
           <>
+            {cloze && wordTitle}
             <WordForms word={word} gates={gates} />
             <p className="text-lg">{word.meaningVi}</p>
-            <div className="rounded-lg border bg-secondary/40 p-3 text-sm">
-              <div className="flex items-start justify-between gap-2">
-                <ReadableText
-                  as="p"
-                  text={word.exampleEn}
-                  source={{ title: `Flashcard “${word.word}”`, url: '/practice/flashcards' }}
-                  className="min-w-0 leading-relaxed italic"
-                />
-                <ListenButton text={word.exampleEn} label="Nghe câu ví dụ" size="sm" />
+            {/* Thẻ hư từ đã hiện câu ví dụ đủ ở trên, không lặp lại. */}
+            {!cloze && (
+              <div className="rounded-lg border bg-secondary/40 p-3 text-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <ReadableText
+                    as="p"
+                    text={word.exampleEn}
+                    source={{ title: `Flashcard “${word.word}”`, url: '/practice/flashcards' }}
+                    className="min-w-0 leading-relaxed italic"
+                  />
+                  <ListenButton text={word.exampleEn} label="Nghe câu ví dụ" size="sm" />
+                </div>
+                <p className="mt-1 text-muted-foreground">{word.exampleVi}</p>
               </div>
-              <p className="mt-1 text-muted-foreground">{word.exampleVi}</p>
-            </div>
+            )}
             <Origins origins={origins} />
             <a
               href={cambridgeUrl(word.word)}
@@ -354,14 +461,15 @@ export function FlashcardSession({ limit, preferNew = false, firstList: firstLis
   const [now, setNow] = useNow()
   const [reviewed, setReviewed] = useState<ReviewedItem[]>([])
   // Quota từ mới (5 ở Sân ga / 8 ở T1 / 10; 3 khi tồn ôn), id lấy trước và cổng hiển thị: cùng nguồn với tóm tắt Luyện tập.
-  const { newPerDay, heavyReview, preferIds, gates } = useNewWordOptions(now)
+  // Kèm id hư từ còn khoá và thẻ quy tắc của viên đã học xong (story 24).
+  const { newPerDay, heavyReview, preferIds, gates, lockedIds, rules } = useNewWordOptions(now)
 
   const session = useMemo(
     () =>
       wordsState.status === 'ready'
-        ? buildStudySession(srs, wordsState.words, savedItems, now, firstList, { newPerDay, preferIds })
+        ? buildStudySession(srs, wordsState.words, savedItems, now, firstList, { newPerDay, preferIds, lockedIds, rules })
         : null,
-    [srs, wordsState, savedItems, now, firstList, newPerDay, preferIds],
+    [srs, wordsState, savedItems, now, firstList, newPerDay, preferIds, lockedIds, rules],
   )
   const progress = useMemo(
     () => limitedProgress(session?.queue ?? [], reviewed, { limit, preferNew }),

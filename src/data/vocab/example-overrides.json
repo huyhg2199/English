@@ -1,0 +1,562 @@
+{
+  "overrides": {
+    "ngsl-account": {
+      "exampleEn": "I have an account at this bank.",
+      "exampleVi": "Tôi có tài khoản ở ngân hàng này."
+    },
+    "ngsl-allow": {
+      "exampleEn": "The hotel doesn't allow pets.",
+      "exampleVi": "Khách sạn không cho mang thú cưng."
+    },
+    "ngsl-along": {
+      "exampleEn": "There are trees along the river.",
+      "exampleVi": "Dọc bờ sông có nhiều cây."
+    },
+    "ngsl-already": {
+      "exampleEn": "It is already nine o'clock.",
+      "exampleVi": "Đã chín giờ rồi."
+    },
+    "ngsl-although": {
+      "exampleEn": "Although the job is hard, I like it.",
+      "exampleVi": "Dù công việc vất vả, tôi vẫn thích nó."
+    },
+    "ngsl-another": {
+      "exampleEn": "Please give me another cup of tea.",
+      "exampleVi": "Cho tôi thêm một tách trà nữa."
+    },
+    "ngsl-appear": {
+      "exampleEn": "New messages appear on the screen.",
+      "exampleVi": "Tin nhắn mới hiện lên trên màn hình."
+    },
+    "ngsl-ask": {
+      "exampleEn": "Students ask the teacher many questions.",
+      "exampleVi": "Học sinh hỏi thầy giáo rất nhiều câu."
+    },
+    "ngsl-baby": {
+      "exampleEn": "Their baby is three months old.",
+      "exampleVi": "Em bé nhà họ được ba tháng tuổi."
+    },
+    "ngsl-back": {
+      "exampleEn": "Please come back at five.",
+      "exampleVi": "Hãy quay lại lúc năm giờ."
+    },
+    "ngsl-bag": {
+      "exampleEn": "My bag is in the meeting room.",
+      "exampleVi": "Túi của tôi ở trong phòng họp."
+    },
+    "ngsl-bear": {
+      "exampleEn": "These trees bear fruit every summer.",
+      "exampleVi": "Những cây này ra quả vào mỗi mùa hè."
+    },
+    "ngsl-begin": {
+      "exampleEn": "Our lessons begin at ten.",
+      "exampleVi": "Các buổi học của chúng tôi bắt đầu lúc mười giờ."
+    },
+    "ngsl-bit": {
+      "exampleEn": "I am a bit hungry.",
+      "exampleVi": "Tôi hơi đói."
+    },
+    "ngsl-board": {
+      "exampleEn": "The teacher writes on the board.",
+      "exampleVi": "Thầy giáo viết lên bảng."
+    },
+    "ngsl-book": {
+      "exampleEn": "This is a good book.",
+      "exampleVi": "Đây là một cuốn sách hay."
+    },
+    "ngsl-build": {
+      "exampleEn": "Birds build nests in spring.",
+      "exampleVi": "Chim làm tổ vào mùa xuân."
+    },
+    "ngsl-call": {
+      "exampleEn": "Please call me at six.",
+      "exampleVi": "Hãy gọi cho tôi lúc sáu giờ."
+    },
+    "ngsl-carry": {
+      "exampleEn": "I carry my laptop in this bag.",
+      "exampleVi": "Tôi mang máy tính xách tay trong chiếc túi này."
+    },
+    "ngsl-cause": {
+      "exampleEn": "Heavy rains cause traffic jams.",
+      "exampleVi": "Mưa lớn gây kẹt xe."
+    },
+    "ngsl-choose": {
+      "exampleEn": "Please choose a seat.",
+      "exampleVi": "Mời bạn chọn một chỗ ngồi."
+    },
+    "ngsl-control": {
+      "exampleEn": "I control the lights with my phone.",
+      "exampleVi": "Tôi điều khiển đèn bằng điện thoại."
+    },
+    "ngsl-course": {
+      "exampleEn": "This English course starts in June.",
+      "exampleVi": "Khoá tiếng Anh này bắt đầu vào tháng Sáu."
+    },
+    "ngsl-create": {
+      "exampleEn": "We create websites for small shops.",
+      "exampleVi": "Chúng tôi làm website cho các cửa hàng nhỏ."
+    },
+    "ngsl-cut": {
+      "exampleEn": "We need to cut costs this year.",
+      "exampleVi": "Năm nay chúng ta cần cắt giảm chi phí."
+    },
+    "ngsl-deal": {
+      "exampleEn": "This phone is a good deal.",
+      "exampleVi": "Mua chiếc điện thoại này rất hời."
+    },
+    "ngsl-decide": {
+      "exampleEn": "We decide together.",
+      "exampleVi": "Chúng tôi cùng nhau quyết định."
+    },
+    "ngsl-describe": {
+      "exampleEn": "Please describe the problem.",
+      "exampleVi": "Hãy mô tả vấn đề."
+    },
+    "ngsl-desk": {
+      "exampleEn": "The report is on your desk.",
+      "exampleVi": "Bản báo cáo ở trên bàn của bạn."
+    },
+    "ngsl-develop": {
+      "exampleEn": "We develop apps for banks.",
+      "exampleVi": "Chúng tôi phát triển ứng dụng cho ngân hàng."
+    },
+    "ngsl-development": {
+      "exampleEn": "The app is still in development.",
+      "exampleVi": "Ứng dụng vẫn đang trong giai đoạn phát triển."
+    },
+    "ngsl-die": {
+      "exampleEn": "Plants die without water.",
+      "exampleVi": "Cây không có nước thì chết."
+    },
+    "ngsl-doctor": {
+      "exampleEn": "The doctor is in room five.",
+      "exampleVi": "Bác sĩ ở phòng số năm."
+    },
+    "ngsl-driver": {
+      "exampleEn": "The bus driver is very kind.",
+      "exampleVi": "Bác tài xế xe buýt rất tốt bụng."
+    },
+    "ngsl-effect": {
+      "exampleEn": "Coffee has a strong effect on me.",
+      "exampleVi": "Cà phê có tác dụng rất mạnh với tôi."
+    },
+    "ngsl-either": {
+      "exampleEn": "There are shops on either side of the street.",
+      "exampleVi": "Hai bên đường đều có cửa hàng."
+    },
+    "ngsl-email": {
+      "exampleEn": "Please send me an email.",
+      "exampleVi": "Hãy gửi email cho tôi."
+    },
+    "ngsl-ever": {
+      "exampleEn": "Do you ever work on Sundays?",
+      "exampleVi": "Bạn có bao giờ làm việc vào Chủ nhật không?"
+    },
+    "ngsl-example": {
+      "exampleEn": "Please give me an example.",
+      "exampleVi": "Hãy cho tôi một ví dụ."
+    },
+    "ngsl-explain": {
+      "exampleEn": "Please explain this report to me.",
+      "exampleVi": "Hãy giải thích bản báo cáo này cho tôi."
+    },
+    "ngsl-fact": {
+      "exampleEn": "In fact, I like my job.",
+      "exampleVi": "Thật ra, tôi thích công việc của mình."
+    },
+    "ngsl-film": {
+      "exampleEn": "We watch a film every Friday.",
+      "exampleVi": "Thứ Sáu nào chúng tôi cũng xem phim."
+    },
+    "ngsl-finally": {
+      "exampleEn": "Finally, sign your name here.",
+      "exampleVi": "Cuối cùng, hãy ký tên vào đây."
+    },
+    "ngsl-find": {
+      "exampleEn": "I often find my keys under the sofa.",
+      "exampleVi": "Tôi hay tìm thấy chìa khoá dưới ghế sofa."
+    },
+    "ngsl-force": {
+      "exampleEn": "Our sales force has twenty people.",
+      "exampleVi": "Đội ngũ bán hàng của chúng tôi có hai mươi người."
+    },
+    "ngsl-friend": {
+      "exampleEn": "She is my friend from school.",
+      "exampleVi": "Cô ấy là bạn học của tôi."
+    },
+    "ngsl-further": {
+      "exampleEn": "Please contact us for further information.",
+      "exampleVi": "Vui lòng liên hệ chúng tôi để biết thêm thông tin."
+    },
+    "ngsl-government": {
+      "exampleEn": "The government pays for the new hospital.",
+      "exampleVi": "Chính phủ chi tiền cho bệnh viện mới."
+    },
+    "ngsl-grow": {
+      "exampleEn": "Farmers grow rice in this area.",
+      "exampleVi": "Nông dân trồng lúa ở vùng này."
+    },
+    "ngsl-half": {
+      "exampleEn": "I work half a day on Saturdays.",
+      "exampleVi": "Thứ Bảy tôi làm nửa ngày."
+    },
+    "ngsl-happen": {
+      "exampleEn": "Accidents often happen on this road.",
+      "exampleVi": "Tai nạn hay xảy ra trên con đường này."
+    },
+    "ngsl-hear": {
+      "exampleEn": "I hear birds every morning.",
+      "exampleVi": "Sáng nào tôi cũng nghe tiếng chim."
+    },
+    "ngsl-help": {
+      "exampleEn": "My friends help me with my homework.",
+      "exampleVi": "Bạn bè giúp tôi làm bài tập về nhà."
+    },
+    "ngsl-himself": {
+      "exampleEn": "He lives by himself.",
+      "exampleVi": "Anh ấy sống một mình."
+    },
+    "ngsl-hope": {
+      "exampleEn": "I hope you like the gift.",
+      "exampleVi": "Mong là bạn thích món quà."
+    },
+    "ngsl-information": {
+      "exampleEn": "Please send me the information.",
+      "exampleVi": "Vui lòng gửi thông tin cho tôi."
+    },
+    "ngsl-into": {
+      "exampleEn": "Please put the milk into the fridge.",
+      "exampleVi": "Hãy cho sữa vào tủ lạnh."
+    },
+    "ngsl-join": {
+      "exampleEn": "Please join us for lunch.",
+      "exampleVi": "Mời bạn ăn trưa cùng chúng tôi."
+    },
+    "ngsl-just": {
+      "exampleEn": "I just want a cup of tea.",
+      "exampleVi": "Tôi chỉ muốn một tách trà."
+    },
+    "ngsl-keep": {
+      "exampleEn": "Please keep your bag with you.",
+      "exampleVi": "Hãy giữ túi của bạn bên mình."
+    },
+    "ngsl-key": {
+      "exampleEn": "This is my car key.",
+      "exampleVi": "Đây là chìa khoá xe của tôi."
+    },
+    "ngsl-land": {
+      "exampleEn": "This land is good for rice.",
+      "exampleVi": "Mảnh đất này hợp để trồng lúa."
+    },
+    "ngsl-last": {
+      "exampleEn": "December is the last month of the year.",
+      "exampleVi": "Tháng Mười Hai là tháng cuối cùng của năm."
+    },
+    "ngsl-learn": {
+      "exampleEn": "I learn English every day.",
+      "exampleVi": "Ngày nào tôi cũng học tiếng Anh."
+    },
+    "ngsl-letter": {
+      "exampleEn": "I get a letter from the bank every month.",
+      "exampleVi": "Tháng nào tôi cũng nhận thư của ngân hàng."
+    },
+    "ngsl-long": {
+      "exampleEn": "The meeting is very long.",
+      "exampleVi": "Cuộc họp rất dài."
+    },
+    "ngsl-maybe": {
+      "exampleEn": "Maybe he is busy.",
+      "exampleVi": "Có lẽ anh ấy bận."
+    },
+    "ngsl-mind": {
+      "exampleEn": "Do you mind the noise?",
+      "exampleVi": "Bạn có thấy phiền vì tiếng ồn không?"
+    },
+    "ngsl-model": {
+      "exampleEn": "This is our new phone model.",
+      "exampleVi": "Đây là mẫu điện thoại mới của chúng tôi."
+    },
+    "ngsl-money": {
+      "exampleEn": "I need money for the trip.",
+      "exampleVi": "Tôi cần tiền cho chuyến đi."
+    },
+    "ngsl-move": {
+      "exampleEn": "Please move your car.",
+      "exampleVi": "Vui lòng dời xe của bạn đi."
+    },
+    "ngsl-new": {
+      "exampleEn": "I have a new laptop.",
+      "exampleVi": "Tôi có một chiếc máy tính xách tay mới."
+    },
+    "ngsl-no": {
+      "exampleEn": "There is no milk in the fridge.",
+      "exampleVi": "Trong tủ lạnh không có sữa."
+    },
+    "ngsl-note": {
+      "exampleEn": "There is a note on your desk.",
+      "exampleVi": "Có một lời nhắn trên bàn của bạn."
+    },
+    "ngsl-nurse": {
+      "exampleEn": "She is a nurse at a big hospital.",
+      "exampleVi": "Cô ấy là y tá ở một bệnh viện lớn."
+    },
+    "ngsl-offer": {
+      "exampleEn": "We offer free delivery.",
+      "exampleVi": "Chúng tôi giao hàng miễn phí."
+    },
+    "ngsl-officer": {
+      "exampleEn": "A police officer stands at the gate.",
+      "exampleVi": "Một cảnh sát đứng ở cổng."
+    },
+    "ngsl-order": {
+      "exampleEn": "I want to change my order.",
+      "exampleVi": "Tôi muốn đổi đơn hàng của mình."
+    },
+    "ngsl-over": {
+      "exampleEn": "There is a bridge over the river.",
+      "exampleVi": "Có một cây cầu bắc qua sông."
+    },
+    "ngsl-part": {
+      "exampleEn": "This part of the city is quiet.",
+      "exampleVi": "Khu này của thành phố rất yên tĩnh."
+    },
+    "ngsl-pass": {
+      "exampleEn": "Please pass me the salt.",
+      "exampleVi": "Làm ơn đưa giúp tôi lọ muối."
+    },
+    "ngsl-pay": {
+      "exampleEn": "I usually pay by card.",
+      "exampleVi": "Tôi thường trả bằng thẻ."
+    },
+    "ngsl-pen": {
+      "exampleEn": "Please sign with a black pen.",
+      "exampleVi": "Vui lòng ký bằng bút mực đen."
+    },
+    "ngsl-perhaps": {
+      "exampleEn": "Perhaps he is at home.",
+      "exampleVi": "Có lẽ anh ấy đang ở nhà."
+    },
+    "ngsl-position": {
+      "exampleEn": "The sales position is still open.",
+      "exampleVi": "Vị trí nhân viên bán hàng vẫn đang tuyển."
+    },
+    "ngsl-power": {
+      "exampleEn": "The power is off in our building.",
+      "exampleVi": "Toà nhà của chúng tôi đang mất điện."
+    },
+    "ngsl-present": {
+      "exampleEn": "All staff are present today.",
+      "exampleVi": "Hôm nay toàn bộ nhân viên đều có mặt."
+    },
+    "ngsl-probably": {
+      "exampleEn": "He is probably at home now.",
+      "exampleVi": "Có lẽ giờ anh ấy đang ở nhà."
+    },
+    "ngsl-question": {
+      "exampleEn": "I have a question about the test.",
+      "exampleVi": "Tôi có một câu hỏi về bài kiểm tra."
+    },
+    "ngsl-quite": {
+      "exampleEn": "The test is quite easy.",
+      "exampleVi": "Bài kiểm tra khá dễ."
+    },
+    "ngsl-raise": {
+      "exampleEn": "Many shops raise prices every year.",
+      "exampleVi": "Nhiều cửa hàng tăng giá mỗi năm."
+    },
+    "ngsl-rather": {
+      "exampleEn": "The room is rather small.",
+      "exampleVi": "Căn phòng khá nhỏ."
+    },
+    "ngsl-reach": {
+      "exampleEn": "I reach the office at eight every day.",
+      "exampleVi": "Ngày nào tôi cũng tới văn phòng lúc tám giờ."
+    },
+    "ngsl-receive": {
+      "exampleEn": "I receive many emails every day.",
+      "exampleVi": "Mỗi ngày tôi nhận rất nhiều email."
+    },
+    "ngsl-remember": {
+      "exampleEn": "I don't remember his name.",
+      "exampleVi": "Tôi không nhớ tên anh ấy."
+    },
+    "ngsl-return": {
+      "exampleEn": "Please return the book on Friday.",
+      "exampleVi": "Hãy trả sách vào thứ Sáu."
+    },
+    "ngsl-rise": {
+      "exampleEn": "Prices rise in summer.",
+      "exampleVi": "Giá cả tăng vào mùa hè."
+    },
+    "ngsl-say": {
+      "exampleEn": "Please say your name.",
+      "exampleVi": "Hãy nói tên của bạn."
+    },
+    "ngsl-sea": {
+      "exampleEn": "We swim in the sea in summer.",
+      "exampleVi": "Mùa hè chúng tôi bơi ở biển."
+    },
+    "ngsl-see": {
+      "exampleEn": "I see the sea from my window.",
+      "exampleVi": "Tôi nhìn thấy biển từ cửa sổ nhà mình."
+    },
+    "ngsl-send": {
+      "exampleEn": "I send emails every morning.",
+      "exampleVi": "Sáng nào tôi cũng gửi email."
+    },
+    "ngsl-several": {
+      "exampleEn": "I have several questions.",
+      "exampleVi": "Tôi có vài câu hỏi."
+    },
+    "ngsl-short": {
+      "exampleEn": "We have a short meeting every morning.",
+      "exampleVi": "Sáng nào chúng tôi cũng có một cuộc họp ngắn."
+    },
+    "ngsl-show": {
+      "exampleEn": "Please show me your ticket.",
+      "exampleVi": "Vui lòng cho tôi xem vé của bạn."
+    },
+    "ngsl-site": {
+      "exampleEn": "Workers wear helmets on the site.",
+      "exampleVi": "Công nhân đội mũ bảo hộ ở công trường."
+    },
+    "ngsl-someone": {
+      "exampleEn": "Someone is at the door.",
+      "exampleVi": "Có ai đó ở ngoài cửa."
+    },
+    "ngsl-sound": {
+      "exampleEn": "I hear a strange sound outside.",
+      "exampleVi": "Tôi nghe thấy một âm thanh lạ bên ngoài."
+    },
+    "ngsl-speak": {
+      "exampleEn": "Do you speak English?",
+      "exampleVi": "Bạn có nói tiếng Anh không?"
+    },
+    "ngsl-spell": {
+      "exampleEn": "Please spell your last name.",
+      "exampleVi": "Vui lòng đánh vần họ của bạn."
+    },
+    "ngsl-staff": {
+      "exampleEn": "All staff have lunch at noon.",
+      "exampleVi": "Toàn bộ nhân viên ăn trưa lúc mười hai giờ."
+    },
+    "ngsl-stay": {
+      "exampleEn": "I stay at home on Sundays.",
+      "exampleVi": "Chủ nhật tôi ở nhà."
+    },
+    "ngsl-such": {
+      "exampleEn": "It is such a nice day.",
+      "exampleVi": "Hôm nay là một ngày thật đẹp."
+    },
+    "ngsl-table": {
+      "exampleEn": "There is a table by the window.",
+      "exampleVi": "Có một cái bàn cạnh cửa sổ."
+    },
+    "ngsl-talk": {
+      "exampleEn": "We talk about work at lunch.",
+      "exampleVi": "Chúng tôi nói chuyện công việc trong bữa trưa."
+    },
+    "ngsl-themselves": {
+      "exampleEn": "They do the work themselves.",
+      "exampleVi": "Họ tự làm việc đó."
+    },
+    "ngsl-think": {
+      "exampleEn": "I think this plan is good.",
+      "exampleVi": "Tôi nghĩ kế hoạch này tốt."
+    },
+    "ngsl-though": {
+      "exampleEn": "I like the job, though the pay is low.",
+      "exampleVi": "Tôi thích công việc này, dù lương thấp."
+    },
+    "ngsl-through": {
+      "exampleEn": "This bus goes through the city center.",
+      "exampleVi": "Xe buýt này chạy qua trung tâm thành phố."
+    },
+    "ngsl-toward": {
+      "exampleEn": "This road goes toward the sea.",
+      "exampleVi": "Con đường này dẫn về phía biển."
+    },
+    "ngsl-town": {
+      "exampleEn": "I live in a small town.",
+      "exampleVi": "Tôi sống ở một thị trấn nhỏ."
+    },
+    "ngsl-true": {
+      "exampleEn": "Is this story true?",
+      "exampleVi": "Câu chuyện này có thật không?"
+    },
+    "ngsl-use": {
+      "exampleEn": "I use my phone every day.",
+      "exampleVi": "Ngày nào tôi cũng dùng điện thoại."
+    },
+    "ngsl-war": {
+      "exampleEn": "My grandfather often talks about the war.",
+      "exampleVi": "Ông tôi hay kể về chiến tranh."
+    },
+    "ngsl-water": {
+      "exampleEn": "I drink a lot of water every day.",
+      "exampleVi": "Mỗi ngày tôi uống nhiều nước."
+    },
+    "ngsl-weekend": {
+      "exampleEn": "What do you do on the weekend?",
+      "exampleVi": "Cuối tuần bạn thường làm gì?"
+    },
+    "ngsl-whether": {
+      "exampleEn": "I don't know whether this answer is right.",
+      "exampleVi": "Tôi không biết câu trả lời này có đúng không."
+    },
+    "ngsl-whole": {
+      "exampleEn": "I work the whole day on Mondays.",
+      "exampleVi": "Thứ Hai nào tôi cũng làm việc cả ngày."
+    },
+    "ngsl-win": {
+      "exampleEn": "I play chess with my dad, and I often win.",
+      "exampleVi": "Tôi chơi cờ vua với bố và tôi hay thắng."
+    },
+    "ngsl-window": {
+      "exampleEn": "Please open the window.",
+      "exampleVi": "Làm ơn mở cửa sổ."
+    },
+    "ngsl-year": {
+      "exampleEn": "There are twelve months in a year.",
+      "exampleVi": "Một năm có mười hai tháng."
+    },
+    "ngsl-yes": {
+      "exampleEn": "Yes, I am ready.",
+      "exampleVi": "Vâng, tôi sẵn sàng rồi."
+    },
+    "ngsl-yesterday": {
+      "exampleEn": "The day before today is yesterday.",
+      "exampleVi": "Ngày trước hôm nay là hôm qua."
+    },
+    "ngsl-yet": {
+      "exampleEn": "The bus is not here yet.",
+      "exampleVi": "Xe buýt vẫn chưa tới."
+    },
+    "ngsl-you": {
+      "exampleEn": "Do you work here?",
+      "exampleVi": "Bạn làm việc ở đây à?"
+    }
+  },
+  "accepted": {
+    "ngsl-ago": "ago luôn đi với quá khứ, không có câu hiện tại đơn tự nhiên chứa ago",
+    "ngsl-can": "can mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-could": "could mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-feel": "báo nhầm: tired là tính từ (mệt), câu là hiện tại đơn",
+    "ngsl-if": "chính từ if, mở khi qua hoặc bỏ qua Sân ga; câu chỉ dùng mệnh lệnh + hiện tại đơn",
+    "ngsl-least": "at least là cụm cố định 'ít nhất', câu còn lại là mệnh lệnh",
+    "ngsl-less": "less mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-may": "may mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-might": "might mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-more": "more mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-most": "most mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-must": "must mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-room": "báo nhầm: left là hướng (bên trái), câu là to be hiện tại",
+    "ngsl-should": "should mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-since": "since mở sau bài s1-t3-w4 dạy hiện tại hoàn thành; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-so": "báo nhầm: tired là tính từ (mệt), câu là to be hiện tại",
+    "ngsl-than": "than mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-turn": "báo nhầm: left là hướng (bên trái), câu là mệnh lệnh",
+    "ngsl-will": "will mở sau bài s1-t3-w1 dạy thì tương lai; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-would": "would mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)"
+  }
+}

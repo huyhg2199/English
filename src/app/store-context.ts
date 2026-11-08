@@ -65,7 +65,7 @@ import {
 } from '@/lib/saved-words'
 import type { StudyWord } from '@/data/vocab'
 import { getBrick } from '@/data/foundation/content'
-import type { BrickId } from '@/data/foundation'
+import type { BrickId, RuleCard } from '@/data/foundation'
 import { newWordOptions } from '@/lib/flashcard-session'
 import {
   computeStreak,
@@ -309,15 +309,16 @@ export function useNewWordList() {
 }
 
 const themeWordIdsOf = (id: BrickId): readonly string[] => getBrick(id)?.themeWordIds ?? []
+const ruleCardsOf = (id: BrickId): readonly RuleCard[] => getBrick(id)?.ruleCards ?? []
 
 /**
  * Kế hoạch từ mới của phiên ôn (story 23), dùng chung cho `FlashcardSession` và tóm tắt Luyện tập để mọi nơi đếm giống
- * nhau: quota hôm nay (`newPerDay`, `heavyReview` khi tồn ôn), id lấy trước (từ chủ đề viên đã học + từ khởi đầu) và
- * cổng hiển thị IPA / trọng âm / từ loại.
+ * nhau: quota hôm nay (`newPerDay`, `heavyReview` khi tồn ôn), id lấy trước (từ chủ đề viên đã học + từ khởi đầu), cổng
+ * hiển thị IPA / trọng âm / từ loại, id hư từ còn khoá và thẻ quy tắc của viên đã học xong (story 24).
  */
 export function useNewWordOptions(now: Date) {
   const { store } = useLoadedStore()
-  return useMemo(() => newWordOptions(store, now, themeWordIdsOf), [store, now])
+  return useMemo(() => newWordOptions(store, now, themeWordIdsOf, ruleCardsOf), [store, now])
 }
 
 /**

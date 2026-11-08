@@ -271,6 +271,19 @@ describe('srs (story 3) — gộp từng thẻ', () => {
     expect(cardsOf(r.store)).toEqual(cardsOf(l))
   })
 
+  it('thẻ quy tắc rule:f01-1 (story 24) gộp theo updatedAt như mọi thẻ, schema vẫn 13', () => {
+    // Máy cũ chấm "Nhớ" lúc 9h, máy mới chấm "Quên" lúc 10h; máy cũ không biết thẻ rule: nhưng vẫn giữ và gộp nó.
+    const older = gradeCard(local({}), 'rule:f01-1', 'good', NOW)
+    const newer = gradeCard(local({}), 'rule:f01-1', 'again', new Date(2026, 10, 2, 10))
+    const onOld = mergeWithRemote(older, remote(pickSynced(newer.data)))
+    if (onOld.kind !== 'merged') throw new Error('expected merged')
+    expect(onOld.store.schemaVersion).toBe(13)
+    expect(cardsOf(onOld.store)['rule:f01-1']).toEqual(cardsOf(newer)['rule:f01-1'])
+    const onNew = mergeWithRemote(newer, remote(pickSynced(older.data)))
+    if (onNew.kind !== 'merged') throw new Error('expected merged')
+    expect(cardsOf(onNew.store)['rule:f01-1']).toEqual(cardsOf(newer)['rule:f01-1'])
+  })
+
   it('app cũ (v3) gặp server v4 → outdated, không gộp, không ghi đè srs', () => {
     const server = remote({ progress: { lessons: {} }, ...srs({ x: { due: 'x' } }) }, 4)
     const oldApp = { schemaVersion: 3, data: { progress: { lessons: {} } } }
