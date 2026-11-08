@@ -1,8 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { BookmarkCheck, ExternalLink, RotateCw } from 'lucide-react'
+import { BookmarkCheck, Eye, ExternalLink, RotateCw } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useNewWordList, useSavedWords, useSrs } from '@/app/store-context'
+import { useNewWordList, useNewWordOptions, useSavedWords, useSrs } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { cambridgeUrl, POS_LABELS, VOCAB_ATTRIBUTION, type StudyWord, type WordList } from '@/data/vocab'
 import { ListenButton } from '@/components/ListenButton'
 import { ReadableText } from '@/components/ReadableText'
-import { buildStudySession } from '@/lib/flashcard-session'
+import { buildStudySession, rankLabel, type FlashcardGates } from '@/lib/flashcard-session'
+import { FOUNDATION_GATES } from '@/lib/foundation'
 import { originsByWord, safeSourceHref, type Origin } from '@/lib/saved-words'
 import {
   formatDelay,
@@ -36,6 +37,9 @@ const KIND_LABELS: Record<SessionItem['kind'], string> = {
   review: 'Ôn lại',
   learning: 'Học lại',
 }
+
+/** Viên gạch mở phiên âm IPA trên thẻ. */
+const IPA_BRICK = FOUNDATION_GATES.ipa
 
 /** Âm tiết theo chính tả, âm nhấn nổi bật (vd peo·ple với "PEO" sáng). */
 function Syllables({ word }: { word: StudyWord }) {
@@ -130,6 +134,8 @@ type FlashcardProps = {
   previous: unknown
   now: Date
   origins: readonly Origin[]
+  /** Cổng hiển thị IPA / âm tiết / từ loại (chỉ thẻ từ NGSL/TSL). */
+  gates: FlashcardGates
   onGrade: (grade: Grade) => void
   onKnown: () => void
 }
@@ -154,7 +160,7 @@ function GradeButtons({ previous, now, onGrade }: Pick<FlashcardProps, 'previous
 }
 
 /** Thẻ riêng từ Sổ tay: mặt trước cụm + nút nghe, mặt sau nghĩa Huy nhập + câu gốc + nguồn. */
-function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<FlashcardProps, 'item' | 'origins'> & {
+function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<FlashcardProps, 'item' | 'origins' | 'gates'> & {
   word: CustomStudyWord
   kind: SessionItem['kind']
 }) {
@@ -197,8 +203,35 @@ function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<F
   )
 }
 
-function Flashcard({ item, previous, now, origins, onGrade, onKnown }: FlashcardProps) {
-  const [flipped, setFlipped] = useState(false)
+/**
+ * IPA (sau F03), âm tiết tô âm nhấn (sau F04), nhãn từ loại (sau F07). IPA còn ẩn thì có một dòng mờ mời học F03
+ * (chỉ là lời mời, không chặn gì).
+ */
+function WordForms({ word, gates }: { word: StudyWord; gates: FlashcardGates }) {
+  return (
+    <div className="flex flex-col gap-1">
+      {gates.ipa ? (
+        <p className="font-mono text-lg text-accent-foreground" lang="en">
+          /{word.ipa}/
+        </p>
+      ) : (
+        <Link
+          to={`/foundation/${IPA_BRICK}`}
+          className="self-start py-1 text-xs text-muted-foreground underline-offset-4 hover:underline"
+        >
+          Phiên âm IPA mở sau viên {IPA_BRICK}
+        </Link>
+      )}
+      {gates.stress && <Syllables word={word} />}
+      {gates.pos && <p className="text-sm text-muted-foreground">{POS_LABELS[word.pos]}</p>}
+    </div>
+  )
+}
+
+function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: FlashcardProps) {
+  // Thẻ "Làm quen": mặt sau hiện ngay, không có "Lật thẻ".
+  const intro = item.intro === true
+  const [flipped, setFlipped] = useState(intro)
   const { word: sessionWord, kind } = item
   if (isCustomWord(sessionWord)) {
     return <CustomFlashcard word={sessionWord} kind={kind} previous={previous} now={now} onGrade={onGrade} onKnown={onKnown} />
@@ -209,10 +242,10 @@ function Flashcard({ item, previous, now, origins, onGrade, onKnown }: Flashcard
     <Card className="gap-4">
       <CardHeader className="gap-3">
         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-          <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{KIND_LABELS[kind]}</span>
-          <span>
-            {word.list.toUpperCase()} #{word.rank}
+          <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">
+            {intro ? 'Làm quen' : KIND_LABELS[kind]}
           </span>
+          <span>{rankLabel(word)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <h2 className="min-w-0 text-3xl font-semibold break-words" lang="en">
@@ -237,13 +270,7 @@ function Flashcard({ item, previous, now, origins, onGrade, onKnown }: Flashcard
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-1">
-              <p className="font-mono text-lg text-accent-foreground" lang="en">
-                /{word.ipa}/
-              </p>
-              <Syllables word={word} />
-              <p className="text-sm text-muted-foreground">{POS_LABELS[word.pos]}</p>
-            </div>
+            <WordForms word={word} gates={gates} />
             <p className="text-lg">{word.meaningVi}</p>
             <div className="rounded-lg border bg-secondary/40 p-3 text-sm">
               <div className="flex items-start justify-between gap-2">
@@ -268,7 +295,15 @@ function Flashcard({ item, previous, now, origins, onGrade, onKnown }: Flashcard
               <ExternalLink className="size-3.5" aria-hidden="true" />
             </a>
 
-            <GradeButtons previous={previous} now={now} onGrade={onGrade} />
+            {intro ? (
+              // "Đã xem" = Nhớ trên từ mới: ra khỏi bước học, gặp lại 0h ngày mai. Không có nút sai.
+              <Button type="button" onClick={() => onGrade('good')}>
+                <Eye aria-hidden="true" />
+                Đã xem
+              </Button>
+            ) : (
+              <GradeButtons previous={previous} now={now} onGrade={onGrade} />
+            )}
             {kind === 'new' && (
               <Button type="button" variant="ghost" onClick={onKnown}>
                 Đã biết từ này (ôn lại sau 2 tháng)
@@ -318,11 +353,15 @@ export function FlashcardSession({ limit, preferNew = false, firstList: firstLis
   // Thời điểm tính phiên; cập nhật sau mỗi lần chấm, mỗi phút và khi app hiện lại (không gọi giờ máy trong render).
   const [now, setNow] = useNow()
   const [reviewed, setReviewed] = useState<ReviewedItem[]>([])
+  // Quota từ mới (5 ở Sân ga / 8 ở T1 / 10; 3 khi tồn ôn), id lấy trước và cổng hiển thị: cùng nguồn với tóm tắt Luyện tập.
+  const { newPerDay, heavyReview, preferIds, gates } = useNewWordOptions(now)
 
   const session = useMemo(
     () =>
-      wordsState.status === 'ready' ? buildStudySession(srs, wordsState.words, savedItems, now, firstList) : null,
-    [srs, wordsState, savedItems, now, firstList],
+      wordsState.status === 'ready'
+        ? buildStudySession(srs, wordsState.words, savedItems, now, firstList, { newPerDay, preferIds })
+        : null,
+    [srs, wordsState, savedItems, now, firstList, newPerDay, preferIds],
   )
   const progress = useMemo(
     () => limitedProgress(session?.queue ?? [], reviewed, { limit, preferNew }),
@@ -363,6 +402,11 @@ export function FlashcardSession({ limit, preferNew = false, firstList: firstLis
           ? `${preferNew ? 'Từ mới' : 'Thẻ'} ${Math.min(progress.count, limit)}/${limit}`
           : `Còn ${session.dueCount} thẻ ôn · ${session.newCount} từ mới hôm nay`}
       </p>
+      {heavyReview && (
+        <p role="status" className="text-sm text-muted-foreground">
+          Hôm nay ôn kỹ, mai học từ mới tiếp
+        </p>
+      )}
       {current ? (
         <Flashcard
           key={`${current.word.id}:${reviewed.length}`}
@@ -370,6 +414,7 @@ export function FlashcardSession({ limit, preferNew = false, firstList: firstLis
           previous={srs.cards[current.word.id]}
           now={now}
           origins={origins.get(current.word.word.toLowerCase()) ?? []}
+          gates={gates}
           onGrade={(g) => advance(current, (at) => grade(current.word.id, g, at))}
           onKnown={() => advance(current, (at) => markKnown(current.word.id, at))}
         />

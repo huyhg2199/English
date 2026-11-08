@@ -5,6 +5,8 @@
 
 export type WordList = 'ngsl' | 'tsl'
 
+export { STARTER_WORD_IDS } from './starter-words'
+
 export const PARTS_OF_SPEECH = [
   'noun',
   'verb',

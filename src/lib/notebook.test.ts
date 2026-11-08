@@ -192,7 +192,7 @@ describe('Thêm vào flashcard', () => {
     expect(custom).toEqual([
       { id: savedCardId(id), custom: true, word: 'take part in', meaningVi: 'tham gia', sentence: 'Teams take part in it.', source: news },
     ])
-    const session = buildSession(readSrs(s), NGSL, LATER, undefined, 'ngsl', custom)
+    const session = buildSession(readSrs(s), NGSL, LATER, { custom })
     const item = session.queue.find((i) => i.word.id === savedCardId(id))
     expect(item && isCustomWord(item.word)).toBe(true)
     expect(item?.kind).toBe('new')
@@ -249,7 +249,7 @@ describe('Thêm vào flashcard', () => {
     s = deleteSavedWord(s, id, LATER)
     expect(customStudyWords(readSavedWords(s))).toEqual([])
     expect(readSrs(s).cards[savedCardId(id)]).toBeDefined()
-    const session = buildSession(readSrs(s), NGSL, LATER, undefined, 'ngsl', customStudyWords(readSavedWords(s)))
+    const session = buildSession(readSrs(s), NGSL, LATER, { custom: customStudyWords(readSavedWords(s)) })
     expect(session.queue.some((i) => i.word.id === savedCardId(id))).toBe(false)
   })
 
@@ -259,13 +259,13 @@ describe('Thêm vào flashcard', () => {
     s = ok(addToSrs(s, id, { meaningVi: 'tham gia' }, NOW)).store
     s = gradeCard(s, savedCardId(id), 'good', LATER)
     const custom = customStudyWords(readSavedWords(s))
-    expect(buildSession(readSrs(s), [], LATER, undefined, 'ngsl', custom).queue).toEqual([])
-    expect(buildSession(readSrs(s), [], NEXT_DAY, undefined, 'ngsl', custom).queue.map((i) => i.kind)).toEqual(['review'])
+    expect(buildSession(readSrs(s), [], LATER, { custom }).queue).toEqual([])
+    expect(buildSession(readSrs(s), [], NEXT_DAY, { custom }).queue.map((i) => i.kind)).toEqual(['review'])
   })
 
   it('thẻ riêng chưa có lịch (đồng bộ mục về trước thẻ) → vào như từ mới, không trừ quota', () => {
     const custom = [{ id: 'saved-x', custom: true as const, word: 'x y', meaningVi: 'a', sentence: '', source: news }]
-    const session = buildSession({ cards: {} }, NGSL, NOW, 2, 'ngsl', custom)
+    const session = buildSession({ cards: {} }, NGSL, NOW, { newPerDay: 2, custom })
     expect(session.queue.map((i) => [i.kind, i.word.id])).toEqual([
       ['new', 'ngsl-w1'],
       ['new', 'ngsl-w2'],

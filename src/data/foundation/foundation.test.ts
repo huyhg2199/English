@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { loadWords } from '@/data/vocab'
+import { hasDetails, loadWords } from '@/data/vocab'
 
 import { BRICKS, getBrickMeta } from './catalog'
 import { BRICK_CONTENT, getBrick, hasBrickContent } from './content'
@@ -195,12 +195,13 @@ describe('nội dung viên gạch', () => {
       expect(screenOf(brick, 'faded').answer.trim()).not.toBe('')
     })
 
-    it('đúng 5 từ chủ đề, là từ nội dung có trong words.json', () => {
+    it('đúng 5 từ chủ đề, là từ nội dung có trong words.json và có dữ liệu AI (phiên ôn mới lấy được)', () => {
       expect(brick.themeWordIds).toHaveLength(5)
       expect(new Set(brick.themeWordIds).size).toBe(5)
       for (const wid of brick.themeWordIds) {
         const w = wordById.get(wid)
         expect(w, wid).toBeDefined()
+        expect(hasDetails(w!), `${wid} chưa có dữ liệu AI`).toBe(true)
         expect(CONTENT_POS.has(w!.pos ?? ''), `${wid} là ${w!.pos}`).toBe(true)
       }
     })

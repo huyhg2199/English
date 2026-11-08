@@ -4,8 +4,12 @@ import type { Word } from '@/data/vocab'
 import type { Store } from '@/lib/storage'
 
 import {
+  addCard,
+  addedCard,
   buildSession,
+  dueCardCount,
   formatDelay,
+  NEW_PER_DAY,
   gradeCard,
   isSrsCard,
   KNOWN_INTERVAL_DAYS,
@@ -162,7 +166,7 @@ describe('markKnown — Đã biết', () => {
 describe('buildSession — I/O Matrix', () => {
   it('lần đầu ôn: srs rỗng → đúng N từ mới đầu danh sách (theo hạng NGSL)', () => {
     const shuffled = [...NGSL].reverse()
-    const s = buildSession({ cards: {} }, shuffled, NOW, 10)
+    const s = buildSession({ cards: {} }, shuffled, NOW, { newPerDay: 10 })
     expect(s.queue.map((i) => i.word.id)).toEqual(NGSL.slice(0, 10).map((w) => w.id))
     expect(s.queue.every((i) => i.kind === 'new')).toBe(true)
     expect(s.newCount).toBe(10)
@@ -173,19 +177,19 @@ describe('buildSession — I/O Matrix', () => {
     const TSL = Array.from({ length: 3 }, (_, i) => word('tsl', i + 1))
     const cards: Record<string, SrsCard> = {}
     NGSL.slice(0, 5).forEach((w) => (cards[w.id] = card({ introducedAt: at(-3).toISOString(), due: at(10).toISOString() })))
-    const s = buildSession({ cards }, [...NGSL, ...TSL], NOW, 6, 'tsl')
+    const s = buildSession({ cards }, [...NGSL, ...TSL], NOW, { newPerDay: 6, firstList: 'tsl' })
     expect(s.queue.map((i) => i.word.id)).toEqual(['tsl-w1', 'tsl-w2', 'tsl-w3', 'ngsl-w6', 'ngsl-w7', 'ngsl-w8'])
   })
 
   it('firstList mặc định ngsl: TSL chỉ tới sau khi hết NGSL', () => {
     const TSL = [word('tsl', 1)]
-    const s = buildSession({ cards: {} }, [...TSL, ...NGSL.slice(0, 2)], NOW, 3)
+    const s = buildSession({ cards: {} }, [...TSL, ...NGSL.slice(0, 2)], NOW, { newPerDay: 3 })
     expect(s.queue.map((i) => i.word.id)).toEqual(['ngsl-w1', 'ngsl-w2', 'tsl-w1'])
   })
 
   it('srs thiếu hoặc sai dạng → như rỗng', () => {
-    expect(buildSession(undefined, NGSL, NOW, 3).newCount).toBe(3)
-    expect(buildSession({ cards: 'x' }, NGSL, NOW, 3).newCount).toBe(3)
+    expect(buildSession(undefined, NGSL, NOW, { newPerDay: 3 }).newCount).toBe(3)
+    expect(buildSession({ cards: 'x' }, NGSL, NOW, { newPerDay: 3 }).newCount).toBe(3)
   })
 
   it('3 thẻ đến hạn + 5 chưa đến hạn → 3 thẻ ôn + từ mới còn lại của ngày; thẻ chưa đến hạn không hiện', () => {
@@ -196,7 +200,7 @@ describe('buildSession — I/O Matrix', () => {
     ;[6, 7].forEach(
       (i) => (cards[NGSL[i].id] = card({ due: at(1, 0).toISOString(), introducedAt: at(0, 7).toISOString() })),
     )
-    const s = buildSession({ cards }, NGSL, NOW, 10)
+    const s = buildSession({ cards }, NGSL, NOW, { newPerDay: 10 })
     const reviews = s.queue.filter((i) => i.kind === 'review').map((i) => i.word.id)
     expect(reviews).toEqual([NGSL[2].id, NGSL[1].id, NGSL[0].id]) // hạn sớm trước
     expect(s.dueCount).toBe(3)
@@ -212,7 +216,7 @@ describe('buildSession — I/O Matrix', () => {
     NGSL.slice(0, 10).forEach((w, i) => {
       cards[w.id] = card({ introducedAt: at(0, 8).toISOString(), due: at(i + 1, 0).toISOString() })
     })
-    const s = buildSession({ cards }, NGSL, NOW, 10)
+    const s = buildSession({ cards }, NGSL, NOW, { newPerDay: 10 })
     expect(s.queue).toEqual([])
     expect(s.nextDue).toEqual(at(1, 0))
   })
@@ -220,21 +224,21 @@ describe('buildSession — I/O Matrix', () => {
   it('ngày hôm sau: quota từ mới mở lại', () => {
     const cards: Record<string, SrsCard> = {}
     NGSL.slice(0, 10).forEach((w) => (cards[w.id] = card({ introducedAt: at(-1).toISOString(), due: at(3).toISOString() })))
-    expect(buildSession({ cards }, NGSL, NOW, 10).newCount).toBe(10)
+    expect(buildSession({ cards }, NGSL, NOW, { newPerDay: 10 }).newCount).toBe(10)
   })
 
   it('Quên → thẻ quay lại trong phiên hôm nay (sau từ mới), không chờ tới ngày mai', () => {
     let store: Store = { schemaVersion: 4, data: {} }
     store = gradeCard(store, NGSL[0].id, 'again', NOW)
     // Từ vừa Quên đã tính là 1 trong 3 từ mới hôm nay.
-    const s = buildSession(readSrs(store), NGSL, NOW, 3)
+    const s = buildSession(readSrs(store), NGSL, NOW, { newPerDay: 3 })
     expect(s.queue.map((i) => [i.word.id, i.kind])).toEqual([
       [NGSL[1].id, 'new'],
       [NGSL[2].id, 'new'],
       [NGSL[0].id, 'learning'],
     ])
     // Sau 1 phút thẻ đến hạn thật → lên đầu.
-    const later = buildSession(readSrs(store), NGSL, new Date(NOW.getTime() + 61_000), 3)
+    const later = buildSession(readSrs(store), NGSL, new Date(NOW.getTime() + 61_000), { newPerDay: 3 })
     expect(later.queue[0]).toMatchObject({ kind: 'review', word: { id: NGSL[0].id } })
   })
 
@@ -242,7 +246,7 @@ describe('buildSession — I/O Matrix', () => {
     let store: Store = { schemaVersion: 4, data: {} }
     store = markCardKnown(store, NGSL[0].id, NOW)
     store = markCardKnown(store, NGSL[1].id, NOW)
-    const s = buildSession(readSrs(store), NGSL, NOW, 10)
+    const s = buildSession(readSrs(store), NGSL, NOW, { newPerDay: 10 })
     expect(s.introducedToday).toBe(0)
     expect(s.newCount).toBe(10)
     expect(s.queue.map((i) => i.word.id)).toEqual(NGSL.slice(2, 12).map((w) => w.id))
@@ -258,7 +262,7 @@ describe('buildSession — I/O Matrix', () => {
       word('tsl', 4),
     ]
     const cards = { 'ngsl-w1': card({ due: at(9).toISOString() }) }
-    const s = buildSession({ cards }, words, NOW, 10)
+    const s = buildSession({ cards }, words, NOW, { newPerDay: 10 })
     expect(s.queue.map((i) => i.word.id)).toEqual(['tsl-w1', 'tsl-w2', 'tsl-w4'])
   })
 
@@ -270,9 +274,118 @@ describe('buildSession — I/O Matrix', () => {
     }
     const srs = { cards }
     const snapshot = structuredClone(srs)
-    const s = buildSession(srs, NGSL, NOW, 2)
+    const s = buildSession(srs, NGSL, NOW, { newPerDay: 2 })
     expect(s.queue.map((i) => i.word.id)).toEqual([NGSL[2].id, NGSL[3].id, NGSL[4].id])
     expect(srs).toEqual(snapshot)
+  })
+})
+
+describe('buildSession — options (story 23)', () => {
+  const ids = (s: { queue: { word: { id: string } }[] }) => s.queue.map((i) => i.word.id)
+
+  it('không truyền options → mặc định cũ: NEW_PER_DAY từ, NGSL theo hạng, không có intro', () => {
+    const s = buildSession({ cards: {} }, NGSL, NOW)
+    expect(s.newCount).toBe(NEW_PER_DAY)
+    expect(ids(s)).toEqual(NGSL.slice(0, NEW_PER_DAY).map((w) => w.id))
+    expect(s.queue.every((i) => !('intro' in i))).toBe(true)
+  })
+
+  it('preferIds đi trước, đúng thứ tự preferIds, rồi lấp theo hạng', () => {
+    const s = buildSession({ cards: {} }, NGSL, NOW, { newPerDay: 5, preferIds: ['ngsl-w20', 'ngsl-w7', 'ngsl-w25'] })
+    expect(ids(s)).toEqual(['ngsl-w20', 'ngsl-w7', 'ngsl-w25', 'ngsl-w1', 'ngsl-w2'])
+  })
+
+  it('preferIds bẩn (trùng, đã có thẻ, không có trong bộ từ, chưa có dữ liệu AI) → bị bỏ qua, không ném lỗi', () => {
+    const words = [...NGSL, word('ngsl', 40, false)]
+    const cards = { 'ngsl-w3': card({ due: at(5).toISOString() }), 'ngsl-w4': 'junk' }
+    const preferIds = ['ngsl-w9', 'ngsl-w9', 'ngsl-w3', 'ngsl-w4', 'ngsl-nope', 'ngsl-w40', '__proto__', 'ngsl-w8']
+    const s = buildSession({ cards }, words, NOW, { newPerDay: 4, preferIds })
+    expect(ids(s)).toEqual(['ngsl-w9', 'ngsl-w8', 'ngsl-w1', 'ngsl-w2'])
+  })
+
+  it('firstList tsl + preferIds: từ ưu tiên (NGSL) trước, rồi TSL hạng 1, 2, …', () => {
+    const TSL = Array.from({ length: 3 }, (_, i) => word('tsl', i + 1))
+    const s = buildSession({ cards: {} }, [...NGSL, ...TSL], NOW, {
+      newPerDay: 4,
+      firstList: 'tsl',
+      preferIds: ['ngsl-w12', 'ngsl-w5'],
+    })
+    expect(ids(s)).toEqual(['ngsl-w12', 'ngsl-w5', 'tsl-w1', 'tsl-w2'])
+  })
+
+  it('quota đã đủ hôm nay → 0 từ mới (không âm), preferIds không vượt quota; hôm sau mở lại', () => {
+    const cards: Record<string, SrsCard> = {}
+    NGSL.slice(0, 8).forEach((w) => (cards[w.id] = card({ introducedAt: at(0, 8).toISOString(), due: at(1, 0).toISOString() })))
+    const s = buildSession({ cards }, NGSL, NOW, { newPerDay: 5, preferIds: ['ngsl-w20'], introMode: true })
+    expect(s.introducedToday).toBe(8)
+    expect(s.newCount).toBe(0)
+    expect(s.queue).toEqual([])
+    expect(buildSession({ cards }, NGSL, at(1), { newPerDay: 5, preferIds: ['ngsl-w20'] }).newCount).toBe(5)
+  })
+
+  it('introMode: chỉ từ danh sách chưa có thẻ có intro; thẻ riêng, thẻ added và thẻ đang học lại thì không', () => {
+    let store: Store = { schemaVersion: 4, data: {} }
+    store = addCard(store, 'ngsl-w2', NOW)
+    store = gradeCard(store, 'ngsl-w3', 'again', at(0, 8))
+    const custom = [{ id: 'saved-x', custom: true as const, word: 'x y', meaningVi: 'a', sentence: '', source: { title: 't', url: '/' } }]
+    const s = buildSession(readSrs(store), NGSL, NOW, { newPerDay: 3, custom, introMode: true })
+    expect(s.queue.map((i) => [i.word.id, i.kind, i.intro === true])).toEqual([
+      ['ngsl-w3', 'review', false],
+      ['ngsl-w1', 'new', true],
+      ['ngsl-w4', 'new', true],
+      ['ngsl-w2', 'new', false],
+      ['saved-x', 'new', false],
+    ])
+    const plain = buildSession(readSrs(store), NGSL, NOW, { newPerDay: 3, custom })
+    expect(plain.queue.some((i) => 'intro' in i)).toBe(false)
+  })
+
+  it('"Đã xem" = gradeCard(..., good) → ra khỏi bước học, đến hạn 0h mai; hôm sau là review', () => {
+    const first = buildSession({ cards: {} }, NGSL, NOW, { newPerDay: 1, introMode: true })
+    expect(first.queue[0]).toMatchObject({ kind: 'new', intro: true, word: { id: 'ngsl-w1' } })
+    const store = gradeCard({ schemaVersion: 4, data: {} }, 'ngsl-w1', 'good', NOW)
+    const c = readSrs(store).cards['ngsl-w1'] as SrsCard
+    expect(c.learning).toBe(false)
+    expect(c.interval).toBe(1)
+    expect(c.due).toBe(startOfLocalDay(NOW, 1).toISOString())
+    // Cùng ngày: không còn từ mới (quota 1 đã dùng), thẻ chưa đến hạn.
+    expect(buildSession(readSrs(store), NGSL, NOW, { newPerDay: 1, introMode: true }).queue).toEqual([])
+    const next = buildSession(readSrs(store), NGSL, at(1), { newPerDay: 1, introMode: true })
+    expect(next.queue[0]).toEqual({ word: NGSL[0], kind: 'review' })
+  })
+
+  it('thẻ cũ: thứ tự và lịch không đổi khi có preferIds / introMode', () => {
+    const cards: Record<string, SrsCard> = {}
+    ;[0, 1, 2].forEach((i) => (cards[NGSL[i].id] = card({ due: at(-i).toISOString() })))
+    const before = buildSession({ cards }, NGSL, NOW, { newPerDay: 0 })
+    const after = buildSession({ cards }, NGSL, NOW, { newPerDay: 0, preferIds: ['ngsl-w1'], introMode: true })
+    expect(after.queue).toEqual(before.queue)
+  })
+})
+
+describe('dueCardCount', () => {
+  it('đếm thẻ hợp lệ có due ≤ now; bỏ thẻ sai dạng và thẻ chưa tới hạn', () => {
+    const cards = {
+      a: card({ due: at(-1).toISOString() }),
+      b: card({ due: NOW.toISOString() }),
+      c: card({ due: at(1, 0).toISOString() }),
+      d: { due: at(-1).toISOString() },
+      e: 'junk',
+      f: card({ due: at(-3).toISOString(), learning: true }),
+    }
+    expect(dueCardCount({ cards }, NOW)).toBe(3)
+    expect(dueCardCount(undefined, NOW)).toBe(0)
+    expect(dueCardCount({ cards: 'x' }, NOW)).toBe(0)
+  })
+
+  it('bỏ thẻ added chưa chấm (hiện như từ mới); `counted` lọc theo id', () => {
+    const cards = {
+      a: card({ due: at(-1).toISOString() }),
+      added: addedCard(at(-1)),
+      'saved-x': card({ due: at(-1).toISOString() }),
+    }
+    expect(dueCardCount({ cards }, NOW)).toBe(2)
+    expect(dueCardCount({ cards }, NOW, (id) => !id.startsWith('saved-'))).toBe(1)
   })
 })
 
