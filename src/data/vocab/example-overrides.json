@@ -48,6 +48,10 @@
       "exampleEn": "These trees bear fruit every summer.",
       "exampleVi": "Những cây này ra quả vào mỗi mùa hè."
     },
+    "ngsl-beautiful": {
+      "exampleEn": "We live in a beautiful city.",
+      "exampleVi": "Chúng tôi sống ở một thành phố đẹp."
+    },
     "ngsl-begin": {
       "exampleEn": "Our lessons begin at ten.",
       "exampleVi": "Các buổi học của chúng tôi bắt đầu lúc mười giờ."
@@ -139,6 +143,10 @@
     "ngsl-effect": {
       "exampleEn": "Coffee has a strong effect on me.",
       "exampleVi": "Cà phê có tác dụng rất mạnh với tôi."
+    },
+    "ngsl-egg": {
+      "exampleEn": "I eat an egg for breakfast.",
+      "exampleVi": "Tôi ăn một quả trứng vào bữa sáng."
     },
     "ngsl-either": {
       "exampleEn": "There are shops on either side of the street.",
@@ -335,6 +343,10 @@
     "ngsl-perhaps": {
       "exampleEn": "Perhaps he is at home.",
       "exampleVi": "Có lẽ anh ấy đang ở nhà."
+    },
+    "ngsl-picture": {
+      "exampleEn": "I like this picture of the sea.",
+      "exampleVi": "Tôi thích bức tranh biển này."
     },
     "ngsl-position": {
       "exampleEn": "The sales position is still open.",

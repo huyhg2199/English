@@ -18,6 +18,32 @@ import {
 const SECTION_IDS = ['pronunciation', 'grammar', 'vocabulary', 'entertainment', 'main', 'checkpoint']
 const SINGLE_LETTER = /^[A-Za-z]\.?$/
 
+/**
+ * Token cấm trong câu hàng B (story 25): to be, have, do, khuyết thiếu do F13–F16 dạy hoặc thuộc Năm 1.
+ * Khai báo lặp (cùng `isForbidden`, `englishParts`) ở `src/data/foundation/foundation.test.ts` (luật câu tiếng Anh của
+ * viên F07–F12); sửa thì sửa cả hai.
+ */
+const ROW_B_FORBIDDEN = new Set([
+  'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', "it's", "that's", "he's", "she's", "there's", "what's",
+  'have', 'has', 'had', 'do', 'does', 'did',
+  'can', 'could', 'will', 'would', 'shall', 'should', 'may', 'might', 'must',
+])
+const FORBIDDEN_CONTRACTION = /n't$|'(m|re|ve|ll|d)$/
+const isForbidden = (token: string) => ROW_B_FORBIDDEN.has(token) || FORBIDDEN_CONTRACTION.test(token)
+const VIETNAMESE = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i
+const tokensOf = (text: string) =>
+  (text.replace(/[’‘ʼ`]/g, "'").match(/[A-Za-z']+/g) ?? []).map((t) => t.toLowerCase())
+/** Chuỗi lẫn tiếng Việt: chỉ lấy câu trong ngoặc kép không dấu và phần còn lại sau khi bỏ ngoặc đơn (nếu hết dấu). */
+function englishParts(text: string): string[] {
+  if (!VIETNAMESE.test(text)) return [text]
+  const parts = [...text.matchAll(/[“"]([^”"]+)[”"]/g)].map((m) => m[1]).filter((q) => !VIETNAMESE.test(q))
+  const rest = text.replace(/\([^)]*\)/g, '')
+  if (!VIETNAMESE.test(rest)) parts.push(rest)
+  return parts
+}
+
+const ROW_B_IDS = ['q-f07-01', 'q-f07-02', 'q-f08-01', 'q-f08-02', 'q-f09-01', 'q-f10-01', 'q-f10-02', 'q-f11-01', 'q-f11-02', 'q-f12-01']
+
 function rowOf(lessonId: string): RowId | undefined {
   return ROW_IDS.find((r) => bricksOfRow(r).some((b) => brickLessonId(b.id) === lessonId))
 }
@@ -108,6 +134,30 @@ describe('ngân hàng câu Sân ga', () => {
     expect(QUIZZES.some((z) => z.lessonIds.some((id) => /^f\d{2}$/.test(id)))).toBe(false)
     expect(QUIZZES.some((z) => z.id.startsWith('lesson-f'))).toBe(false)
     for (const z of FOUNDATION_QUIZZES) expect(getQuiz(z.id)).toBeUndefined()
+  })
+
+  it('hàng B giữ đủ 10 id cũ (Sổ lỗi tham chiếu theo id), theo đúng thứ tự', () => {
+    expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'B').map((q) => q.id)).toEqual(ROW_B_IDS)
+    for (const id of ROW_B_IDS) expect(getQuestion(id)?.id, id).toBe(id)
+  })
+
+  it('hàng B: đề (đã điền), lựa chọn, đáp án, audioText, giải thích không có to be, have, do, khuyết thiếu', () => {
+    const bad: string[] = []
+    for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === 'B')) {
+      const filled = q.prompt.replace('___', q.answer)
+      for (const text of [filled, ...q.options, q.answer, q.audioText ?? '', q.explanation]) {
+        const hit = englishParts(text).flatMap(tokensOf).filter(isForbidden)
+        if (hit.length > 0) bad.push(`${q.id}: "${text}" (${hit.join(', ')})`)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+
+  it('Sổ lỗi cũ: getQuestion("q-f11-02") trả câu đã viết lại (không to be)', () => {
+    const q = getQuestion('q-f11-02')!
+    expect(q.lessonId).toBe('f11')
+    expect(q.answer).toBe('I buy a bag.')
+    expect(getQuestion('q-f12-01')?.answer).toBe('these')
   })
 
   it('getQuestion tra được câu Sân ga và câu cũ', () => {

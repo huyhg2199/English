@@ -3541,6 +3541,13 @@
     "status": "clean"
   },
   {
+    "id": "ngsl-picture",
+    "rank": 509,
+    "exampleEn": "I like this picture of the sea.",
+    "features": [],
+    "status": "override"
+  },
+  {
     "id": "ngsl-address",
     "rank": 558,
     "exampleEn": "What is your email address?",
@@ -3646,6 +3653,20 @@
     "status": "override"
   },
   {
+    "id": "ngsl-quickly",
+    "rank": 783,
+    "exampleEn": "Please reply quickly.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-beautiful",
+    "rank": 792,
+    "exampleEn": "We live in a beautiful city.",
+    "features": [],
+    "status": "override"
+  },
+  {
     "id": "ngsl-husband",
     "rank": 801,
     "exampleEn": "Her husband works at a bank.",
@@ -3660,11 +3681,25 @@
     "status": "clean"
   },
   {
+    "id": "ngsl-box",
+    "rank": 861,
+    "exampleEn": "Put the papers in this box.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-baby",
     "rank": 871,
     "exampleEn": "Their baby is three months old.",
     "features": [],
     "status": "override"
+  },
+  {
+    "id": "ngsl-dog",
+    "rank": 895,
+    "exampleEn": "I walk my dog every morning.",
+    "features": [],
+    "status": "clean"
   },
   {
     "id": "ngsl-officer",
@@ -3716,6 +3751,13 @@
     "status": "override"
   },
   {
+    "id": "ngsl-advice",
+    "rank": 1040,
+    "exampleEn": "Thanks for your advice on the interview.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-chair",
     "rank": 1060,
     "exampleEn": "Please take a chair and sit down.",
@@ -3765,6 +3807,20 @@
     "status": "override"
   },
   {
+    "id": "ngsl-egg",
+    "rank": 1381,
+    "exampleEn": "I eat an egg for breakfast.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-shoe",
+    "rank": 1476,
+    "exampleEn": "I need new shoes for work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-farmer",
     "rank": 1580,
     "exampleEn": "We buy vegetables directly from local farmers.",
@@ -3779,6 +3835,13 @@
     "status": "override"
   },
   {
+    "id": "ngsl-cat",
+    "rank": 1678,
+    "exampleEn": "My cat sleeps on my desk while I work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-spell",
     "rank": 1972,
     "exampleEn": "Please spell your last name.",
@@ -3791,6 +3854,13 @@
     "exampleEn": "Please sign with a black pen.",
     "features": [],
     "status": "override"
+  },
+  {
+    "id": "ngsl-orange",
+    "rank": 2499,
+    "exampleEn": "I have an orange with my breakfast.",
+    "features": [],
+    "status": "clean"
   },
   {
     "id": "ngsl-rice",

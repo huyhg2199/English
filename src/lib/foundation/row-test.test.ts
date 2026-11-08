@@ -163,8 +163,8 @@ describe('recordRowTest · Soát vé', () => {
     expect(f.rows.A).toEqual(readFoundation(afterA).rows.A)
     expect(needsPlacement(store)).toBe(false)
     expect(nextPlacementRow(store)).toBeNull()
-    // Hàng A xong → viên tiếp theo bỏ qua hàng A (F07 chưa có nội dung → về bức tường).
-    expect(nextBrickId(store, hasBrickContent)).toBeNull()
+    // Hàng A xong → viên tiếp theo bỏ qua hàng A, sang F07 (đã có nội dung từ story 25).
+    expect(nextBrickId(store, hasBrickContent)).toBe('F07')
     expect(nextBrickId(skipPlacement(empty(), day(7)), hasBrickContent)).toBe('F01')
     // Bỏ qua lần nữa không đổi gì.
     expect(skipPlacement(store, day(8))).toBe(store)

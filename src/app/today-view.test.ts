@@ -29,7 +29,7 @@ import {
 
 const day = (d: number, h = 20) => new Date(2026, 10, d, h)
 const empty = (): Store => ({ schemaVersion: CURRENT_VERSION, data: {} })
-/** Nội dung giả: F01–F06 đã soạn, F07+ "Đang soạn" (như hiện tại). */
+/** Nội dung giả (tiêm vào): F01–F06 đã soạn, F07+ "Đang soạn"; không phụ thuộc nội dung thật. */
 const CONTENT = new Set<string>(['F01', 'F02', 'F03', 'F04', 'F05', 'F06'])
 const hasContent = (id: BrickId) => CONTENT.has(id)
 const none = () => false

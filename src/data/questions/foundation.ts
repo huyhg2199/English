@@ -11,6 +11,7 @@ import type { Question } from './types'
  * O.W.L., test quay lại và không chạy ở `/practice/quiz/…`. `getQuestion` vẫn tra được (để Sổ lỗi hiện câu).
  * `lessonId` = viên viết thường (`f03`); id câu `q-fNN-NN`. Câu hàng B–D được hỏi kiến thức chưa dạy (ngoại lệ Soát vé
  * / "Tôi biết rồi"). Mỗi hàng tối đa 2 câu nghe, nên máy không có TTS vẫn đủ 8 câu.
+ * Câu hàng B chỉ dùng kiến thức F01–F12 (kiểm tra cuối hàng chạy sau khi học hết hàng): không to be, have, do, khuyết thiếu.
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
@@ -140,7 +141,8 @@ const ROW_B: readonly Question[] = [
     prompt: 'Từ nào là tính từ (adjective)?',
     options: ['beautiful', 'beauty', 'beautifully', 'beautify'],
     answer: 'beautiful',
-    explanation: 'Đuôi -ful thường là tính từ (beautiful). beauty là danh từ, beautifully là trạng từ (-ly).',
+    explanation:
+      'Đuôi -ful thường là tính từ: beautiful (đẹp). beauty là danh từ, beautifully là trạng từ (đuôi -ly), beautify là động từ.',
   },
   {
     id: 'q-f07-02',
@@ -151,7 +153,7 @@ const ROW_B: readonly Question[] = [
     prompt: 'Từ có đuôi -tion (station, information) thường là từ loại gì?',
     options: ['Danh từ', 'Động từ', 'Tính từ', 'Trạng từ'],
     answer: 'Danh từ',
-    explanation: 'Đuôi -tion thường cho danh từ: station, information, action.',
+    explanation: 'Đuôi -tion thường là danh từ: station, information, action.',
   },
   {
     id: 'q-f08-01',
@@ -159,21 +161,21 @@ const ROW_B: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'từ loại',
     kind: 'choice',
-    prompt: 'Câu nào đúng cho “Tôi thích xe màu đỏ”?',
-    options: ['I like red cars.', 'I like cars red.', 'Like I red cars.', 'I cars red like.'],
-    answer: 'I like red cars.',
-    explanation: 'Tính từ đứng trước danh từ: red cars (tiếng Việt nói ngược: xe đỏ).',
+    prompt: 'Câu nào đúng cho “Tôi thích những ngôi nhà to”?',
+    options: ['I like big houses.', 'I like houses big.', 'Like I big houses.', 'I houses big like.'],
+    answer: 'I like big houses.',
+    explanation: 'Câu cần chủ ngữ I đứng đầu, và tính từ đứng trước danh từ: big houses (tiếng Việt nói ngược: nhà to).',
   },
   {
     id: 'q-f08-02',
     lessonId: 'f08',
     sectionId: 'grammar',
-    tag: 'thì',
+    tag: 'từ loại',
     kind: 'choice',
     prompt: "Let's ___ now.",
     options: ['go', 'goes', 'going', 'went'],
     answer: 'go',
-    explanation: "Sau Let's là động từ nguyên dạng: Let's go.",
+    explanation: "Sau Let's là động từ dạng gốc: Let's go. Không thêm -s, -ing, không đổi sang went.",
   },
   {
     id: 'q-f09-01',
@@ -181,10 +183,10 @@ const ROW_B: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'từ loại',
     kind: 'choice',
-    prompt: 'I love ___.',
-    options: ['her', 'she', 'he', 'my'],
-    answer: 'her',
-    explanation: 'Sau động từ dùng đại từ tân ngữ: I love her (không nói “I love she”).',
+    prompt: 'Please help ___.',
+    options: ['us', 'we', 'our', 'they'],
+    answer: 'us',
+    explanation: 'Sau động từ dùng tân ngữ: we → us. Please help us, không nói “help we”.',
   },
   {
     id: 'q-f10-01',
@@ -192,10 +194,10 @@ const ROW_B: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'từ vựng',
     kind: 'choice',
-    prompt: 'two ___ (hai đứa trẻ)',
+    prompt: 'I teach ten ___. (đứa trẻ)',
     options: ['children', 'childs', 'child', 'childrens'],
     answer: 'children',
-    explanation: 'child có số nhiều bất quy tắc: children. Không thêm -s.',
+    explanation: 'Số nhiều bất quy tắc: child → children (giống man → men). Không thêm -s: I teach ten children.',
   },
   {
     id: 'q-f10-02',
@@ -227,9 +229,9 @@ const ROW_B: readonly Question[] = [
     tag: 'từ loại',
     kind: 'choice',
     prompt: 'Câu nào đúng?',
-    options: ['I am a student.', 'I am student.', 'I am an student.', 'I a student.'],
-    answer: 'I am a student.',
-    explanation: 'Danh từ đếm được số ít cần a/an: a student. âm đầu của student là phụ âm /s/ nên dùng a.',
+    options: ['I buy a bag.', 'I buy bag.', 'I buy an bag.', 'I buy a bags.'],
+    answer: 'I buy a bag.',
+    explanation: 'bag đếm được, số ít nên phải có từ đứng trước (a/an, the, my…). Nói “một cái” thì âm đầu /b/ là phụ âm nên dùng a: I buy a bag.',
   },
   {
     id: 'q-f12-01',
@@ -237,10 +239,10 @@ const ROW_B: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'từ loại',
     kind: 'choice',
-    prompt: '___ books are on the table.',
-    options: ['These', 'This', 'That', 'It'],
-    answer: 'These',
-    explanation: 'books số nhiều nên dùng these/those. this/that đi với số ít (this book).',
+    prompt: 'I want ___ cakes.',
+    options: ['these', 'this', 'that', 'it'],
+    answer: 'these',
+    explanation: 'cakes số nhiều nên dùng these (gần) hoặc those (xa). this, that chỉ đi với số ít: this cake.',
   },
 ]
 
