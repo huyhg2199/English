@@ -139,6 +139,13 @@ describe('nội dung bài T1', () => {
           sentenceIds.push(s.id)
         }
       }
+      // Câu luyện nói của các phần (story 28) cũng không được trùng id với câu nào khác.
+      for (const p of c.parts ?? []) {
+        for (const s of p.sentences) {
+          expect(s.id.startsWith(`${c.lessonId}-`), s.id).toBe(true)
+          sentenceIds.push(s.id)
+        }
+      }
       const sentences = c.pronunciation!.sentences
       expect(sentences.length, c.lessonId).toBeGreaterThanOrEqual(3)
       expect(sentences.length, c.lessonId).toBeLessThanOrEqual(5)

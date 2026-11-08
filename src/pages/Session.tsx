@@ -13,9 +13,10 @@ import {
 } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 
-import { useLoadedStore, useSessions, useSkillBoard } from '@/app/store-context'
+import { useLessonParts, useLoadedStore, useSessions, useSkillBoard } from '@/app/store-context'
 import { BrickPlayer } from '@/components/foundation/BrickPlayer'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
+import type { PronunciationView } from '@/components/lesson/LessonContentParts'
 import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { VideoList } from '@/components/media/VideoEmbed'
 import { ReadingSourceContext } from '@/components/reading-source'
@@ -160,8 +161,11 @@ function TheoryStep({
   )
 }
 
-/** Bài chính: thẻ đoạn kèm nội dung (bảng âm, TenseCard, nút thi O.W.L.) hiện ngay trong buổi, lý thuyết trước. */
-function LessonStep({ current }: { current: SessionLesson | null }) {
+/**
+ * Bài chính: thẻ đoạn kèm nội dung (bảng âm, TenseCard, nút thi O.W.L.) hiện ngay trong buổi, lý thuyết trước.
+ * Bài T1 chia phần (story 28): đoạn Phát âm chỉ hiện phần của buổi (`partId`); đã xem hết thì hiện mọi phần để ôn cả tuần.
+ */
+function LessonStep({ current, partId }: { current: SessionLesson | null; partId: string | null }) {
   const { weakest } = useSkillBoard()
   if (!current) {
     return (
@@ -180,6 +184,8 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
   }
   const { lesson, stage } = current
   const content = getLessonContent(lesson.id)
+  const partCount = content?.parts?.length ?? 0
+  const view: PronunciationView = partId ? { kind: 'part', partId } : { kind: 'all' }
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -188,6 +194,11 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
         </p>
         <h2 className="text-xl font-semibold break-words">{lesson.title}</h2>
       </div>
+      {partCount > 0 && !partId && (
+        <p className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
+          Đã xem đủ {partCount} phần, hôm nay ôn lại cả tuần.
+        </p>
+      )}
       {/* Lý thuyết (phát âm, ngữ pháp) luôn trước; đoạn luyện của kỹ năng yếu nhất lên trước đoạn luyện khác, nhãn "Ưu tiên". */}
       {prioritizeSections(
         lesson.sections.filter((s) => s.id !== 'entertainment'),
@@ -198,7 +209,13 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
           value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
         >
           <LessonSectionCard lesson={lesson} stage={stage} section={section} priority={priority}>
-            <LessonSectionContent lesson={lesson} stage={stage} section={section} content={content} />
+            <LessonSectionContent
+              lesson={lesson}
+              stage={stage}
+              section={section}
+              content={content}
+              pronunciationView={view}
+            />
           </LessonSectionCard>
         </ReadingSourceContext.Provider>
       ))}
@@ -241,20 +258,23 @@ function FunStep({ plan }: { plan: SessionPlan }) {
 /**
  * Buổi 30' theo kế hoạch (`resolveSessionPlan`, story 21): lý thuyết luôn trước. Đang ở Sân ga: Lý thuyết 12' (viên gạch
  * chạy ngay trong buổi) → Ôn & từ mới 8' → Giải trí nhẹ 10'; sau Sân ga: Bài chính 15' → Ôn flashcard 5' → Giải trí 10'.
- * Kế hoạch và bước chốt trên URL (`?brick=F03&step=theory` / `?lesson=…&step=lesson`), nên mở trang khác rồi quay lại
+ * Kế hoạch và bước chốt trên URL (`?brick=F03&step=theory` / `?lesson=…&part=…&step=lesson`), nên mở trang khác rồi quay lại
  * vẫn đúng buổi. Rời buổi giữa chừng không ghi gì; chỉ "Xong buổi" mới ghi nhật ký.
  */
 export function Session() {
   const { record } = useSessions()
+  const { markSessionSeen } = useLessonParts()
   const { store } = useLoadedStore()
   const [params, setParams] = useSearchParams()
   const [finished, setFinished] = useState(false)
   const brickParam = params.get('brick')
   const lessonParam = params.get('lesson')
+  const partParam = params.get('part')
   const stepParam = params.get('step')
   const { plan, stepIndex, search } = useMemo(
-    () => resolveSessionPlan({ brick: brickParam, lesson: lessonParam, step: stepParam }, store, hasBrickContent),
-    [brickParam, lessonParam, stepParam, store],
+    () =>
+      resolveSessionPlan({ brick: brickParam, lesson: lessonParam, part: partParam, step: stepParam }, store, hasBrickContent),
+    [brickParam, lessonParam, partParam, stepParam, store],
   )
   const canonical = new URLSearchParams(search).toString()
   const brickId = plan.mode === 'foundation' ? plan.brickId : null
@@ -292,6 +312,8 @@ export function Session() {
 
   function finish() {
     record('full', new Date(), { lessonId: sessionRecordLessonId(plan) })
+    // Buổi học một phần của bài T1 (story 28): "Xong buổi" cũng tính phần đó là đã xem (đã có thì store không đổi).
+    markSessionSeen(plan)
     setFinished(true)
     window.scrollTo(0, 0)
   }
@@ -348,7 +370,9 @@ export function Session() {
           )}
         />
       )}
-      {meta.id === 'lesson' && <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} />}
+      {meta.id === 'lesson' && (
+        <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} partId={plan.mode === 'lesson' ? plan.partId : null} />
+      )}
       {meta.id === 'fun' && <FunStep plan={plan} />}
 
       <div className="flex gap-2">

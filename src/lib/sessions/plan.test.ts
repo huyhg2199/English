@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allLessons, type Lesson } from '@/data/roadmap'
 import type { BrickId, RowId } from '@/data/foundation'
 import { completeBrick, isInFoundation, markRowTested, resumeFoundation, skipFoundation } from '@/lib/foundation'
-import { setLessonCompleted } from '@/lib/roadmap-progress'
+import { markLessonPartSeen, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { CURRENT_VERSION, type Store } from '@/lib/storage'
 
 import {
@@ -13,6 +13,7 @@ import {
   LEGACY_STEP_MAP,
   LESSON_STEPS,
   lockTheory,
+  markSessionPartSeen,
   readSessionDays,
   recordSession,
   resolveSessionPlan,
@@ -118,10 +119,10 @@ describe('resolveSessionPlan — I/O Matrix', () => {
     expect(r.search).toEqual({ brick: 'F03', step: 'theory' })
   })
 
-  it('buổi bài không tham số → ?lesson=<bài hiện tại>&step=lesson', () => {
+  it('buổi bài không tham số → ?lesson=<bài hiện tại>&part=<phần tiếp theo>&step=lesson', () => {
     const s = skipFoundation(empty(), day(1))
     const r = resolveSessionPlan({}, s, hasContent)
-    expect(r.search).toEqual({ lesson: 's1-t1-w1', step: 'lesson' })
+    expect(r.search).toEqual({ lesson: 's1-t1-w1', part: 's1-t1-w1-p1', step: 'lesson' })
   })
 
   it('Kế hoạch đã chốt: ?brick=F06&step=fun sau khi Sân ga xong → vẫn buổi Sân ga, ghi f06 full 25 phút', () => {
@@ -198,6 +199,7 @@ describe('resolveSessionPlan — I/O Matrix', () => {
     expect(resolveSessionPlan({ brick: 'F03', step: '-1' }, s, hasContent).stepIndex).toBe(0)
     expect(resolveSessionPlan({ lesson: 's1-t1-w1', step: 'theory' }, s, hasContent).search).toEqual({
       lesson: 's1-t1-w1',
+      part: 's1-t1-w1-p1',
       step: 'lesson',
     })
     expect(resolveSessionPlan({ brick: 'f03', step: 'review' }, s, hasContent).search).toEqual({ brick: 'F03', step: 'review' })
@@ -229,9 +231,9 @@ describe('sessionRecordLessonId', () => {
   it('viên → fNN, bài → id bài, không có → undefined', () => {
     expect(sessionRecordLessonId({ mode: 'foundation', brickId: 'F03', review: false, steps: FOUNDATION_STEPS })).toBe('f03')
     expect(sessionRecordLessonId({ mode: 'foundation', brickId: null, review: false, steps: FOUNDATION_STEPS })).toBeUndefined()
-    expect(sessionRecordLessonId({ mode: 'lesson', lesson: null, steps: LESSON_STEPS })).toBeUndefined()
+    expect(sessionRecordLessonId({ mode: 'lesson', lesson: null, partId: null, steps: LESSON_STEPS })).toBeUndefined()
     const lesson = sessionLesson(empty())
-    expect(sessionRecordLessonId({ mode: 'lesson', lesson, steps: LESSON_STEPS })).toBe('s1-t1-w1')
+    expect(sessionRecordLessonId({ mode: 'lesson', lesson, partId: null, steps: LESSON_STEPS })).toBe('s1-t1-w1')
   })
 })
 
@@ -249,7 +251,7 @@ describe('sessionSearch — tham số chuẩn khi chuyển bước', () => {
   })
 
   it('buổi bài lesson null → chỉ step', () => {
-    const plan: SessionPlan = { mode: 'lesson', lesson: null, steps: LESSON_STEPS }
+    const plan: SessionPlan = { mode: 'lesson', lesson: null, partId: null, steps: LESSON_STEPS }
     expect(sessionSearch(plan, 1)).toEqual({ step: 'srs' })
   })
 })
@@ -277,7 +279,7 @@ describe('lockTheory — "Ôn lại" chốt theo viên lúc vào buổi', () => 
   })
 
   it('buổi bài hoặc không có viên → null', () => {
-    const lessonPlan: SessionPlan = { mode: 'lesson', lesson: null, steps: LESSON_STEPS }
+    const lessonPlan: SessionPlan = { mode: 'lesson', lesson: null, partId: null, steps: LESSON_STEPS }
     expect(lockTheory(null, lessonPlan, empty(), hasContent)).toBeNull()
     expect(lockTheory(null, sessionPlan(empty(), none), empty(), none)).toBeNull()
   })
@@ -318,7 +320,7 @@ describe('sessionWordList', () => {
     expect(sessionWordList(sessionPlan(done(['F01']), hasContent))).toBe('ngsl')
     const s = skipFoundation(empty(), day(1))
     expect(sessionWordList(sessionPlan(s, hasContent))).toBe('ngsl')
-    expect(sessionWordList({ mode: 'lesson', lesson: null, steps: LESSON_STEPS })).toBe('tsl')
+    expect(sessionWordList({ mode: 'lesson', lesson: null, partId: null, steps: LESSON_STEPS })).toBe('tsl')
   })
 })
 
@@ -350,5 +352,105 @@ describe('lazyFoundationBrick — ngày lười ở Sân ga (story 22)', () => {
   it('không viên nào có nội dung → null (thẻ "đang soạn")', () => {
     expect(lazyFoundationBrick(empty(), none)).toBeNull()
     expect(lazyFoundationBrick(passRows(['A']), none)).toBeNull()
+  })
+})
+
+describe('phần của buổi bài T1 — I/O Matrix (story 28)', () => {
+  const W1 = 's1-t1-w1'
+  const p = (n: number, lesson = W1) => `${lesson}-p${n}`
+  const after = (): Store => skipFoundation(empty(), day(1))
+  const seen = (ids: readonly string[], s: Store = after(), lesson = W1) => ids.reduce((acc, id) => markLessonPartSeen(acc, lesson, id), s)
+
+  it('Buổi đầu của W1: sau Sân ga, chưa xem phần nào → ?lesson=s1-t1-w1&part=s1-t1-w1-p1&step=lesson', () => {
+    const r = resolveSessionPlan({}, after(), hasContent)
+    expect(r.plan).toMatchObject({ mode: 'lesson', partId: p(1) })
+    expect(r.search).toEqual({ lesson: W1, part: p(1), step: 'lesson' })
+    expect(new URLSearchParams(r.search).toString()).toBe('lesson=s1-t1-w1&part=s1-t1-w1-p1&step=lesson')
+    expect(sessionPlan(after(), hasContent)).toMatchObject({ mode: 'lesson', partId: p(1) })
+  })
+
+  it('Phần tiếp theo: partsSeen = [p1] → chốt p2; xem không theo thứ tự [p2] → chốt p1', () => {
+    expect(resolveSessionPlan({}, seen([p(1)]), hasContent).search).toEqual({ lesson: W1, part: p(2), step: 'lesson' })
+    expect(resolveSessionPlan({}, seen([p(2)]), hasContent).search).toEqual({ lesson: W1, part: p(1), step: 'lesson' })
+  })
+
+  it('Đã xem hết: không có part, partId null (buổi ôn cả tuần); bài vẫn chưa xong', () => {
+    const r = resolveSessionPlan({}, seen([p(1), p(2), p(3)]), hasContent)
+    expect(r.plan).toMatchObject({ mode: 'lesson', partId: null })
+    expect(r.plan.mode === 'lesson' && r.plan.lesson?.lesson.id).toBe(W1)
+    expect(r.search).toEqual({ lesson: W1, step: 'lesson' })
+  })
+
+  it('Đánh dấu giữa buổi: URL part=p1, xem xong p1 → kế hoạch vẫn là p1', () => {
+    const params = { lesson: W1, part: p(1), step: 'lesson' }
+    expect(resolveSessionPlan(params, after(), hasContent).plan).toMatchObject({ partId: p(1) })
+    const r = resolveSessionPlan(params, seen([p(1)]), hasContent)
+    expect(r.plan).toMatchObject({ partId: p(1) })
+    expect(r.search).toEqual(params)
+    // Chuyển bước giữ part.
+    expect(sessionSearch(r.plan, 1)).toEqual({ lesson: W1, part: p(1), step: 'srs' })
+  })
+
+  it('URL lạ: part của bài khác hoặc part=abc → bỏ, tính lại từ store', () => {
+    const s = seen([p(1)])
+    for (const part of [p(1, 's1-t1-w3'), 'abc', '', 's1-t1-w1-p9']) {
+      const r = resolveSessionPlan({ lesson: W1, part, step: 'lesson' }, s, hasContent)
+      expect(r.search, part).toEqual({ lesson: W1, part: p(2), step: 'lesson' })
+    }
+    // part không có lesson → kế hoạch từ store.
+    expect(resolveSessionPlan({ part: 'abc' }, s, hasContent).search).toEqual({ lesson: W1, part: p(2), step: 'lesson' })
+    // part ở buổi Sân ga bị bỏ.
+    expect(resolveSessionPlan({ brick: 'F03', part: p(1) }, done(['F01', 'F02']), hasContent).search).toEqual({
+      brick: 'F03',
+      step: 'theory',
+    })
+  })
+
+  it('Bài không chia: bài hiện tại W4 hoặc T2 → không có part, giống trước story', () => {
+    let s = after()
+    for (const id of ['s1-t1-w1', 's1-t1-w2', 's1-t1-w3']) s = setLessonCompleted(s, id, true, day(2))
+    const w4 = resolveSessionPlan({}, s, hasContent)
+    expect(w4.plan).toMatchObject({ mode: 'lesson', partId: null })
+    expect(w4.search).toEqual({ lesson: 's1-t1-w4', step: 'lesson' })
+    // part của W1 trên URL buổi W4 → bỏ.
+    expect(resolveSessionPlan({ lesson: 's1-t1-w4', part: p(1) }, s, hasContent).search).toEqual({ lesson: 's1-t1-w4', step: 'lesson' })
+    const t2 = resolveSessionPlan({ lesson: 's1-t2-w1', step: 'lesson' }, s, hasContent)
+    expect(t2.search).toEqual({ lesson: 's1-t2-w1', step: 'lesson' })
+  })
+
+  it('Acceptance: ở W3, 4 buổi liên tiếp "Xong buổi" → Nhóm 1 → 4, buổi thứ 5 ôn cả tuần', () => {
+    let s = after()
+    for (const id of ['s1-t1-w1', 's1-t1-w2']) s = setLessonCompleted(s, id, true, day(2))
+    const order: (string | null)[] = []
+    for (let i = 0; i < 5; i++) {
+      const { plan } = resolveSessionPlan({}, s, hasContent)
+      if (plan.mode !== 'lesson') throw new Error('expected lesson')
+      expect(plan.lesson?.lesson.id).toBe('s1-t1-w3')
+      order.push(plan.partId)
+      s = markSessionPartSeen(s, plan)
+    }
+    expect(order).toEqual(['s1-t1-w3-p1', 's1-t1-w3-p2', 's1-t1-w3-p3', 's1-t1-w3-p4', null])
+  })
+
+  it('markSessionPartSeen ("Xong buổi"): buổi part=p2 thêm p2, đã có thì trả store cũ; buổi Sân ga / không chia / ôn cả tuần → store cũ', () => {
+    const s = after()
+    const { plan } = resolveSessionPlan({ lesson: W1, part: p(2), step: 'lesson' }, s, hasContent)
+    const marked = markSessionPartSeen(s, plan)
+    expect([...readSeenPartIds(marked, W1)]).toEqual([p(2)])
+    expect(markSessionPartSeen(marked, plan)).toBe(marked)
+    const w4 = resolveSessionPlan({ lesson: 's1-t1-w4', step: 'lesson' }, s, hasContent).plan
+    expect(markSessionPartSeen(s, w4)).toBe(s)
+    const foundation = resolveSessionPlan({ brick: 'F01', step: 'theory' }, s, hasContent).plan
+    expect(markSessionPartSeen(s, foundation)).toBe(s)
+    const allSeen = seen([p(1), p(2), p(3)], s)
+    const review = resolveSessionPlan({ lesson: W1, step: 'lesson' }, allSeen, hasContent).plan
+    expect(markSessionPartSeen(allSeen, review)).toBe(allSeen)
+  })
+
+  it('Acceptance: đang ở Sân ga, xem Ngày 2 ở trang bài → buổi bài sau này (khi rời Sân ga) chốt Ngày 1', () => {
+    const inFoundation = markLessonPartSeen(done(['F01']), W1, p(2))
+    expect(sessionPlan(inFoundation, hasContent).mode).toBe('foundation')
+    const left = skipFoundation(inFoundation, day(3))
+    expect(resolveSessionPlan({}, left, hasContent).search).toEqual({ lesson: W1, part: p(1), step: 'lesson' })
   })
 })

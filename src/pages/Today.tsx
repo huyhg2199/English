@@ -3,6 +3,7 @@ import { Bell, BookOpenCheck, Check, Coffee, Flame, Gauge, Play, Sparkles, X } f
 import { Link, Navigate } from 'react-router'
 
 import {
+  useBrickInvite,
   useComeback,
   useLoadedStore,
   useOwl,
@@ -14,6 +15,7 @@ import {
 import { todayView } from '@/app/today-view'
 import { useNow } from '@/app/use-now'
 import { ComebackCard } from '@/components/ComebackCard'
+import { BrickReviewInvite } from '@/components/foundation/BrickReviewInvite'
 import { FoundationHero } from '@/components/foundation/FoundationHero'
 import { WallPassedCard } from '@/components/foundation/WallPassedCard'
 import { OwlPlanCard } from '@/components/owl/ReviewPlan'
@@ -101,7 +103,8 @@ function ReminderBanner({ now }: { now: Date }) {
  *   đồng hồ giờ học khi đã có điểm ETS; ẩn Bài hiện tại, lịch 750, Đo trình độ và bảng kỹ năng (`todayView`).
  * - Sau Sân ga: bố cục cũ (nút 30', ngày lười, bài hiện tại, ngày dự kiến 750); cuối trang lời mời Mũ (chưa Nhà), bảng kỹ
  *   năng + đồng hồ (có điểm ETS) hoặc "Đo trình độ (tuỳ chọn)".
- * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày và kế hoạch ôn O.W.L. 1 khi trượt.
+ * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, kế hoạch ôn O.W.L. 1 khi trượt và dải mời "Ôn viên gạch
+ * X n'?" (story 28) ngay dưới nhóm nút khi sai lặp lại cùng một khái niệm nền.
  */
 export function Today() {
   const { store } = useLoadedStore()
@@ -112,6 +115,7 @@ export function Today() {
   const plan = useSchedule(now)
   const comeback = useComeback(now)
   const { activePlan } = useOwl(now)
+  const brickInvite = useBrickInvite(now)
   const view = useMemo(() => todayView(store, hasBrickContent), [store])
   const streak = useMemo(() => computeStreak(days, now), [days, now])
   const hours = useMemo(() => studyHours(days, now), [days, now])
@@ -187,6 +191,9 @@ export function Today() {
         </Button>
         {today && <p className="text-center text-xs text-muted-foreground">Muốn học thêm thì cứ bắt đầu lại.</p>}
       </div>
+
+      {/* Lời mời ôn viên gạch (story 28): dải nhỏ dưới nhóm nút, ở cả Sân ga lẫn sau Sân ga; không chặn gì. */}
+      {brickInvite.invite && <BrickReviewInvite invite={brickInvite.invite} onDismiss={(id) => brickInvite.dismiss(id)} />}
 
       {view.mode === 'roadmap' && (
         <>

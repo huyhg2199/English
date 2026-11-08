@@ -30,6 +30,7 @@ import {
   completeBrick,
   foundationState,
   markWelcomeSeen,
+  readFoundation,
   needsPlacement,
   resumeFoundation,
   skipFoundation,
@@ -45,6 +46,8 @@ import { activeReviewPlan, listOwlAttempts, recordOwlAttempt, type OwlAttemptInp
 import { planFor } from '@/lib/schedule'
 import {
   attemptId,
+  brickReviewInvite,
+  dismissBrickInvite,
   listGradedAttempts,
   readMistakes,
   recordAttempt,
@@ -53,7 +56,7 @@ import {
   type AttemptInput,
 } from '@/lib/quiz'
 import type { RecognitionResult } from '@/lib/speech-recognition'
-import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
+import { markLessonPartSeen, readCompletedLessonIds, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { createNote, deleteNote, noteId, readNotes, updateNote, type NoteInput } from '@/lib/notes'
 import {
   addToSrs,
@@ -64,16 +67,18 @@ import {
   type SavedWordSource,
 } from '@/lib/saved-words'
 import type { StudyWord } from '@/data/vocab'
-import { getBrick } from '@/data/foundation/content'
+import { getBrick, hasBrickContent } from '@/data/foundation/content'
 import type { BrickId, RuleCard } from '@/data/foundation'
 import { newWordOptions } from '@/lib/flashcard-session'
 import {
   computeStreak,
+  markSessionPartSeen,
   newWordListFor,
   readSessionDays,
   recordSession,
   sessionLesson,
   type SessionKind,
+  type SessionPlan,
 } from '@/lib/sessions'
 import { unlockedSpells } from '@/lib/spells'
 import {
@@ -168,6 +173,47 @@ export function useProgress() {
     [handle],
   )
   return { completedLessonIds, startLessonId, setCompleted }
+}
+
+/**
+ * Phần đã xem của bài T1 (story 28, `progress.lessons[id].partsSeen`): `seenPartIds(lessonId)` và `markSeen` (thêm phần,
+ * không đổi "đã xong" của bài). Ghi qua `handle.update` nên lưu local và đồng bộ như tiến độ.
+ */
+export function useLessonParts() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const seenPartIds = useCallback((lessonId: string) => readSeenPartIds(store, lessonId), [store])
+  const markSeen = useCallback(
+    (lessonId: string, partId: string) => handle.update((s) => markLessonPartSeen(s, lessonId, partId)),
+    [handle],
+  )
+  /** "Xong buổi": thêm phần của buổi vào `partsSeen` (`markSessionPartSeen`). */
+  const markSessionSeen = useCallback((plan: SessionPlan) => handle.update((s) => markSessionPartSeen(s, plan)), [handle])
+  return { seenPartIds, markSeen, markSessionSeen }
+}
+
+/**
+ * Lời mời ôn viên gạch mà Hôm nay hiện (story 28): nối `brickReviewInvite` với `lastDoneAt` thật của viên
+ * (`readFoundation`) và `hasBrickContent` (viên "Đang soạn" không mời).
+ */
+export function brickInviteFor(store: Store, now: Date, hasContent: (id: BrickId) => boolean = hasBrickContent) {
+  const { bricks } = readFoundation(store)
+  return brickReviewInvite(store, now, { lastDoneAt: (id) => bricks[id]?.lastDoneAt, hasContent })
+}
+
+/**
+ * Lời mời "Ôn viên gạch X n'?" (story 28) tại `now`: `invite` (null khi không có) và `dismiss` ("Để sau", ghi
+ * `mistakes.brickInvites`, đồng bộ). Viên đã ôn xong sau câu sai mới nhất hoặc chưa có nội dung thì không mời.
+ */
+export function useBrickInvite(now: Date) {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const invite = useMemo(() => brickInviteFor(store, now), [store, now])
+  const dismiss = useCallback(
+    (brickId: string, at: Date = new Date()) => handle.update((s) => dismissBrickInvite(s, brickId, at)),
+    [handle],
+  )
+  return { invite, dismiss }
 }
 
 /**

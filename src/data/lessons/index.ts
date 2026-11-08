@@ -1,5 +1,13 @@
 import { GRAMMAR_W1, GRAMMAR_W2, GRAMMAR_W3, GRAMMAR_W4 } from './t1-grammar'
-import { PRONUNCIATION_W1, PRONUNCIATION_W2, PRONUNCIATION_W3, PRONUNCIATION_W4 } from './t1-pronunciation'
+import {
+  PARTS_W1,
+  PARTS_W2,
+  PARTS_W3,
+  PRONUNCIATION_W1,
+  PRONUNCIATION_W2,
+  PRONUNCIATION_W3,
+  PRONUNCIATION_W4,
+} from './t1-pronunciation'
 import {
   GRAMMAR_T2_W1,
   GRAMMAR_T2_W2,
@@ -41,18 +49,21 @@ export const LESSON_CONTENTS: readonly LessonContent[] = [
   {
     lessonId: 's1-t1-w1',
     pronunciation: PRONUNCIATION_W1,
+    parts: PARTS_W1,
     grammar: GRAMMAR_W1,
     ...rp('Làm quen lần đầu', 'Meeting someone new', 'We meet for the first time at a coffee shop. Ask me my name, where I am from, and what I like.'),
   },
   {
     lessonId: 's1-t1-w2',
     pronunciation: PRONUNCIATION_W2,
+    parts: PARTS_W2,
     grammar: GRAMMAR_W2,
     ...rp('Một ngày của tôi', 'My daily routine', 'Ask me about my daily routine: what I do in the morning, in the afternoon and in the evening.'),
   },
   {
     lessonId: 's1-t1-w3',
     pronunciation: PRONUNCIATION_W3,
+    parts: PARTS_W3,
     grammar: GRAMMAR_W3,
     ...rp('Bạn mới hỏi thói quen', 'Habits and likes', 'You are my new friend. Ask me yes/no questions about my habits and likes (food, music, sport).'),
   },
@@ -138,6 +149,14 @@ const byId = new Map(LESSON_CONTENTS.map((c) => [c.lessonId, c]))
 
 export function getLessonContent(lessonId: string): LessonContent | undefined {
   return byId.get(lessonId)
+}
+
+const NO_PARTS: readonly string[] = []
+const partIdsByLesson = new Map(LESSON_CONTENTS.map((c) => [c.lessonId, c.parts?.map((p) => p.id) ?? NO_PARTS]))
+
+/** Id các phần của đoạn Phát âm (story 28), theo thứ tự; bài không chia (hoặc id lạ) → `[]`. */
+export function lessonPartIds(lessonId: string): readonly string[] {
+  return partIdsByLesson.get(lessonId) ?? NO_PARTS
 }
 
 /** Mọi thì đã soạn, theo thứ tự bài. */

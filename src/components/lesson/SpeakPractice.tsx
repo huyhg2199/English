@@ -124,11 +124,14 @@ function SentenceRow({
 export function SpeakPractice({
   sentences,
   title = 'Luyện nói câu mẫu',
+  titleAs: Title = 'h3',
   onListeningChange,
   tone = 'default',
 }: {
   sentences: readonly PracticeSentence[]
   title?: string
+  /** Cấp tiêu đề; `h4` khi khối nằm trong một phần của bài (story 28). */
+  titleAs?: 'h3' | 'h4'
   /** `gentle`: không tô đỏ từ lệch / điểm thấp / lỗi micro (dùng ở viên gạch Sân ga 9¾). */
   tone?: Tone
   /** Báo micro bắt đầu / thôi nghe (vd để khối shadowing tắt nút "Nghe cả đoạn"). */
@@ -170,7 +173,7 @@ export function SpeakPractice({
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="font-semibold">{title}</h3>
+      <Title className="font-semibold">{title}</Title>
       {supported ? (
         <p className="text-xs text-muted-foreground">
           Nghe mẫu, rồi bấm nói. Từ thiếu hoặc lệch sẽ {tone === 'gentle' ? 'được gạch chân' : 'tô đỏ'}. App chỉ lưu điểm; âm thanh do dịch vụ nhận giọng nói

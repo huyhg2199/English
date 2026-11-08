@@ -1,4 +1,4 @@
-import type { ExampleWord, Pair, PronunciationContent, Sound } from './types'
+import type { ExampleWord, LessonPart, Pair, PronunciationContent, Sound } from './types'
 
 /**
  * Bộ âm giọng Mỹ cho tháng T1 (khớp IPA của bộ từ NGSL trong app). Mẹo khẩu hình tự soạn.
@@ -253,7 +253,8 @@ export const CONSONANTS: readonly Sound[] = [
     's',
     'Như "x" tiếng Việt: đầu lưỡi gần lợi trên, môi không chu. /s/ cuối từ (bus, class) phải nghe rõ tiếng xì.',
     w('see', 'say', 'bus', 'class', 'sit'),
-    pr('sea', 'she'),
+    // Story 28: chỉ so với âm cùng phần (Nhóm 2 có /z/); cặp /s/–/ʃ/ vẫn còn ở thẻ /ʃ/ (Nhóm 4).
+    pr('sue', 'zoo'),
   ),
   consonant(
     'c-z',
@@ -456,3 +457,153 @@ export const PRONUNCIATION_W4: PronunciationContent = {
     { id: 's1-t1-w4-say-4', text: 'He needs help, so she helps him.', vi: 'Anh ấy cần giúp đỡ, nên cô ấy giúp anh ấy.' },
   ],
 }
+
+// ---------------------------------------------------------------- Chia phần theo ngày (story 28)
+
+type PartInput = Omit<LessonPart, 'id' | 'sentences'> & { sentences: readonly (readonly [string, string])[] }
+
+/** Dựng phần của bài: id `${lessonId}-p${n}`, id câu `${partId}-say-${k}`. */
+function parts(lessonId: string, inputs: readonly PartInput[]): readonly LessonPart[] {
+  return inputs.map((p, i) => {
+    const id = `${lessonId}-p${i + 1}`
+    return { ...p, id, sentences: p.sentences.map(([text, vi], k) => ({ id: `${id}-say-${k + 1}`, text, vi })) }
+  })
+}
+
+/** W1: 3 ngày × 4 nguyên âm. Chỉ dùng to be (hiện tại đơn học ở W2). */
+export const PARTS_W1: readonly LessonPart[] = parts('s1-t1-w1', [
+  {
+    title: 'Ngày 1 · i và u, dài và ngắn',
+    note: 'Hai cặp dài – ngắn /iː/ – /ɪ/ và /uː/ – /ʊ/: âm có dấu ː kéo dài hơn, môi căng hơn.',
+    soundIds: ['v-ii', 'v-i', 'v-uu', 'v-u'],
+    sentences: [
+      ['This is a big school.', 'Đây là một ngôi trường lớn.'],
+      ['The food is good.', 'Đồ ăn ngon.'],
+      ['She is free this week.', 'Tuần này cô ấy rảnh.'],
+    ],
+    requires: ['demonstratives', 'be-affirmative', 'articles', 'adjective-before-noun', 'subject-pronouns', 'monophthongs'],
+  },
+  {
+    title: 'Ngày 2 · e, /æ/, a dài và â',
+    note: 'Bốn âm mở miệng từ vừa tới rộng; /æ/ không có trong tiếng Việt nên luyện kỹ hơn.',
+    soundIds: ['v-e', 'v-ae', 'v-aa', 'v-uh'],
+    sentences: [
+      ['My bag is red.', 'Cái túi của tôi màu đỏ.'],
+      ['The cup is not hot.', 'Cái cốc không nóng.'],
+      ['Is your job fun?', 'Công việc của bạn có vui không?'],
+    ],
+    requires: ['possessive-adjectives', 'be-affirmative', 'articles', 'be-negative', 'be-questions', 'monophthongs'],
+  },
+  {
+    title: 'Ngày 3 · o dài, ơ nhẹ và âm cong lưỡi',
+    note: '/ɔː/ giọng Mỹ hay đứng trước r, /ə/ là âm nhẹ nhất, còn /ɝː/ và /ɚ/ phải cong lưỡi.',
+    soundIds: ['v-oo', 'v-schwa', 'v-er-long', 'v-er-weak'],
+    sentences: [
+      ['My sister is a nurse.', 'Chị tôi là y tá.'],
+      ['The water is warm.', 'Nước ấm.'],
+      ['Her teacher is in the store.', 'Giáo viên của cô ấy ở trong cửa hàng.'],
+    ],
+    requires: ['possessive-adjectives', 'be-affirmative', 'articles', 'prepositions-of-place', 'monophthongs'],
+  },
+])
+
+/** W2: 5 âm gần tiếng Việt, rồi 3 âm có r kiểu Mỹ. Thêm hiện tại đơn khẳng định. */
+export const PARTS_W2: readonly LessonPart[] = parts('s1-t1-w2', [
+  {
+    title: '5 nguyên âm đôi gần tiếng Việt',
+    note: 'Bốn âm gần vần tiếng Việt (ây, ai, oi, ao) và /oʊ/ (ô rồi chuyển sang u): nhớ đọc đủ phần đuôi ở cuối âm.',
+    soundIds: ['d-ei', 'd-ai', 'd-oi', 'd-ou', 'd-au'],
+    sentences: [
+      ['They like my house.', 'Họ thích nhà tôi.'],
+      ['The boy knows my name.', 'Cậu bé biết tên tôi.'],
+      ['I go out at night.', 'Tôi ra ngoài vào buổi tối.'],
+    ],
+    requires: ['subject-pronouns', 'present-simple', 'possessive-adjectives', 'articles', 'prepositions-of-time', 'diphthongs'],
+  },
+  {
+    title: '3 âm có r kiểu Mỹ',
+    note: 'Đọc nguyên âm rồi cong lưỡi sang r liền một hơi, không tách thành hai âm.',
+    soundIds: ['d-ir', 'd-er', 'd-ur'],
+    sentences: [
+      ['Their house is here.', 'Nhà của họ ở đây.'],
+      ['We share our chairs.', 'Chúng tôi dùng chung ghế.'],
+      ['She is a tourist here.', 'Cô ấy là khách du lịch ở đây.'],
+    ],
+    requires: ['possessive-adjectives', 'be-affirmative', 'subject-pronouns', 'present-simple', 'plurals', 'articles', 'diphthongs'],
+  },
+])
+
+/** W3: 4 nhóm × 6 phụ âm, nhóm ★ /θ ð ʃ ʒ tʃ dʒ/ để cuối. Thêm phủ định / câu hỏi của hiện tại đơn. */
+export const PARTS_W3: readonly LessonPart[] = parts('s1-t1-w3', [
+  {
+    title: 'Nhóm 1 · p b t d k g',
+    note: 'Ba cặp vô thanh / hữu thanh: /p t k/ bật hơi ở đầu từ; cả 6 âm phải đọc rõ ở cuối từ.',
+    soundIds: ['c-p', 'c-b', 'c-t', 'c-d', 'c-k', 'c-g'],
+    sentences: [
+      ["I don't need a big bag.", 'Tôi không cần túi to.'],
+      ['Does he take the bus?', 'Anh ấy có đi xe buýt không?'],
+      ['Put the cup down.', 'Đặt cái cốc xuống.'],
+    ],
+    requires: [
+      'subject-pronouns',
+      'present-simple',
+      'present-simple-negative',
+      'present-simple-questions',
+      'articles',
+      'adjective-before-noun',
+      'imperatives',
+      'consonants',
+    ],
+  },
+  {
+    title: 'Nhóm 2 · f v s z h m',
+    note: '/f/ – /v/ và /s/ – /z/ có khẩu hình giống nhau, chỉ khác dây thanh có rung hay không.',
+    soundIds: ['c-f', 'c-v', 'c-s', 'c-z', 'c-h', 'c-m'],
+    sentences: [
+      ['My family has a fast car.', 'Gia đình tôi có một chiếc xe chạy nhanh.'],
+      ['He has a very nice house.', 'Anh ấy có một ngôi nhà rất đẹp.'],
+      ['My mom makes soup.', 'Mẹ tôi nấu súp.'],
+    ],
+    requires: ['subject-pronouns', 'have-has', 'articles', 'adjective-before-noun', 'possessive-adjectives', 'present-simple', 'consonants'],
+  },
+  {
+    title: 'Nhóm 3 · n ng l r y w',
+    note: '/n ŋ/ (hơi ra đằng mũi), /l r/ và /j w/: /l/ cuối từ vẫn chạm lưỡi, /r/ cong lưỡi chứ không rung.',
+    soundIds: ['c-n', 'c-ng', 'c-l', 'c-r', 'c-y', 'c-w'],
+    sentences: [
+      ['We walk in the morning.', 'Chúng tôi đi bộ vào buổi sáng.'],
+      ['Do you like yellow?', 'Bạn có thích màu vàng không?'],
+      ['Young people run a lot.', 'Người trẻ chạy bộ nhiều.'],
+    ],
+    requires: [
+      'subject-pronouns',
+      'present-simple',
+      'present-simple-questions',
+      'prepositions-of-time',
+      'articles',
+      'adjective-before-noun',
+      'irregular-plurals',
+      'consonants',
+    ],
+  },
+  {
+    title: 'Nhóm 4 · ★ θ ð ʃ ʒ + tʃ dʒ',
+    note: 'Nhóm người Việt hay sai nhất: /θ ð/ đặt lưỡi giữa hai hàm răng, /ʃ ʒ tʃ dʒ/ chu môi ra trước.',
+    soundIds: ['c-th', 'c-dh', 'c-sh', 'c-zh', 'c-ch', 'c-j'],
+    sentences: [
+      ['They usually watch TV.', 'Họ thường xem TV.'],
+      ["She doesn't share her things.", 'Cô ấy không cho ai dùng chung đồ của mình.'],
+      ['Do they enjoy their jobs?', 'Họ có thích công việc của mình không?'],
+    ],
+    requires: [
+      'subject-pronouns',
+      'frequency-adverbs',
+      'present-simple',
+      'present-simple-negative',
+      'present-simple-questions',
+      'possessive-adjectives',
+      'plurals',
+      'consonants',
+    ],
+  },
+])
