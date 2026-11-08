@@ -4,11 +4,10 @@ import { Link } from 'react-router'
 
 import { ListenButton } from '@/components/ListenButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { sectionHref } from '@/data/roadmap'
 import type { Question } from '@/data/questions'
 import { cn } from '@/lib/utils'
 
-import { sourceLabel } from './source-label'
+import { questionSourceHref, sourceLabel } from './source-label'
 
 const KIND_HINTS: Record<Question['kind'], string> = {
   choice: 'Chọn đáp án đúng',
@@ -16,11 +15,11 @@ const KIND_HINTS: Record<Question['kind'], string> = {
   listening: 'Nghe',
 }
 
-/** Link về đúng đoạn bài nguồn của câu. */
+/** Link về đúng đoạn bài nguồn của câu (câu Sân ga `fNN` → đúng viên gạch). */
 export function SourceSectionLink({ lessonId, sectionId }: { lessonId: string; sectionId: string }) {
   return (
     <Link
-      to={sectionHref(lessonId, sectionId)}
+      to={questionSourceHref(lessonId, sectionId)}
       className="text-xs break-words text-primary underline-offset-4 hover:underline"
     >
       Xem lại: {sourceLabel(lessonId, sectionId)}
@@ -64,15 +63,21 @@ type Props = {
   heading: string
   /** Hiện thêm sau khi đã chọn (vd nút câu tiếp). */
   footer?: ReactNode
+  /**
+   * `gentle` (Sân ga 9¾): chọn sai thì viền nét đứt, nền `muted`, lời "Chưa đúng, không sao", không dùng màu đỏ, và không
+   * hiện link "Xem lại" (đang giữa bài kiểm tra hàng, rời trang là mất bài; link có ở màn kết quả). Mặc định giữ nguyên.
+   */
+  tone?: 'default' | 'gentle'
 }
 
 /**
  * Một câu hỏi: chọn một lần, chọn xong hiện đúng/sai ngay. Đúng có hiệu ứng Lumos; sai hiện đáp án đúng,
  * giải thích và link về đoạn bài nguồn.
  */
-export function QuestionCard({ question, options, chosen, onChoose, heading, footer }: Props) {
+export function QuestionCard({ question, options, chosen, onChoose, heading, footer, tone = 'default' }: Props) {
   const answered = chosen !== null
   const correct = chosen === question.answer
+  const gentle = tone === 'gentle'
   return (
     <Card className={cn('gap-4', answered && correct && 'lumos border-primary')}>
       <CardHeader className="gap-2">
@@ -101,7 +106,12 @@ export function QuestionCard({ question, options, chosen, onChoose, heading, foo
                   'flex min-h-11 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-base break-words transition-colors',
                   !answered && 'hover:border-primary hover:bg-accent/40',
                   answered && isAnswer && 'border-primary bg-accent/50 text-accent-foreground',
-                  answered && isChosen && !isAnswer && 'border-destructive bg-destructive/10 text-destructive',
+                  answered &&
+                    isChosen &&
+                    !isAnswer &&
+                    (gentle
+                      ? 'border-dashed border-muted-foreground bg-muted/40'
+                      : 'border-destructive bg-destructive/10 text-destructive'),
                   answered && !isAnswer && !isChosen && 'opacity-60',
                 )}
               >
@@ -115,11 +125,15 @@ export function QuestionCard({ question, options, chosen, onChoose, heading, foo
 
         {answered && (
           <div role="status" className="flex flex-col gap-2 text-sm">
-            <p className={cn('font-semibold', correct ? 'text-primary' : 'text-destructive')}>
-              {correct ? 'Lumos! Chính xác.' : `Chưa đúng. Đáp án: ${question.answer}`}
+            <p className={cn('font-semibold', correct ? 'text-primary' : gentle ? 'text-foreground' : 'text-destructive')}>
+              {correct
+                ? 'Lumos! Chính xác.'
+                : gentle
+                  ? `Chưa đúng, không sao. Đáp án: ${question.answer}`
+                  : `Chưa đúng. Đáp án: ${question.answer}`}
             </p>
             <p className="break-words text-muted-foreground">{question.explanation}</p>
-            {!correct && <SourceSectionLink lessonId={question.lessonId} sectionId={question.sectionId} />}
+            {!correct && !gentle && <SourceSectionLink lessonId={question.lessonId} sectionId={question.sectionId} />}
           </div>
         )}
         {answered && footer}

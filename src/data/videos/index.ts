@@ -32,6 +32,20 @@ export function funStepVideos(lesson: Pick<Lesson, 'id'> | null | undefined): re
 }
 
 /**
+ * Video phần "Giải trí nhẹ" của buổi Sân ga (story 21): VOA Let's Learn English Lesson 1, 2 (đã có trong `videos.json`,
+ * đã kiểm oEmbed). Lesson 3 chưa có id đã kiểm nên chưa thêm.
+ */
+export const FOUNDATION_FUN_VIDEO_IDS: readonly string[] = ['WR9_nsLyaEY', '1-U7o9xjWQc']
+
+/** Video của `FOUNDATION_FUN_VIDEO_IDS` theo đúng thứ tự; id không có trong dữ liệu bị bỏ qua (mỗi id một lần). */
+export function foundationFunVideos(videos: readonly LessonVideo[] = LESSON_VIDEOS): readonly LessonVideo[] {
+  return FOUNDATION_FUN_VIDEO_IDS.flatMap((id) => {
+    const video = videos.find((v) => v.id === id)
+    return video ? [video] : []
+  })
+}
+
+/**
  * URL iframe (youtube-nocookie). Chỉ dùng sau khi người dùng bấm phát nên có `autoplay=1`;
  * `playsinline=1` để iPhone phát ngay trong trang, `rel=0` để video gợi ý cuối chỉ cùng kênh.
  * `jsapiOrigin`: thêm `enablejsapi=1&origin=…` cho video có phụ đề.

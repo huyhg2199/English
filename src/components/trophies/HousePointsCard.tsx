@@ -8,7 +8,7 @@ import { STREAK_BONUS, STREAK_BONUS_EVERY, type HousePoints } from '@/lib/trophi
 
 type Props = { house: House | null; points: HousePoints; streak: number; longest: number }
 
-/** Điểm Nhà (tên + màu Nhà qua `data-house`), chuỗi hiện tại và dài nhất. Chưa có Nhà thì mời đội Mũ. */
+/** Điểm Nhà (tên + màu Nhà qua `data-house`), chuỗi hiện tại và dài nhất. Chưa có Nhà thì mời đội Mũ; có Nhà thì link "Đổi Nhà". */
 export function HousePointsCard({ house, points, streak, longest }: Props) {
   return (
     <Card className="gap-4 border-primary/50">
@@ -43,7 +43,11 @@ export function HousePointsCard({ house, points, streak, longest }: Props) {
             <dd className="text-lg font-semibold tabular-nums">{longest} ngày</dd>
           </div>
         </dl>
-        {!house && (
+        {house ? (
+          <Link to="/sorting-hat" className="self-start text-sm text-primary underline-offset-4 hover:underline">
+            Đổi Nhà
+          </Link>
+        ) : (
           <Button asChild variant="outline" className="w-full">
             <Link to="/sorting-hat">Đội Mũ Phân Loại để chọn Nhà</Link>
           </Button>

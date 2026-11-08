@@ -18,13 +18,16 @@ export type SessionDay = {
   completedAt: string
   /** Số phút tính giờ học theo CAP-7 (giờ chủ động + giải trí ×½). */
   minutes: number
-  /** Bài của buổi (buổi chuẩn). */
+  /** Bài của buổi (buổi chuẩn): id bài, hoặc viên gạch dạng `f03` ở buổi Sân ga. */
   lessonId?: string
   /** Lần sửa gần nhất; không bao giờ lùi. Dùng để gộp khi đồng bộ. */
   updatedAt: string
 }
 
-/** Phút tính giờ học: buổi chuẩn = 5' SRS + 15' bài chính + 10' giải trí × ½ = 25; buổi lười = 10. */
+/**
+ * Phút tính giờ học: buổi chuẩn = 15' bài chính + 5' SRS + 10' giải trí × ½ = 25 (buổi Sân ga: 12' lý thuyết + 8' ôn
+ * + 10' giải trí nhẹ × ½ = 25, cùng số); buổi lười = 10.
+ */
 export const SESSION_MINUTES: Record<SessionKind, number> = { full: 5 + 15 + 10 / 2, lazy: 10 }
 
 export function isSessionDay(value: unknown): value is SessionDay {

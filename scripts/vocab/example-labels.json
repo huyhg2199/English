@@ -1,0 +1,3809 @@
+[
+  {
+    "id": "ngsl-the",
+    "rank": 1,
+    "exampleEn": "The meeting starts at nine.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-be",
+    "rank": 2,
+    "exampleEn": "She is a nurse.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-and",
+    "rank": 3,
+    "exampleEn": "I like tea and coffee.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-of",
+    "rank": 4,
+    "exampleEn": "This is a map of the city.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-to",
+    "rank": 5,
+    "exampleEn": "I go to work by bus.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-a",
+    "rank": 6,
+    "exampleEn": "I have a meeting today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-in",
+    "rank": 7,
+    "exampleEn": "The files are in the box.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-have",
+    "rank": 8,
+    "exampleEn": "I have two brothers.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-it",
+    "rank": 9,
+    "exampleEn": "It is very cold today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-you",
+    "rank": 10,
+    "exampleEn": "Do you work here?",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-he",
+    "rank": 11,
+    "exampleEn": "He works in a bank.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-for",
+    "rank": 12,
+    "exampleEn": "This gift is for you.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-they",
+    "rank": 13,
+    "exampleEn": "They live near the office.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-not",
+    "rank": 14,
+    "exampleEn": "I am not ready yet.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-that",
+    "rank": 15,
+    "exampleEn": "That desk is mine.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-we",
+    "rank": 16,
+    "exampleEn": "We have lunch at noon.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-on",
+    "rank": 17,
+    "exampleEn": "The keys are on the table.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-with",
+    "rank": 18,
+    "exampleEn": "I work with a good team.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-this",
+    "rank": 19,
+    "exampleEn": "This room is very quiet.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-i",
+    "rank": 20,
+    "exampleEn": "I am a student.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-do",
+    "rank": 21,
+    "exampleEn": "I do my homework every night.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-as",
+    "rank": 22,
+    "exampleEn": "She works as a teacher.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-at",
+    "rank": 23,
+    "exampleEn": "See you at the station.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-she",
+    "rank": 24,
+    "exampleEn": "She is my manager.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-but",
+    "rank": 25,
+    "exampleEn": "The room is small but clean.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-from",
+    "rank": 26,
+    "exampleEn": "I am from Vietnam.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-by",
+    "rank": 27,
+    "exampleEn": "I go to work by train.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-will",
+    "rank": 28,
+    "exampleEn": "I will call you tomorrow.",
+    "features": [
+      "future"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-or",
+    "rank": 29,
+    "exampleEn": "Tea or coffee?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-say",
+    "rank": 30,
+    "exampleEn": "Please say your name.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-go",
+    "rank": 31,
+    "exampleEn": "Let's go home.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-so",
+    "rank": 32,
+    "exampleEn": "I am so tired today.",
+    "features": [
+      "past"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-all",
+    "rank": 33,
+    "exampleEn": "All the staff are here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-if",
+    "rank": 34,
+    "exampleEn": "Call me if you are late.",
+    "features": [
+      "conditional"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-one",
+    "rank": 35,
+    "exampleEn": "I have one question.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-would",
+    "rank": 36,
+    "exampleEn": "Would you like some water?",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-about",
+    "rank": 37,
+    "exampleEn": "Tell me about your job.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-can",
+    "rank": 38,
+    "exampleEn": "I can speak English.",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-which",
+    "rank": 39,
+    "exampleEn": "Which bus goes to the airport?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-there",
+    "rank": 40,
+    "exampleEn": "There is a bank near here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-know",
+    "rank": 41,
+    "exampleEn": "I know her name.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-more",
+    "rank": 42,
+    "exampleEn": "We need more time.",
+    "features": [
+      "comparative"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-get",
+    "rank": 43,
+    "exampleEn": "I get up at six.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-who",
+    "rank": 44,
+    "exampleEn": "Who is your manager?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-like",
+    "rank": 45,
+    "exampleEn": "I like my new job.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-when",
+    "rank": 46,
+    "exampleEn": "When does the shop open?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-think",
+    "rank": 47,
+    "exampleEn": "I think this plan is good.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-make",
+    "rank": 48,
+    "exampleEn": "I make coffee every morning.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-time",
+    "rank": 49,
+    "exampleEn": "What time is it?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-see",
+    "rank": 50,
+    "exampleEn": "I see the sea from my window.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-what",
+    "rank": 51,
+    "exampleEn": "What is your name?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-up",
+    "rank": 52,
+    "exampleEn": "Please stand up.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-some",
+    "rank": 53,
+    "exampleEn": "I need some paper.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-other",
+    "rank": 54,
+    "exampleEn": "Do you have other colors?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-out",
+    "rank": 55,
+    "exampleEn": "She is out for lunch.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-good",
+    "rank": 56,
+    "exampleEn": "This is a good idea.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-people",
+    "rank": 57,
+    "exampleEn": "Many people work here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-year",
+    "rank": 58,
+    "exampleEn": "There are twelve months in a year.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-take",
+    "rank": 59,
+    "exampleEn": "Take an umbrella with you.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-no",
+    "rank": 60,
+    "exampleEn": "There is no milk in the fridge.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-well",
+    "rank": 61,
+    "exampleEn": "She speaks English well.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-because",
+    "rank": 62,
+    "exampleEn": "I am late because of the rain.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-very",
+    "rank": 63,
+    "exampleEn": "The food is very good.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-just",
+    "rank": 64,
+    "exampleEn": "I just want a cup of tea.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-come",
+    "rank": 65,
+    "exampleEn": "Come to my office, please.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-could",
+    "rank": 66,
+    "exampleEn": "Could you open the window?",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-work",
+    "rank": 67,
+    "exampleEn": "I work from nine to five.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-use",
+    "rank": 68,
+    "exampleEn": "I use my phone every day.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-than",
+    "rank": 69,
+    "exampleEn": "He is taller than me.",
+    "features": [
+      "comparative"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-now",
+    "rank": 70,
+    "exampleEn": "I am busy now.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-then",
+    "rank": 71,
+    "exampleEn": "Finish this, then go home.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-also",
+    "rank": 72,
+    "exampleEn": "I also speak French.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-into",
+    "rank": 73,
+    "exampleEn": "Please put the milk into the fridge.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-only",
+    "rank": 74,
+    "exampleEn": "I only have ten dollars.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-look",
+    "rank": 75,
+    "exampleEn": "Look at this photo.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-want",
+    "rank": 76,
+    "exampleEn": "I want a cup of tea.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-give",
+    "rank": 77,
+    "exampleEn": "Please give me the report.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-first",
+    "rank": 78,
+    "exampleEn": "This is my first day here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-new",
+    "rank": 79,
+    "exampleEn": "I have a new laptop.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-way",
+    "rank": 80,
+    "exampleEn": "Is this the way to the station?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-find",
+    "rank": 81,
+    "exampleEn": "I often find my keys under the sofa.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-over",
+    "rank": 82,
+    "exampleEn": "There is a bridge over the river.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-any",
+    "rank": 83,
+    "exampleEn": "Do you have any questions?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-after",
+    "rank": 84,
+    "exampleEn": "Let's meet after work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-day",
+    "rank": 85,
+    "exampleEn": "Have a nice day!",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-where",
+    "rank": 86,
+    "exampleEn": "Where is the meeting room?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-thing",
+    "rank": 87,
+    "exampleEn": "I have many things to do.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-most",
+    "rank": 88,
+    "exampleEn": "Most people like music.",
+    "features": [
+      "comparative"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-should",
+    "rank": 89,
+    "exampleEn": "You should see a doctor.",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-need",
+    "rank": 90,
+    "exampleEn": "I need your help.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-much",
+    "rank": 91,
+    "exampleEn": "How much is this bag?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-right",
+    "rank": 92,
+    "exampleEn": "Your answer is right.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-how",
+    "rank": 93,
+    "exampleEn": "How are you today?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-back",
+    "rank": 94,
+    "exampleEn": "Please come back at five.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-mean",
+    "rank": 95,
+    "exampleEn": "What does this word mean?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-even",
+    "rank": 96,
+    "exampleEn": "He works even on Sundays.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-may",
+    "rank": 97,
+    "exampleEn": "May I come in?",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-here",
+    "rank": 98,
+    "exampleEn": "Please sign here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-many",
+    "rank": 99,
+    "exampleEn": "We have many customers.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-such",
+    "rank": 100,
+    "exampleEn": "It is such a nice day.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-last",
+    "rank": 101,
+    "exampleEn": "December is the last month of the year.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-child",
+    "rank": 102,
+    "exampleEn": "She has one child.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-tell",
+    "rank": 103,
+    "exampleEn": "Please tell me the time.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-really",
+    "rank": 104,
+    "exampleEn": "I really like this song.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-call",
+    "rank": 105,
+    "exampleEn": "Please call me at six.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-before",
+    "rank": 106,
+    "exampleEn": "Wash your hands before lunch.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-company",
+    "rank": 107,
+    "exampleEn": "She works for a big company.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-through",
+    "rank": 108,
+    "exampleEn": "This bus goes through the city center.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-down",
+    "rank": 109,
+    "exampleEn": "Please sit down.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-show",
+    "rank": 110,
+    "exampleEn": "Please show me your ticket.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-life",
+    "rank": 111,
+    "exampleEn": "City life is busy.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-man",
+    "rank": 112,
+    "exampleEn": "That man is my boss.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-change",
+    "rank": 113,
+    "exampleEn": "We need to change the plan.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-place",
+    "rank": 114,
+    "exampleEn": "This is a nice place to eat.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-long",
+    "rank": 115,
+    "exampleEn": "The meeting is very long.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-between",
+    "rank": 116,
+    "exampleEn": "The bank is between two shops.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-feel",
+    "rank": 117,
+    "exampleEn": "I feel tired today.",
+    "features": [
+      "past"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-too",
+    "rank": 118,
+    "exampleEn": "This coffee is too hot.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-still",
+    "rank": 119,
+    "exampleEn": "She is still at work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-problem",
+    "rank": 120,
+    "exampleEn": "There is a problem with my computer.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-write",
+    "rank": 121,
+    "exampleEn": "Please write your name here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-same",
+    "rank": 122,
+    "exampleEn": "We work in the same office.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-lot",
+    "rank": 123,
+    "exampleEn": "I have a lot of work today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-great",
+    "rank": 124,
+    "exampleEn": "That's a great idea!",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-try",
+    "rank": 125,
+    "exampleEn": "Try this cake.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-leave",
+    "rank": 126,
+    "exampleEn": "I leave the office at six.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-number",
+    "rank": 127,
+    "exampleEn": "What is your phone number?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-both",
+    "rank": 128,
+    "exampleEn": "Both rooms are free.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-own",
+    "rank": 129,
+    "exampleEn": "I have my own office.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-part",
+    "rank": 130,
+    "exampleEn": "This part of the city is quiet.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-point",
+    "rank": 131,
+    "exampleEn": "That's a good point.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-little",
+    "rank": 132,
+    "exampleEn": "I speak a little English.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-help",
+    "rank": 133,
+    "exampleEn": "My friends help me with my homework.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-ask",
+    "rank": 134,
+    "exampleEn": "Students ask the teacher many questions.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-meet",
+    "rank": 135,
+    "exampleEn": "Nice to meet you.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-start",
+    "rank": 136,
+    "exampleEn": "The class starts at eight.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-talk",
+    "rank": 137,
+    "exampleEn": "We talk about work at lunch.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-something",
+    "rank": 138,
+    "exampleEn": "I want something to drink.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-put",
+    "rank": 139,
+    "exampleEn": "Put the box on the desk.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-another",
+    "rank": 140,
+    "exampleEn": "Please give me another cup of tea.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-become",
+    "rank": 141,
+    "exampleEn": "She wants to become a doctor.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-interest",
+    "rank": 142,
+    "exampleEn": "I have an interest in music.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-country",
+    "rank": 143,
+    "exampleEn": "Vietnam is a beautiful country.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-old",
+    "rank": 144,
+    "exampleEn": "This is an old building.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-each",
+    "rank": 145,
+    "exampleEn": "Each room has a TV.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-school",
+    "rank": 146,
+    "exampleEn": "My son goes to school by bus.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-late",
+    "rank": 147,
+    "exampleEn": "Sorry, I am late.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-high",
+    "rank": 148,
+    "exampleEn": "The price is too high.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-different",
+    "rank": 149,
+    "exampleEn": "We have different ideas.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-off",
+    "rank": 150,
+    "exampleEn": "Please turn off the lights.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-next",
+    "rank": 151,
+    "exampleEn": "See you next week.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-end",
+    "rank": 152,
+    "exampleEn": "The office is at the end of the hall.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-live",
+    "rank": 153,
+    "exampleEn": "I live in Hanoi.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-why",
+    "rank": 154,
+    "exampleEn": "Why are you late?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-while",
+    "rank": 155,
+    "exampleEn": "I listen to music while I work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-world",
+    "rank": 156,
+    "exampleEn": "She wants to travel the world.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-week",
+    "rank": 157,
+    "exampleEn": "I work five days a week.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-play",
+    "rank": 158,
+    "exampleEn": "The kids play in the park.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-might",
+    "rank": 159,
+    "exampleEn": "It might rain later.",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-must",
+    "rank": 160,
+    "exampleEn": "You must wear a helmet.",
+    "features": [
+      "modal"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-home",
+    "rank": 161,
+    "exampleEn": "I am at home now.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-never",
+    "rank": 162,
+    "exampleEn": "I never drink coffee at night.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-include",
+    "rank": 163,
+    "exampleEn": "The price includes breakfast.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-course",
+    "rank": 164,
+    "exampleEn": "This English course starts in June.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-house",
+    "rank": 165,
+    "exampleEn": "They have a big house.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-report",
+    "rank": 166,
+    "exampleEn": "Please send me the report.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-group",
+    "rank": 167,
+    "exampleEn": "We work in small groups.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-case",
+    "rank": 168,
+    "exampleEn": "In that case, call me.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-woman",
+    "rank": 169,
+    "exampleEn": "That woman is our new manager.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-around",
+    "rank": 170,
+    "exampleEn": "There are shops around the hotel.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-book",
+    "rank": 171,
+    "exampleEn": "This is a good book.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-family",
+    "rank": 172,
+    "exampleEn": "I live with my family.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-seem",
+    "rank": 173,
+    "exampleEn": "She seems happy today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-let",
+    "rank": 174,
+    "exampleEn": "Let me help you.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-again",
+    "rank": 175,
+    "exampleEn": "Please say that again.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-kind",
+    "rank": 176,
+    "exampleEn": "What kind of music do you like?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-keep",
+    "rank": 177,
+    "exampleEn": "Please keep your bag with you.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-hear",
+    "rank": 178,
+    "exampleEn": "I hear birds every morning.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-system",
+    "rank": 179,
+    "exampleEn": "The computer system is down.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-every",
+    "rank": 180,
+    "exampleEn": "I swim every morning.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-question",
+    "rank": 181,
+    "exampleEn": "I have a question about the test.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-during",
+    "rank": 182,
+    "exampleEn": "Please turn off phones during the meeting.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-always",
+    "rank": 183,
+    "exampleEn": "She is always on time.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-big",
+    "rank": 184,
+    "exampleEn": "They live in a big city.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-set",
+    "rank": 185,
+    "exampleEn": "I set my alarm for six.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-small",
+    "rank": 186,
+    "exampleEn": "I live in a small apartment.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-study",
+    "rank": 187,
+    "exampleEn": "I study English every day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-follow",
+    "rank": 188,
+    "exampleEn": "Please follow me.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-begin",
+    "rank": 189,
+    "exampleEn": "Our lessons begin at ten.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-important",
+    "rank": 190,
+    "exampleEn": "This is an important email.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-since",
+    "rank": 191,
+    "exampleEn": "I have worked here since 2020.",
+    "features": [
+      "past",
+      "perfect"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-run",
+    "rank": 192,
+    "exampleEn": "I run in the park every morning.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-under",
+    "rank": 193,
+    "exampleEn": "The bag is under the desk.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-turn",
+    "rank": 194,
+    "exampleEn": "Turn left at the bank.",
+    "features": [
+      "past"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-few",
+    "rank": 195,
+    "exampleEn": "I have a few questions.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-bring",
+    "rank": 196,
+    "exampleEn": "Please bring your ID card.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-early",
+    "rank": 197,
+    "exampleEn": "I have an early meeting.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-hand",
+    "rank": 198,
+    "exampleEn": "Please raise your hand.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-state",
+    "rank": 199,
+    "exampleEn": "Texas is a big state.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-move",
+    "rank": 200,
+    "exampleEn": "Please move your car.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-money",
+    "rank": 201,
+    "exampleEn": "I need money for the trip.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-fact",
+    "rank": 202,
+    "exampleEn": "In fact, I like my job.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-however",
+    "rank": 203,
+    "exampleEn": "The job is hard. However, I like it.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-area",
+    "rank": 204,
+    "exampleEn": "There are many shops in this area.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-provide",
+    "rank": 205,
+    "exampleEn": "The company provides lunch for staff.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-name",
+    "rank": 206,
+    "exampleEn": "What is your name?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-read",
+    "rank": 207,
+    "exampleEn": "I read the news every morning.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-friend",
+    "rank": 208,
+    "exampleEn": "She is my friend from school.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-month",
+    "rank": 209,
+    "exampleEn": "The meeting is next month.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-large",
+    "rank": 210,
+    "exampleEn": "We need a large room for the meeting.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-business",
+    "rank": 211,
+    "exampleEn": "My father runs a small business.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-without",
+    "rank": 212,
+    "exampleEn": "I drink coffee without sugar.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-information",
+    "rank": 213,
+    "exampleEn": "Please send me the information.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-open",
+    "rank": 214,
+    "exampleEn": "The store opens at 9 a.m.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-order",
+    "rank": 215,
+    "exampleEn": "I want to change my order.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-government",
+    "rank": 216,
+    "exampleEn": "The government pays for the new hospital.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-word",
+    "rank": 217,
+    "exampleEn": "I learn ten new words a day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-issue",
+    "rank": 218,
+    "exampleEn": "We have an issue with the printer.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-market",
+    "rank": 219,
+    "exampleEn": "I buy fruit at the market.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-pay",
+    "rank": 220,
+    "exampleEn": "I usually pay by card.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-build",
+    "rank": 221,
+    "exampleEn": "Birds build nests in spring.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-hold",
+    "rank": 222,
+    "exampleEn": "Please hold the door for me.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-service",
+    "rank": 223,
+    "exampleEn": "The service at this hotel is great.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-against",
+    "rank": 224,
+    "exampleEn": "Many people are against the new rule.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-believe",
+    "rank": 225,
+    "exampleEn": "I believe you are right.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-second",
+    "rank": 226,
+    "exampleEn": "My office is on the second floor.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-though",
+    "rank": 227,
+    "exampleEn": "I like the job, though the pay is low.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-yes",
+    "rank": 228,
+    "exampleEn": "Yes, I am ready.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-love",
+    "rank": 229,
+    "exampleEn": "I love my family.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-increase",
+    "rank": 230,
+    "exampleEn": "Prices increase every year.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-job",
+    "rank": 231,
+    "exampleEn": "She has a new job at a bank.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-plan",
+    "rank": 232,
+    "exampleEn": "What is your plan for the weekend?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-result",
+    "rank": 233,
+    "exampleEn": "The test results are good.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-away",
+    "rank": 234,
+    "exampleEn": "The manager is away this week.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-example",
+    "rank": 235,
+    "exampleEn": "Please give me an example.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-happen",
+    "rank": 236,
+    "exampleEn": "Accidents often happen on this road.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-offer",
+    "rank": 237,
+    "exampleEn": "We offer free delivery.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-young",
+    "rank": 238,
+    "exampleEn": "My sister is still young.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-close",
+    "rank": 239,
+    "exampleEn": "Please close the window.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-program",
+    "rank": 240,
+    "exampleEn": "I watch this TV program every day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-lead",
+    "rank": 241,
+    "exampleEn": "She leads a team of ten people.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-buy",
+    "rank": 242,
+    "exampleEn": "I want to buy a new phone.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-understand",
+    "rank": 243,
+    "exampleEn": "I don't understand this word.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-thank",
+    "rank": 244,
+    "exampleEn": "Thank you for your help.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-far",
+    "rank": 245,
+    "exampleEn": "My home is not far from here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-today",
+    "rank": 246,
+    "exampleEn": "I have a meeting today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-hour",
+    "rank": 247,
+    "exampleEn": "I work eight hours a day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-student",
+    "rank": 248,
+    "exampleEn": "He is a student at this school.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-face",
+    "rank": 249,
+    "exampleEn": "Wash your face before bed.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-hope",
+    "rank": 250,
+    "exampleEn": "I hope you like the gift.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-idea",
+    "rank": 251,
+    "exampleEn": "That is a good idea.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-cost",
+    "rank": 252,
+    "exampleEn": "The cost of the trip is $500.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-less",
+    "rank": 253,
+    "exampleEn": "I want to spend less money.",
+    "features": [
+      "comparative"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-room",
+    "rank": 254,
+    "exampleEn": "The meeting room is on the left.",
+    "features": [
+      "past"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-until",
+    "rank": 255,
+    "exampleEn": "The shop is open until 10 p.m.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-reason",
+    "rank": 256,
+    "exampleEn": "What is the reason for the delay?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-form",
+    "rank": 257,
+    "exampleEn": "Please fill in this form.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-spend",
+    "rank": 258,
+    "exampleEn": "I spend a lot on food.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-head",
+    "rank": 259,
+    "exampleEn": "My head hurts.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-car",
+    "rank": 260,
+    "exampleEn": "I go to work by car.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-learn",
+    "rank": 261,
+    "exampleEn": "I learn English every day.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-level",
+    "rank": 262,
+    "exampleEn": "My English level is still low.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-person",
+    "rank": 263,
+    "exampleEn": "She is a very kind person.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-experience",
+    "rank": 264,
+    "exampleEn": "Do you have work experience?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-once",
+    "rank": 265,
+    "exampleEn": "I go to the gym once a week.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-member",
+    "rank": 266,
+    "exampleEn": "He is a new member of our team.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-enough",
+    "rank": 267,
+    "exampleEn": "We don't have enough time.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-bad",
+    "rank": 268,
+    "exampleEn": "The weather is bad today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-city",
+    "rank": 269,
+    "exampleEn": "I live in a big city.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-night",
+    "rank": 270,
+    "exampleEn": "I work late at night.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-able",
+    "rank": 271,
+    "exampleEn": "Are you able to come tomorrow?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-support",
+    "rank": 272,
+    "exampleEn": "My family always supports me.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-whether",
+    "rank": 273,
+    "exampleEn": "I don't know whether this answer is right.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-line",
+    "rank": 274,
+    "exampleEn": "Please wait in line.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-present",
+    "rank": 275,
+    "exampleEn": "All staff are present today.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-side",
+    "rank": 276,
+    "exampleEn": "The bank is on the other side of the street.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-quite",
+    "rank": 277,
+    "exampleEn": "The test is quite easy.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-although",
+    "rank": 278,
+    "exampleEn": "Although the job is hard, I like it.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-sure",
+    "rank": 279,
+    "exampleEn": "Are you sure about the time?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-term",
+    "rank": 280,
+    "exampleEn": "What does this term mean?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-least",
+    "rank": 281,
+    "exampleEn": "Call me at least once a week.",
+    "features": [
+      "comparative"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-age",
+    "rank": 282,
+    "exampleEn": "What is your age?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-low",
+    "rank": 283,
+    "exampleEn": "The price is very low.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-speak",
+    "rank": 284,
+    "exampleEn": "Do you speak English?",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-within",
+    "rank": 285,
+    "exampleEn": "Please reply within two days.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-process",
+    "rank": 286,
+    "exampleEn": "The hiring process takes one month.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-public",
+    "rank": 287,
+    "exampleEn": "I take public transportation to work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-often",
+    "rank": 288,
+    "exampleEn": "I often drink tea in the afternoon.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-train",
+    "rank": 289,
+    "exampleEn": "I take the train to work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-possible",
+    "rank": 290,
+    "exampleEn": "Please reply as soon as possible.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-actually",
+    "rank": 291,
+    "exampleEn": "Actually, I am not hungry.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-rather",
+    "rank": 292,
+    "exampleEn": "The room is rather small.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-view",
+    "rank": 293,
+    "exampleEn": "The room has a nice view.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-together",
+    "rank": 294,
+    "exampleEn": "We have lunch together every day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-consider",
+    "rank": 295,
+    "exampleEn": "Please consider my offer.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-price",
+    "rank": 296,
+    "exampleEn": "What is the price of this bag?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-parent",
+    "rank": 297,
+    "exampleEn": "My parents live in Hanoi.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-hard",
+    "rank": 298,
+    "exampleEn": "This question is very hard.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-party",
+    "rank": 299,
+    "exampleEn": "We have an office party on Friday.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-local",
+    "rank": 300,
+    "exampleEn": "I shop at a local market.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-control",
+    "rank": 301,
+    "exampleEn": "I control the lights with my phone.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-already",
+    "rank": 302,
+    "exampleEn": "It is already nine o'clock.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-concern",
+    "rank": 303,
+    "exampleEn": "Safety is our main concern.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-product",
+    "rank": 304,
+    "exampleEn": "This is our new product.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-lose",
+    "rank": 305,
+    "exampleEn": "Don't lose your ticket.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-story",
+    "rank": 306,
+    "exampleEn": "My son likes this story.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-almost",
+    "rank": 307,
+    "exampleEn": "It's almost time to go home.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-continue",
+    "rank": 308,
+    "exampleEn": "Let's continue the meeting after lunch.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-stand",
+    "rank": 309,
+    "exampleEn": "Please stand in line.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-whole",
+    "rank": 310,
+    "exampleEn": "I work the whole day on Mondays.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-yet",
+    "rank": 311,
+    "exampleEn": "The bus is not here yet.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-rate",
+    "rank": 312,
+    "exampleEn": "The hotel rate is $80 a night.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-care",
+    "rank": 313,
+    "exampleEn": "I care about my health.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-expect",
+    "rank": 314,
+    "exampleEn": "We expect the package tomorrow.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-effect",
+    "rank": 315,
+    "exampleEn": "Coffee has a strong effect on me.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-sort",
+    "rank": 316,
+    "exampleEn": "What sort of music do you like?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-ever",
+    "rank": 317,
+    "exampleEn": "Do you ever work on Sundays?",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-anything",
+    "rank": 318,
+    "exampleEn": "Do you need anything else?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-cause",
+    "rank": 319,
+    "exampleEn": "Heavy rains cause traffic jams.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-fall",
+    "rank": 320,
+    "exampleEn": "Be careful, don't fall.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-deal",
+    "rank": 321,
+    "exampleEn": "This phone is a good deal.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-water",
+    "rank": 322,
+    "exampleEn": "I drink a lot of water every day.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-send",
+    "rank": 323,
+    "exampleEn": "I send emails every morning.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-allow",
+    "rank": 324,
+    "exampleEn": "The hotel doesn't allow pets.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-soon",
+    "rank": 325,
+    "exampleEn": "See you soon!",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-watch",
+    "rank": 326,
+    "exampleEn": "I watch TV after dinner.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-base",
+    "rank": 327,
+    "exampleEn": "The company's base is in Ho Chi Minh City.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-probably",
+    "rank": 328,
+    "exampleEn": "He is probably at home now.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-suggest",
+    "rank": 329,
+    "exampleEn": "I suggest we take a short break.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-past",
+    "rank": 330,
+    "exampleEn": "It's ten past nine.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-power",
+    "rank": 331,
+    "exampleEn": "The power is off in our building.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-test",
+    "rank": 332,
+    "exampleEn": "I have an English test tomorrow.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-visit",
+    "rank": 333,
+    "exampleEn": "I visit my parents every weekend.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-center",
+    "rank": 334,
+    "exampleEn": "The hotel is in the city center.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-grow",
+    "rank": 335,
+    "exampleEn": "Farmers grow rice in this area.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-nothing",
+    "rank": 336,
+    "exampleEn": "There is nothing in the box.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-return",
+    "rank": 337,
+    "exampleEn": "Please return the book on Friday.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-mother",
+    "rank": 338,
+    "exampleEn": "My mother is a teacher.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-walk",
+    "rank": 339,
+    "exampleEn": "I walk to work every day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-matter",
+    "rank": 340,
+    "exampleEn": "It doesn't matter.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-mind",
+    "rank": 341,
+    "exampleEn": "Do you mind the noise?",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-value",
+    "rank": 342,
+    "exampleEn": "This house has a high value.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-office",
+    "rank": 343,
+    "exampleEn": "I am at the office now.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-record",
+    "rank": 344,
+    "exampleEn": "Please keep a record of your spending.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-stay",
+    "rank": 345,
+    "exampleEn": "I stay at home on Sundays.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-force",
+    "rank": 346,
+    "exampleEn": "Our sales force has twenty people.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-stop",
+    "rank": 347,
+    "exampleEn": "Please stop the car here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-several",
+    "rank": 348,
+    "exampleEn": "I have several questions.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-light",
+    "rank": 349,
+    "exampleEn": "Please turn off the light.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-develop",
+    "rank": 350,
+    "exampleEn": "We develop apps for banks.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-remember",
+    "rank": 351,
+    "exampleEn": "I don't remember his name.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-bit",
+    "rank": 352,
+    "exampleEn": "I am a bit hungry.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-share",
+    "rank": 353,
+    "exampleEn": "Let's share the cost.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-real",
+    "rank": 354,
+    "exampleEn": "Is this a real diamond?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-answer",
+    "rank": 355,
+    "exampleEn": "I know the answer.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sit",
+    "rank": 356,
+    "exampleEn": "Please sit down.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-figure",
+    "rank": 357,
+    "exampleEn": "The sales figures are good this month.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-letter",
+    "rank": 358,
+    "exampleEn": "I get a letter from the bank every month.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-decide",
+    "rank": 359,
+    "exampleEn": "We decide together.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-language",
+    "rank": 360,
+    "exampleEn": "How many languages do you speak?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-subject",
+    "rank": 361,
+    "exampleEn": "What is the subject of the email?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-class",
+    "rank": 362,
+    "exampleEn": "I have an English class tonight.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-development",
+    "rank": 363,
+    "exampleEn": "The app is still in development.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-town",
+    "rank": 364,
+    "exampleEn": "I live in a small town.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-half",
+    "rank": 365,
+    "exampleEn": "I work half a day on Saturdays.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-minute",
+    "rank": 366,
+    "exampleEn": "Please wait a minute.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-food",
+    "rank": 367,
+    "exampleEn": "The food here is very good.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-break",
+    "rank": 368,
+    "exampleEn": "Let's take a ten-minute break.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-clear",
+    "rank": 369,
+    "exampleEn": "Your explanation is very clear.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-future",
+    "rank": 370,
+    "exampleEn": "What are your plans for the future?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-either",
+    "rank": 371,
+    "exampleEn": "There are shops on either side of the street.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-ago",
+    "rank": 372,
+    "exampleEn": "I started this job two years ago.",
+    "features": [
+      "past"
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "ngsl-per",
+    "rank": 373,
+    "exampleEn": "The room costs $50 per night.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-remain",
+    "rank": 374,
+    "exampleEn": "Please remain in your seats.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-top",
+    "rank": 375,
+    "exampleEn": "Write your name at the top of the page.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-among",
+    "rank": 376,
+    "exampleEn": "She is popular among her coworkers.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-win",
+    "rank": 377,
+    "exampleEn": "I play chess with my dad, and I often win.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-color",
+    "rank": 378,
+    "exampleEn": "What color is your car?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-involve",
+    "rank": 379,
+    "exampleEn": "The job involves a lot of travel.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-reach",
+    "rank": 380,
+    "exampleEn": "I reach the office at eight every day.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-social",
+    "rank": 381,
+    "exampleEn": "I don't use social media much.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-period",
+    "rank": 382,
+    "exampleEn": "The sale lasts for a short period.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-across",
+    "rank": 383,
+    "exampleEn": "The bank is across the street.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-note",
+    "rank": 384,
+    "exampleEn": "There is a note on your desk.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-history",
+    "rank": 385,
+    "exampleEn": "I like reading about history.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-create",
+    "rank": 386,
+    "exampleEn": "We create websites for small shops.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-drive",
+    "rank": 387,
+    "exampleEn": "I drive to work every day.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-along",
+    "rank": 388,
+    "exampleEn": "There are trees along the river.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-type",
+    "rank": 389,
+    "exampleEn": "What type of room do you want?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sound",
+    "rank": 390,
+    "exampleEn": "I hear a strange sound outside.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-eye",
+    "rank": 391,
+    "exampleEn": "She has blue eyes.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-music",
+    "rank": 392,
+    "exampleEn": "I listen to music on the bus.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-game",
+    "rank": 393,
+    "exampleEn": "Let's play a game.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-political",
+    "rank": 394,
+    "exampleEn": "We don't talk about political issues at work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-free",
+    "rank": 395,
+    "exampleEn": "Are you free this afternoon?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-receive",
+    "rank": 396,
+    "exampleEn": "I receive many emails every day.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-moment",
+    "rank": 397,
+    "exampleEn": "Please wait a moment.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sale",
+    "rank": 398,
+    "exampleEn": "This car is for sale.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-policy",
+    "rank": 399,
+    "exampleEn": "Read the company's return policy.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-further",
+    "rank": 400,
+    "exampleEn": "Please contact us for further information.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-body",
+    "rank": 401,
+    "exampleEn": "I exercise every day to keep my body healthy.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-require",
+    "rank": 402,
+    "exampleEn": "This job requires good English skills.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-wait",
+    "rank": 403,
+    "exampleEn": "Please wait here for a moment.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-general",
+    "rank": 404,
+    "exampleEn": "We have a general meeting every Monday.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-appear",
+    "rank": 405,
+    "exampleEn": "New messages appear on the screen.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-toward",
+    "rank": 406,
+    "exampleEn": "This road goes toward the sea.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-team",
+    "rank": 407,
+    "exampleEn": "Our team works well together.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-easy",
+    "rank": 408,
+    "exampleEn": "This form is easy to fill out.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-individual",
+    "rank": 409,
+    "exampleEn": "Each employee has an individual desk.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-full",
+    "rank": 410,
+    "exampleEn": "The parking lot is full today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-black",
+    "rank": 411,
+    "exampleEn": "He wears a black suit to work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sense",
+    "rank": 412,
+    "exampleEn": "She has a good sense of humor.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-perhaps",
+    "rank": 413,
+    "exampleEn": "Perhaps he is at home.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-add",
+    "rank": 414,
+    "exampleEn": "Please add your name to the list.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-rule",
+    "rank": 415,
+    "exampleEn": "Please follow the office rules.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-pass",
+    "rank": 416,
+    "exampleEn": "Please pass me the salt.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-produce",
+    "rank": 417,
+    "exampleEn": "This factory produces car parts.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sell",
+    "rank": 418,
+    "exampleEn": "They sell fresh bread every morning.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-short",
+    "rank": 419,
+    "exampleEn": "We have a short meeting every morning.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-agree",
+    "rank": 420,
+    "exampleEn": "I agree with your plan.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-law",
+    "rank": 421,
+    "exampleEn": "Smoking here is against the law.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-everything",
+    "rank": 422,
+    "exampleEn": "Everything is ready for the meeting.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-research",
+    "rank": 423,
+    "exampleEn": "She does research on new products.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-cover",
+    "rank": 424,
+    "exampleEn": "The company covers our travel costs.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-paper",
+    "rank": 425,
+    "exampleEn": "The printer is out of paper.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-position",
+    "rank": 426,
+    "exampleEn": "The sales position is still open.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-near",
+    "rank": 427,
+    "exampleEn": "The bank is near my office.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-human",
+    "rank": 428,
+    "exampleEn": "We need a human resources manager.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-computer",
+    "rank": 429,
+    "exampleEn": "My computer is very slow today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-situation",
+    "rank": 430,
+    "exampleEn": "The situation is under control now.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-staff",
+    "rank": 431,
+    "exampleEn": "All staff have lunch at noon.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-activity",
+    "rank": 432,
+    "exampleEn": "The hotel offers many activities for kids.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-film",
+    "rank": 433,
+    "exampleEn": "We watch a film every Friday.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-morning",
+    "rank": 434,
+    "exampleEn": "I check my email every morning.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-war",
+    "rank": 435,
+    "exampleEn": "My grandfather often talks about the war.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-account",
+    "rank": 436,
+    "exampleEn": "I have an account at this bank.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-shop",
+    "rank": 437,
+    "exampleEn": "The shop closes at nine.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-major",
+    "rank": 438,
+    "exampleEn": "This is a major problem for us.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-someone",
+    "rank": 439,
+    "exampleEn": "Someone is at the door.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-above",
+    "rank": 440,
+    "exampleEn": "The clock is above the door.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-design",
+    "rank": 441,
+    "exampleEn": "I like the design of this office.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-event",
+    "rank": 442,
+    "exampleEn": "The event starts at 7 p.m.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-special",
+    "rank": 443,
+    "exampleEn": "Today we have a special offer.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sometimes",
+    "rank": 444,
+    "exampleEn": "I sometimes work from home.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-condition",
+    "rank": 445,
+    "exampleEn": "The car is in good condition.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-carry",
+    "rank": 446,
+    "exampleEn": "I carry my laptop in this bag.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-choose",
+    "rank": 447,
+    "exampleEn": "Please choose a seat.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-father",
+    "rank": 448,
+    "exampleEn": "My father works in a bank.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-decision",
+    "rank": 449,
+    "exampleEn": "We need to make a decision today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-table",
+    "rank": 450,
+    "exampleEn": "There is a table by the window.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-certain",
+    "rank": 451,
+    "exampleEn": "Are you certain about the date?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-forward",
+    "rank": 452,
+    "exampleEn": "I look forward to meeting you.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-main",
+    "rank": 453,
+    "exampleEn": "The main office is in Hanoi.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-die",
+    "rank": 454,
+    "exampleEn": "Plants die without water.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-bear",
+    "rank": 455,
+    "exampleEn": "These trees bear fruit every summer.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-cut",
+    "rank": 456,
+    "exampleEn": "We need to cut costs this year.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-describe",
+    "rank": 457,
+    "exampleEn": "Please describe the problem.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-himself",
+    "rank": 458,
+    "exampleEn": "He lives by himself.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-available",
+    "rank": 459,
+    "exampleEn": "Is the manager available now?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-especially",
+    "rank": 460,
+    "exampleEn": "I love fruit, especially mangoes.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-strong",
+    "rank": 461,
+    "exampleEn": "This coffee is very strong.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-rise",
+    "rank": 462,
+    "exampleEn": "Prices rise in summer.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-girl",
+    "rank": 463,
+    "exampleEn": "The girl in the red dress is my sister.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-maybe",
+    "rank": 464,
+    "exampleEn": "Maybe he is busy.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-community",
+    "rank": 465,
+    "exampleEn": "Our company helps the local community.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-else",
+    "rank": 466,
+    "exampleEn": "Do you need anything else?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-particular",
+    "rank": 467,
+    "exampleEn": "Is there a particular day you prefer?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-role",
+    "rank": 468,
+    "exampleEn": "She plays a key role in our team.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-join",
+    "rank": 469,
+    "exampleEn": "Please join us for lunch.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-difficult",
+    "rank": 470,
+    "exampleEn": "This test is very difficult.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-please",
+    "rank": 471,
+    "exampleEn": "Please close the door.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-detail",
+    "rank": 472,
+    "exampleEn": "Please send me the details by email.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-difference",
+    "rank": 473,
+    "exampleEn": "What is the difference between these two?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-action",
+    "rank": 474,
+    "exampleEn": "We need to take action now.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-health",
+    "rank": 475,
+    "exampleEn": "Walking is good for your health.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-eat",
+    "rank": 476,
+    "exampleEn": "We usually eat lunch at noon.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-step",
+    "rank": 477,
+    "exampleEn": "The first step is to fill out this form.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-true",
+    "rank": 478,
+    "exampleEn": "Is this story true?",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-phone",
+    "rank": 479,
+    "exampleEn": "Please turn off your phone.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-themselves",
+    "rank": 480,
+    "exampleEn": "They do the work themselves.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-draw",
+    "rank": 481,
+    "exampleEn": "My son likes to draw animals.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-white",
+    "rank": 482,
+    "exampleEn": "I need a white shirt for the interview.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-date",
+    "rank": 483,
+    "exampleEn": "What is the date today?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-practice",
+    "rank": 484,
+    "exampleEn": "Speaking English needs a lot of practice.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-model",
+    "rank": 485,
+    "exampleEn": "This is our new phone model.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-raise",
+    "rank": 486,
+    "exampleEn": "Many shops raise prices every year.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-customer",
+    "rank": 487,
+    "exampleEn": "The customer wants a refund.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-front",
+    "rank": 488,
+    "exampleEn": "Let's meet in front of the building.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-explain",
+    "rank": 489,
+    "exampleEn": "Please explain this report to me.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-door",
+    "rank": 490,
+    "exampleEn": "Please lock the door when you leave.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-outside",
+    "rank": 491,
+    "exampleEn": "Let's eat lunch outside today.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-behind",
+    "rank": 492,
+    "exampleEn": "The parking lot is behind the hotel.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-economic",
+    "rank": 493,
+    "exampleEn": "The country has economic problems.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-site",
+    "rank": 494,
+    "exampleEn": "Workers wear helmets on the site.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-approach",
+    "rank": 495,
+    "exampleEn": "We need a new approach to sales.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-teacher",
+    "rank": 496,
+    "exampleEn": "My English teacher is very kind.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-land",
+    "rank": 497,
+    "exampleEn": "This land is good for rice.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-charge",
+    "rank": 498,
+    "exampleEn": "There is no charge for delivery.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-finally",
+    "rank": 499,
+    "exampleEn": "Finally, sign your name here.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-sign",
+    "rank": 500,
+    "exampleEn": "Please sign the contract here.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-address",
+    "rank": 558,
+    "exampleEn": "What is your email address?",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-fine",
+    "rank": 597,
+    "exampleEn": "I'm fine, thank you.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-wife",
+    "rank": 602,
+    "exampleEn": "His wife works at a bank.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-police",
+    "rank": 616,
+    "exampleEn": "Call the police!",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-page",
+    "rank": 652,
+    "exampleEn": "Please turn to page ten.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-key",
+    "rank": 659,
+    "exampleEn": "This is my car key.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-manager",
+    "rank": 661,
+    "exampleEn": "I need to talk to the manager.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-worker",
+    "rank": 673,
+    "exampleEn": "The factory has two hundred workers.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-evening",
+    "rank": 679,
+    "exampleEn": "I study English in the evening.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-son",
+    "rank": 687,
+    "exampleEn": "Their son is ten years old.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-yesterday",
+    "rank": 703,
+    "exampleEn": "The day before today is yesterday.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-tomorrow",
+    "rank": 726,
+    "exampleEn": "See you tomorrow.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-window",
+    "rank": 734,
+    "exampleEn": "Please open the window.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-board",
+    "rank": 741,
+    "exampleEn": "The teacher writes on the board.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-doctor",
+    "rank": 763,
+    "exampleEn": "The doctor is in room five.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-husband",
+    "rank": 801,
+    "exampleEn": "Her husband works at a bank.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-brother",
+    "rank": 821,
+    "exampleEn": "My brother is a doctor.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-baby",
+    "rank": 871,
+    "exampleEn": "Their baby is three months old.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-officer",
+    "rank": 896,
+    "exampleEn": "A police officer stands at the gate.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-daughter",
+    "rank": 927,
+    "exampleEn": "My daughter is five years old.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-clock",
+    "rank": 932,
+    "exampleEn": "The clock on the wall is slow.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-weekend",
+    "rank": 934,
+    "exampleEn": "What do you do on the weekend?",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-afternoon",
+    "rank": 948,
+    "exampleEn": "The meeting is this afternoon.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sister",
+    "rank": 964,
+    "exampleEn": "My sister lives in Hanoi.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sea",
+    "rank": 987,
+    "exampleEn": "We swim in the sea in summer.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-chair",
+    "rank": 1060,
+    "exampleEn": "Please take a chair and sit down.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-email",
+    "rank": 1169,
+    "exampleEn": "Please send me an email.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-driver",
+    "rank": 1200,
+    "exampleEn": "The bus driver is very kind.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-lesson",
+    "rank": 1234,
+    "exampleEn": "I take an English lesson every evening.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-bag",
+    "rank": 1252,
+    "exampleEn": "My bag is in the meeting room.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-engineer",
+    "rank": 1312,
+    "exampleEn": "He works as a software engineer.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-nurse",
+    "rank": 1315,
+    "exampleEn": "She is a nurse at a big hospital.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-farmer",
+    "rank": 1580,
+    "exampleEn": "We buy vegetables directly from local farmers.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-desk",
+    "rank": 1588,
+    "exampleEn": "The report is on your desk.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-spell",
+    "rank": 1972,
+    "exampleEn": "Please spell your last name.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-pen",
+    "rank": 2320,
+    "exampleEn": "Please sign with a black pen.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-rice",
+    "rank": 2695,
+    "exampleEn": "We usually have rice for lunch.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sheep",
+    "rank": 2710,
+    "exampleEn": "There are many sheep on the farm.",
+    "features": [],
+    "status": "clean"
+  }
+]

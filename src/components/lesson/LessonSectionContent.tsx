@@ -1,0 +1,54 @@
+import { GraduationCap } from 'lucide-react'
+import { Link } from 'react-router'
+
+import { GrammarSection, PronunciationSection } from '@/components/lesson/LessonContentParts'
+import { LinkList } from '@/components/session/SessionParts'
+import { Button } from '@/components/ui/button'
+import type { LessonContent } from '@/data/lessons'
+import { entertainmentLinks, type Lesson, type Section, type Stage } from '@/data/roadmap'
+import { OWL_CHECKPOINT_ID, OWL_HREF } from '@/lib/owl'
+
+/**
+ * Link ngoài của phần giải trí (story 15): phương án phụ, nằm dưới video phát trong app (nếu có).
+ * "Nguồn miễn phí" của đoạn chỉ là chữ, nên vẫn giữ link bấm được ở đây; không có link nào thì không hiện gì.
+ */
+function EntertainmentLinks({ lesson }: { lesson: Lesson }) {
+  const links = entertainmentLinks(lesson)
+  if (links.length === 0) return null
+  return (
+    <div className="flex flex-col gap-1">
+      <h3 className="font-semibold">Nguồn ngoài</h3>
+      <LinkList links={links} />
+    </div>
+  )
+}
+
+type Props = {
+  lesson: Lesson
+  stage: Stage
+  section: Section
+  /** Nội dung soạn sẵn của bài (T1–T4); không có thì đoạn chỉ hiện phần chung của `LessonSectionCard`. */
+  content: LessonContent | undefined
+}
+
+/**
+ * Nội dung học của một đoạn (children của `LessonSectionCard`): bảng âm, TenseCard, link giải trí, nút thi O.W.L.
+ * Trang bài và buổi 30' dùng chung (story 21). Nơi gọi tự bọc `ReadingSourceContext.Provider`.
+ */
+export function LessonSectionContent({ lesson, stage, section, content }: Props) {
+  return (
+    <>
+      {content && section.id === 'pronunciation' && <PronunciationSection content={content} />}
+      {content && section.id === 'grammar' && <GrammarSection content={content} />}
+      {section.id === 'entertainment' && <EntertainmentLinks lesson={lesson} />}
+      {section.id === 'checkpoint' && lesson.checkpointId === OWL_CHECKPOINT_ID && (
+        <Button asChild className="self-start">
+          <Link to={OWL_HREF}>
+            <GraduationCap aria-hidden="true" />
+            Vào thi {stage.checkpoint.name}
+          </Link>
+        </Button>
+      )}
+    </>
+  )
+}

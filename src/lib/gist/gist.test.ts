@@ -427,3 +427,11 @@ describe('createGistWriter', () => {
     expect(t.writer.getState().phase).toBe('off')
   })
 })
+
+describe('status.json — buổi Sân ga (lessonId f03, story 21)', () => {
+  it('buổi full lessonId f03 → studied true, kind full, streak 1', () => {
+    const s = recordSession(empty(), 'full', new Date('2026-11-02T02:00:00Z'), { lessonId: 'f03' })
+    const now = new Date('2026-11-02T03:00:00Z')
+    expect(statusFor(s, now)).toEqual({ date: '2026-11-02', studied: true, kind: 'full', streak: 1, updatedAt: now.toISOString() })
+  })
+})

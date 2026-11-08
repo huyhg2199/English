@@ -14,7 +14,16 @@ import {
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { useMistakes, useNewWordList, useOwl, useQuizzes, useSavedWords, useSpells, useSrs } from '@/app/store-context'
+import {
+  useMistakes,
+  useNewWordList,
+  useNewWordOptions,
+  useOwl,
+  useQuizzes,
+  useSavedWords,
+  useSpells,
+  useSrs,
+} from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,9 +41,14 @@ function FlashcardSummary() {
   const { items: savedItems } = useSavedWords()
   const firstList = useNewWordList()
   const [now] = useNow()
+  // Cùng quota / id ưu tiên với phiên ôn (`FlashcardSession`) để số từ mới khớp.
+  const { newPerDay, preferIds, lockedIds, rules } = useNewWordOptions(now)
   const session = useMemo(
-    () => (wordsState.status === 'ready' ? buildStudySession(srs, wordsState.words, savedItems, now, firstList) : null),
-    [srs, wordsState, savedItems, now, firstList],
+    () =>
+      wordsState.status === 'ready'
+        ? buildStudySession(srs, wordsState.words, savedItems, now, firstList, { newPerDay, preferIds, lockedIds, rules })
+        : null,
+    [srs, wordsState, savedItems, now, firstList, newPerDay, preferIds, lockedIds, rules],
   )
 
   if (!session) return wordsState.status === 'error' ? 'Chưa mở được bộ từ' : 'Đang đếm thẻ…'

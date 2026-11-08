@@ -42,3 +42,42 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/16-bilingual-subtitles.md`
   summary: Máy trạng thái lượt điền từ trong `SubtitledVideo.tsx` (đếm, flush khi hết video / đổi chế độ / rời trang) chưa có test.
   evidence: Chưa có môi trường test component; nên tách thành reducer thuần trong `src/lib/subs`.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/18-foundation-data-store-v13.md`
+  summary: Luật nội dung viên gạch trong `src/data/foundation/types.ts` (đúng một `___` ở `faded.en` và `RuleCard.cloze`, `syllables` ghép lại đúng `word`, `tapSyllable.answer` trong khoảng, 2–5 câu `check`, thứ tự màn explain → … → apply) chỉ nằm trong chú thích, chưa có validator/test.
+  evidence: Story 18 chỉ định kiểu; story 19–26 viết nội dung màn nên cần thêm hàm kiểm (vd `brickContentIssues`) và test duyệt mọi viên khi nội dung đầu tiên được thêm.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/19-brick-player-foundation-wall.md`
+  summary: Việc BrickPlayer gọi `completeBrick` đúng một lần khi màn Áp dụng hiện (và không ghi gì nếu thoát trước) chỉ kiểm bằng headless Chrome, chưa có test tự động.
+  evidence: Vitest chạy env `node`, chỉ `src/**/*.test.ts`, không có jsdom/RTL; xoá effect hoặc đổi điều kiện sang `check` vẫn pass 86 test. Cần harness test component (cùng giới hạn đã defer ở story 8, 15, 16).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: `SourceSectionLink` (Sổ lỗi, màn kết quả kiểm tra hàng) chuyển sang `questionSourceHref` nhưng chưa có test component; quay lại `sectionHref` thì link "Xem lại: Viên gạch Fxx" sai mà không test nào đỏ.
+  evidence: `source-label.test.ts` chỉ test hàm thuần; Vitest env `node`, không có jsdom/RTL (cùng giới hạn đã defer ở story 8, 15, 16, 19). AC 3 hiện chỉ có kiểm tra headless Chrome.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: Việc `BrickScreen` truyền `audioText` / `sampleAudioText` cho nút nghe (F02 đọc "aitch, you, why" thay "H-U-Y") chưa có test; test F02 chỉ kiểm dữ liệu.
+  evidence: Bỏ `speech={ex.audioText}` trong `ContrastBody` thì test dữ liệu F02 vẫn pass. Cách rẻ: helper thuần `spokenText(screen)` trong `src/data/foundation` dùng chung cho `BrickScreen` và test, hoặc harness test component.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: (chưa kiểm chứng, medium) Thẻ quy tắc `f03-rule-1` và `f05-rule-2` có đáp án `iː`, không gõ được trên bàn phím điện thoại; `f02-rule-2` "W = ___ you" có chữ W đứng một mình nếu sau này máy đọc thẻ.
+  evidence: Thẻ quy tắc chưa vào SRS ở story 20. Story 23 quyết định cách ôn thẻ (gõ hay chạm, có đọc TTS không); nếu là gõ thì đổi đáp án sang ASCII hoặc chấm bỏ dấu ː, nếu có TTS thì đọc qua `spellForSpeech`.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: (chưa kiểm chứng, medium) Tên chữ cái cho TTS `A: 'ay'` và `E: 'ee'` có thể bị giọng iOS/Android đọc sai ("ay" thành /aɪ/ như chữ I, "ee" bị đánh vần), đúng lỗi A/I mà F02 dạy.
+  evidence: Headless Chrome chỉ xác nhận chuỗi được gửi tới TTS, không nghe được âm. Cần nghe trên iPhone thật (Safari/PWA) và một máy Android các ví dụ F02 "A, E, I", "H-U-Y", câu nghe J-E; nếu sai thì đổi chuỗi (R đã đổi sang 'are').
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/20-row-a-content-placement-quizzes.md`
+  summary: Khi các hàng chưa có kết quả cuối cùng được xong bằng cách học hết viên (`completeBrick`) chứ không qua kiểm tra hàng, Soát vé vẫn `pending` dù `nextPlacementRow` là null.
+  evidence: `recordRowTest` giờ đóng Soát vé ở mọi chế độ, nhưng `completeBrick` (story 18/19) không xét Soát vé. Hiện không lộ ra giao diện (thẻ mời ẩn, `/foundation/soat-ve` chuyển hướng) vì UI dựa vào `placementRow`; story 21/22 khi đọc `needsPlacement` nên dùng `placementRow !== null` hoặc cho `completeBrick` gọi `finishPlacement('done')` khi hết hàng.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/21-session-plan-theory-first.md`
+  summary: Hôm nay vẫn hiện thẻ "Bài hiện tại" (bài lộ trình, `useSessions().current`) trong khi nút "Bắt đầu buổi 30'" giờ mở buổi Sân ga, nên lúc ở Sân ga thẻ và buổi không khớp.
+  evidence: `src/pages/Today.tsx` thẻ "Bài hiện tại" đọc `sessionLesson`; story 21 đổi nút sang `/session` (chọn buổi Sân ga khi `isInFoundation`). Intent story 21 cấm sửa Hôm nay ngoài nút; story 22 (thẻ Sân ga, ẩn thẻ) cần thay thẻ này bằng thẻ viên gạch khi đang ở Sân ga.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/21-session-plan-theory-first.md`
+  summary: Bài test quay lại có thể trỏ "Học tiếp" tới route hỏng `sectionHref('f03', 'pronunciation')` khi câu sai nhiều nhất là câu viên gạch (`q-fNN`) lấy từ Sổ lỗi.
+  evidence: `weakestSectionFrom` trả `{ lessonId: 'f03', sectionId: 'pronunciation' }` (test ở `comeback.test.ts`), `ComebackNext` trong `src/pages/Quiz.tsx` dựng `sectionHref(weak.lessonId, …)` không kiểm id viên; `pickComebackTest` lấy câu từ Sổ lỗi theo `QUESTION_BANK` (có câu `q-fNN` từ story 20). Nên dùng `brickIdFromLessonId` để trỏ `/foundation/F03` (hoặc bỏ câu viên khỏi `weakestSectionFrom`).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/22-today-welcome-house-schedule-lazy.md`
+  summary: `setHouse` cũng bump `placement.updatedAt`, nên người đã có `startLessonId` đổi Nhà sau khi lịch chạy sẽ dời ngày bắt đầu lịch (luật "ETS áp dụng muộn") và xoá số tuần trễ một cách âm thầm.
+  evidence: `roadmapStartDate` (`src/lib/schedule/schedule.ts`) đọc `placement.updatedAt` làm ngày áp dụng xếp lớp; `setHouse` (`src/lib/placement`) ghi `updatedAt` mới. Lỗi có từ trước story 22 (rủi ro 2 trong Implementation Notes); story 22 làm nút "Đổi Nhà" dễ thấy hơn (trang Mũ, Phòng Cúp). Cách sửa gợi ý: lưu ngày áp dụng riêng (cần đổi shape store, ngoài phạm vi story 22) hoặc để `setHouse` không chạm field dùng cho lịch.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/23-srs-new-words-intro-gates.md`
+  summary: Luật "từ chủ đề của viên gạch/bài lên trước" (`learning-rules.md`, mục Từ vựng) mới làm phần viên gạch; bài T1/T2 sau Sân ga chưa góp từ chủ đề nào vào `preferredNewWordIds`.
+  evidence: `preferredNewWordIds` (`src/lib/flashcard-session.ts`) chỉ đọc `themeWordIdsOf(brickId)`; dữ liệu bài (`src/data/lessons/types.ts`) không có trường từ chủ đề (chỉ `words` của phần phát âm/tự đọc). Intent story 23 chỉ định nghĩa `preferIds` từ viên gạch + danh sách khởi đầu; cần một story khác chọn từ chủ đề cho từng bài rồi nối vào `preferredNewWordIds`.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/23-srs-new-words-intro-gates.md`
+  summary: Giao diện thẻ mới của story 23 (thẻ Làm quen mở sẵn mặt sau, nút "Đã xem" = `good`, ẩn IPA/âm tiết/từ loại theo cổng kèm link F03, dòng "Hôm nay ôn kỹ…") không có test tự động nào.
+  evidence: Vitest chỉ chạy `src/**/*.test.ts` với env `node`, repo không có test component (`.test.tsx`), nên đảo `useState(intro)` hay nối "Đã xem" sang `easy` vẫn qua `npm test`. Hàm thuần đứng sau (`flashcardGates`, `rankLabel`, `item.intro`, `gradeCard(..., 'good')`) đã có test; muốn chặn hồi quy giao diện cần thêm jsdom + React Testing Library (việc riêng).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/24-srs-function-words-rule-cards-examples.md`
+  summary: Giao diện thẻ của story 24 không có test tự động nào: nhánh `isRuleWord` → `RuleFlashcard`, mặt trước thẻ hư từ là câu có `___` (không hiện từ đứng riêng), và plan `lockedIds`/`rules` truyền vào phiên ở `FlashcardSession.tsx` và `Practice.tsx`.
+  evidence: Vitest chỉ chạy `src/**/*.test.ts` với env `node`, repo không có test component. Đảo nhánh `cloze ? … : wordTitle`, bỏ nhánh `isRuleWord` hay bỏ `lockedIds, rules` ở `Practice.tsx` thì vẫn qua `npm test`. Hàm thuần đứng sau (`functionWordCloze`, `buildSession` với `rules`/`lockedIds`, `newWordOptions`) đã có test. Muốn chặn hồi quy giao diện cần thêm jsdom + React Testing Library (việc riêng, chung với mục tương tự của story 23).

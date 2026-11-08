@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
+import { completeBrick, createDefaultFoundation, finishPlacement, foundationState, markRowTested, readFoundation, resumeFoundation, skipFoundation } from '@/lib/foundation'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { getQuestion } from '@/data/questions'
 import { gradeAttempt, listAttempts, readMistakes, recordAttempt } from '@/lib/quiz'
@@ -46,7 +47,7 @@ function roundTrip(store: Store, now = T1): Backup {
 
 describe('BACKUP_KEYS / allowlist', () => {
   it('trùng với allowlist đồng bộ', () => {
-    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice'])
+    expect([...BACKUP_KEYS]).toEqual(['progress', 'srs', 'sessions', 'savedWords', 'placement', 'pronunciation', 'notes', 'quizzes', 'mistakes', 'trophies', 'reminders', 'videoPractice', 'foundation'])
   })
 
   it('không có key nào giống API key / token / PAT / secret / password', () => {
@@ -143,6 +144,16 @@ describe('restoreBackup — I/O Matrix', () => {
     const twice = restoreBackup(once, backup)
     expect(twice.store).toBe(once)
     expect(twice).toMatchObject({ added: 0, updated: 0 })
+  })
+
+  it('thẻ quy tắc rule:f01-1 (story 24) qua sao lưu / khôi phục y nguyên, file vẫn schema 13', () => {
+    const fileStore = gradeCard(gradeCard(empty(), 'rule:f01-1', 'good', T0), 'ngsl-day', 'good', T0)
+    const backup = roundTrip(fileStore)
+    expect(backup.schemaVersion).toBe(13)
+    const r = restoreBackup(empty(), backup)
+    expect(readSrs(r.store).cards['rule:f01-1']).toEqual(readSrs(fileStore).cards['rule:f01-1'])
+    expect(r.store.schemaVersion).toBe(13)
+    expect(r).toMatchObject({ added: 2, updated: 0 })
   })
 
   it('nhật ký ngày học và từ đã lưu cũng được gộp', () => {
@@ -437,6 +448,82 @@ describe('videoPractice trong sao lưu (story 16)', () => {
   })
 })
 
+describe('foundation trong sao lưu (story 18)', () => {
+  const at = (d: number) => new Date(2026, 10, d, 20)
+  const envelope = (data: unknown, schemaVersion = CURRENT_VERSION) =>
+    JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion, exportedAt: T1.toISOString(), data })
+
+  function sanga(): Store {
+    let s: Store = { ...empty(), data: { geminiApiKey: 'secret' } }
+    s = markRowTested(s, 'A', 7, 8, at(3))
+    s = markRowTested(s, 'B', 4, 8, at(3))
+    s = finishPlacement(s, 'done', at(3))
+    s = completeBrick(s, 'F07', at(4))
+    s = completeBrick(s, 'F07', at(5))
+    s = skipFoundation(s, at(6))
+    s = resumeFoundation(s, at(8))
+    return s
+  }
+
+  it('xuất có foundation, không có key ngoài allowlist; nhập vào máy trống → foundationState giống hệt', () => {
+    const s = sanga()
+    const backup = createBackup(s, at(9))
+    expect(backup.data.foundation).toEqual(s.data.foundation)
+    expect(Object.keys(backup.data)).toEqual(['foundation'])
+    const parsed = parseBackup(serializeBackup(backup))
+    if (!parsed.ok) throw new Error(parsed.message)
+    const r = restoreBackup(empty(), parsed.backup)
+    expect(r.store.data.foundation).toEqual(s.data.foundation)
+    expect(foundationState(r.store)).toEqual(foundationState(s))
+    expect(readFoundation(r.store)).toEqual(readFoundation(s))
+    // 1 viên + 1 "cập nhật" cho các field còn lại (hàng, Soát vé, bỏ qua…).
+    expect(r).toMatchObject({ added: 2, updated: 0 })
+    expect(restoreBackup(r.store, parsed.backup)).toMatchObject({ store: r.store, added: 0, updated: 0 })
+  })
+
+  it('file v12 không có key → foundation mặc định sau migrate; khôi phục vào máy trống không đếm mặc định', () => {
+    const parsed = parseBackup(envelope({ progress: { lessons: {} } }, 12))
+    if (!parsed.ok) throw new Error(parsed.message)
+    expect(parsed.backup.schemaVersion).toBe(CURRENT_VERSION)
+    expect(parsed.backup.data.foundation).toEqual(createDefaultFoundation())
+    const r = restoreBackup(empty(), parsed.backup)
+    expect(readFoundation(r.store)).toEqual(createDefaultFoundation())
+    expect(r).toMatchObject({ added: 0, updated: 0 })
+  })
+
+  it('file mới hơn máy: máy có foundation mặc định, file đã qua hàng A → updated', () => {
+    const machine = runMigrations({ schemaVersion: 12, data: {} }, CURRENT_VERSION, migrations)
+    const file = roundTrip(markRowTested(empty(), 'A', 8, 8, at(3)))
+    const r = restoreBackup(machine, file)
+    expect(foundationState(r.store).rowsDone).toEqual(['A'])
+    expect(r).toMatchObject({ added: 0, updated: 1 })
+  })
+
+  it('mục sai dạng trong bricks / rows, hàng lạ và id __proto__ bị bỏ', () => {
+    const t = T1.toISOString()
+    const good = { firstDoneAt: t, lastDoneAt: t, updatedAt: t }
+    const text =
+      '{"app":"lumos-english","kind":"backup","schemaVersion":' + CURRENT_VERSION + ',"exportedAt":"' + t + '","data":{"foundation":{' +
+      '"bricks":{"F01":' + JSON.stringify(good) + ',"F02":{"firstDoneAt":"x"},"__proto__":' + JSON.stringify(good) + ',"constructor":' + JSON.stringify(good) + ',"F99":' + JSON.stringify(good) + '},' +
+      '"rows":{"A":{"passed":true,"best":75,"updatedAt":"' + t + '"},"B":{"passed":"yes","best":75,"updatedAt":"' + t + '"},"Z":{"passed":true,"best":75,"updatedAt":"' + t + '"},"__proto__":{"passed":true,"best":75,"updatedAt":"' + t + '"}},' +
+      '"placement":"done","updatedAt":"' + t + '"}}}'
+    const parsed = parseBackup(text)
+    if (!parsed.ok) throw new Error(parsed.message)
+    const f = parsed.backup.data.foundation as { bricks: object; rows: object; placement: string }
+    expect(Object.keys(f.bricks)).toEqual(['F01'])
+    expect(Object.keys(f.rows)).toEqual(['A'])
+    expect(Object.getPrototypeOf(f.bricks)).toBe(Object.prototype)
+    expect(f.placement).toBe('done')
+    const r = restoreBackup(empty(), parsed.backup)
+    expect(foundationState(r.store)).toMatchObject({ rowsDone: ['A'], doneBrickIds: ['F01'] })
+
+    const odd = parseBackup(envelope({ foundation: { bricks: 'x', rows: [1] } }))
+    expect(odd.ok && odd.backup.data.foundation).toEqual({ bricks: {}, rows: {} })
+    const notObject = parseBackup(envelope({ foundation: [1] }))
+    expect(notObject.ok && notObject.backup.data.foundation).toBeUndefined()
+  })
+})
+
 describe('shareOrDownload', () => {
   function fakeDocument() {
     const link = { href: '', download: '', rel: '', style: {} as Record<string, string>, click: vi.fn(), remove: vi.fn() }
@@ -516,5 +603,16 @@ describe('shareOrDownload', () => {
     })
     expect(r).toBe('cancelled')
     expect(link.click).not.toHaveBeenCalled()
+  })
+})
+
+describe('sessions — lessonId dạng fNN (buổi Sân ga, story 21)', () => {
+  it('buổi lessonId f03 qua sao lưu / khôi phục giữ nguyên', () => {
+    const s = recordSession(empty(), 'full', T0, { lessonId: 'f03' })
+    const backup = roundTrip(s)
+    const restored = restoreBackup(empty(), backup).store
+    expect(Object.values(readSessionDays(restored))).toEqual([
+      expect.objectContaining({ kind: 'full', minutes: 25, lessonId: 'f03' }),
+    ])
   })
 })

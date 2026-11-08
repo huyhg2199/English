@@ -5,7 +5,16 @@ import { describe, expect, it } from 'vitest'
 
 import { buildSession, markKnown } from '@/lib/srs'
 
-import { cambridgeUrl, compareStudyOrder, hasDetails, loadWords, PARTS_OF_SPEECH, VOCAB_ATTRIBUTION, type Word } from './index'
+import {
+  cambridgeUrl,
+  compareStudyOrder,
+  hasDetails,
+  loadWords,
+  PARTS_OF_SPEECH,
+  STARTER_WORD_IDS,
+  VOCAB_ATTRIBUTION,
+  type Word,
+} from './index'
 
 const words = await loadWords()
 
@@ -73,7 +82,7 @@ describe('words.json', () => {
     const cards = Object.fromEntries(
       words.filter((w) => w.list === 'ngsl').map((w) => [w.id, markKnown(undefined, new Date(2026, 10, 1, 9, 0, 0))]),
     )
-    const session = buildSession({ cards }, words, now, 3)
+    const session = buildSession({ cards }, words, now, { newPerDay: 3 })
     expect(session.queue.map((i) => [i.kind, (i.word as Word).list, (i.word as Word).rank])).toEqual([
       ['new', 'tsl', 1],
       ['new', 'tsl', 2],
@@ -123,5 +132,29 @@ describe('cambridgeUrl / ghi nguồn', () => {
   it('ghi nguồn CC BY-SA 4.0 và newgeneralservicelist.com', () => {
     expect(VOCAB_ATTRIBUTION.text).toContain('CC BY-SA 4.0')
     expect(VOCAB_ATTRIBUTION.sourceUrl).toContain('newgeneralservicelist.com')
+  })
+})
+
+describe('STARTER_WORD_IDS — danh sách từ khởi đầu', () => {
+  const byId = new Map(words.map((w) => [w.id, w]))
+
+  it('đúng 60 id, không trùng, mở đầu bằng nhóm thời gian', () => {
+    expect(STARTER_WORD_IDS).toHaveLength(60)
+    expect(new Set(STARTER_WORD_IDS).size).toBe(60)
+    expect(STARTER_WORD_IDS.slice(0, 5)).toEqual(['ngsl-day', 'ngsl-week', 'ngsl-month', 'ngsl-year', 'ngsl-hour'])
+    expect(STARTER_WORD_IDS.at(-1)).toBe('ngsl-test')
+  })
+
+  it('mọi id có trong words.json, thuộc NGSL và có dữ liệu AI', () => {
+    for (const id of STARTER_WORD_IDS) {
+      const w = byId.get(id)
+      expect(w, id).toBeDefined()
+      expect(w?.list, id).toBe('ngsl')
+      expect(w && hasDetails(w), id).toBe(true)
+    }
+  })
+
+  it('chỉ thực từ: pos thuộc noun | verb | adjective | adverb', () => {
+    for (const id of STARTER_WORD_IDS) expect(['noun', 'verb', 'adjective', 'adverb'], id).toContain(byId.get(id)?.pos)
   })
 })

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
 import { OWL_POST_DEADLINE_MS, owlPostReady } from '@/app/owl-post-gate'
+import { shouldShowWelcome } from '@/app/today-view'
 import { createBackup, restoreBackup, type Backup } from '@/lib/backup'
 import type { GistWriter, MergeCounts } from '@/lib/gist'
 import { readReminders, setReminderTimes } from '@/lib/reminders'
@@ -25,6 +26,21 @@ import {
 import { QUESTION_BANK } from '@/data/questions'
 import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
+import {
+  completeBrick,
+  foundationState,
+  markWelcomeSeen,
+  needsPlacement,
+  resumeFoundation,
+  skipFoundation,
+} from '@/lib/foundation'
+import {
+  nextPlacementRow,
+  placementStarted,
+  recordRowTest,
+  skipPlacement,
+  type RowTestInput,
+} from '@/lib/foundation/row-test'
 import { activeReviewPlan, listOwlAttempts, recordOwlAttempt, type OwlAttemptInput } from '@/lib/owl'
 import { planFor } from '@/lib/schedule'
 import {
@@ -48,6 +64,9 @@ import {
   type SavedWordSource,
 } from '@/lib/saved-words'
 import type { StudyWord } from '@/data/vocab'
+import { getBrick } from '@/data/foundation/content'
+import type { BrickId, RuleCard } from '@/data/foundation'
+import { newWordOptions } from '@/lib/flashcard-session'
 import {
   computeStreak,
   newWordListFor,
@@ -191,6 +210,38 @@ export function useSrs() {
 }
 
 /**
+ * Sân ga 9¾ (story 19, 20): trạng thái (`status`, `rowsDone`, `taughtCount` cho "x/18", `doneBrickIds`), xong viên (đi tới
+ * màn Áp dụng), "Bỏ qua Sân ga" và "Quay lại Sân ga"; Soát vé (`needsPlacement`, hàng tiếp theo `placementRow`, đã làm
+ * hàng nào chưa `placementStarted`), ghi một lần kiểm tra hàng (`recordRowTest`) và "Bỏ qua, học từ viên 1"
+ * (`skipPlacement`). Ghi qua `handle.update` nên lưu local và đồng bộ.
+ */
+export function useFoundation() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const state = useMemo(() => foundationState(store), [store])
+  const placement = useMemo(
+    () => ({
+      needsPlacement: needsPlacement(store),
+      placementRow: nextPlacementRow(store),
+      placementStarted: placementStarted(store),
+    }),
+    [store],
+  )
+  const recordRow = useCallback(
+    (input: RowTestInput, now: Date = new Date()) => handle.update((s) => recordRowTest(s, input, now)),
+    [handle],
+  )
+  const skipTicket = useCallback((now: Date = new Date()) => handle.update((s) => skipPlacement(s, now)), [handle])
+  const complete = useCallback(
+    (brickId: string, now: Date = new Date()) => handle.update((s) => completeBrick(s, brickId, now)),
+    [handle],
+  )
+  const skip = useCallback((now: Date = new Date()) => handle.update((s) => skipFoundation(s, now)), [handle])
+  const resume = useCallback((now: Date = new Date()) => handle.update((s) => resumeFoundation(s, now)), [handle])
+  return { state, ...placement, completeBrick: complete, skip, resume, recordRowTest: recordRow, skipPlacement: skipTicket }
+}
+
+/**
  * Phụ đề video (story 16): từ NGSL/TSL đã học (thẻ SRS đã có, để tô câu và ưu tiên ẩn khi điền từ), kết quả điền từ
  * theo video (`store.data.videoPractice`) và hàm ghi một lượt (best = max, attempts + 1, đồng bộ).
  */
@@ -255,6 +306,19 @@ export function useSessions() {
 export function useNewWordList() {
   const { store } = useLoadedStore()
   return useMemo(() => newWordListFor(store), [store])
+}
+
+const themeWordIdsOf = (id: BrickId): readonly string[] => getBrick(id)?.themeWordIds ?? []
+const ruleCardsOf = (id: BrickId): readonly RuleCard[] => getBrick(id)?.ruleCards ?? []
+
+/**
+ * Kế hoạch từ mới của phiên ôn (story 23), dùng chung cho `FlashcardSession` và tóm tắt Luyện tập để mọi nơi đếm giống
+ * nhau: quota hôm nay (`newPerDay`, `heavyReview` khi tồn ôn), id lấy trước (từ chủ đề viên đã học + từ khởi đầu), cổng
+ * hiển thị IPA / trọng âm / từ loại, id hư từ còn khoá và thẻ quy tắc của viên đã học xong (story 24).
+ */
+export function useNewWordOptions(now: Date) {
+  const { store } = useLoadedStore()
+  return useMemo(() => newWordOptions(store, now, themeWordIdsOf, ruleCardsOf), [store, now])
 }
 
 /**
@@ -396,7 +460,10 @@ export function useOwl(now: Date) {
   return { attempts, activePlan, record }
 }
 
-/** Lịch gốc, số tuần trễ và ngày dự kiến đạt 750 (story 11) tại thời điểm `now`. */
+/**
+ * Lịch 12 tháng (story 11 + 22) tại thời điểm `now`: `not-started` khi chưa qua / bỏ qua Sân ga; `paused` khi đang quay
+ * lại Sân ga; `running` kèm lịch gốc, số tuần trễ và ngày dự kiến đạt 750.
+ */
 export function useSchedule(now: Date) {
   const { store } = useLoadedStore()
   return useMemo(() => planFor(store, now), [store, now])
@@ -475,20 +542,43 @@ export function deliverOwlPost(handle: StoreHandle, now: Date = new Date()): Lev
 }
 
 /**
- * Cú đưa thư (story 12): khi mở app thì chờ lượt đồng bộ đầu xong (xem `owlPostReady`, hạn chót tính từ lúc mở app)
- * rồi kiểm tra; mỗi lần app hiện lại (`visibilitychange`) kiểm tra lại để báo huy chương nhận trong lúc mở app.
+ * Lượt đồng bộ đầu đã xong chưa (xem `owlPostReady`): chờ engine đồng bộ chạy xong lượt đầu, trừ khi không đồng bộ
+ * (không cấu hình / chưa đăng nhập) hoặc đã quá `OWL_POST_DEADLINE_MS` tính từ lúc component mount. Dùng cho cú đưa thư
+ * và Thư nhập học, để máy thứ hai kịp kéo dữ liệu của máy kia về rồi mới quyết.
  */
-export function useOwlPost() {
-  const handle = useStoreHandle()
+export function useFirstSyncReady(): boolean {
   const sync = useSync()
   const [deadlinePassed, setDeadlinePassed] = useState(false)
-  const [letters, setLetters] = useState<LevelUp[]>([])
-  const ready = owlPostReady(sync, deadlinePassed)
 
   useEffect(() => {
     const timer = setTimeout(() => setDeadlinePassed(true), OWL_POST_DEADLINE_MS)
     return () => clearTimeout(timer)
   }, [])
+
+  return owlPostReady(sync, deadlinePassed)
+}
+
+/**
+ * Thư nhập học (story 22): `show` khi chưa xem và lượt đồng bộ đầu đã xong (`useFirstSyncReady`); `markSeen` ghi
+ * `welcomeSeenAt` (chỉ lần đầu, đồng bộ) — trang thư gọi ngay khi hiện nên thư chỉ hiện một lần.
+ */
+export function useWelcome() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const ready = useFirstSyncReady()
+  const show = shouldShowWelcome(store, ready)
+  const markSeen = useCallback((now: Date = new Date()) => handle.update((s) => markWelcomeSeen(s, now)), [handle])
+  return { show, markSeen }
+}
+
+/**
+ * Cú đưa thư (story 12): khi mở app thì chờ lượt đồng bộ đầu xong (`useFirstSyncReady`, hạn chót tính từ lúc mở app)
+ * rồi kiểm tra; mỗi lần app hiện lại (`visibilitychange`) kiểm tra lại để báo huy chương nhận trong lúc mở app.
+ */
+export function useOwlPost() {
+  const handle = useStoreHandle()
+  const [letters, setLetters] = useState<LevelUp[]>([])
+  const ready = useFirstSyncReady()
 
   useEffect(() => {
     if (!ready) return

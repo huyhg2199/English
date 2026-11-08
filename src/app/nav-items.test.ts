@@ -33,8 +33,8 @@ describe('NAV_ITEMS', () => {
     expect('/practice/flashcards'.startsWith(`${practice.path}/`)).toBe(true)
   })
 
-  it('/session, /session/lazy, /sorting-hat là route thật, tab Hôm nay sáng; các tab khác không', () => {
-    for (const path of ['/session', '/session/lazy', '/sorting-hat']) {
+  it('/session, /session/lazy, /sorting-hat, /welcome, /do-trinh-do là route thật, tab Hôm nay sáng; các tab khác không', () => {
+    for (const path of ['/session', '/session/lazy', '/sorting-hat', '/welcome', '/do-trinh-do']) {
       const leaf = matchRoutes(routes, path)!.at(-1)!.route
       expect(leaf.path).not.toBe('*')
       expect(NAV_ITEMS.filter((item) => isNavItemActive(item, path)).map((i) => i.label)).toEqual(['Hôm nay'])
@@ -59,5 +59,25 @@ describe('NAV_ITEMS', () => {
     const leaf = matchRoutes(routes, '/owl-post')!.at(-1)!.route
     expect(leaf.path).toBe('owl-post')
     expect(NAV_ITEMS.filter((item) => isNavItemActive(item, '/owl-post')).map((i) => i.label)).toEqual(['Luyện tập'])
+  })
+
+  it('/foundation, /foundation/F01 là route thật, tab Lộ trình sáng; /foundationx không', () => {
+    expect(matchRoutes(routes, '/foundation')!.at(-1)!.route.path).toBe('foundation')
+    expect(matchRoutes(routes, '/foundation/F01')!.at(-1)!.route.path).toBe('foundation/:brickId')
+    const active = (p: string) => NAV_ITEMS.filter((item) => isNavItemActive(item, p)).map((i) => i.label)
+    expect(active('/foundation')).toEqual(['Lộ trình'])
+    expect(active('/foundation/F01')).toEqual(['Lộ trình'])
+    expect(active('/foundationx')).toEqual([])
+  })
+
+  it('/foundation/soat-ve, /foundation/kiem-tra/A là route thật (không rơi vào :brickId), tab Lộ trình sáng', () => {
+    expect(matchRoutes(routes, '/foundation/soat-ve')!.at(-1)!.route.path).toBe('foundation/soat-ve')
+    const rowTest = matchRoutes(routes, '/foundation/kiem-tra/A')!.at(-1)!
+    expect(rowTest.route.path).toBe('foundation/kiem-tra/:row')
+    expect(rowTest.params.row).toBe('A')
+    expect(matchRoutes(routes, '/foundation/F02')!.at(-1)!.route.path).toBe('foundation/:brickId')
+    const active = (p: string) => NAV_ITEMS.filter((item) => isNavItemActive(item, p)).map((i) => i.label)
+    expect(active('/foundation/soat-ve')).toEqual(['Lộ trình'])
+    expect(active('/foundation/kiem-tra/A')).toEqual(['Lộ trình'])
   })
 })

@@ -201,3 +201,18 @@ describe('unseenLevelUps / markSeen', () => {
     expect(s.data.trophies).toEqual({ seen: { 'x:y': old }, extra: 1 })
   })
 })
+
+describe('nhật ký buổi có lessonId dạng fNN (buổi Sân ga, story 21)', () => {
+  const withBrick = (days: Record<string, unknown>) =>
+    Object.fromEntries(Object.entries(days).map(([k, v]) => [k, { ...(v as object), lessonId: 'f03' }]))
+
+  it('housePoints, longestStreak, comebackCount, medalProgress không đổi khi lessonId là f03', () => {
+    const days = { ...run(D(2026, 10, 1), 3), ...run(D(2026, 11, 1), 8) }
+    const brick = withBrick(days)
+    expect(housePoints(brick)).toEqual(housePoints(days))
+    expect(housePoints(brick).total).toBeGreaterThan(0)
+    expect(longestStreak(brick)).toBe(8)
+    expect(comebackCount(brick)).toBe(comebackCount(days))
+    expect(medalProgress(store({ sessions: { days: brick } }))).toEqual(medalProgress(store({ sessions: { days } })))
+  })
+})

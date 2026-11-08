@@ -172,3 +172,20 @@ describe('đồng hồ gợi ý', () => {
     expect(formatClock(-3)).toBe('0:00')
   })
 })
+
+describe('lessonId dạng fNN (buổi Sân ga, story 21)', () => {
+  it('recordSession full lessonId f03 → mục hợp lệ, 25 phút, giữ streak', () => {
+    let s = recordSession(store(), 'full', day(-1), { lessonId: 'f02' })
+    s = recordSession(s, 'full', NOW, { lessonId: 'f03' })
+    const entry = todaySession(s, NOW)
+    expect(entry).toMatchObject({ kind: 'full', minutes: 25, lessonId: 'f03' })
+    expect(isSessionDay(entry)).toBe(true)
+    expect(computeStreak(readSessionDays(s), NOW)).toBe(2)
+  })
+
+  it('resolveSessionLesson("f03", fb) → fb (không phải bài trên lộ trình)', () => {
+    const fb = sessionLesson(store())
+    expect(resolveSessionLesson('f03', fb)).toBe(fb)
+    expect(resolveSessionLesson('F03', null)).toBeNull()
+  })
+})

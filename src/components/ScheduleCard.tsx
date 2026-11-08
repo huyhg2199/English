@@ -1,13 +1,14 @@
 import { CalendarClock } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatDate, planConsequence, planStatusLabel, type Plan } from '@/lib/schedule'
+import { formatDate, planConsequence, planStatusLabel, type ActivePlan, type Plan } from '@/lib/schedule'
 
 /**
- * Thẻ "Ngày dự kiến đạt 750" (story 11, CAP-5): ngày + "đúng hạn" / "lùi N tuần" và hệ quả bằng lời nhẹ nhàng.
- * Không chữ đỏ, không cảnh báo: trễ chỉ làm mốc dịch lại, tiến độ giữ nguyên.
+ * Thẻ "Ngày dự kiến đạt 750" (story 11 + 22, CAP-5): ngày + "đúng hạn" / "lùi N tuần" / "tạm dừng" và hệ quả bằng lời nhẹ
+ * nhàng. Không chữ đỏ, không cảnh báo: trễ chỉ làm mốc dịch lại, tiến độ giữ nguyên. Hôm nay chỉ hiện thẻ này sau Sân ga
+ * (`todayView` mode `roadmap`), nên thực tế nhãn là "đúng hạn" / "lùi N tuần"; nhánh "tạm dừng" để thẻ đúng với mọi `ActivePlan`.
  */
-export function ScheduleCard({ plan }: { plan: Plan }) {
+export function ScheduleCard({ plan }: { plan: ActivePlan }) {
   return (
     <Card className="gap-3">
       <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
@@ -32,8 +33,19 @@ export function ScheduleCard({ plan }: { plan: Plan }) {
   )
 }
 
-/** Dòng ngắn cho đầu trang Lộ trình. */
+/**
+ * Dòng ngắn cho đầu trang Lộ trình: lịch chưa bắt đầu (đang ở Sân ga 9¾) → một câu, không ngày, không nhãn;
+ * tạm dừng → ngày + "tạm dừng"; đang chạy → ngày + "đúng hạn" / "lùi N tuần".
+ */
 export function ScheduleLine({ plan }: { plan: Plan }) {
+  if (plan.status === 'not-started') {
+    return (
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <CalendarClock className="size-4 text-primary" aria-hidden="true" />
+        <span>Lịch 12 tháng bắt đầu khi bạn qua hoặc bỏ qua Sân ga 9¾.</span>
+      </p>
+    )
+  }
   if (plan.done) return null
   return (
     <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">

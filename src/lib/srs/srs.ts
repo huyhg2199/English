@@ -47,11 +47,41 @@ export type CustomStudyWord = {
   source: { title: string; url: string }
 }
 
-/** Từ trong phiên ôn: từ NGSL/TSL có dữ liệu AI hoặc thẻ riêng từ Sổ tay. */
-export type SessionWord = StudyWord | CustomStudyWord
+/** Tiền tố id thẻ SRS của thẻ quy tắc viên gạch (story 24): `rule:fNN-n`. */
+export const RULE_CARD_PREFIX = 'rule:'
+
+/**
+ * Thẻ quy tắc của viên gạch (story 24): thẻ điền chỗ trống, id `rule:fNN-n` (từ id nội dung `fNN-rule-n`). Cùng shape
+ * `SrsCard` và thuật toán như thẻ từ; không tính quota từ mới, không phải thẻ Làm quen, không có "Đã biết".
+ */
+export type RuleStudyWord = {
+  id: string
+  rule: true
+  /** = `answer` (để các chỗ dùng chung `word.word` vẫn có chữ). */
+  word: string
+  /** Viên gạch chứa thẻ (`F01`…). */
+  brickId: string
+  /** Câu có đúng một chỗ trống `___`. */
+  cloze: string
+  answer: string
+  /** Nghĩa / quy tắc tiếng Việt. */
+  vi: string
+}
+
+/** Từ trong phiên ôn: từ NGSL/TSL có dữ liệu AI, thẻ quy tắc viên gạch hoặc thẻ riêng từ Sổ tay. */
+export type SessionWord = StudyWord | CustomStudyWord | RuleStudyWord
 
 export function isCustomWord(word: SessionWord): word is CustomStudyWord {
   return 'custom' in word && word.custom === true
+}
+
+export function isRuleWord(word: SessionWord): word is RuleStudyWord {
+  return 'rule' in word && word.rule === true
+}
+
+/** Id thẻ SRS là thẻ quy tắc (`rule:…`). */
+export function isRuleCardId(id: string): boolean {
+  return id.startsWith(RULE_CARD_PREFIX)
 }
 
 /** `store.data.srs` từ schema v4. Thẻ sai dạng vẫn nằm trong `cards` (không xoá), chỉ bị bỏ qua. */
@@ -204,6 +234,11 @@ export type SessionItem = {
   word: SessionWord
   /** `review`: thẻ đến hạn; `new`: từ mới hôm nay; `learning`: thẻ đang học, quay lại sau ít phút. */
   kind: 'review' | 'new' | 'learning'
+  /**
+   * Thẻ "Làm quen" (CAP-9): từ NGSL/TSL chưa có thẻ, gặp lần đầu khi bật `introMode`. Hiện nghĩa ngay, chỉ có
+   * "Đã xem" (= `review(card, 'good')`) và "Đã biết"; không có Quên/Khó/Nhớ/Dễ.
+   */
+  intro?: true
 }
 
 export type Session = {
@@ -229,34 +264,70 @@ function isUnreviewedAdded(card: SrsCard): boolean {
   return card.added === true && card.learning && !card.known && card.reps === 0 && card.lapses === 0 && card.due === card.introducedAt
 }
 
-/** Thứ tự ổn định: từ trong danh sách theo `compareStudyOrder`, thẻ riêng xếp sau theo id. */
+/** Nhóm trong thứ tự ổn định: từ danh sách → thẻ quy tắc → thẻ riêng. */
+function sessionWordGroup(word: SessionWord): number {
+  return isRuleWord(word) ? 1 : isCustomWord(word) ? 2 : 0
+}
+
+/** Thứ tự ổn định: từ trong danh sách theo `compareStudyOrder`, rồi thẻ quy tắc, rồi thẻ riêng (hai nhóm sau theo id). */
 function compareSessionWords(a: SessionWord, b: SessionWord, firstList: WordList = 'ngsl'): number {
-  const ca = isCustomWord(a)
-  const cb = isCustomWord(b)
-  if (!ca && !cb) return compareStudyOrder(a, b, firstList)
-  if (ca !== cb) return ca ? 1 : -1
+  const ga = sessionWordGroup(a)
+  const gb = sessionWordGroup(b)
+  if (ga !== gb) return ga - gb
+  if (ga === 0) return compareStudyOrder(a as StudyWord, b as StudyWord, firstList)
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+}
+
+/** Tuỳ chọn của `buildSession`; thiếu field nào thì dùng mặc định (giữ hành vi cũ). */
+export type BuildSessionOptions = {
+  /** Tối đa bấy nhiêu từ mới mỗi ngày (giờ máy), đã trừ số từ giới thiệu hôm nay. Mặc định `NEW_PER_DAY`. */
+  newPerDay?: number
+  /** Danh sách lấy từ mới trước khi hết `preferIds`. Mặc định `'ngsl'`. */
+  firstList?: WordList
+  /** Thẻ riêng từ Sổ tay (`customStudyWords`). Mặc định `[]`. */
+  custom?: readonly CustomStudyWord[]
+  /**
+   * Id từ mới lấy trước, đúng thứ tự này (từ chủ đề viên gạch, danh sách từ khởi đầu). Id trùng, id đã có thẻ,
+   * id không có trong bộ từ hay chưa có dữ liệu AI bị bỏ qua. Mặc định `[]`.
+   */
+  preferIds?: readonly string[]
+  /** Gắn `intro: true` cho từ NGSL/TSL chưa có thẻ (thẻ "Làm quen"). Mặc định `false`. */
+  introMode?: boolean
+  /**
+   * Id từ chưa được giới thiệu làm từ mới (cổng hư từ, story 24): không vào phần từ mới kể cả khi nằm trong `preferIds`,
+   * không tạo thẻ, không tính quota. Thẻ đã có của các id này vẫn ôn theo lịch. Mặc định rỗng.
+   */
+  lockedIds?: ReadonlySet<string>
+  /**
+   * Thẻ quy tắc viên gạch (story 24). Có thẻ thì đi theo `due` như mọi thẻ; chưa có thì vào như từ mới sau phần từ mới,
+   * không tính quota, không phải Làm quen. Thẻ `rule:` trong store mà không có ở đây bị bỏ qua. Mặc định `[]`.
+   */
+  rules?: readonly RuleStudyWord[]
 }
 
 /**
  * Dựng phiên ôn: chỉ từ có dữ liệu AI; thẻ chưa đến hạn không hiện; tối đa `newPerDay` từ mới mỗi ngày
- * (giờ máy), lấy theo hạng: hết danh sách `firstList` rồi tới danh sách còn lại (mặc định NGSL → TSL;
- * chặng 2 trở đi truyền `'tsl'`, xem `newWordListFor`). Thẻ đã có lịch không đổi.
+ * (giờ máy), lấy theo `preferIds` trước rồi theo hạng: hết danh sách `firstList` rồi tới danh sách còn lại
+ * (mặc định NGSL → TSL; chặng 2 trở đi truyền `'tsl'`, xem `newWordListFor`). Thẻ đã có lịch không đổi.
  * Thẻ sai dạng bị bỏ qua, từ của nó không bị coi là từ mới.
  * `custom`: thẻ riêng từ Sổ tay (`customStudyWords`), cùng lịch/thuật toán; chưa có thẻ thì vào như từ mới
  * nhưng không tính quota. Thẻ có `added` (Huy tự thêm) không tính vào quota từ mới.
+ * `introMode`: từ NGSL/TSL chưa có thẻ thành thẻ "Làm quen" (`intro: true`); thẻ riêng và thẻ `added` thì không.
+ * `lockedIds`: từ chưa được giới thiệu (cổng hư từ); thẻ đã có vẫn ôn. `rules`: thẻ quy tắc viên gạch, lịch như thẻ riêng.
  */
-export function buildSession(
-  srs: unknown,
-  words: readonly Word[],
-  now: Date,
-  newPerDay: number = NEW_PER_DAY,
-  firstList: WordList = 'ngsl',
-  custom: readonly CustomStudyWord[] = [],
-): Session {
+export function buildSession(srs: unknown, words: readonly Word[], now: Date, options: BuildSessionOptions = {}): Session {
+  const newPerDay = options.newPerDay ?? NEW_PER_DAY
+  const firstList = options.firstList ?? 'ngsl'
+  const custom = options.custom ?? []
+  const preferIds = options.preferIds ?? []
+  const introMode = options.introMode ?? false
+  const lockedIds = options.lockedIds
   const cards = readCards(srs)
   const study = words.filter(hasDetails)
-  const scheduled: SessionWord[] = [...study, ...custom]
+  // Thẻ quy tắc trùng id: lấy mục đầu tiên.
+  const ruleIds = new Set<string>()
+  const rules = (options.rules ?? []).filter((r) => !ruleIds.has(r.id) && ruleIds.add(r.id))
+  const scheduled: SessionWord[] = [...study, ...rules, ...custom]
   const tomorrow = startOfLocalDay(now, 1).getTime()
   const t = now.getTime()
 
@@ -269,7 +340,14 @@ export function buildSession(
   for (const word of scheduled) {
     const card = cards[word.id]
     if (!isSrsCard(card)) continue
-    if (!card.known && !card.added && !isCustomWord(word) && isSameLocalDay(new Date(card.introducedAt), now)) introducedToday++
+    if (
+      !card.known &&
+      !card.added &&
+      !isCustomWord(word) &&
+      !isRuleWord(word) &&
+      isSameLocalDay(new Date(card.introducedAt), now)
+    )
+      introducedToday++
     const at = Date.parse(card.due)
     // Thẻ Huy vừa thêm từ Sổ tay, chưa chấm lần nào: hiện như từ mới (có "Đã biết"), vẫn không tính quota.
     if (at <= t && isUnreviewedAdded(card)) addedNew.push({ word, at })
@@ -285,16 +363,31 @@ export function buildSession(
   later.sort(byTime)
 
   const newLimit = Math.max(0, newPerDay - introducedToday)
-  const fresh = study
-    .filter((w) => !Object.hasOwn(cards, w.id))
-    .sort((a, b) => compareStudyOrder(a, b, firstList))
-    .slice(0, newLimit)
+  // Từ bị khoá (cổng hư từ) không được giới thiệu; mở khoá thì về đúng hạng vì phần còn lại vẫn sort theo hạng.
+  const unseen = study.filter((w) => !Object.hasOwn(cards, w.id) && !lockedIds?.has(w.id))
+  // `preferIds` trước (đúng thứ tự, bỏ id trùng / đã có thẻ / không có trong bộ từ), phần còn lại theo hạng.
+  const unseenById = new Map(unseen.map((w) => [w.id, w]))
+  const preferred: StudyWord[] = []
+  const taken = new Set<string>()
+  for (const id of preferIds) {
+    const w = unseenById.get(id)
+    if (w === undefined || taken.has(id)) continue
+    taken.add(id)
+    preferred.push(w)
+  }
+  const fresh = [
+    ...preferred,
+    ...unseen.filter((w) => !taken.has(w.id)).sort((a, b) => compareStudyOrder(a, b, firstList)),
+  ].slice(0, newLimit)
+  // Thẻ quy tắc chưa có lịch (viên vừa học xong): vào như từ mới sau phần từ mới, không trừ quota, không Làm quen.
+  const freshRules = rules.filter((w) => !Object.hasOwn(cards, w.id))
   // Thẻ riêng chưa có lịch (vd đồng bộ mới về mục lưu): vào như từ mới, không trừ quota.
   const freshCustom = custom.filter((w) => !Object.hasOwn(cards, w.id))
 
   const queue: SessionItem[] = [
     ...due.map(({ word }) => ({ word, kind: 'review' as const })),
-    ...fresh.map((word) => ({ word, kind: 'new' as const })),
+    ...fresh.map((word) => (introMode ? { word, kind: 'new' as const, intro: true as const } : { word, kind: 'new' as const })),
+    ...freshRules.map((word) => ({ word, kind: 'new' as const })),
     ...addedNew.map(({ word }) => ({ word, kind: 'new' as const })),
     ...freshCustom.map((word) => ({ word, kind: 'new' as const })),
     ...later.map(({ word }) => ({ word, kind: 'learning' as const })),
@@ -303,10 +396,25 @@ export function buildSession(
   return {
     queue,
     dueCount: due.length + later.length,
-    newCount: fresh.length + addedNew.length + freshCustom.length,
+    newCount: fresh.length + freshRules.length + addedNew.length + freshCustom.length,
     introducedToday,
     nextDue: queue.length === 0 && nextDue !== null ? new Date(nextDue) : null,
   }
+}
+
+/**
+ * Số thẻ đến hạn ôn lúc `now`: thẻ hợp lệ trong `srs.cards` có `due ≤ now`. Bỏ thẻ sai dạng và thẻ `added` chưa chấm
+ * (phiên hiện chúng như từ mới). `counted` (tuỳ chọn) lọc thêm theo id, vd bỏ thẻ riêng không còn mục lưu (phiên không
+ * bao giờ hiện, nên không ôn bớt được).
+ */
+export function dueCardCount(srs: unknown, now: Date, counted?: (cardId: string) => boolean): number {
+  const t = now.getTime()
+  let count = 0
+  for (const [id, card] of Object.entries(readCards(srs))) {
+    if (!isSrsCard(card) || isUnreviewedAdded(card) || Date.parse(card.due) > t) continue
+    if (counted === undefined || counted(id)) count++
+  }
+  return count
 }
 
 /** Nhãn khoảng tới lúc đến hạn (cho nút chấm): "1 phút", "10 phút", "1 ngày", "2 tháng". */

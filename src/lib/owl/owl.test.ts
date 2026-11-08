@@ -9,6 +9,7 @@ import {
   listMistakes,
   readAttempts,
   readMistakes,
+  recordMistake,
   reviewableDue,
   reviewMistake,
   type AttemptAnswer,
@@ -518,5 +519,23 @@ describe('sửa sau review', () => {
     expect(picked).not.toContain('ngsl-ngslw1')
     expect(picked).not.toContain('ngsl-ngslw2')
     expect(picked.slice(10)).toEqual(ngslIds(3, 23))
+  })
+})
+
+describe('reviewPlan — mục Sổ lỗi của viên gạch (lessonId fNN)', () => {
+  it('mục Sổ lỗi lessonId f03 (tag phát âm) không làm lỗi và không vào kế hoạch', () => {
+    const brickQ = getQuestion('q-f03-01')!
+    expect(brickQ.lessonId).toBe('f03')
+    const store = recordMistake(empty(), brickQ, 'x', T0)
+    const plan = reviewPlan(
+      store,
+      { answers: [...answers(pronIds(30), 5), ...answers(tenseIds(20), 20)], finishedAt: T0.toISOString() },
+      T0,
+    )!
+    expect(plan.parts).toEqual(['pronunciation'])
+    for (const d of plan.days) {
+      expect(d.lessonId).not.toBe('f03')
+      expect(d.mistakeIds).not.toContain(brickQ.id)
+    }
   })
 })

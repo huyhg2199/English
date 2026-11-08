@@ -48,6 +48,9 @@ export const DEFAULT_ENTERTAINMENT_LINKS: readonly EntertainmentLink[] = [
   byName('YouGlish'),
 ]
 
+/** Link ngoài của phần "Giải trí nhẹ" ở buổi Sân ga (story 21): VOA Learning English (Let's Learn English). */
+export const FOUNDATION_FUN_LINKS: readonly EntertainmentLink[] = [byName('VOA Learning English')]
+
 /** Việc của đoạn giải trí trong bài (chặng 2–3 không có đoạn này → null). */
 export function entertainmentTask(lesson: Lesson | null | undefined): string | null {
   return lesson?.sections.find((s) => s.id === 'entertainment')?.task ?? null

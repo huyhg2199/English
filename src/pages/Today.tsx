@@ -1,30 +1,33 @@
 import { useMemo, useState } from 'react'
-import { Bell, BookOpenCheck, Check, Coffee, Flame, Play, Sparkles, X } from 'lucide-react'
-import { Link } from 'react-router'
+import { Bell, BookOpenCheck, Check, Coffee, Flame, Gauge, Play, Sparkles, X } from 'lucide-react'
+import { Link, Navigate } from 'react-router'
 
 import {
   useComeback,
   useLoadedStore,
   useOwl,
-  usePlacement,
   useSchedule,
   useSessions,
   useSkillBoard,
+  useWelcome,
 } from '@/app/store-context'
+import { todayView } from '@/app/today-view'
 import { useNow } from '@/app/use-now'
 import { ComebackCard } from '@/components/ComebackCard'
+import { FoundationHero } from '@/components/foundation/FoundationHero'
 import { OwlPlanCard } from '@/components/owl/ReviewPlan'
 import { ScheduleCard } from '@/components/ScheduleCard'
 import { SkillGapCard } from '@/components/SkillGapCard'
 import { StudyClock } from '@/components/StudyClock'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { hasBrickContent } from '@/data/foundation/content'
 import { lessonHref } from '@/data/roadmap'
 import { studyHours } from '@/lib/placement'
 import { readDismissedDay, saveDismissedDay, showReminderBanner } from '@/lib/reminders'
 import { computeStreak, isSessionDay, localDayKey } from '@/lib/sessions'
 
-/** Mời đội Mũ Phân Loại khi chưa làm. */
+/** Mời đội Mũ Phân Loại (4 câu chọn Nhà) khi chưa có Nhà. */
 function SortingHatInvite() {
   return (
     <Card className="gap-3 border-primary/50">
@@ -33,11 +36,31 @@ function SortingHatInvite() {
         <CardTitle className="text-lg">
           <h2>Đội Mũ Phân Loại</h2>
         </CardTitle>
-        <CardDescription>Nhập điểm đề mẫu để xếp đúng bài, chọn Nhà và có bảng kỹ năng.</CardDescription>
+        <CardDescription>4 câu hỏi vui để chọn Nhà.</CardDescription>
       </CardHeader>
       <CardContent>
         <Button asChild variant="outline" className="w-full">
           <Link to="/sorting-hat">Đội Mũ</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+/** Mời Đo trình độ (tuỳ chọn) sau Sân ga khi chưa có điểm ETS: mốc điểm theo kỹ năng và bảng kỹ năng. */
+function MeasureInvite() {
+  return (
+    <Card className="gap-3">
+      <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
+        <Gauge className="row-span-2 size-8 text-primary" aria-hidden="true" />
+        <CardTitle className="text-lg">
+          <h2>Đo trình độ (tuỳ chọn)</h2>
+        </CardTitle>
+        <CardDescription>Làm đề mẫu ETS ở ngoài rồi nhập số câu đúng: có mốc điểm và bảng kỹ năng.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button asChild variant="outline" className="w-full">
+          <Link to="/do-trinh-do">Đo trình độ</Link>
         </Button>
       </CardContent>
     </Card>
@@ -72,21 +95,29 @@ function ReminderBanner({ now }: { now: Date }) {
 }
 
 /**
- * Trang Hôm nay: 1 nút lớn vào buổi 30', nút phụ ngày lười 10', bài hiện tại, streak, ngày dự kiến đạt 750,
- * thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, kế hoạch ôn O.W.L. 1 khi trượt, Mũ Phân Loại / bảng kỹ năng.
+ * Trang Hôm nay. Lần đầu (chưa xem Thư nhập học, lượt đồng bộ đầu đã xong) chuyển sang `/welcome`.
+ * - Đang ở Sân ga 9¾: thẻ Sân ga (`FoundationHero`, có nút buổi 30'), streak, ngày lười 10', lời mời Mũ khi chưa có Nhà,
+ *   đồng hồ giờ học khi đã có điểm ETS; ẩn Bài hiện tại, lịch 750, Đo trình độ và bảng kỹ năng (`todayView`).
+ * - Sau Sân ga: bố cục cũ (nút 30', ngày lười, bài hiện tại, ngày dự kiến 750); cuối trang lời mời Mũ (chưa Nhà), bảng kỹ
+ *   năng + đồng hồ (có điểm ETS) hoặc "Đo trình độ (tuỳ chọn)".
+ * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày và kế hoạch ôn O.W.L. 1 khi trượt.
  */
 export function Today() {
+  const { store } = useLoadedStore()
+  const welcome = useWelcome()
   const { days, current } = useSessions()
-  const { done: placed } = usePlacement()
   const { board, weakest } = useSkillBoard()
   const [now] = useNow()
   const plan = useSchedule(now)
   const comeback = useComeback(now)
   const { activePlan } = useOwl(now)
+  const view = useMemo(() => todayView(store, hasBrickContent), [store])
   const streak = useMemo(() => computeStreak(days, now), [days, now])
   const hours = useMemo(() => studyHours(days, now), [days, now])
   const todayEntry = days[localDayKey(now)]
   const today = isSessionDay(todayEntry) ? todayEntry : null
+
+  if (welcome.show) return <Navigate to="/welcome" replace />
 
   return (
     <section className="flex flex-col gap-6">
@@ -102,6 +133,8 @@ export function Today() {
       )}
 
       {activePlan && <OwlPlanCard active={activePlan} />}
+
+      {view.mode === 'foundation' && <FoundationHero hero={view.hero} />}
 
       <Card className="gap-3">
         <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
@@ -134,12 +167,14 @@ export function Today() {
       </Card>
 
       <div className="flex flex-col gap-3">
-        <Button asChild size="lg" className="h-16 text-lg shadow-[0_0_24px_var(--candle-glow)]">
-          <Link to={current ? `/session?lesson=${encodeURIComponent(current.lesson.id)}` : '/session'}>
-            <Play className="size-6" aria-hidden="true" />
-            Bắt đầu buổi 30'
-          </Link>
-        </Button>
+        {view.mode === 'roadmap' && (
+          <Button asChild size="lg" className="h-16 text-lg shadow-[0_0_24px_var(--candle-glow)]">
+            <Link to="/session">
+              <Play className="size-6" aria-hidden="true" />
+              Bắt đầu buổi 30'
+            </Link>
+          </Button>
+        )}
         <Button asChild variant="outline" size="lg">
           <Link to="/session/lazy">
             <Coffee aria-hidden="true" />
@@ -149,37 +184,37 @@ export function Today() {
         {today && <p className="text-center text-xs text-muted-foreground">Muốn học thêm thì cứ bắt đầu lại.</p>}
       </div>
 
-      <Card className="gap-3">
-        <CardHeader>
-          <CardDescription>Bài hiện tại</CardDescription>
-          {current ? (
-            <CardTitle className="flex items-start gap-2 text-lg">
-              <BookOpenCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-              <Link to={lessonHref(current.lesson.id)} className="break-words underline-offset-4 hover:underline">
-                {current.lesson.title}
-              </Link>
-            </CardTitle>
-          ) : (
-            <CardTitle className="text-lg">Đã xong cả lộ trình</CardTitle>
-          )}
-          {current && (
-            <p className="text-sm text-muted-foreground">
-              Chặng {current.stage.number} {current.stage.name} · Tuần {current.lesson.week}
-            </p>
-          )}
-        </CardHeader>
-      </Card>
-
-      <ScheduleCard plan={plan} />
-
-      {placed ? (
+      {view.mode === 'roadmap' && (
         <>
-          <SkillGapCard board={board} weakest={weakest} />
-          <StudyClock hours={hours} />
+          <Card className="gap-3">
+            <CardHeader>
+              <CardDescription>Bài hiện tại</CardDescription>
+              {current ? (
+                <CardTitle className="flex items-start gap-2 text-lg">
+                  <BookOpenCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+                  <Link to={lessonHref(current.lesson.id)} className="break-words underline-offset-4 hover:underline">
+                    {current.lesson.title}
+                  </Link>
+                </CardTitle>
+              ) : (
+                <CardTitle className="text-lg">Đã xong cả lộ trình</CardTitle>
+              )}
+              {current && (
+                <p className="text-sm text-muted-foreground">
+                  Chặng {current.stage.number} {current.stage.name} · Tuần {current.lesson.week}
+                </p>
+              )}
+            </CardHeader>
+          </Card>
+
+          {plan.status !== 'not-started' && <ScheduleCard plan={plan} />}
         </>
-      ) : (
-        <SortingHatInvite />
       )}
+
+      {view.showSortingHat && <SortingHatInvite />}
+      {view.mode === 'roadmap' && view.showMeasureInvite && <MeasureInvite />}
+      {view.mode === 'roadmap' && view.showSkillGap && <SkillGapCard board={board} weakest={weakest} />}
+      {view.showStudyClock && <StudyClock hours={hours} />}
     </section>
   )
 }
