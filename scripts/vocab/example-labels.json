@@ -3548,6 +3548,20 @@
     "status": "override"
   },
   {
+    "id": "ngsl-happy",
+    "rank": 513,
+    "exampleEn": "My parents are happy today.",
+    "features": [],
+    "status": "override"
+  },
+  {
+    "id": "ngsl-usually",
+    "rank": 555,
+    "exampleEn": "I usually start work at eight.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-address",
     "rank": 558,
     "exampleEn": "What is your email address?",
@@ -3562,6 +3576,13 @@
     "status": "clean"
   },
   {
+    "id": "ngsl-street",
+    "rank": 598,
+    "exampleEn": "The bank is on Main Street.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-wife",
     "rank": 602,
     "exampleEn": "His wife works at a bank.",
@@ -3569,11 +3590,25 @@
     "status": "clean"
   },
   {
+    "id": "ngsl-finish",
+    "rank": 609,
+    "exampleEn": "I finish work at six.",
+    "features": [],
+    "status": "override"
+  },
+  {
     "id": "ngsl-police",
     "rank": 616,
     "exampleEn": "Call the police!",
     "features": [],
     "status": "clean"
+  },
+  {
+    "id": "ngsl-bank",
+    "rank": 627,
+    "exampleEn": "There is a bank next to my office.",
+    "features": [],
+    "status": "override"
   },
   {
     "id": "ngsl-page",
@@ -3618,6 +3653,13 @@
     "status": "clean"
   },
   {
+    "id": "ngsl-bed",
+    "rank": 694,
+    "exampleEn": "I go to bed at eleven.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-yesterday",
     "rank": 703,
     "exampleEn": "The day before today is yesterday.",
@@ -3653,6 +3695,13 @@
     "status": "override"
   },
   {
+    "id": "ngsl-ready",
+    "rank": 774,
+    "exampleEn": "Dinner is ready.",
+    "features": [],
+    "status": "override"
+  },
+  {
     "id": "ngsl-quickly",
     "rank": 783,
     "exampleEn": "Please reply quickly.",
@@ -3677,6 +3726,13 @@
     "id": "ngsl-brother",
     "rank": 821,
     "exampleEn": "My brother is a doctor.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-sleep",
+    "rank": 827,
+    "exampleEn": "I sleep eight hours every night.",
     "features": [],
     "status": "clean"
   },
@@ -3779,6 +3835,13 @@
     "status": "override"
   },
   {
+    "id": "ngsl-busy",
+    "rank": 1233,
+    "exampleEn": "I am busy with a project this week.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-lesson",
     "rank": 1234,
     "exampleEn": "I take an English lesson every evening.",
@@ -3791,6 +3854,13 @@
     "exampleEn": "My bag is in the meeting room.",
     "features": [],
     "status": "override"
+  },
+  {
+    "id": "ngsl-kitchen",
+    "rank": 1307,
+    "exampleEn": "The office kitchen has a microwave.",
+    "features": [],
+    "status": "clean"
   },
   {
     "id": "ngsl-engineer",
@@ -3814,9 +3884,23 @@
     "status": "override"
   },
   {
+    "id": "ngsl-coffee",
+    "rank": 1395,
+    "exampleEn": "Let's grab a coffee before the meeting.",
+    "features": [],
+    "status": "clean"
+  },
+  {
     "id": "ngsl-shoe",
     "rank": 1476,
     "exampleEn": "I need new shoes for work.",
+    "features": [],
+    "status": "clean"
+  },
+  {
+    "id": "ngsl-wake",
+    "rank": 1508,
+    "exampleEn": "I usually wake up at six.",
     "features": [],
     "status": "clean"
   },

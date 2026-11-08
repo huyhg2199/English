@@ -44,6 +44,10 @@
       "exampleEn": "My bag is in the meeting room.",
       "exampleVi": "Túi của tôi ở trong phòng họp."
     },
+    "ngsl-bank": {
+      "exampleEn": "There is a bank next to my office.",
+      "exampleVi": "Cạnh văn phòng tôi có một ngân hàng."
+    },
     "ngsl-bear": {
       "exampleEn": "These trees bear fruit every summer.",
       "exampleVi": "Những cây này ra quả vào mỗi mùa hè."
@@ -184,6 +188,10 @@
       "exampleEn": "I often find my keys under the sofa.",
       "exampleVi": "Tôi hay tìm thấy chìa khoá dưới ghế sofa."
     },
+    "ngsl-finish": {
+      "exampleEn": "I finish work at six.",
+      "exampleVi": "Tôi tan làm lúc sáu giờ."
+    },
     "ngsl-force": {
       "exampleEn": "Our sales force has twenty people.",
       "exampleVi": "Đội ngũ bán hàng của chúng tôi có hai mươi người."
@@ -211,6 +219,10 @@
     "ngsl-happen": {
       "exampleEn": "Accidents often happen on this road.",
       "exampleVi": "Tai nạn hay xảy ra trên con đường này."
+    },
+    "ngsl-happy": {
+      "exampleEn": "My parents are happy today.",
+      "exampleVi": "Hôm nay bố mẹ tôi vui."
     },
     "ngsl-hear": {
       "exampleEn": "I hear birds every morning.",
@@ -383,6 +395,10 @@
     "ngsl-reach": {
       "exampleEn": "I reach the office at eight every day.",
       "exampleVi": "Ngày nào tôi cũng tới văn phòng lúc tám giờ."
+    },
+    "ngsl-ready": {
+      "exampleEn": "Dinner is ready.",
+      "exampleVi": "Bữa tối đã sẵn sàng."
     },
     "ngsl-receive": {
       "exampleEn": "I receive many emails every day.",

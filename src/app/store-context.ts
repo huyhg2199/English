@@ -76,7 +76,17 @@ import {
   type SessionKind,
 } from '@/lib/sessions'
 import { unlockedSpells } from '@/lib/spells'
-import { housePoints, longestStreak, markSeen, medalProgress, unseenLevelUps, type LevelUp } from '@/lib/trophies'
+import {
+  boardingMedal,
+  isWallCelebrationPending,
+  longestStreak,
+  markSeen,
+  markWallCelebrated,
+  medalProgress,
+  storeHousePoints,
+  unseenLevelUps,
+  type LevelUp,
+} from '@/lib/trophies'
 import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
 import { knownWordsFromStore } from '@/lib/subs/highlight'
 import { readVideoPractice, recordVideoPractice } from '@/lib/subs/practice'
@@ -213,7 +223,8 @@ export function useSrs() {
  * Sân ga 9¾ (story 19, 20): trạng thái (`status`, `rowsDone`, `taughtCount` cho "x/18", `doneBrickIds`), xong viên (đi tới
  * màn Áp dụng), "Bỏ qua Sân ga" và "Quay lại Sân ga"; Soát vé (`needsPlacement`, hàng tiếp theo `placementRow`, đã làm
  * hàng nào chưa `placementStarted`), ghi một lần kiểm tra hàng (`recordRowTest`) và "Bỏ qua, học từ viên 1"
- * (`skipPlacement`). Ghi qua `handle.update` nên lưu local và đồng bộ.
+ * (`skipPlacement`). Qua bức tường (story 26): còn chờ ăn mừng (`wallCelebrationPending`) và ghi đã ăn mừng + đã đưa thư
+ * Lên tàu Năm 1 (`markWallCelebrated`, 2 mục `trophies.seen`). Ghi qua `handle.update` nên lưu local và đồng bộ.
  */
 export function useFoundation() {
   const handle = useStoreHandle()
@@ -238,7 +249,22 @@ export function useFoundation() {
   )
   const skip = useCallback((now: Date = new Date()) => handle.update((s) => skipFoundation(s, now)), [handle])
   const resume = useCallback((now: Date = new Date()) => handle.update((s) => resumeFoundation(s, now)), [handle])
-  return { state, ...placement, completeBrick: complete, skip, resume, recordRowTest: recordRow, skipPlacement: skipTicket }
+  const wallCelebrationPending = useMemo(() => isWallCelebrationPending(store), [store])
+  const celebrate = useCallback(
+    (now: Date = new Date()) => handle.update((s) => markWallCelebrated(s, now)),
+    [handle],
+  )
+  return {
+    state,
+    ...placement,
+    completeBrick: complete,
+    skip,
+    resume,
+    recordRowTest: recordRow,
+    skipPlacement: skipTicket,
+    wallCelebrationPending,
+    markWallCelebrated: celebrate,
+  }
 }
 
 /**
@@ -516,17 +542,22 @@ export function useSpells() {
   return useMemo(() => unlockedSpells(store), [store])
 }
 
-/** Phòng Cúp (story 12): điểm Nhà, chuỗi hiện tại / dài nhất, tiến độ huy chương. Tính lại từ dữ liệu, không có key riêng. */
+/**
+ * Phòng Cúp (story 12): điểm Nhà (cộng +5 mỗi viên gạch xong lần đầu, story 26), chuỗi hiện tại / dài nhất, tiến độ huy
+ * chương và huy chương một lần "Lên tàu Năm 1" (`boarding`). Tính lại từ dữ liệu, không có key riêng.
+ */
 export function useTrophies(now: Date) {
   const { store } = useLoadedStore()
   return useMemo(() => {
     const days = readSessionDays(store)
     return {
       house: readPlacement(store).house,
-      points: housePoints(days),
+      // Điểm Nhà + 5 cho mỗi viên gạch đã xong lần đầu (story 26).
+      points: storeHousePoints(store),
       streak: computeStreak(days, now),
       longest: longestStreak(days),
       medals: medalProgress(store),
+      boarding: boardingMedal(store),
     }
   }, [store, now])
 }

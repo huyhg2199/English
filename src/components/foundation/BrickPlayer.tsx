@@ -9,6 +9,7 @@ import type { Brick, Screen } from '@/data/foundation'
 import { advanceCheck, recordAnswer, skipEasier, startCheck, startEasier, type CheckFlow } from '@/lib/foundation'
 
 import { BrickScreen, CheckScreen } from './BrickScreen'
+import { WallPassedButton } from './WallPassedCard'
 
 const SCREEN_TITLES: Record<Screen['kind'], string> = {
   explain: 'Giải thích',
@@ -27,6 +28,7 @@ const SCREEN_TITLES: Record<Screen['kind'], string> = {
  *
  * `variant`: `page` (trang `/foundation/:id`, mặc định) hoặc `session` (chạy trong buổi 30', story 21): không có link
  * "Bức tường", tiêu đề là `h2`, màn cuối hiện `endSlot` (vd nút "Học tiếp viên sau") thay cho nút "Về bức tường".
+ * Trang viên khi còn chờ ăn mừng qua bức tường (story 26): màn cuối có nút "Qua bức tường" thay "Về bức tường".
  */
 export function BrickPlayer({
   brick,
@@ -38,7 +40,7 @@ export function BrickPlayer({
   endSlot?: ReactNode
 }) {
   const inSession = variant === 'session'
-  const { completeBrick } = useFoundation()
+  const { completeBrick, wallCelebrationPending } = useFoundation()
   const [index, setIndex] = useState(0)
   const [flow, setFlow] = useState<CheckFlow>(startCheck)
   const [seed] = useState(() => `${brick.id}-${Date.now()}`)
@@ -154,6 +156,9 @@ export function BrickPlayer({
         {isLast ? (
           inSession ? (
             endSlot
+          ) : wallCelebrationPending ? (
+            // Vừa xong viên cuối (cả 4 hàng xong): nút chính dẫn tới màn ăn mừng, link "Bức tường" ở đầu trang vẫn còn.
+            <WallPassedButton />
           ) : (
             <Button asChild>
               <Link to="/foundation">Về bức tường</Link>

@@ -10,6 +10,12 @@ import { F09_CONTENT } from './bricks/f09'
 import { F10_CONTENT } from './bricks/f10'
 import { F11_CONTENT } from './bricks/f11'
 import { F12_CONTENT } from './bricks/f12'
+import { F13_CONTENT } from './bricks/f13'
+import { F14_CONTENT } from './bricks/f14'
+import { F15_CONTENT } from './bricks/f15'
+import { F16_CONTENT } from './bricks/f16'
+import { F17_CONTENT } from './bricks/f17'
+import { F18_CONTENT } from './bricks/f18'
 import { getBrickMeta } from './catalog'
 import type { Brick, BrickId } from './types'
 
@@ -36,6 +42,12 @@ export const BRICK_CONTENT: Readonly<Partial<Record<BrickId, Brick>>> = {
   F10: withMeta('F10', F10_CONTENT),
   F11: withMeta('F11', F11_CONTENT),
   F12: withMeta('F12', F12_CONTENT),
+  F13: withMeta('F13', F13_CONTENT),
+  F14: withMeta('F14', F14_CONTENT),
+  F15: withMeta('F15', F15_CONTENT),
+  F16: withMeta('F16', F16_CONTENT),
+  F17: withMeta('F17', F17_CONTENT),
+  F18: withMeta('F18', F18_CONTENT),
 }
 
 /** Viên có nội dung theo id (đúng hoa thường như danh mục); chưa soạn / id lạ → `undefined`. */

@@ -4,6 +4,7 @@ import { ListenButton } from '@/components/ListenButton'
 import type { ExampleWord, PronunciationContent, Sound } from '@/data/lessons'
 import { cn } from '@/lib/utils'
 
+import { GlossaryText } from './TermChip'
 import { useNgslLookup, type NgslLookup as Lookup } from './use-ngsl'
 
 function Example({ example, lookup }: { example: ExampleWord; lookup: Lookup }) {
@@ -46,7 +47,9 @@ function SoundItem({ sound, lookup }: { sound: Sound; lookup: Lookup }) {
           </span>
         )}
       </div>
-      <p className="text-sm">{sound.tip}</p>
+      <p className="text-sm">
+        <GlossaryText text={sound.tip} />
+      </p>
       <ul className="flex flex-wrap gap-1.5 text-sm" aria-label={`Từ ví dụ cho /${sound.ipa}/`} lang="en">
         {sound.examples.map((ex) => (
           <Example key={ex.form ?? ex.word} example={ex} lookup={lookup} />
@@ -69,13 +72,18 @@ function SoundItem({ sound, lookup }: { sound: Sound; lookup: Lookup }) {
   )
 }
 
-/** Bảng âm của đoạn Phát âm: từng âm có IPA, mẹo khẩu hình, từ ví dụ NGSL (IPA + nút nghe) và cặp dễ nhầm. */
+/**
+ * Bảng âm của đoạn Phát âm: từng âm có IPA, mẹo khẩu hình, từ ví dụ NGSL (IPA + nút nghe) và cặp dễ nhầm. Lời tiếng Việt
+ * (`intro`, `group.note`, `sound.tip`) có chip thuật ngữ (story 26); IPA và từ ví dụ không có chip.
+ */
 export function SoundTable({ content }: { content: PronunciationContent }) {
   const { state, lookup } = useNgslLookup()
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm text-muted-foreground">{content.intro}</p>
+      <p className="text-sm text-muted-foreground">
+        <GlossaryText text={content.intro} />
+      </p>
       {state.status === 'error' && content.groups.length > 0 && (
         <p className="text-xs text-muted-foreground">
           Chưa tải được IPA của từ ví dụ.{' '}
@@ -87,7 +95,11 @@ export function SoundTable({ content }: { content: PronunciationContent }) {
       {content.groups.map((group) => (
         <div key={group.title} className="flex flex-col gap-2">
           <h3 className="font-semibold">{group.title}</h3>
-          {group.note && <p className="text-xs text-muted-foreground">{group.note}</p>}
+          {group.note && (
+            <p className="text-xs text-muted-foreground">
+              <GlossaryText text={group.note} />
+            </p>
+          )}
           <ul className="flex flex-col gap-2">
             {group.sounds.map((sound) => (
               <SoundItem key={sound.id} sound={sound} lookup={lookup} />

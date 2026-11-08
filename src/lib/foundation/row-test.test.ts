@@ -247,9 +247,46 @@ describe('rowTestMode / recordRowTest · kiểm tra hàng', () => {
     expect(listAttempts(again)).toHaveLength(2)
   })
 
+  it('Kiểm tra cuối hàng C (F13–F16 xong, story 26): sai q-f14-02 → vào Sổ lỗi, câu đã viết lại mở viên F14 có nội dung', () => {
+    const done = completeRow(empty(), ['F13', 'F14', 'F15', 'F16'])
+    expect(rowTestMode(done, 'C', 'row')).toBe('final')
+    const q = FOUNDATION_QUESTIONS.find((x) => x.id === 'q-f14-02')!
+    const wrong = q.options.find((o) => o !== q.answer)!
+    const others = pickQuiz(FOUNDATION_QUESTIONS, foundationQuiz('C'), 'seed-c', { canSpeak: true }).filter((x) => x.id !== q.id)
+    const answers: AttemptAnswer[] = [
+      { questionId: q.id, chosen: wrong, correct: false },
+      ...others.slice(0, 7).map((x) => ({ questionId: x.id, chosen: x.answer, correct: true })),
+    ]
+    const at = day(8)
+    const store = recordRowTest(
+      done,
+      { row: 'C', context: 'row', attemptId: 'a-c', seed: 'seed-c', startedAt: at, answers },
+      at,
+    )
+    const mistakes = listMistakes(readMistakes(store))
+    expect(mistakes.map((m) => m.id)).toContain('q-f14-02')
+    const f14 = mistakes.find((m) => m.id === 'q-f14-02')!
+    expect(f14.lessonId).toBe('f14')
+    expect(hasBrickContent('F14')).toBe(true)
+  })
+
   it('Kiểm tra cuối hàng không ghi buổi học (chỉ foundation, quizzes, mistakes)', () => {
     const store = test(completeRow(empty(), ROW_A), 'A', 6, 'row')
     expect(Object.keys(store.data).sort()).toEqual(['foundation', 'mistakes', 'quizzes'])
+  })
+})
+
+describe('bức tường đủ nội dung (story 26)', () => {
+  it('store mới: 18 viên mở (hasContent), không ô "Đang soạn"; qua tường bằng Soát vé → mọi ô sáng', () => {
+    const rows = wallRows(foundationState(empty()), hasBrickContent)
+    const tiles = rows.flatMap((r) => r.tiles)
+    expect(tiles).toHaveLength(18)
+    expect(tiles.every((t) => t.hasContent)).toBe(true)
+    let store = empty()
+    for (const row of ['A', 'B', 'C', 'D'] as const) store = test(store, row, 7, 'placement', day(6))
+    expect(readFoundation(store).completedAt).not.toBeNull()
+    expect(wallRows(foundationState(store), hasBrickContent).flatMap((r) => r.tiles).every((t) => t.lit)).toBe(true)
+    expect(nextBrickId(store, hasBrickContent)).toBeNull()
   })
 })
 

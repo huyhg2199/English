@@ -15,6 +15,7 @@ import { todayView } from '@/app/today-view'
 import { useNow } from '@/app/use-now'
 import { ComebackCard } from '@/components/ComebackCard'
 import { FoundationHero } from '@/components/foundation/FoundationHero'
+import { WallPassedCard } from '@/components/foundation/WallPassedCard'
 import { OwlPlanCard } from '@/components/owl/ReviewPlan'
 import { ScheduleCard } from '@/components/ScheduleCard'
 import { SkillGapCard } from '@/components/SkillGapCard'
@@ -133,6 +134,9 @@ export function Today() {
       )}
 
       {activePlan && <OwlPlanCard active={activePlan} />}
+
+      {/* Qua bức tường mà chưa ăn mừng (kể cả qua trong buổi 30' hay đồng bộ từ máy khác, story 26). */}
+      <WallPassedCard />
 
       {view.mode === 'foundation' && <FoundationHero hero={view.hero} />}
 

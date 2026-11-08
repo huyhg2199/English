@@ -232,3 +232,6 @@ export function resolveBrickRoute(param: string | undefined, hasContent: (id: Br
 export function brickHref(id: BrickId): string {
   return `/foundation/${id}`
 }
+
+/** Màn ăn mừng "Qua bức tường" (story 26); segment tĩnh, đặt trước `/foundation/:brickId` trong routes. */
+export const WALL_PASSED_HREF = '/foundation/qua-buc-tuong'

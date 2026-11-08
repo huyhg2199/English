@@ -12,6 +12,9 @@ import type { Question } from './types'
  * `lessonId` = viên viết thường (`f03`); id câu `q-fNN-NN`. Câu hàng B–D được hỏi kiến thức chưa dạy (ngoại lệ Soát vé
  * / "Tôi biết rồi"). Mỗi hàng tối đa 2 câu nghe, nên máy không có TTS vẫn đủ 8 câu.
  * Câu hàng B chỉ dùng kiến thức F01–F12 (kiểm tra cuối hàng chạy sau khi học hết hàng): không to be, have, do, khuyết thiếu.
+ * Câu hàng C chỉ dùng F01–F16 (không at / every / trạng từ tần suất, không going / gone); hàng D dùng F01–F18. Cả hai
+ * hàng không có do / does / did, khuyết thiếu, 've / 'll / 'd, n't ngoài isn't / aren't (story 26). Câu quiz không lặp
+ * nguyên văn câu trong viên (kiểm chuyển giao, không kiểm trí nhớ).
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
@@ -256,7 +259,7 @@ const ROW_C: readonly Question[] = [
     prompt: 'She ___ a nurse.',
     options: ['is', 'am', 'are', 'be'],
     answer: 'is',
-    explanation: 'He / she / it đi với is: She is a nurse.',
+    explanation: 'he / she / it đi với is: She is a nurse. am chỉ đi với I, are đi với you / we / they.',
   },
   {
     id: 'q-f13-02',
@@ -267,7 +270,7 @@ const ROW_C: readonly Question[] = [
     prompt: 'They ___ students.',
     options: ['are', 'is', 'am', 'be'],
     answer: 'are',
-    explanation: 'We / you / they đi với are: They are students.',
+    explanation: 'you / we / they đi với are: They are students.',
   },
   {
     id: 'q-f13-03',
@@ -290,7 +293,7 @@ const ROW_C: readonly Question[] = [
     prompt: '___ is your name?',
     options: ['What', 'Where', 'Who', 'How'],
     answer: 'What',
-    explanation: 'Hỏi tên dùng What: What is your name?',
+    explanation: 'Hỏi tên dùng what (gì) đứng đầu câu: What is your name?',
   },
   {
     id: 'q-f14-02',
@@ -298,10 +301,10 @@ const ROW_C: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'thì',
     kind: 'choice',
-    prompt: 'He ___ at home now. (Anh ấy không ở nhà.)',
-    options: ["isn't", "aren't", "don't", 'not'],
+    prompt: 'He ___ home today. (Hôm nay anh ấy không có nhà.)',
+    options: ["isn't", "aren't", 'not', 'am not'],
     answer: "isn't",
-    explanation: "Phủ định của is là is not (isn't): He isn't at home.",
+    explanation: "he đi với is, phủ định thêm not: is not, nói nhanh isn't. aren't đi với you / we / they, am not đi với I.",
   },
   {
     id: 'q-f15-01',
@@ -312,7 +315,7 @@ const ROW_C: readonly Question[] = [
     prompt: 'There ___ two chairs in the room.',
     options: ['are', 'is', 'am', 'be'],
     answer: 'are',
-    explanation: 'two chairs số nhiều nên dùng There are.',
+    explanation: 'two chairs là số nhiều nên dùng There are. There is chỉ cho một vật.',
   },
   {
     id: 'q-f15-02',
@@ -321,9 +324,9 @@ const ROW_C: readonly Question[] = [
     tag: 'giới từ',
     kind: 'choice',
     prompt: 'The book is ___ the bag. (Quyển sách ở trong túi.)',
-    options: ['in', 'on', 'under', 'at'],
+    options: ['in', 'on', 'under', 'between'],
     answer: 'in',
-    explanation: 'Ở trong dùng in: in the bag. on là ở trên, under là ở dưới.',
+    explanation: 'Ở trong dùng in: in the bag. on là ở trên, under là ở dưới, between là ở giữa hai vật.',
   },
   {
     id: 'q-f15-03',
@@ -340,7 +343,7 @@ const ROW_C: readonly Question[] = [
       'There is a car under the chair.',
     ],
     answer: 'There is a cat under the chair.',
-    explanation: 'Một con mèo (a cat) nên dùng There is; under là ở dưới.',
+    explanation: 'a cat (một con mèo) nên dùng There is; under = ở dưới.',
   },
   {
     id: 'q-f16-01',
@@ -349,20 +352,20 @@ const ROW_C: readonly Question[] = [
     tag: 'thì',
     kind: 'choice',
     prompt: 'She ___ two brothers.',
-    options: ['has', 'have', 'is', 'having'],
+    options: ['has', 'have', 'is', 'haves'],
     answer: 'has',
-    explanation: 'He / she / it đi với has: She has two brothers.',
+    explanation: 'Ngôi thứ ba số ít (he / she / it) dùng has: She has two brothers. Không có dạng “haves”.',
   },
   {
     id: 'q-f16-02',
     lessonId: 'f16',
     sectionId: 'grammar',
-    tag: 'từ vựng',
+    tag: 'thì',
     kind: 'choice',
-    prompt: 'Câu nào đúng cho “Tôi 25 tuổi”?',
-    options: ['I am 25.', 'I have 25.', 'I have 25 years.', 'I is 25.'],
-    answer: 'I am 25.',
-    explanation: 'Nói tuổi dùng to be, không dùng have: I am 25 (years old).',
+    prompt: 'Câu nào đúng cho “Anh ấy 30 tuổi”?',
+    options: ['He is 30.', 'He has 30.', 'He has 30 years.', 'He are 30.'],
+    answer: 'He is 30.',
+    explanation: 'Nói tuổi dùng to be, không dùng have / has: He is 30 (years old).',
   },
 ]
 
@@ -376,7 +379,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'Yesterday she ___ to the market.',
     options: ['went', 'go', 'goes', 'gone'],
     answer: 'went',
-    explanation: 'Yesterday là quá khứ: go → went.',
+    explanation: 'Có yesterday là quá khứ: go đổi thành went. gone phải đi với have / has.',
   },
   {
     id: 'q-f17-02',
@@ -387,7 +390,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'He ___ to work every day.',
     options: ['goes', 'go', 'going', 'gone'],
     answer: 'goes',
-    explanation: 'Việc lặp lại mỗi ngày, chủ ngữ he: goes.',
+    explanation: 'Thói quen (every day), chủ ngữ he: goes. going cần am / is / are, gone cần have / has.',
   },
   {
     id: 'q-f17-03',
@@ -398,7 +401,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'They are ___ home now.',
     options: ['going', 'go', 'went', 'gone'],
     answer: 'going',
-    explanation: 'Đang xảy ra lúc này: are + going.',
+    explanation: 'Đang xảy ra bây giờ: am / is / are + going: They are going home now.',
   },
   {
     id: 'q-f17-04',
@@ -406,10 +409,11 @@ const ROW_D: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'thì',
     kind: 'choice',
-    prompt: '___ he work every day? (Anh ấy có làm việc mỗi ngày không?)',
-    options: ['Does', 'Do', 'Is', 'Are'],
-    answer: 'Does',
-    explanation: 'Câu hỏi về việc lặp lại, chủ ngữ he / she / it: Does he work every day? (I / you / we / they dùng Do.)',
+    prompt: 'I ___ to school. (Ngày nào tôi cũng đi học.)',
+    options: ['go', 'goes', 'going', 'gone'],
+    answer: 'go',
+    explanation:
+      'Thói quen, chủ ngữ I: dạng gốc go. goes đi với he / she / it; going cần am / is / are; gone cần have / has.',
   },
   {
     id: 'q-f17-05',
@@ -421,7 +425,7 @@ const ROW_D: readonly Question[] = [
     audioText: 'She is going home now.',
     options: ['She is going home now.', 'She goes home now.', 'She went home now.', 'She is going home soon.'],
     answer: 'She is going home now.',
-    explanation: 'is going: việc đang xảy ra lúc nói (now).',
+    explanation: 'is going: việc đang xảy ra bây giờ (now).',
   },
   {
     id: 'q-f18-01',
@@ -432,7 +436,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'The class starts ___ 7:30.',
     options: ['at', 'on', 'in', 'for'],
     answer: 'at',
-    explanation: 'Giờ cụ thể dùng at: at 7:30.',
+    explanation: 'Giờ dùng at: at 7:30. Thứ dùng on, tháng dùng in.',
   },
   {
     id: 'q-f18-02',
@@ -443,7 +447,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'I play football ___ Sunday.',
     options: ['on', 'in', 'at', 'to'],
     answer: 'on',
-    explanation: 'Thứ trong tuần dùng on: on Sunday.',
+    explanation: 'Thứ trong tuần dùng on: on Sunday. at cho giờ, in cho tháng.',
   },
   {
     id: 'q-f18-03',
@@ -454,7 +458,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'My birthday is ___ May.',
     options: ['in', 'on', 'at', 'to'],
     answer: 'in',
-    explanation: 'Tháng dùng in: in May.',
+    explanation: 'Tháng dùng in: in May. on cho thứ, at cho giờ.',
   },
   {
     id: 'q-f18-04',
@@ -465,7 +469,7 @@ const ROW_D: readonly Question[] = [
     prompt: 'Câu nào đặt trạng từ tần suất đúng chỗ?',
     options: ['I always drink coffee.', 'I drink always coffee.', 'I coffee always drink.', 'Drink I always coffee.'],
     answer: 'I always drink coffee.',
-    explanation: 'Trạng từ tần suất (always, usually…) đứng trước động từ thường: I always drink coffee.',
+    explanation: 'Trạng từ tần suất (always, usually…) đứng trước động từ thường: I always drink coffee. Với am / is / are thì đứng sau.',
   },
   {
     id: 'q-f18-05',
@@ -477,7 +481,7 @@ const ROW_D: readonly Question[] = [
     audioText: 'I usually get up at six.',
     options: ['I usually get up at six.', 'I usually get up at sixty.', 'I usually get up in six.', 'I usual get up at six.'],
     answer: 'I usually get up at six.',
-    explanation: 'Giờ dùng at (at six); usually đứng trước động từ get up.',
+    explanation: 'Giờ dùng at (at six); usually đứng trước động từ get up. sixty là 60.',
   },
 ]
 

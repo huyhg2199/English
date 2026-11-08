@@ -170,6 +170,7 @@ describe('highlightReason', () => {
   it('tên thì ngắn, từ đã học lấy từ id thẻ NGSL/TSL', () => {
     expect(shortTenseName('Quá khứ đơn: động từ có quy tắc')).toBe('Quá khứ đơn')
     expect(shortTenseName('Tương lai với will')).toBe('Tương lai với will')
+    expect(shortTenseName('Ôn lại: viên gạch F13–F14 · to be (am / is / are)')).toBe('to be (am / is / are)')
     expect([...knownWordsFromCardIds(['ngsl-work', 'tsl-invoice', 'custom-abc', 'word-1'])]).toEqual(['work', 'invoice'])
   })
 })

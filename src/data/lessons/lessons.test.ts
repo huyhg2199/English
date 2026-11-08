@@ -152,6 +152,12 @@ describe('nội dung bài T1', () => {
     expect(new Set(tenseIds).size).toBe(tenseIds.length)
   })
 
+  it('TO_BE (bài s1-t1-w1) là thẻ ôn lại viên gạch F13–F14 (story 26)', () => {
+    const toBe = content('s1-t1-w1').grammar!.tenses.find((t) => t.id === 'to-be')!
+    expect(toBe.name.startsWith('Ôn lại: viên gạch F13–F14')).toBe(true)
+    expect(toBe.name).toBe('Ôn lại: viên gạch F13–F14 · to be (am / is / are)')
+  })
+
   it('mỗi thì: 3 quy tắc, 4–6 ví dụ có dịch, có lỗi hay mắc, ≥1 câu thoại VOA (link VOA) hoặc YouGlish', () => {
     expect(allTenses().map((t) => t.id)).toEqual([
       'to-be',

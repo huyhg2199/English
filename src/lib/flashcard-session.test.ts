@@ -195,9 +195,10 @@ describe('preferredNewWordIds — từ mới lấy trước', () => {
   })
 
   it('viên không có nội dung không góp từ', () => {
+    // Story 26: F01–F18 đều có nội dung, nên viên "Đang soạn" được giả bằng lookup trả rỗng cho F17.
     const store = completeBrick(empty(), 'F17', day(9))
-    expect(getBrick('F17')).toBeUndefined()
-    expect(preferredNewWordIds(store, themeWordIdsOf)).toEqual([...STARTER_WORD_IDS])
+    const drafting = (id: BrickId) => (id === 'F17' ? [] : themeWordIdsOf(id))
+    expect(preferredNewWordIds(store, drafting)).toEqual([...STARTER_WORD_IDS])
   })
 
   it('hàng A qua kiểm tra, chưa học viên nào → chỉ danh sách khởi đầu', () => {
@@ -571,3 +572,61 @@ describe('hàng B có nội dung (story 25, getBrick thật)', () => {
     expect(preferredNewWordIds(store, themeWordIdsOf)).toEqual([...STARTER_WORD_IDS])
   })
 })
+
+describe('hàng C–D có nội dung (story 26, getBrick thật)', () => {
+  const ROW_AB: readonly BrickId[] = ['F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12']
+  const ROW_CD: readonly BrickId[] = ['F13', 'F14', 'F15', 'F16', 'F17', 'F18']
+  const doneAll = (list: readonly BrickId[], s: Store = empty(), d = 1) =>
+    list.reduce((acc, id, i) => completeBrick(acc, id, day(d, 8 + (i % 10))), s)
+
+  it("F01–F12 xong → viên tiếp theo F13, buổi 30' chạy F13", () => {
+    const store = doneAll(ROW_AB)
+    expect(nextBrickId(store, hasBrickContent)).toBe('F13')
+    expect(sessionPlan(store, hasBrickContent)).toMatchObject({ mode: 'foundation', brickId: 'F13', review: false })
+  })
+
+  it('xong lần lượt F13, F14, F15, F16, F18 → khoá 75 → 74 → 67 → 62 → 61 → 56; xong thêm F17 thì qua tường, còn khoá 15', () => {
+    let store = doneAll(ROW_AB)
+    const sizes = [lockedNewWordIds(store).size]
+    for (const [i, id] of (['F13', 'F14', 'F15', 'F16', 'F18'] as const).entries()) {
+      store = completeBrick(store, id, day(9, 8 + i))
+      sizes.push(lockedNewWordIds(store).size)
+      // Từ chủ đề của viên vừa học lên đầu từ mới.
+      expect(preferredNewWordIds(store, themeWordIdsOf).slice(0, 5), id).toEqual([...themeWordIdsOf(id)])
+    }
+    expect(sizes).toEqual([75, 74, 67, 62, 61, 56])
+    expect(readFoundationCompletedAt(store)).toBeNull()
+
+    store = completeBrick(store, 'F17', day(10))
+    expect(readFoundationCompletedAt(store)).toBe(day(10).toISOString())
+    expect(lockedNewWordIds(store).size).toBe(15)
+    expect(openedIn(store).length).toBe(ALL_FUNCTION_IDS.length - 15)
+    expect([...lockedNewWordIds(store)].map(wordOf).sort()).toEqual(LESSON_LOCKED)
+  })
+
+  it('hàng A–C xong, xong F17 rồi F18 → completedAt = lúc xong F18', () => {
+    let store = doneAll([...ROW_AB, 'F13', 'F14', 'F15', 'F16'])
+    store = completeBrick(store, 'F17', day(9))
+    expect(readFoundationCompletedAt(store)).toBeNull()
+    store = completeBrick(store, 'F18', day(11))
+    expect(readFoundationCompletedAt(store)).toBe(day(11).toISOString())
+  })
+
+  it('ruleStudyWords sau khi xong F13–F18 → rule:f13-… … rule:f18-… theo thứ tự viên; hư từ mở chỉ là thẻ điền câu', () => {
+    const store = doneAll([...ROW_CD].reverse())
+    const rules = ruleStudyWords(store, ruleCardsOf)
+    const expected = ROW_CD.flatMap((b) => getBrick(b)!.ruleCards.map(ruleCardId))
+    expect(rules.map((r) => r.id)).toEqual(expected)
+    expect(rules[0].id).toBe('rule:f13-1')
+    expect(rules.at(-1)!.id.startsWith('rule:f18-')).toBe(true)
+    for (const id of ['ngsl-be', 'ngsl-not', 'ngsl-there', 'ngsl-have', 'ngsl-at']) {
+      const w = words.find((x) => x.id === id)!
+      expect(functionWordCloze(w), id).not.toBeNull()
+    }
+  })
+})
+
+function readFoundationCompletedAt(store: Store): string | null {
+  const f = store.data.foundation as { completedAt?: string | null } | undefined
+  return f?.completedAt ?? null
+}

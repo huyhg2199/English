@@ -5,6 +5,7 @@ import { Link, Navigate, useParams } from 'react-router'
 import { useFoundation, useLoadedStore } from '@/app/store-context'
 import { RowTestResult } from '@/components/foundation/RowTestResult'
 import { RowTestRun } from '@/components/foundation/RowTestRun'
+import { WallPassedButton } from '@/components/foundation/WallPassedCard'
 import { Button } from '@/components/ui/button'
 import { ROW_TITLES, type RowId } from '@/data/foundation'
 import { parseRowParam, rowBrickRange, rowStartBrick, rowTestHref, rowTestMode } from '@/lib/foundation/row-test'
@@ -16,7 +17,7 @@ const MODE_NOTE = {
 
 function RowTestPage({ row }: { row: RowId }) {
   const { store } = useLoadedStore()
-  const { state } = useFoundation()
+  const { state, wallCelebrationPending } = useFoundation()
   // Chế độ chốt lúc mở trang (để hiện lời dẫn). Màn kết quả dùng chế độ thật sự lúc ghi (`outcome.mode`).
   const [mode] = useState<'know' | 'final'>(() => (rowTestMode(store, row, 'row') === 'final' ? 'final' : 'know'))
   const [run, setRun] = useState(0)
@@ -56,7 +57,9 @@ function RowTestPage({ row }: { row: RowId }) {
             rowDone={state.rowsDone.includes(row)}
             actions={
               <>
+                {wallCelebrationPending && <WallPassedButton />}
                 <Button
+                  variant={wallCelebrationPending ? 'outline' : 'default'}
                   onClick={() => {
                     setRun((n) => n + 1)
                     window.scrollTo(0, 0)

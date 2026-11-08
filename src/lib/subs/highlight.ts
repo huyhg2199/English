@@ -10,8 +10,12 @@ export type LessonTense = { id: string; name: string }
 /** Tối đa chừng này từ đã học được nêu trong lý do. */
 export const MAX_REASON_WORDS = 3
 
-/** "Hiện tại đơn: câu khẳng định" → "Hiện tại đơn" (phần trước dấu hai chấm). */
+/**
+ * "Hiện tại đơn: câu khẳng định" → "Hiện tại đơn" (phần trước dấu hai chấm). Tên dạng "Ôn lại: viên gạch F13–F14 · to be
+ * (am / is / are)" (story 26) → phần sau dấu " · " cuối: "to be (am / is / are)".
+ */
 export function shortTenseName(name: string): string {
+  if (/^Ôn lại:/.test(name) && name.includes(' · ')) return name.slice(name.lastIndexOf(' · ') + 3).trim()
   return name.split(':')[0].trim()
 }
 

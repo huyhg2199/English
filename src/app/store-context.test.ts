@@ -155,6 +155,19 @@ describe('deliverOwlPost (story 12)', () => {
   })
 })
 
+describe('deliverOwlPost khi đã qua bức tường (story 26)', () => {
+  it('không trả thư Lên tàu Năm 1 và không ghi wall-passed / board-year-1 (thư đó chỉ ở màn Qua bức tường)', () => {
+    const T = '2026-11-03T02:00:00.000Z'
+    const raw = JSON.stringify({ schemaVersion: 13, data: { foundation: { completedAt: T, bricks: {}, rows: {} } } })
+    const storage = fakeStorage({ [STORAGE_KEY]: raw })
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    const now = new Date('2026-11-04T08:00:00.000Z')
+
+    expect(deliverOwlPost(handle, now)).toEqual([])
+    expect(readSeen(handle.getSnapshot().store)).toEqual({})
+  })
+})
+
 describe('recordSessionAndBackup (story 13: xong buổi → ghi Gist)', () => {
   it('ghi buổi vào store trước, rồi đúng một PATCH lên Gist với status.json studied true và đúng loại buổi', async () => {
     const storage = fakeStorage()

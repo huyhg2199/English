@@ -7,6 +7,7 @@ import { Foundation } from '@/pages/Foundation'
 import { FoundationBrick } from '@/pages/FoundationBrick'
 import { FoundationRowTest } from '@/pages/FoundationRowTest'
 import { FoundationTicket } from '@/pages/FoundationTicket'
+import { FoundationWallPassed } from '@/pages/FoundationWallPassed'
 import { LazySession } from '@/pages/LazySession'
 import { Measure } from '@/pages/Measure'
 import { Lesson } from '@/pages/Lesson'
@@ -49,6 +50,8 @@ export const routes: RouteObject[] = [
       // Soát vé và kiểm tra hàng (story 20); segment tĩnh thắng `:brickId`.
       { path: 'foundation/soat-ve', element: <FoundationTicket /> },
       { path: 'foundation/kiem-tra/:row', element: <FoundationRowTest /> },
+      // Màn ăn mừng qua bức tường (story 26); đặt trước `:brickId`.
+      { path: 'foundation/qua-buc-tuong', element: <FoundationWallPassed /> },
       { path: 'foundation/:brickId', element: <FoundationBrick /> },
       { path: 'practice', element: <Practice /> },
       // Phiên ôn flashcard; tab Luyện tập vẫn sáng (NavLink /practice không `end`).

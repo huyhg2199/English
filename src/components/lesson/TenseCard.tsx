@@ -7,6 +7,7 @@ import { getSpell, type DialogueLine, type Tense } from '@/data/lessons'
 
 import { SpellCard } from './SpellCard'
 import { TenseTimeline } from './TenseTimeline'
+import { GlossaryText } from './TermChip'
 
 function Dialogue({ line }: { line: DialogueLine }) {
   if (line.kind === 'youglish') {
@@ -47,14 +48,20 @@ function Dialogue({ line }: { line: DialogueLine }) {
   )
 }
 
-/** Một thì / chủ điểm: dòng thời gian (nếu là thì), công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ thần chú. */
+/**
+ * Một thì / chủ điểm: dòng thời gian (nếu là thì), công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ
+ * thần chú. Lời tiếng Việt (`use`, nhãn và chữ công thức, quy tắc, `mistakes[].why`) có chip thuật ngữ (story 26); câu
+ * tiếng Anh, câu thoại không có chip.
+ */
 export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedSpellIds: ReadonlySet<string> }) {
   const spell = getSpell(tense.spellId)
   return (
     <article className="flex flex-col gap-4">
       <header>
         <h3 className="text-lg font-semibold">{tense.name}</h3>
-        <p className="text-sm text-muted-foreground">{tense.use}</p>
+        <p className="text-sm text-muted-foreground">
+          <GlossaryText text={tense.use} />
+        </p>
       </header>
 
       {tense.timeline && <TenseTimeline kind={tense.timeline.kind} label={tense.timeline.label} />}
@@ -64,9 +71,11 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
         <dl className="flex flex-col gap-2 text-sm">
           {tense.formulas.map((f) => (
             <div key={f.label} className="rounded-lg bg-secondary/60 p-2">
-              <dt className="text-xs text-muted-foreground">{f.label}</dt>
+              <dt className="text-xs text-muted-foreground">
+                <GlossaryText text={f.label} />
+              </dt>
               <dd lang="en" className="font-medium break-words">
-                {f.text}
+                <GlossaryText text={f.text} />
               </dd>
             </div>
           ))}
@@ -77,7 +86,9 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
         <h4 className="font-semibold">3 quy tắc</h4>
         <ol className="list-decimal space-y-1 pl-5 text-sm">
           {tense.rules.map((r) => (
-            <li key={r}>{r}</li>
+            <li key={r}>
+              <GlossaryText text={r} />
+            </li>
           ))}
         </ol>
       </div>
@@ -106,7 +117,9 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
                 <span className="text-destructive line-through">{m.wrong}</span> →{' '}
                 <span className="font-semibold text-primary">{m.right}</span>
               </p>
-              <p className="text-xs text-muted-foreground">{m.why}</p>
+              <p className="text-xs text-muted-foreground">
+                <GlossaryText text={m.why} />
+              </p>
             </li>
           ))}
         </ul>
