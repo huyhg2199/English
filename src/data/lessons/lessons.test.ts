@@ -57,8 +57,10 @@ describe('nội dung bài T1', () => {
     expect(consonants).toHaveLength(24)
     expect(new Set(consonants.map((s) => s.ipa)).size).toBe(24)
     expect(consonants.filter((s) => s.focus).map((s) => s.ipa).sort()).toEqual(['ð', 'ʃ', 'ʒ', 'θ'].sort())
+    // Tuần 4 chỉ dạy đuôi -s; đuôi -ed học ở T2 tuần 3 (story 27: chỉ dùng kiến thức đã dạy).
     const endings = sounds('s1-t1-w4').map((s) => s.id)
-    expect(endings).toEqual(expect.arrayContaining(['e-s-s', 'e-s-z', 'e-s-iz', 'e-ed-t', 'e-ed-d', 'e-ed-id']))
+    expect(endings).toEqual(expect.arrayContaining(['e-s-s', 'e-s-z', 'e-s-iz']))
+    expect(endings.filter((id) => id.startsWith('e-ed-'))).toEqual([])
   })
 
   it('mỗi âm có 3–5 từ ví dụ thuộc NGSL có dữ liệu; IPA của từ chứa đúng âm', () => {
@@ -109,7 +111,7 @@ describe('nội dung bài T1', () => {
 
   it('âm cuối: dạng -s/-ed có IPA kết thúc đúng đuôi (T1 tuần 4 và T2 tuần 3)', () => {
     const forms = [
-      ...sounds('s1-t1-w4').filter((x) => x.id.startsWith('e-s-') || x.id.startsWith('e-ed-')),
+      ...sounds('s1-t1-w4').filter((x) => x.id.startsWith('e-s-')),
       ...sounds('s1-t2-w3'),
     ]
     expect(sounds('s1-t2-w3').map((x) => x.ipa)).toEqual(['t', 'd', 'ɪd'])
@@ -256,9 +258,8 @@ describe('nội dung bài T1', () => {
     }
   })
 
-  it('tuần 1 có link "Làm bài đầu vào"', () => {
-    expect(content('s1-t1-w1').placementLink).toBe(true)
-    expect(content('s1-t1-w2').placementLink).toBeFalsy()
+  it('không bài nào có nút bài đầu vào (CAP-3: Mũ Phân Loại chỉ chọn Nhà)', () => {
+    for (const c of LESSON_CONTENTS) expect(Object.keys(c), c.lessonId).not.toContain('placementLink')
   })
 })
 

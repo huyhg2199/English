@@ -1,4 +1,4 @@
-import { ClipboardCheck, CloudMoon, GraduationCap } from 'lucide-react'
+import { ClipboardCheck, CloudMoon } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useSpells } from '@/app/store-context'
@@ -33,20 +33,12 @@ function LazyWeekNotice() {
   )
 }
 
-/** Nội dung đoạn Phát âm: (tuần 1) nút làm bài đầu vào, bảng âm, các khối phát âm mới và luyện nói câu mẫu; tuần Tết chỉ có lời nhắc ngày lười. */
+/** Nội dung đoạn Phát âm: bảng âm, các khối phát âm mới và luyện nói câu mẫu; tuần Tết chỉ có lời nhắc ngày lười. */
 export function PronunciationSection({ content }: { content: LessonContent }) {
   if (content.lazyWeek) return <LazyWeekNotice />
   if (!content.pronunciation) return null
   return (
     <div className="flex flex-col gap-5">
-      {content.placementLink && (
-        <Button asChild variant="outline" className="self-start">
-          <Link to="/sorting-hat">
-            <GraduationCap aria-hidden="true" />
-            Làm bài đầu vào (Mũ Phân Loại)
-          </Link>
-        </Button>
-      )}
       <SoundTable content={content.pronunciation} />
       {content.pronunciation.blocks?.map((block, i) => (
         <PronunciationBlockView key={`${block.kind}-${i}`} block={block} />

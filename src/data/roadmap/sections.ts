@@ -15,7 +15,7 @@ export function section(id: SectionId, task: string, tags: readonly SkillTag[]):
 }
 
 export function vocabularyTask(words: number): string {
-  return `Đạt ${words} từ lũy kế trong Anki`
+  return `Đạt ${words} từ lũy kế bằng flashcard trong app`
 }
 
 /**

@@ -187,8 +187,6 @@ export type LessonContent = {
   lessonId: string
   pronunciation?: PronunciationContent
   grammar?: GrammarContent
-  /** Tuần 1: nút "Làm bài đầu vào" sang Mũ Phân Loại. */
-  placementLink?: boolean
   /** Tuần Tết: chỉ nhắc chạy chế độ ngày lười, không có nội dung mới. */
   lazyWeek?: boolean
   /**

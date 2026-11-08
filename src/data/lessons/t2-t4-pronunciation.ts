@@ -253,7 +253,7 @@ const STAGE_1_OVERVIEW_SOUNDS: PronunciationBlock = {
     { text: '12 nguyên âm đơn: /iː/ khác /ɪ/, /æ/ khác /e/, âm dài có dấu ː.', lessonId: 's1-t1-w1', sectionId: 'pronunciation' },
     { text: '8 nguyên âm đôi: trượt đủ hai âm (late /eɪ/, go /oʊ/).', lessonId: 's1-t1-w2', sectionId: 'pronunciation' },
     { text: '24 phụ âm, chú ý /θ ð ʃ ʒ/.', lessonId: 's1-t1-w3', sectionId: 'pronunciation' },
-    { text: 'Âm cuối, đuôi -s (/s z ɪz/) và -ed (/t d ɪd/).', lessonId: 's1-t1-w4', sectionId: 'pronunciation' },
+    { text: 'Âm cuối, đuôi -s (/s z ɪz/).', lessonId: 's1-t1-w4', sectionId: 'pronunciation' },
     { text: 'Trọng âm 2 âm tiết: danh/tính từ nhấn âm 1, động từ nhấn âm 2.', lessonId: 's1-t2-w1', sectionId: 'pronunciation' },
     { text: 'Trọng âm theo hậu tố -tion, -ic, -ity.', lessonId: 's1-t2-w2', sectionId: 'pronunciation' },
     { text: 'Đuôi -ed: /t/ /d/ /ɪd/.', lessonId: 's1-t2-w3', sectionId: 'pronunciation' },

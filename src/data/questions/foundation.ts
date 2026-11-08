@@ -15,6 +15,8 @@ import type { Question } from './types'
  * Câu hàng C chỉ dùng F01–F16 (không at / every / trạng từ tần suất, không going / gone); hàng D dùng F01–F18. Cả hai
  * hàng không có do / does / did, khuyết thiếu, 've / 'll / 'd, n't ngoài isn't / aren't (story 26). Câu quiz không lặp
  * nguyên văn câu trong viên (kiểm chuyển giao, không kiểm trí nhớ).
+ * `requires` (story 27): chỉ khái niệm của F01 tới viên cuối hàng của câu, có ít nhất 1 khái niệm của chính viên. Câu Sân ga
+ * không bị lọc lúc chạy (Soát vé / "Tôi biết rồi" được hỏi kiến thức chưa dạy); khai báo để kiểm tĩnh và cho story sau.
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
@@ -30,6 +32,7 @@ const ROW_A: readonly Question[] = [
     options: ['went', 'go', 'goes', 'going'],
     answer: 'went',
     explanation: 'Nói về hôm qua thì động từ đổi dạng: go → went. Tiếng Việt giữ nguyên “đi”, tiếng Anh thì không.',
+    requires: ['en-vs-vi'],
   },
   {
     id: 'q-f02-01',
@@ -41,6 +44,7 @@ const ROW_A: readonly Question[] = [
     options: ['I', 'E', 'A', 'Y'],
     answer: 'I',
     explanation: 'I đọc “ai”, E đọc “i”, A đọc “ây”, Y đọc “oai” (why).',
+    requires: ['alphabet'],
   },
   {
     id: 'q-f02-02',
@@ -52,6 +56,7 @@ const ROW_A: readonly Question[] = [
     options: ['nam at gmail dot com', 'nam a gmail chấm com', 'nam at gmail com', 'nam dot gmail at com'],
     answer: 'nam at gmail dot com',
     explanation: '@ đọc “at”, dấu chấm đọc “dot”: nam at gmail dot com.',
+    requires: ['alphabet', 'spelling-out'],
   },
   {
     id: 'q-f03-01',
@@ -63,6 +68,7 @@ const ROW_A: readonly Question[] = [
     options: ['Cách đọc (IPA) của sea', 'Nghĩa của sea', 'Từ loại của sea', 'Cách viết khác của sea'],
     answer: 'Cách đọc (IPA) của sea',
     explanation: 'Phần giữa hai dấu /…/ là cách đọc theo IPA. Dấu ː nghĩa là kéo dài âm i.',
+    requires: ['ipa', 'long-vowel-mark'],
   },
   {
     id: 'q-f03-02',
@@ -75,6 +81,7 @@ const ROW_A: readonly Question[] = [
     options: ['key', 'car', 'sea', 'sound'],
     answer: 'key',
     explanation: 'key /kiː/: âm /k/ rồi /iː/ kéo dài.',
+    requires: ['ipa', 'long-vowel-mark'],
   },
   {
     id: 'q-f04-01',
@@ -86,6 +93,7 @@ const ROW_A: readonly Question[] = [
     options: ['com-PU-ter', 'COM-pu-ter', 'com-pu-TER', 'Không nhấn âm tiết nào'],
     answer: 'com-PU-ter',
     explanation: 'computer /kəmˈpjuːtər/: dấu ˈ đứng trước âm tiết giữa, nên nhấn PU.',
+    requires: ['ipa', 'syllables', 'stress'],
   },
   {
     id: 'q-f05-01',
@@ -98,6 +106,7 @@ const ROW_A: readonly Question[] = [
     options: ['rice', 'rise', 'right', 'ride'],
     answer: 'rice',
     explanation: 'rice /raɪs/ kết thúc bằng /s/ xì nhẹ. rise là /z/, right là /t/, ride là /d/.',
+    requires: ['ipa', 'final-sounds'],
   },
   {
     id: 'q-f05-02',
@@ -109,6 +118,7 @@ const ROW_A: readonly Question[] = [
     options: ['bag – back', 'bag – big', 'sea – key', 'car – key'],
     answer: 'bag – back',
     explanation: 'bag /bæɡ/ và back /bæk/ chỉ khác âm cuối /ɡ/ và /k/. Nuốt âm cuối là nhầm nghĩa.',
+    requires: ['ipa', 'final-sounds'],
   },
   {
     id: 'q-f06-01',
@@ -120,6 +130,7 @@ const ROW_A: readonly Question[] = [
     options: ['fifty dollars', 'fifteen dollars', 'five zero dollars', 'five dollars'],
     answer: 'fifty dollars',
     explanation: '50 = fifty (nhấn FIF). fifteen là 15, nhấn ở cuối: fifTEEN.',
+    requires: ['numbers', 'teen-ty-stress', 'prices'],
   },
   {
     id: 'q-f06-02',
@@ -131,6 +142,7 @@ const ROW_A: readonly Question[] = [
     options: ['second', 'two', 'twoth', 'twice'],
     answer: 'second',
     explanation: 'Ngày trong tháng dùng số thứ tự: 1st first, 2nd second, 3rd third.',
+    requires: ['ordinals'],
   },
 ]
 
@@ -146,6 +158,7 @@ const ROW_B: readonly Question[] = [
     answer: 'beautiful',
     explanation:
       'Đuôi -ful thường là tính từ: beautiful (đẹp). beauty là danh từ, beautifully là trạng từ (đuôi -ly), beautify là động từ.',
+    requires: ['parts-of-speech', 'word-suffixes'],
   },
   {
     id: 'q-f07-02',
@@ -157,6 +170,7 @@ const ROW_B: readonly Question[] = [
     options: ['Danh từ', 'Động từ', 'Tính từ', 'Trạng từ'],
     answer: 'Danh từ',
     explanation: 'Đuôi -tion thường là danh từ: station, information, action.',
+    requires: ['parts-of-speech', 'word-suffixes'],
   },
   {
     id: 'q-f08-01',
@@ -168,6 +182,7 @@ const ROW_B: readonly Question[] = [
     options: ['I like big houses.', 'I like houses big.', 'Like I big houses.', 'I houses big like.'],
     answer: 'I like big houses.',
     explanation: 'Câu cần chủ ngữ I đứng đầu, và tính từ đứng trước danh từ: big houses (tiếng Việt nói ngược: nhà to).',
+    requires: ['subject-verb', 'adjective-before-noun', 'plurals'],
   },
   {
     id: 'q-f08-02',
@@ -179,6 +194,7 @@ const ROW_B: readonly Question[] = [
     options: ['go', 'goes', 'going', 'went'],
     answer: 'go',
     explanation: "Sau Let's là động từ dạng gốc: Let's go. Không thêm -s, -ing, không đổi sang went.",
+    requires: ['imperatives'],
   },
   {
     id: 'q-f09-01',
@@ -190,6 +206,7 @@ const ROW_B: readonly Question[] = [
     options: ['us', 'we', 'our', 'they'],
     answer: 'us',
     explanation: 'Sau động từ dùng tân ngữ: we → us. Please help us, không nói “help we”.',
+    requires: ['object-pronouns', 'subject-pronouns', 'imperatives'],
   },
   {
     id: 'q-f10-01',
@@ -201,6 +218,7 @@ const ROW_B: readonly Question[] = [
     options: ['children', 'childs', 'child', 'childrens'],
     answer: 'children',
     explanation: 'Số nhiều bất quy tắc: child → children (giống man → men). Không thêm -s: I teach ten children.',
+    requires: ['irregular-plurals', 'numbers'],
   },
   {
     id: 'q-f10-02',
@@ -213,6 +231,7 @@ const ROW_B: readonly Question[] = [
     options: ['three boxes', 'three box', 'tree boxes', 'three foxes'],
     answer: 'three boxes',
     explanation: 'boxes đọc /ˈbɑːksɪz/: đuôi -es sau x đọc /ɪz/, thêm một âm tiết.',
+    requires: ['plural-s-sounds', 'numbers', 'ipa'],
   },
   {
     id: 'q-f11-01',
@@ -224,6 +243,7 @@ const ROW_B: readonly Question[] = [
     options: ['an', 'a', 'any', 'much'],
     answer: 'an',
     explanation: 'Âm đầu của apple là nguyên âm /æ/ nên dùng an: an apple. Xét âm đầu chứ không xét chữ đầu (an hour, a university).',
+    requires: ['articles', 'ipa'],
   },
   {
     id: 'q-f11-02',
@@ -235,6 +255,7 @@ const ROW_B: readonly Question[] = [
     options: ['I buy a bag.', 'I buy bag.', 'I buy an bag.', 'I buy a bags.'],
     answer: 'I buy a bag.',
     explanation: 'bag đếm được, số ít nên phải có từ đứng trước (a/an, the, my…). Nói “một cái” thì âm đầu /b/ là phụ âm nên dùng a: I buy a bag.',
+    requires: ['articles', 'countable-uncountable', 'subject-verb'],
   },
   {
     id: 'q-f12-01',
@@ -246,6 +267,7 @@ const ROW_B: readonly Question[] = [
     options: ['these', 'this', 'that', 'it'],
     answer: 'these',
     explanation: 'cakes số nhiều nên dùng these (gần) hoặc those (xa). this, that chỉ đi với số ít: this cake.',
+    requires: ['demonstratives', 'plurals'],
   },
 ]
 
@@ -260,6 +282,7 @@ const ROW_C: readonly Question[] = [
     options: ['is', 'am', 'are', 'be'],
     answer: 'is',
     explanation: 'he / she / it đi với is: She is a nurse. am chỉ đi với I, are đi với you / we / they.',
+    requires: ['be-affirmative', 'subject-pronouns', 'articles'],
   },
   {
     id: 'q-f13-02',
@@ -271,6 +294,7 @@ const ROW_C: readonly Question[] = [
     options: ['are', 'is', 'am', 'be'],
     answer: 'are',
     explanation: 'you / we / they đi với are: They are students.',
+    requires: ['be-affirmative', 'subject-pronouns', 'plurals'],
   },
   {
     id: 'q-f13-03',
@@ -283,6 +307,7 @@ const ROW_C: readonly Question[] = [
     options: ['I am a teacher.', 'I am teacher.', 'I is a teacher.', 'I am a teachers.'],
     answer: 'I am a teacher.',
     explanation: 'I đi với am; nghề nghiệp số ít cần a: I am a teacher.',
+    requires: ['be-affirmative', 'articles'],
   },
   {
     id: 'q-f14-01',
@@ -294,6 +319,7 @@ const ROW_C: readonly Question[] = [
     options: ['What', 'Where', 'Who', 'How'],
     answer: 'What',
     explanation: 'Hỏi tên dùng what (gì) đứng đầu câu: What is your name?',
+    requires: ['wh-questions', 'be-questions', 'possessive-adjectives'],
   },
   {
     id: 'q-f14-02',
@@ -305,6 +331,7 @@ const ROW_C: readonly Question[] = [
     options: ["isn't", "aren't", 'not', 'am not'],
     answer: "isn't",
     explanation: "he đi với is, phủ định thêm not: is not, nói nhanh isn't. aren't đi với you / we / they, am not đi với I.",
+    requires: ['be-negative', 'subject-pronouns'],
   },
   {
     id: 'q-f15-01',
@@ -316,6 +343,7 @@ const ROW_C: readonly Question[] = [
     options: ['are', 'is', 'am', 'be'],
     answer: 'are',
     explanation: 'two chairs là số nhiều nên dùng There are. There is chỉ cho một vật.',
+    requires: ['there-is-are', 'prepositions-of-place', 'plurals', 'numbers', 'articles'],
   },
   {
     id: 'q-f15-02',
@@ -327,6 +355,7 @@ const ROW_C: readonly Question[] = [
     options: ['in', 'on', 'under', 'between'],
     answer: 'in',
     explanation: 'Ở trong dùng in: in the bag. on là ở trên, under là ở dưới, between là ở giữa hai vật.',
+    requires: ['prepositions-of-place', 'be-affirmative', 'articles'],
   },
   {
     id: 'q-f15-03',
@@ -344,6 +373,7 @@ const ROW_C: readonly Question[] = [
     ],
     answer: 'There is a cat under the chair.',
     explanation: 'a cat (một con mèo) nên dùng There is; under = ở dưới.',
+    requires: ['there-is-are', 'prepositions-of-place', 'articles'],
   },
   {
     id: 'q-f16-01',
@@ -355,6 +385,7 @@ const ROW_C: readonly Question[] = [
     options: ['has', 'have', 'is', 'haves'],
     answer: 'has',
     explanation: 'Ngôi thứ ba số ít (he / she / it) dùng has: She has two brothers. Không có dạng “haves”.',
+    requires: ['have-has', 'subject-pronouns', 'numbers', 'plurals'],
   },
   {
     id: 'q-f16-02',
@@ -366,6 +397,7 @@ const ROW_C: readonly Question[] = [
     options: ['He is 30.', 'He has 30.', 'He has 30 years.', 'He are 30.'],
     answer: 'He is 30.',
     explanation: 'Nói tuổi dùng to be, không dùng have / has: He is 30 (years old).',
+    requires: ['have-has', 'be-affirmative', 'subject-pronouns', 'numbers'],
   },
 ]
 
@@ -380,6 +412,7 @@ const ROW_D: readonly Question[] = [
     options: ['went', 'go', 'goes', 'gone'],
     answer: 'went',
     explanation: 'Có yesterday là quá khứ: go đổi thành went. gone phải đi với have / has.',
+    requires: ['verb-forms', 'tenses-overview'],
   },
   {
     id: 'q-f17-02',
@@ -391,6 +424,7 @@ const ROW_D: readonly Question[] = [
     options: ['goes', 'go', 'going', 'gone'],
     answer: 'goes',
     explanation: 'Thói quen (every day), chủ ngữ he: goes. going cần am / is / are, gone cần have / has.',
+    requires: ['verb-forms', 'tenses-overview', 'subject-pronouns', 'frequency-adverbs'],
   },
   {
     id: 'q-f17-03',
@@ -402,6 +436,7 @@ const ROW_D: readonly Question[] = [
     options: ['going', 'go', 'went', 'gone'],
     answer: 'going',
     explanation: 'Đang xảy ra bây giờ: am / is / are + going: They are going home now.',
+    requires: ['verb-forms', 'be-affirmative'],
   },
   {
     id: 'q-f17-04',
@@ -414,6 +449,7 @@ const ROW_D: readonly Question[] = [
     answer: 'go',
     explanation:
       'Thói quen, chủ ngữ I: dạng gốc go. goes đi với he / she / it; going cần am / is / are; gone cần have / has.',
+    requires: ['verb-forms', 'tenses-overview'],
   },
   {
     id: 'q-f17-05',
@@ -426,6 +462,7 @@ const ROW_D: readonly Question[] = [
     options: ['She is going home now.', 'She goes home now.', 'She went home now.', 'She is going home soon.'],
     answer: 'She is going home now.',
     explanation: 'is going: việc đang xảy ra bây giờ (now).',
+    requires: ['verb-forms', 'be-affirmative'],
   },
   {
     id: 'q-f18-01',
@@ -437,6 +474,7 @@ const ROW_D: readonly Question[] = [
     options: ['at', 'on', 'in', 'for'],
     answer: 'at',
     explanation: 'Giờ dùng at: at 7:30. Thứ dùng on, tháng dùng in.',
+    requires: ['prepositions-of-time', 'clock-time', 'verb-forms', 'articles'],
   },
   {
     id: 'q-f18-02',
@@ -448,6 +486,7 @@ const ROW_D: readonly Question[] = [
     options: ['on', 'in', 'at', 'to'],
     answer: 'on',
     explanation: 'Thứ trong tuần dùng on: on Sunday. at cho giờ, in cho tháng.',
+    requires: ['prepositions-of-time', 'days-months'],
   },
   {
     id: 'q-f18-03',
@@ -459,6 +498,7 @@ const ROW_D: readonly Question[] = [
     options: ['in', 'on', 'at', 'to'],
     answer: 'in',
     explanation: 'Tháng dùng in: in May. on cho thứ, at cho giờ.',
+    requires: ['prepositions-of-time', 'days-months', 'possessive-adjectives', 'be-affirmative'],
   },
   {
     id: 'q-f18-04',
@@ -470,6 +510,7 @@ const ROW_D: readonly Question[] = [
     options: ['I always drink coffee.', 'I drink always coffee.', 'I coffee always drink.', 'Drink I always coffee.'],
     answer: 'I always drink coffee.',
     explanation: 'Trạng từ tần suất (always, usually…) đứng trước động từ thường: I always drink coffee. Với am / is / are thì đứng sau.',
+    requires: ['frequency-adverbs', 'parts-of-speech'],
   },
   {
     id: 'q-f18-05',
@@ -482,6 +523,7 @@ const ROW_D: readonly Question[] = [
     options: ['I usually get up at six.', 'I usually get up at sixty.', 'I usually get up in six.', 'I usual get up at six.'],
     answer: 'I usually get up at six.',
     explanation: 'Giờ dùng at (at six); usually đứng trước động từ get up. sixty là 60.',
+    requires: ['frequency-adverbs', 'prepositions-of-time', 'clock-time', 'numbers'],
   },
 ]
 

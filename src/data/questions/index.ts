@@ -6,6 +6,7 @@ import { T2_T4_QUESTIONS } from './t2-t4'
 import type { Question } from './types'
 
 export * from './types'
+export * from './concepts'
 export { FOUNDATION_QUESTIONS, FOUNDATION_QUIZZES, foundationQuiz, ROW_QUIZ_ID, ROW_QUIZ_SIZE } from './foundation'
 
 /** Toàn bộ ngân hàng câu: T1 (story 9) và T2–T4 (story 10). */
@@ -33,6 +34,12 @@ export type QuizDef = {
 
 /** Số câu của bài kiểm tra một bài: 5 trong 6 câu (không có TTS thì câu nghe được thay bằng câu còn lại). */
 export const LESSON_QUIZ_SIZE = 5
+
+/**
+ * Số câu tối thiểu của quiz bài / mini test sau khi bỏ câu cần viên gạch chưa học (story 27). Có câu bị bỏ mà còn ít hơn
+ * số này thì không chạy, hiện thông báo mời học viên còn thiếu.
+ */
+export const MIN_QUIZ_QUESTIONS = 4
 
 /** Id bài kiểm tra của một bài học. */
 export function lessonQuizId(lessonId: string): string {

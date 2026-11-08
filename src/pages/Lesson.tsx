@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, BookOpenCheck, Check, ClipboardCheck, MapPinOff, NotebookPen } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
-import { useNotes, useProgress, useSkillBoard } from '@/app/store-context'
+import { useLoadedStore, useNotes, useProgress, useSkillBoard } from '@/app/store-context'
 import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { RoleplayButton } from '@/components/lesson/RoleplayButton'
 import { NoteForm } from '@/components/notebook/NoteForm'
@@ -12,9 +12,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { getLessonContent } from '@/data/lessons'
-import { getQuiz, lessonQuizId, quizHref } from '@/data/questions'
+import { getQuiz, lessonQuizId, QUESTION_BANK, quizHref } from '@/data/questions'
 import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
+import { isBrickTaught } from '@/lib/foundation'
 import { prioritizeSections } from '@/lib/placement'
+import { quizButtonCount } from '@/lib/quiz'
+import { canSpeak } from '@/lib/speech'
 
 function BackLink() {
   return (
@@ -73,6 +76,7 @@ export function Lesson() {
   const { entry, targetSectionId: target } = resolveLessonRoute(lessonId, sectionId)
   const { completedLessonIds, setCompleted } = useProgress()
   const { weakest } = useSkillBoard()
+  const { store } = useLoadedStore()
   const { key: locationKey } = useLocation()
 
   // Có đoạn hợp lệ thì cuộn tới đó, không thì về đầu trang (kể cả khi reload).
@@ -114,6 +118,8 @@ export function Lesson() {
   const content = getLessonContent(lesson.id)
   // Câu hỏi kiểm tra bài (story 10): mọi bài có đủ câu trong ngân hàng.
   const quiz = getQuiz(lessonQuizId(lesson.id))
+  // Số câu đủ nền (story 27): bỏ câu cần viên gạch chưa học, tính cả việc thay câu nghe khi không có TTS; còn < 4 câu thì nhãn không có số.
+  const quizCount = quiz ? quizButtonCount(QUESTION_BANK, quiz, { canSpeak: canSpeak() }, (id) => isBrickTaught(store, id)) : null
 
   return (
     <section className="flex flex-col gap-6">
@@ -160,7 +166,7 @@ export function Lesson() {
         <Button asChild variant="outline" className="self-start">
           <Link to={quizHref(quiz.id)}>
             <ClipboardCheck aria-hidden="true" />
-            Kiểm tra bài ({quiz.size} câu)
+            {quizCount === null ? 'Kiểm tra bài' : `Kiểm tra bài (${quizCount} câu)`}
           </Link>
         </Button>
       )}

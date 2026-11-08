@@ -344,7 +344,7 @@ export const CONSONANTS: readonly Sound[] = [
   ),
 ]
 
-// ---------------------------------------------------------------- Tuần 4: âm cuối, -s, -ed
+// ---------------------------------------------------------------- Tuần 4: âm cuối, đuôi -s
 
 const ending = (id: string, ipa: string, tip: string, examples: ExampleWord[], pair?: Pair): Sound => ({
   id,
@@ -383,45 +383,6 @@ export const ENDINGS_S: readonly Sound[] = [
       f('watch', 'watches', 'ˈwɑːtʃɪz'),
       f('change', 'changes', 'ˈtʃeɪndʒɪz'),
       f('box', 'boxes', 'ˈbɑːksɪz'),
-    ],
-  ),
-]
-
-export const ENDINGS_ED: readonly Sound[] = [
-  ending(
-    'e-ed-t',
-    't',
-    'Sau âm vô thanh /p k f s ʃ tʃ/: đuôi -ed đọc /t/, không thêm âm tiết. "worked" là MỘT âm tiết /wɝːkt/, không phải "wơ-kệt".',
-    [
-      f('work', 'worked', 'wɝːkt'),
-      f('help', 'helped', 'helpt'),
-      f('watch', 'watched', 'wɑːtʃt'),
-      f('stop', 'stopped', 'stɑːpt'),
-      f('like', 'liked', 'laɪkt'),
-    ],
-  ),
-  ending(
-    'e-ed-d',
-    'd',
-    'Sau âm hữu thanh (nguyên âm, /b ɡ v z m n l r/…): đuôi -ed đọc /d/, vẫn một âm tiết.',
-    [
-      f('play', 'played', 'pleɪd'),
-      f('live', 'lived', 'lɪvd'),
-      f('open', 'opened', 'ˈoʊpənd'),
-      f('call', 'called', 'kɑːld'),
-      f('clean', 'cleaned', 'kliːnd'),
-    ],
-  ),
-  ending(
-    'e-ed-id',
-    'ɪd',
-    'Chỉ sau /t/ và /d/: đuôi -ed thêm một âm tiết /ɪd/ (want-ed, need-ed).',
-    [
-      f('want', 'wanted', 'ˈwɑːntɪd'),
-      f('need', 'needed', 'ˈniːdɪd'),
-      f('start', 'started', 'ˈstɑːrt̬ɪd'),
-      f('decide', 'decided', 'dɪˈsaɪdɪd'),
-      f('wait', 'waited', 'ˈweɪt̬ɪd'),
     ],
   ),
 ]
@@ -483,16 +444,15 @@ export const PRONUNCIATION_W3: PronunciationContent = {
 
 export const PRONUNCIATION_W4: PronunciationContent = {
   intro:
-    'Âm cuối là lỗi lớn nhất của người Việt: tiếng Anh dùng âm cuối để phân biệt nghĩa (số ít/số nhiều, hiện tại/quá khứ). Cách đọc đuôi -s và -ed phụ thuộc âm đứng trước.',
+    'Âm cuối là lỗi lớn nhất của người Việt: tiếng Anh dùng âm cuối để phân biệt nghĩa (like khác light, book khác books). Đuôi -s đọc /s/, /z/ hay /ɪz/ tuỳ âm đứng trước. Đuôi -ed học ở T2 tuần 3.',
   groups: [
     { title: 'Phụ âm cuối', sounds: FINAL_CONSONANTS },
-    { title: 'Đuôi -s / -es', note: 'Áp dụng cho danh từ số nhiều và động từ ngôi thứ ba (she works).', sounds: ENDINGS_S },
-    { title: 'Đuôi -ed', note: 'Áp dụng cho động từ quá khứ có quy tắc.', sounds: ENDINGS_ED },
+    { title: 'Đuôi -s / -es', note: 'Áp dụng cho danh từ số nhiều và động từ ngôi thứ ba số ít (she works).', sounds: ENDINGS_S },
   ],
   sentences: [
     { id: 's1-t1-w4-say-1', text: 'She likes books and plays games.', vi: 'Cô ấy thích sách và chơi game.' },
     { id: 's1-t1-w4-say-2', text: 'My friend watches movies on Fridays.', vi: 'Bạn tôi xem phim vào các ngày thứ Sáu.' },
-    { id: 's1-t1-w4-say-3', text: 'We worked late and started early.', vi: 'Chúng tôi làm việc muộn và bắt đầu sớm.' },
-    { id: 's1-t1-w4-say-4', text: 'He needed help, so I helped him.', vi: 'Anh ấy cần giúp, nên tôi đã giúp.' },
+    { id: 's1-t1-w4-say-3', text: 'She works late and starts early.', vi: 'Cô ấy làm việc muộn và bắt đầu sớm.' },
+    { id: 's1-t1-w4-say-4', text: 'He needs help, so she helps him.', vi: 'Anh ấy cần giúp đỡ, nên cô ấy giúp anh ấy.' },
   ],
 }

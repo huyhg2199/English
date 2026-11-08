@@ -42,7 +42,6 @@ export const LESSON_CONTENTS: readonly LessonContent[] = [
     lessonId: 's1-t1-w1',
     pronunciation: PRONUNCIATION_W1,
     grammar: GRAMMAR_W1,
-    placementLink: true,
     ...rp('Làm quen lần đầu', 'Meeting someone new', 'We meet for the first time at a coffee shop. Ask me my name, where I am from, and what I like.'),
   },
   {
