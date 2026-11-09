@@ -34,7 +34,8 @@ export const routes: RouteObject[] = [
     path: '/',
     element: <AppShell />,
     children: [
-      { index: true, element: <Today /> },
+      // `wide` (story 31): từ 1024px Hôm nay và Lộ trình dùng lưới 2 cột, cột main 1024px.
+      { index: true, element: <Today />, handle: { layout: 'wide' } satisfies RouteHandle },
       // Buổi 30' và ngày lười 10'; tab Hôm nay vẫn sáng (`alsoActiveFor` trong nav-items).
       // `wide` (story 30): từ 1024px buổi học, trang bài và viên gạch chia hai cột (`SplitLayout`), cột main 1024px.
       { path: 'session', element: <Session />, handle: { layout: 'wide' } satisfies RouteHandle },
@@ -44,7 +45,7 @@ export const routes: RouteObject[] = [
       { path: 'welcome', element: <Welcome /> },
       { path: 'sorting-hat', element: <SortingHat /> },
       { path: 'do-trinh-do', element: <Measure /> },
-      { path: 'roadmap', element: <Roadmap /> },
+      { path: 'roadmap', element: <Roadmap />, handle: { layout: 'wide' } satisfies RouteHandle },
       // Trang bài; sectionId là segment route (hash router đã chiếm `#`). Tab Lộ trình vẫn sáng.
       { path: 'roadmap/lesson/:lessonId/:sectionId?', element: <Lesson />, handle: { layout: 'wide' } satisfies RouteHandle },
       // Sân ga 9¾ (story 19): bức tường 18 viên và trình phát viên gạch; tab Lộ trình vẫn sáng (`alsoActiveFor`).

@@ -3,12 +3,14 @@ import { ArrowLeft, ArrowRight, Hammer, PartyPopper, Sparkles } from 'lucide-rea
 import { Link, useSearchParams } from 'react-router'
 
 import { useLessonParts, useLoadedStore, useSessions, useSkillBoard } from '@/app/store-context'
+import { useHotkeys, type HotkeyBindings } from '@/app/use-hotkeys'
 import { BrickPlayer } from '@/components/foundation/BrickPlayer'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
 import type { PronunciationView } from '@/components/lesson/LessonContentParts'
 import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { VideoList } from '@/components/media/VideoEmbed'
 import { ReadingSourceContext } from '@/components/reading-source'
+import { Kbd } from '@/components/Kbd'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
 import { SessionRail } from '@/components/session/SessionRail'
 import { BackToToday, LinkList, SessionDoneView, StepClock } from '@/components/session/SessionParts'
@@ -27,6 +29,7 @@ import {
   sectionHref,
 } from '@/data/roadmap'
 import { foundationFunVideos, funStepVideos } from '@/data/videos'
+import { stepForKey } from '@/lib/hotkeys'
 import { prioritizeSections } from '@/lib/placement'
 import {
   followUpBrickId,
@@ -286,6 +289,9 @@ export function Session() {
   function goTo(index: number) {
     setParams(sessionSearch(plan, index), { replace: true })
     window.scrollTo(0, 0)
+    // Nút "Tiếp" / "Quay lại" ở cột phụ và hàng đáy vẫn là cùng nút sau khi đổi bước: bỏ focus để Space (lật thẻ) / Enter ở
+    // bước mới không bấm lại nút đó (story 31).
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
   }
 
   function followUpTo(id: BrickId) {
@@ -300,6 +306,14 @@ export function Session() {
     setFinished(true)
     window.scrollTo(0, 0)
   }
+
+  // Phím tắt (story 31): → bước sau, ← bước trước (cùng `goTo` với nút). Bước cuối → không tự "Xong buổi"; view xong không có phím.
+  const stepKeys: HotkeyBindings = {}
+  for (const name of ['ArrowLeft', 'ArrowRight'] as const) {
+    const to = stepForKey(name, stepIndex, steps.length)
+    if (to !== null) stepKeys[name] = () => goTo(to)
+  }
+  useHotkeys(stepKeys, !finished)
 
   if (finished) {
     return (
@@ -364,15 +378,17 @@ export function Session() {
 
           <div className="flex gap-2 lg:hidden">
             {stepIndex > 0 && (
-              <Button variant="outline" onClick={() => goTo(stepIndex - 1)}>
+              <Button variant="outline" onClick={() => goTo(stepIndex - 1)} aria-keyshortcuts="ArrowLeft">
                 <ArrowLeft aria-hidden="true" />
                 Quay lại
+                <Kbd>←</Kbd>
               </Button>
             )}
             {nextStep ? (
-              <Button className="flex-1" onClick={() => goTo(stepIndex + 1)}>
+              <Button className="flex-1" onClick={() => goTo(stepIndex + 1)} aria-keyshortcuts="ArrowRight">
                 Tiếp: {nextStep.title}
                 <ArrowRight aria-hidden="true" />
+                <Kbd>→</Kbd>
               </Button>
             ) : (
               <Button className="flex-1" onClick={finish}>

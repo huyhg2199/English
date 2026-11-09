@@ -4,12 +4,16 @@ import {
   CHROME_MISSING_MESSAGE,
   EXPECTED,
   findChrome,
+  GRID_LANDMARKS,
+  HOTKEY_PROBE,
+  hotkeyProblems,
   layoutProblems,
   parseCheckArgs,
   RAIL_LANDMARKS,
   ROUTES,
   WIDE_ROUTES,
   WIDTHS,
+  type HotkeyProbe,
   type LayoutMetrics,
 } from '../../scripts/layout/check-lib.mjs'
 
@@ -224,9 +228,9 @@ describe('layout:check — layoutProblems', () => {
 })
 
 describe('layout:check — cột phụ hai cột (story 30)', () => {
-  it('WIDE_ROUTES: bài, link sâu, viên gạch, buổi học; mốc dính 16px', () => {
+  it('WIDE_ROUTES: Hôm nay, Lộ trình (story 31), bài, link sâu, viên gạch, buổi học; mốc dính 16px', () => {
     expect([...WIDE_ROUTES].sort()).toEqual(
-      ['/foundation/F01', '/roadmap/lesson/s1-t1-w1', '/roadmap/lesson/s1-t1-w1/vocabulary', '/session'].sort(),
+      ['/', '/roadmap', '/foundation/F01', '/roadmap/lesson/s1-t1-w1', '/roadmap/lesson/s1-t1-w1/vocabulary', '/session'].sort(),
     )
     expect(EXPECTED.railStickyOffset).toBe(16)
   })
@@ -291,5 +295,135 @@ describe('layout:check — cột phụ hai cột (story 30)', () => {
   it('route default không cần cột phụ; trang không cuộn được (rails null) → không kiểm dính', () => {
     expect(layoutProblems(1280, good(1280))).toEqual([])
     expect(layoutProblems(1280, { ...goodWide(1280), rails: null }, 'wide')).toEqual([])
+  })
+})
+
+describe('layout:check — lưới 2 cột Hôm nay / Lộ trình (story 31)', () => {
+  /** Route `wide` không có cột phụ mà có lưới `columns` cột. */
+  const gridded = (width: number, columns: number | null): LayoutMetrics => ({
+    ...goodWide(width),
+    railCount: 0,
+    rails: null,
+    grid: columns === null ? null : { selector: GRID_LANDMARKS['/'], columns },
+  })
+
+  it('GRID_LANDMARKS: Hôm nay và Lộ trình, đều là route wide', () => {
+    expect(GRID_LANDMARKS).toEqual({ '/': 'main > section', '/roadmap': 'main section[aria-labelledby^="stage-"]' })
+    for (const route of Object.keys(GRID_LANDMARKS)) expect(WIDE_ROUTES).toContain(route)
+  })
+
+  it('route wide có lưới 2 cột (không cột phụ) ở 1024/1280/1920 → đạt', () => {
+    for (const width of [1024, 1280, 1920]) expect(layoutProblems(width, gridded(width, 2), 'wide')).toEqual([])
+  })
+
+  it('lưới chỉ có 1 cột ở máy tính → "lưới chỉ có 1 cột"', () => {
+    expect(layoutProblems(1280, gridded(1280, 1), 'wide')).toEqual([expect.stringMatching(/lưới chỉ có 1 cột: main > section/)])
+  })
+
+  it('không cột phụ và không lưới → "thiếu cột phụ" (như story 30)', () => {
+    expect(layoutProblems(1280, gridded(1280, null), 'wide')).toEqual([expect.stringMatching(/thiếu cột phụ/)])
+    // Số đo cũ (story 30) không có trường `grid`.
+    expect(layoutProblems(1280, { ...goodWide(1280), railCount: 0, rails: null }, 'wide')).toEqual([
+      expect.stringMatching(/thiếu cột phụ/),
+    ])
+  })
+
+  it('dưới 1024px lưới một cột là đúng → không kiểm', () => {
+    expect(layoutProblems(375, { ...good(375), grid: { selector: 'main > section', columns: 1 } }, 'wide')).toEqual([])
+    expect(layoutProblems(1023, { ...good(1023, 768), grid: { selector: 'main > section', columns: 1 } }, 'wide')).toEqual([])
+  })
+})
+
+describe('layout:check — thử phím tắt (story 31)', () => {
+  const pass: HotkeyProbe = {
+    brick: {
+      screenAfterEnter: 'Màn 4/6',
+      screenAfterTyping: 'Màn 4/6',
+      typingGraded: true,
+      checkScreen: 'Màn 5/6',
+      hiddenCheckState: 'answering',
+      checkStateAfterKey: 'answered',
+    },
+    session: { stepAfterRight: 1, stepAfterLeft: 0 },
+    quiz: { answeredAfterKey: true, headingAfterEnter: 'Câu 2/8' },
+    notebook: { searchValue: 'chào', hashBefore: '#/notebook', hashAfter: '#/notebook', scrollBefore: 120, scrollAfter: 120 },
+  }
+
+  it('probe đúng → đạt; số liệu probe ở 1280×800', () => {
+    expect(hotkeyProblems(pass)).toEqual([])
+    expect(HOTKEY_PROBE).toMatchObject({ width: 1280, height: 800, brickRoute: '/foundation/F01', brickScreen: 'Màn 4/6' })
+  })
+
+  it('F01 sau Enter vẫn "Màn 1/6" → lỗi', () => {
+    expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, screenAfterEnter: 'Màn 1/6' } })).toEqual([
+      expect.stringMatching(/F01: bấm Enter 3 lần nhưng đang ở "Màn 1\/6"/),
+    ])
+  })
+
+  it('F01 gõ trong ô làm đổi màn hoặc không chấm → lỗi', () => {
+    expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, screenAfterTyping: 'Màn 5/6' } })).toEqual([
+      expect.stringMatching(/F01: gõ "chào 1" \+ Enter trong ô làm đổi màn: "Màn 5\/6"/),
+    ])
+    expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, typingGraded: false } })).toEqual([
+      expect.stringMatching(/không chấm/),
+    ])
+  })
+
+  it('F01 màn luyện tập: Enter không sang màn 5, phần ẩn nhận phím 1, hoặc phím 1 không chọn → lỗi', () => {
+    expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, checkScreen: 'Màn 4/6' } })).toEqual([
+      expect.stringMatching(/F01: bấm Enter ở màn 4 nhưng đang ở "Màn 4\/6" \(cần "Màn 5\/6"\)/),
+    ])
+    expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, hiddenCheckState: 'answered' } })).toEqual([
+      expect.stringMatching(/F01: bấm 1 khi phần luyện tập đang ẩn .* đã bị trả lời/),
+    ])
+    expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, checkStateAfterKey: 'answering' } })).toEqual([
+      expect.stringMatching(/F01: bấm 1 ở màn luyện tập không chọn đáp án/),
+    ])
+  })
+
+  it('kiểm tra hàng A: phím 2 không chọn hoặc Enter không sang câu 2 → lỗi', () => {
+    expect(HOTKEY_PROBE.quizRoute).toBe('/foundation/kiem-tra/A')
+    expect(hotkeyProblems({ ...pass, quiz: { answeredAfterKey: false, headingAfterEnter: null } })).toEqual([
+      expect.stringMatching(/kiem-tra\/A: bấm 2 không chọn đáp án câu 1/),
+    ])
+    expect(hotkeyProblems({ ...pass, quiz: { answeredAfterKey: true, headingAfterEnter: 'Câu 1/8' } })).toEqual([
+      expect.stringMatching(/bấm Enter sau khi chọn không sang câu 2 \(đang ở "Câu 1\/8"\)/),
+    ])
+  })
+
+  it('/session → không đổi bước, ← không về → mỗi trường hợp một lỗi', () => {
+    expect(hotkeyProblems({ ...pass, session: { stepAfterRight: 0, stepAfterLeft: 0 } })).toEqual([
+      expect.stringMatching(/\/session: bấm → không sang bước 2/),
+    ])
+    expect(hotkeyProblems({ ...pass, session: { stepAfterRight: 1, stepAfterLeft: 1 } })).toEqual([
+      expect.stringMatching(/\/session: bấm ← không về bước 1/),
+    ])
+  })
+
+  it('ô tìm kiếm Sổ tay ≠ "chào", hash đổi hoặc trang cuộn → mỗi trường hợp một lỗi', () => {
+    expect(hotkeyProblems({ ...pass, notebook: { ...pass.notebook, searchValue: 'chao' } })).toEqual([
+      expect.stringMatching(/ô có "chao"/),
+    ])
+    expect(hotkeyProblems({ ...pass, notebook: { ...pass.notebook, hashAfter: '#/practice' } })).toEqual([
+      expect.stringMatching(/đổi trang \(#\/notebook → #\/practice\)/),
+    ])
+    expect(hotkeyProblems({ ...pass, notebook: { ...pass.notebook, scrollAfter: 520 } })).toEqual([
+      expect.stringMatching(/làm cuộn trang/),
+    ])
+  })
+
+  it('bước không chạy được → lỗi tiếng Việt kèm lý do', () => {
+    const broken: HotkeyProbe = {
+      brick: { ...pass.brick, error: 'không thấy ô "Từ còn thiếu"' },
+      session: { ...pass.session, error: 'x' },
+      quiz: { ...pass.quiz, error: 'z' },
+      notebook: { ...pass.notebook, error: 'y' },
+    }
+    expect(hotkeyProblems(broken)).toEqual([
+      expect.stringMatching(/^F01: không thử được phím: không thấy ô/),
+      expect.stringMatching(/^\/foundation\/kiem-tra\/A: không thử được phím: z/),
+      expect.stringMatching(/^\/session: không thử được phím/),
+      expect.stringMatching(/^\/notebook: không thử được phím/),
+    ])
   })
 })

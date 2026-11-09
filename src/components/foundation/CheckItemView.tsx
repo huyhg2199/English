@@ -1,11 +1,14 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { Check, Eye, Lightbulb, RotateCcw } from 'lucide-react'
 
+import { useHotkeys } from '@/app/use-hotkeys'
+import { Kbd } from '@/components/Kbd'
 import { ListenButton } from '@/components/ListenButton'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { CheckItem } from '@/data/foundation'
 import { answerText, isCorrect, shuffledTokens, type CheckResponse } from '@/lib/foundation'
+import { CHOICE_KEYS, choiceBindings } from '@/lib/hotkeys'
 import { canSpeak } from '@/lib/speech'
 import { cn } from '@/lib/utils'
 
@@ -49,12 +52,14 @@ function ChoiceBody({
     <div className="grid gap-2" role="group" aria-label="Các lựa chọn">
       {item.options.map((option, i) => {
         const isAnswer = i === item.answer
+        const hotkey = i < CHOICE_KEYS.length ? CHOICE_KEYS[i] : undefined
         return (
           <button
             key={option}
             type="button"
             disabled={status !== 'answering'}
             onClick={() => onChoose(i)}
+            aria-keyshortcuts={hotkey}
             className={cn(
               'flex min-h-11 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-base break-words transition-colors',
               status === 'answering' && 'hover:border-primary hover:bg-accent/40',
@@ -63,7 +68,10 @@ function ChoiceBody({
               status !== 'answering' && !(showAnswer && isAnswer) && i !== chosen && 'opacity-60',
             )}
           >
-            <span className="min-w-0">{option}</span>
+            <span className="min-w-0">
+              {hotkey && <Kbd>{hotkey}</Kbd>}
+              {option}
+            </span>
             {showAnswer && isAnswer && <Check className="size-4 shrink-0" aria-label="Đáp án đúng" />}
           </button>
         )
@@ -76,6 +84,10 @@ function ChoiceBody({
  * Một câu luyện trong viên gạch: trả lời (`order`/`sort` xếp xong, sửa được, rồi bấm "Kiểm tra"), "Gợi ý", sai thì hiện giải thích + "Thử lại" / "Xem đáp án" (màu trung tính,
  * không ghi Sổ lỗi). Đúng có hiệu ứng Lumos. `onAttempt` báo mỗi lần trả lời (nơi gọi chỉ tính lần đầu);
  * `footer` hiện khi câu đã xong (đúng hoặc đã xem đáp án). Đổi câu thì nơi gọi đổi `key` để làm mới.
+ *
+ * Phím tắt (story 31): câu `choice`/`listen` đang trả lời thì 1–4 chọn; câu đã xong thì Enter → `onContinue` (cùng handler với
+ * nút trong `footer`, mọi loại câu). `active = false` (màn check đang ẩn) thì không nhận phím. Câu `order`/`sort`/`tapSyllable`
+ * không có phím trả lời.
  */
 export function CheckItemView({
   item,
@@ -84,6 +96,8 @@ export function CheckItemView({
   onAttempt,
   onReveal,
   footer,
+  active = true,
+  onContinue,
 }: {
   item: CheckItem
   heading: string
@@ -92,6 +106,10 @@ export function CheckItemView({
   onAttempt?: (correct: boolean) => void
   onReveal?: () => void
   footer?: ReactNode
+  /** Câu đang hiện (không nằm trong phần bị ẩn); false thì không nhận phím tắt. */
+  active?: boolean
+  /** Enter khi câu đã xong (vd "Câu tiếp"). */
+  onContinue?: () => void
 }) {
   const [status, setStatus] = useState<Status>('answering')
   const [showHint, setShowHint] = useState(false)
@@ -124,6 +142,24 @@ export function CheckItemView({
   const answering = status === 'answering'
   const resolved = status === 'correct' || status === 'revealed'
 
+  /** Chọn lựa chọn `i` (nút hoặc phím 1–4) của câu `choice`/`listen`. */
+  function choose(i: number) {
+    if (item.kind !== 'choice' && item.kind !== 'listen') return
+    setChosen(i)
+    submit({ kind: item.kind, choice: i })
+  }
+
+  const choiceItem = item.kind === 'choice' || item.kind === 'listen'
+  useHotkeys(
+    choiceBindings({
+      choosing: answering && choiceItem,
+      count: choiceItem ? item.options.length : 0,
+      choose,
+      next: resolved ? onContinue : undefined,
+    }),
+    active,
+  )
+
   let body: ReactNode
   if (item.kind === 'choice' || item.kind === 'listen') {
     body = (
@@ -131,10 +167,7 @@ export function CheckItemView({
         item={item}
         status={status}
         chosen={chosen}
-        onChoose={(i) => {
-          setChosen(i)
-          submit({ kind: item.kind, choice: i })
-        }}
+        onChoose={choose}
       />
     )
   } else if (item.kind === 'tapSyllable') {

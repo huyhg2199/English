@@ -3,6 +3,8 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useFoundation } from '@/app/store-context'
+import { useHotkeys } from '@/app/use-hotkeys'
+import { Kbd } from '@/components/Kbd'
 import { SplitLayout, SplitMain } from '@/components/SplitLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -65,9 +67,13 @@ export function BrickPlayer({
     go(apply >= 0 ? apply : index + 1)
   }
 
-  if (!screen) return null
-  const canNext = screen.kind !== 'check' || flow.stage === 'finished'
+  const canNext = screen !== undefined && (screen.kind !== 'check' || flow.stage === 'finished')
   const isLast = index === total - 1
+  // Phím Enter = "Tiếp" (story 31), chỉ bật khi nút bấm được và chưa phải màn cuối. Trên màn check `canNext` chỉ đúng khi
+  // `flow.stage === 'finished'`, lúc đó không còn câu nào nhận Enter, nên hai Enter không cùng bật.
+  useHotkeys({ Enter: () => go(index + 1) }, canNext && !isLast)
+
+  if (!screen) return null
 
   return (
     <div ref={top} className="flex scroll-mt-4 flex-col gap-4">
@@ -120,6 +126,7 @@ export function BrickPlayer({
                 screen={checkScreen}
                 flow={flow}
                 seed={seed}
+                active={screen.kind === 'check'}
                 onAttempt={(item, ok) => setFlow((f) => recordAnswer(f, item.id, ok))}
                 onNext={() => setFlow((f) => advanceCheck(f, checkScreen))}
                 onStartEasier={() => setFlow(startEasier)}
@@ -164,9 +171,10 @@ export function BrickPlayer({
                 </Button>
               )
             ) : (
-              <Button type="button" onClick={() => go(index + 1)} disabled={!canNext}>
+              <Button type="button" onClick={() => go(index + 1)} disabled={!canNext} aria-keyshortcuts="Enter">
                 Tiếp
                 <ChevronRight aria-hidden="true" />
+                <Kbd>Enter</Kbd>
               </Button>
             )}
           </nav>

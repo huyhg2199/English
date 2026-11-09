@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, ClipboardCheck, Compass, MapPinOff } from 'lucide-
 import { Link, useNavigate, useParams } from 'react-router'
 
 import { useComeback, useLoadedStore, useQuizzes } from '@/app/store-context'
+import { Kbd } from '@/components/Kbd'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { QuizResult } from '@/components/quiz/QuizResult'
 import { Button } from '@/components/ui/button'
@@ -89,6 +90,8 @@ function QuizRun({ quizId, questions, run, kind, renderResult }: RunProps) {
     setGraded(result)
     window.scrollTo(0, 0)
   }
+  // Nút "Câu tiếp" / "Xem kết quả" và phím Enter (story 31) dùng chung handler.
+  const next = last ? finish : () => setIndex((i) => i + 1)
 
   return (
     <div className="flex flex-col gap-3">
@@ -113,8 +116,12 @@ function QuizRun({ quizId, questions, run, kind, renderResult }: RunProps) {
         onChoose={(option) => setChosen((c) => ({ ...c, [question.id]: option }))}
         heading={`Câu ${index + 1}/${questions.length}`}
         footer={
-          <Button onClick={last ? finish : () => setIndex((i) => i + 1)}>{last ? 'Xem kết quả' : 'Câu tiếp'}</Button>
+          <Button onClick={next} aria-keyshortcuts="Enter">
+            {last ? 'Xem kết quả' : 'Câu tiếp'}
+            <Kbd>Enter</Kbd>
+          </Button>
         }
+        onNext={next}
       />
       <p className="text-xs text-muted-foreground">Rời trang giữa chừng thì lần làm này không được lưu.</p>
     </div>

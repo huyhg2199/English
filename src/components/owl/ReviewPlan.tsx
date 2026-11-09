@@ -53,11 +53,11 @@ export function ReviewPlanList({ plan, todayIndex }: { plan: ReviewPlan; todayIn
 }
 
 /** Thẻ kế hoạch ôn O.W.L. 1 trên trang Hôm nay (tới khi qua lần sau hoặc hết 14 ngày). */
-export function OwlPlanCard({ active }: { active: ActivePlan }) {
+export function OwlPlanCard({ active, className }: { active: ActivePlan; className?: string }) {
   const { plan, dayIndex, today } = active
   const parts = plan.parts.map((p) => OWL_PART_LABELS[p].toLowerCase()).join(' và ')
   return (
-    <Card className="gap-3 border-primary/50">
+    <Card className={cn('gap-3 border-primary/50', className)}>
       <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
         <CalendarCheck className="row-span-2 size-9 text-primary drop-shadow-[0_0_10px_var(--candle-glow)]" aria-hidden="true" />
         <CardTitle className="text-lg">

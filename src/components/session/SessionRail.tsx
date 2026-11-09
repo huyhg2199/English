@@ -1,6 +1,7 @@
 // mobile-guard: desktop-only — cả file chỉ hiện từ 1024px (`hidden lg:flex`), dưới 1024px buổi học dùng stepper ngang và hàng nút đáy.
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 
+import { Kbd } from '@/components/Kbd'
 import { SplitRail } from '@/components/SplitLayout'
 import { Button } from '@/components/ui/button'
 import { stepperItems, type SessionStep } from '@/lib/sessions'
@@ -54,9 +55,14 @@ export function SessionRail({
       </ol>
       <div className="flex flex-col gap-2">
         {nextStep ? (
-          <Button className="h-auto min-h-9 w-full py-2 whitespace-normal" onClick={() => onGo(stepIndex + 1)}>
+          <Button
+            className="h-auto min-h-9 w-full py-2 whitespace-normal"
+            onClick={() => onGo(stepIndex + 1)}
+            aria-keyshortcuts="ArrowRight"
+          >
             Tiếp: {nextStep.title}
             <ArrowRight aria-hidden="true" />
+            <Kbd>→</Kbd>
           </Button>
         ) : (
           <Button className="w-full" onClick={onFinish}>
@@ -64,9 +70,10 @@ export function SessionRail({
           </Button>
         )}
         {stepIndex > 0 && (
-          <Button variant="outline" className="w-full" onClick={() => onGo(stepIndex - 1)}>
+          <Button variant="outline" className="w-full" onClick={() => onGo(stepIndex - 1)} aria-keyshortcuts="ArrowLeft">
             <ArrowLeft aria-hidden="true" />
             Quay lại
+            <Kbd>←</Kbd>
           </Button>
         )}
       </div>

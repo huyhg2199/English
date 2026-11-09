@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 
 import { useFoundation, useLoadedStore } from '@/app/store-context'
+import { Kbd } from '@/components/Kbd'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { Button } from '@/components/ui/button'
 import type { RowId } from '@/data/foundation'
@@ -70,6 +71,8 @@ export function RowTestRun({ row, context, renderResult }: Props) {
     setResult({ graded, mode })
     window.scrollTo(0, 0)
   }
+  // Nút "Câu tiếp" / "Xem kết quả" và phím Enter (story 31) dùng chung handler.
+  const next = last ? finish : () => setIndex((i) => i + 1)
 
   return (
     <div className="flex flex-col gap-3">
@@ -95,8 +98,12 @@ export function RowTestRun({ row, context, renderResult }: Props) {
         heading={`Câu ${index + 1}/${questions.length}`}
         tone="gentle"
         footer={
-          <Button onClick={last ? finish : () => setIndex((i) => i + 1)}>{last ? 'Xem kết quả' : 'Câu tiếp'}</Button>
+          <Button onClick={next} aria-keyshortcuts="Enter">
+            {last ? 'Xem kết quả' : 'Câu tiếp'}
+            <Kbd>Enter</Kbd>
+          </Button>
         }
+        onNext={next}
       />
       <p className="text-xs text-muted-foreground">Rời trang giữa chừng thì hàng này chưa được tính, lần sau làm lại từ câu 1.</p>
     </div>

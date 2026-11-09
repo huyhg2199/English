@@ -23,13 +23,13 @@ export function WallPassedButton({ className }: { className?: string }) {
  * Thẻ "Qua bức tường" (story 26) cho Hôm nay và bức tường: chỉ hiện khi còn chờ ăn mừng (đã có `completedAt` mà chưa có
  * mục `wall-passed`), kể cả khi qua tường trong buổi 30' hay đồng bộ từ máy khác. Mở màn ăn mừng một lần thì thẻ biến mất.
  */
-export function WallPassedCard() {
+export function WallPassedCard({ className }: { className?: string }) {
   const { wallCelebrationPending } = useFoundation()
   // Chờ lượt đồng bộ đầu: máy thứ hai chưa kéo mục `wall-passed` của máy kia về thì chưa mời ăn mừng.
   const ready = useFirstSyncReady()
   if (!wallCelebrationPending || !ready) return null
   return (
-    <Card className="gap-3 border-primary/60 py-4 shadow-[0_0_18px_var(--candle-glow)]">
+    <Card className={cn('gap-3 border-primary/60 py-4 shadow-[0_0_18px_var(--candle-glow)]', className)}>
       <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3 px-4">
         <PartyPopper className="row-span-2 size-8 text-primary" aria-hidden="true" />
         <CardTitle className="text-lg leading-tight">

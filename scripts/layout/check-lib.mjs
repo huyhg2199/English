@@ -32,6 +32,8 @@ export const ROUTES = [
  * này với `layoutFor` của cây routes, nên gắn `wide` cho route mà quên sửa ở đây thì `npm test` đỏ.
  */
 export const WIDE_ROUTES = [
+  '/',
+  '/roadmap',
   '/roadmap/lesson/s1-t1-w1',
   '/roadmap/lesson/s1-t1-w1/vocabulary',
   '/foundation/F01',
@@ -46,6 +48,15 @@ export const RAIL_LANDMARKS = {
   '/session': '[data-split-rail] ol[aria-label="Các phần của buổi"]',
   '/roadmap/lesson/s1-t1-w1': '[data-split-rail] nav[aria-label="Mục lục bài"]',
   '/roadmap/lesson/s1-t1-w1/vocabulary': '[data-split-rail] nav[aria-label="Mục lục bài"]',
+}
+
+/**
+ * Lưới 2 cột của route `wide` không có cột phụ (story 31): phần tử khớp đầu tiên; số cột = số giá trị `left` (làm tròn) khác
+ * nhau của các con trực tiếp đang hiện. Lộ trình: lưới nằm trong mỗi chặng (thẻ chặng trải 2 cột, các tháng xếp 2 cột).
+ */
+export const GRID_LANDMARKS = {
+  '/': 'main > section',
+  '/roadmap': 'main section[aria-labelledby^="stage-"]',
 }
 
 /** Route tĩnh dưới AppShell cố ý không đo (màn phụ cần dữ liệu riêng hoặc chỉ là luồng một lần). Test kiểm cây routes. */
@@ -176,9 +187,13 @@ export function layoutProblems(width, m, layout = 'default') {
       problems.push(`bottom nav không sát cạnh dưới (bottom ${px(nav.bottom)}, viewport ${px(m.innerHeight)})`)
   }
 
-  // Bố cục hai cột (story 30): route `wide` phải có cột phụ hiện; cột phụ dính ngay dưới TopBar + 1rem khi cuộn, trừ khi khung
-  // cha (lưới SplitLayout) đã hết chỗ (đáy khung cao hơn chỗ dính + chiều cao cột thì cột bị đẩy lên là đúng).
-  if (desktop && layout === 'wide' && m.railCount === 0) problems.push('thiếu cột phụ: không có [data-split-rail] nào hiện')
+  // Bố cục hai cột (story 30–31): route `wide` phải có cột phụ hiện hoặc lưới ≥ 2 cột (Hôm nay, Lộ trình); cột phụ dính ngay
+  // dưới TopBar + 1rem khi cuộn, trừ khi khung cha (lưới SplitLayout) đã hết chỗ (đáy khung cao hơn chỗ dính + chiều cao cột
+  // thì cột bị đẩy lên là đúng).
+  const grid = m.grid ?? null
+  if (desktop && layout === 'wide' && m.railCount === 0 && !grid)
+    problems.push('thiếu cột phụ: không có [data-split-rail] nào hiện')
+  if (desktop && grid && grid.columns < 2) problems.push(`lưới chỉ có ${grid.columns} cột: ${grid.selector}`)
   if (desktop && m.railLandmark && !m.railLandmark.visible)
     problems.push(`thiếu nội dung cột phụ: không thấy ${m.railLandmark.selector}`)
   if (desktop && m.rails) {
@@ -201,4 +216,81 @@ export function layoutProblems(width, m, layout = 'default') {
     problems.push(`padding đáy main ${px(m.mainPaddingBottom)} (cần ${px(padding)})`)
 
   return problems
+}
+
+/**
+ * Chấm kết quả thử phím tắt ở 1280px (story 31). Trả danh sách lỗi tiếng Việt (rỗng = đạt).
+ * @param {import('./check-lib.d.mts').HotkeyProbe} probe
+ */
+export function hotkeyProblems(probe) {
+  const problems = []
+  const { brick, session, quiz, notebook } = probe
+
+  if (brick.error) problems.push(`F01: không thử được phím: ${brick.error}`)
+  else {
+    if (brick.screenAfterEnter !== HOTKEY_PROBE.brickScreen)
+      problems.push(`F01: bấm Enter 3 lần nhưng đang ở "${brick.screenAfterEnter ?? '?'}" (cần "${HOTKEY_PROBE.brickScreen}")`)
+    else {
+      if (brick.screenAfterTyping !== HOTKEY_PROBE.brickScreen)
+        problems.push(`F01: gõ "${HOTKEY_PROBE.brickTyped}" + Enter trong ô làm đổi màn: "${brick.screenAfterTyping ?? '?'}"`)
+      if (!brick.typingGraded)
+        problems.push(`F01: gõ "${HOTKEY_PROBE.brickTyped}" + Enter trong ô không chấm (không thấy "Chưa đúng")`)
+      if (brick.checkScreen !== HOTKEY_PROBE.checkScreen)
+        problems.push(`F01: bấm Enter ở màn 4 nhưng đang ở "${brick.checkScreen ?? '?'}" (cần "${HOTKEY_PROBE.checkScreen}")`)
+      else {
+        if (brick.hiddenCheckState !== 'answering')
+          problems.push(`F01: bấm 1 khi phần luyện tập đang ẩn (màn 4) mà câu luyện tập ${checkStateLabel(brick.hiddenCheckState)}`)
+        else if (brick.checkStateAfterKey !== 'answered')
+          problems.push(`F01: bấm 1 ở màn luyện tập không chọn đáp án (câu ${checkStateLabel(brick.checkStateAfterKey)})`)
+      }
+    }
+  }
+
+  if (quiz.error) problems.push(`${HOTKEY_PROBE.quizRoute}: không thử được phím: ${quiz.error}`)
+  else {
+    if (!quiz.answeredAfterKey) problems.push(`${HOTKEY_PROBE.quizRoute}: bấm 2 không chọn đáp án câu 1`)
+    else if (!/^Câu 2\//.test(quiz.headingAfterEnter ?? ''))
+      problems.push(`${HOTKEY_PROBE.quizRoute}: bấm Enter sau khi chọn không sang câu 2 (đang ở "${quiz.headingAfterEnter ?? '?'}")`)
+  }
+
+  if (session.error) problems.push(`/session: không thử được phím: ${session.error}`)
+  else {
+    if (session.stepAfterRight !== 1)
+      problems.push(`/session: bấm → không sang bước 2 (bước hiện tại: ${stepLabel(session.stepAfterRight)})`)
+    if (session.stepAfterLeft !== 0)
+      problems.push(`/session: bấm ← không về bước 1 (bước hiện tại: ${stepLabel(session.stepAfterLeft)})`)
+  }
+
+  if (notebook.error) problems.push(`/notebook: không thử được phím: ${notebook.error}`)
+  else {
+    if (notebook.searchValue !== HOTKEY_PROBE.searchText)
+      problems.push(`/notebook: gõ "${HOTKEY_PROBE.searchText}" vào ô tìm kiếm nhưng ô có "${notebook.searchValue ?? ''}"`)
+    if (notebook.hashAfter !== notebook.hashBefore)
+      problems.push(`/notebook: gõ vào ô tìm kiếm làm đổi trang (${notebook.hashBefore} → ${notebook.hashAfter})`)
+    if (Math.abs(notebook.scrollAfter - notebook.scrollBefore) > TOLERANCE)
+      problems.push(`/notebook: gõ vào ô tìm kiếm làm cuộn trang (${px(notebook.scrollBefore)} → ${px(notebook.scrollAfter)})`)
+  }
+  return problems
+}
+
+const stepLabel = (index) => (index === null ? 'không rõ' : String(index + 1))
+
+const checkStateLabel = (state) =>
+  state === 'answered' ? 'đã bị trả lời' : state === 'answering' ? 'chưa được trả lời' : 'không thấy'
+
+/** Số liệu của bước thử phím (check.mjs dùng chung với hotkeyProblems). */
+export const HOTKEY_PROBE = {
+  width: 1280,
+  height: 800,
+  brickRoute: '/foundation/F01',
+  /** Enter ×3 từ màn 1 → màn ví dụ một chỗ trống. */
+  brickScreen: 'Màn 4/6',
+  brickTyped: 'chào 1',
+  /** Bỏ focus ô rồi Enter ở màn 4 → màn luyện tập (câu đầu là `choice`). */
+  checkScreen: 'Màn 5/6',
+  /** Kiểm tra hàng A: `QuestionCard` từ dữ liệu sạch. */
+  quizRoute: '/foundation/kiem-tra/A',
+  sessionRoute: '/session',
+  notebookRoute: '/notebook',
+  searchText: 'chào',
 }

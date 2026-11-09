@@ -2,9 +2,12 @@ import type { ReactNode } from 'react'
 import { Check, Headphones, X } from 'lucide-react'
 import { Link } from 'react-router'
 
+import { useHotkeys } from '@/app/use-hotkeys'
+import { Kbd } from '@/components/Kbd'
 import { ListenButton } from '@/components/ListenButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Question } from '@/data/questions'
+import { CHOICE_KEYS, choiceBindings } from '@/lib/hotkeys'
 import { cn } from '@/lib/utils'
 
 import { questionSourceHref, sourceLabel } from './source-label'
@@ -68,16 +71,23 @@ type Props = {
    * hiện link "Xem lại" (đang giữa bài kiểm tra hàng, rời trang là mất bài; link có ở màn kết quả). Mặc định giữ nguyên.
    */
   tone?: 'default' | 'gentle'
+  /**
+   * Phím Enter khi đã chọn (story 31): cùng handler với nút "Câu tiếp" / "Xem kết quả" / "Xong" của nơi gọi. Không truyền thì
+   * Enter không làm gì.
+   */
+  onNext?: () => void
 }
 
 /**
  * Một câu hỏi: chọn một lần, chọn xong hiện đúng/sai ngay. Đúng có hiệu ứng Lumos; sai hiện đáp án đúng,
  * giải thích và link về đoạn bài nguồn.
  */
-export function QuestionCard({ question, options, chosen, onChoose, heading, footer, tone = 'default' }: Props) {
+export function QuestionCard({ question, options, chosen, onChoose, heading, footer, tone = 'default', onNext }: Props) {
   const answered = chosen !== null
   const correct = chosen === question.answer
   const gentle = tone === 'gentle'
+  // Phím tắt (story 31): chưa chọn thì 1–4 chọn lựa chọn thứ n; đã chọn thì Enter → `onNext`.
+  useHotkeys(choiceBindings({ choosing: !answered, count: options.length, choose: (at) => onChoose(options[at]), next: onNext }))
   return (
     <Card className={cn('gap-4', answered && correct && 'lumos border-primary')}>
       <CardHeader className="gap-2">
@@ -92,15 +102,17 @@ export function QuestionCard({ question, options, chosen, onChoose, heading, foo
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="grid gap-2" role="group" aria-label="Các lựa chọn">
-          {options.map((option) => {
+          {options.map((option, i) => {
             const isAnswer = option === question.answer
             const isChosen = option === chosen
+            const hotkey = i < CHOICE_KEYS.length ? CHOICE_KEYS[i] : undefined
             return (
               <button
                 key={option}
                 type="button"
                 disabled={answered}
                 onClick={() => onChoose(option)}
+                aria-keyshortcuts={hotkey}
                 lang="en"
                 className={cn(
                   'flex min-h-11 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-base break-words transition-colors',
@@ -115,7 +127,10 @@ export function QuestionCard({ question, options, chosen, onChoose, heading, foo
                   answered && !isAnswer && !isChosen && 'opacity-60',
                 )}
               >
-                <span className="min-w-0">{option}</span>
+                <span className="min-w-0">
+                  {hotkey && <Kbd>{hotkey}</Kbd>}
+                  {option}
+                </span>
                 {answered && isAnswer && <Check className="size-4 shrink-0" aria-label="Đáp án đúng" />}
                 {answered && isChosen && !isAnswer && <X className="size-4 shrink-0" aria-label="Bạn chọn" />}
               </button>

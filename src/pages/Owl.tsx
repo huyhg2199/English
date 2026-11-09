@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 import { useLoadedStore, useOwl } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
+import { Kbd } from '@/components/Kbd'
 import { EtsForm } from '@/components/owl/EtsForm'
 import { OwlPronunciation } from '@/components/owl/OwlPronunciation'
 import { OwlResult } from '@/components/owl/OwlResult'
@@ -52,6 +53,16 @@ function TensesPart({
   const question = questions[index]
   const last = index === questions.length - 1
   const answered = chosen[question.id] !== undefined
+  // Nút "Câu tiếp" / "Nộp bài" và phím Enter (story 31) dùng chung handler.
+  const next = () => {
+    // Phải chọn đáp án trước khi sang câu / nộp bài (không chấm sai im lặng câu bỏ trống).
+    if (!answered) return
+    if (last) onDone(gradeAttempt(questions, chosen).answers)
+    else {
+      setIndex((i) => i + 1)
+      window.scrollTo(0, 0)
+    }
+  }
   return (
     <div className="flex flex-col gap-3">
       <div
@@ -75,21 +86,12 @@ function TensesPart({
         onChoose={(option) => setChosen((c) => ({ ...c, [question.id]: option }))}
         heading={`Thì · câu ${index + 1}/${questions.length}`}
         footer={
-          <Button
-            disabled={!answered}
-            onClick={() => {
-              // Phải chọn đáp án trước khi sang câu / nộp bài (không chấm sai im lặng câu bỏ trống).
-              if (!answered) return
-              if (last) onDone(gradeAttempt(questions, chosen).answers)
-              else {
-                setIndex((i) => i + 1)
-                window.scrollTo(0, 0)
-              }
-            }}
-          >
+          <Button disabled={!answered} onClick={next} aria-keyshortcuts="Enter">
             {last ? 'Nộp bài, xem kết quả' : 'Câu tiếp'}
+            <Kbd>Enter</Kbd>
           </Button>
         }
+        onNext={next}
       />
       <p className="text-xs text-muted-foreground">Rời trang giữa chừng thì lần thi này không được lưu.</p>
     </div>

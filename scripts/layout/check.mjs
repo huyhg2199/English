@@ -12,6 +12,9 @@ import {
   CHROME_MISSING_MESSAGE,
   DEEP_LINK,
   findChrome,
+  GRID_LANDMARKS,
+  HOTKEY_PROBE,
+  hotkeyProblems,
   LG_MIN_WIDTH,
   layoutProblems,
   parseCheckArgs,
@@ -81,9 +84,9 @@ const frames = `new Promise((r) => requestAnimationFrame(() => requestAnimationF
 
 /**
  * Đo bố cục (xem LayoutMetrics trong check-lib.d.mts). `probeScroll`: cuộn 600px để đo TopBar và cột phụ (`[data-split-rail]`)
- * dính.
+ * dính. `gridSelector` (story 31): đếm số cột của lưới (số `left` làm tròn khác nhau của con trực tiếp đang hiện).
  */
-function measureExpression({ probeScroll, deepLinkSection, railLandmark = null }) {
+function measureExpression({ probeScroll, deepLinkSection, railLandmark = null, gridSelector = null }) {
   return `(async () => {
   const label = 'Điều hướng chính'
   const visible = (el) => !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden'
@@ -99,6 +102,14 @@ function measureExpression({ probeScroll, deepLinkSection, railLandmark = null }
   const landmarkSelector = ${JSON.stringify(railLandmark)}
   const railLandmark = landmarkSelector
     ? { selector: landmarkSelector, visible: [...document.querySelectorAll(landmarkSelector)].some(visible) }
+    : null
+  const gridSelector = ${JSON.stringify(gridSelector)}
+  const gridEl = gridSelector ? document.querySelector(gridSelector) : null
+  const grid = gridEl
+    ? {
+        selector: gridSelector,
+        columns: new Set([...gridEl.children].filter(visible).map((c) => Math.round(c.getBoundingClientRect().left))).size,
+      }
     : null
   let topBarTopAfterScroll = null
   let rails = null
@@ -135,9 +146,72 @@ function measureExpression({ probeScroll, deepLinkSection, railLandmark = null }
     railCount: railEls.length,
     rails,
     railLandmark,
+    grid,
   }
 })()`
 }
+
+/** Chữ "Màn n/6" của viên gạch đang mở; null nếu không thấy. */
+const BRICK_SCREEN_EXPRESSION = `(document.querySelector('main')?.innerText.match(/Màn \\d+\\/\\d+/) ?? [null])[0]`
+
+/** Vị trí (0-based) bước `aria-current="step"` trong stepper buổi học đang hiện; null nếu không thấy. */
+const SESSION_STEP_EXPRESSION = `(() => {
+  const ol = [...document.querySelectorAll('ol[aria-label="Các phần của buổi"]')].find((el) => el.getClientRects().length > 0)
+  if (!ol) return null
+  const at = [...ol.children].findIndex((li) => li.matches('[aria-current="step"]') || li.querySelector('[aria-current="step"]'))
+  return at < 0 ? null : at
+})()`
+
+/** Bấm nút có chữ `text` (JS click); ném lỗi nếu không thấy. */
+/**
+ * Câu 1 của phần "Luyện tập" trong viên gạch (kể cả khi phần đó đang ẩn): `answering` khi đang hiện câu 1 và mọi lựa chọn
+ * còn bấm được; `answered` khi đã có lựa chọn bị khoá hoặc đã sang câu sau (câu 1 bị trả lời rồi bị Enter "Câu tiếp");
+ * null nếu không thấy phần luyện tập.
+ */
+const CHECK_STATE_EXPRESSION = `(() => {
+  const section = document.querySelector('main section[aria-label="Luyện tập"]')
+  if (!section) return null
+  const heading = (section.textContent.match(/Câu \\d+\\/\\d+/) ?? [null])[0]
+  if (heading && !heading.startsWith('Câu 1/')) return 'answered'
+  const buttons = [...section.querySelectorAll('[role="group"][aria-label="Các lựa chọn"] button')]
+  if (buttons.length === 0) return null
+  return buttons.some((b) => b.disabled) ? 'answered' : 'answering'
+})()`
+
+/** Câu trắc nghiệm (`QuestionCard`) đang hiện: chữ "Câu n/m" và đã chọn chưa (lựa chọn bị khoá). */
+const QUESTION_STATE_EXPRESSION = `(() => {
+  const main = document.querySelector('main')
+  const heading = (main?.innerText.match(/Câu \\d+\\/\\d+/) ?? [null])[0]
+  const buttons = main ? [...main.querySelectorAll('[role="group"][aria-label="Các lựa chọn"] button')] : []
+  return { heading, answered: buttons.length > 0 && buttons.every((b) => b.disabled) }
+})()`
+
+const clickButtonExpression = (text) => `(() => {
+  const button = [...document.querySelectorAll('button')].find((b) => b.textContent.includes(${JSON.stringify(text)}) && b.getClientRects().length > 0)
+  if (!button) throw new Error('không thấy nút "' + ${JSON.stringify(text)} + '"')
+  button.click()
+})()`
+
+/** Phím thường cho `Input.dispatchKeyEvent`. */
+const KEYS = {
+  Enter: { code: 'Enter', keyCode: 13, text: '\r' },
+  ArrowLeft: { code: 'ArrowLeft', keyCode: 37 },
+  ArrowRight: { code: 'ArrowRight', keyCode: 39 },
+  ' ': { code: 'Space', keyCode: 32, text: ' ' },
+}
+
+function keyInfo(key) {
+  if (KEYS[key]) return KEYS[key]
+  if (/^[0-9]$/.test(key)) return { code: `Digit${key}`, keyCode: key.charCodeAt(0), text: key }
+  if (/^[a-z]$/i.test(key)) return { code: `Key${key.toUpperCase()}`, keyCode: key.toUpperCase().charCodeAt(0), text: key }
+  throw new Error(`Chưa hỗ trợ phím "${key}"`)
+}
+
+/**
+ * Các trạng thái gõ Telex của một từ có dấu (vd "chào": c, ch, cha, chao, chào kèm phím c h a o f). Chỉ cần đủ cho chữ của
+ * probe; chữ không dấu thì gõ thẳng.
+ */
+const TELEX = { chào: { keys: 'chaof', states: ['c', 'ch', 'cha', 'chao', 'chào'] } }
 
 /** So hai ảnh PNG (base64) bằng canvas: đếm pixel khác, trả ảnh diff (đỏ = khác, nền = ảnh gốc mờ). */
 function compareExpression(a, b) {
@@ -355,6 +429,8 @@ async function openPage(cdp) {
   await send('Network.setBlockedURLs', { urls: ['https://*', 'wss://*'] })
   await send('Page.addScriptToEvaluateOnNewDocument', { source: INIT_SCRIPT })
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
+  // Trang headless nhận phím / focus như cửa sổ đang được chọn (thử phím tắt, story 31).
+  await send('Emulation.setFocusEmulationEnabled', { enabled: true })
 
   async function evaluate(expression) {
     const res = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true })
@@ -376,6 +452,48 @@ async function openPage(cdp) {
     send,
     evaluate,
     blank: () => navigate('about:blank'),
+    /** Phím thường: keyDown (kèm chữ nếu là phím in được) rồi keyUp, vào phần tử đang focus. */
+    async press(key) {
+      const info = keyInfo(key)
+      const base = { key, code: info.code, windowsVirtualKeyCode: info.keyCode, nativeVirtualKeyCode: info.keyCode }
+      await send(
+        'Input.dispatchKeyEvent',
+        info.text ? { type: 'keyDown', ...base, text: info.text, unmodifiedText: info.text } : { type: 'rawKeyDown', ...base },
+      )
+      await send('Input.dispatchKeyEvent', { type: 'keyUp', ...base })
+    },
+    /**
+     * Gõ chữ như người dùng: từ có dấu theo Telex (mỗi phím là keydown "Process"/229 + `Input.imeSetComposition`, cuối cùng
+     * `Input.insertText` chốt chữ), khoảng trắng và chữ không dấu gửi bằng `Input.dispatchKeyEvent`.
+     */
+    async type(text) {
+      for (const [i, word] of text.split(' ').entries()) {
+        if (i > 0) await this.press(' ')
+        const telex = TELEX[word]
+        if (!telex) {
+          for (const ch of word) await this.press(ch)
+          continue
+        }
+        for (const [k, state] of telex.states.entries()) {
+          const letter = telex.keys[k]
+          await send('Input.dispatchKeyEvent', {
+            type: 'rawKeyDown',
+            key: 'Process',
+            code: `Key${letter.toUpperCase()}`,
+            windowsVirtualKeyCode: 229,
+            nativeVirtualKeyCode: 229,
+          })
+          await send('Input.imeSetComposition', { text: state, selectionStart: state.length, selectionEnd: state.length })
+          await send('Input.dispatchKeyEvent', {
+            type: 'keyUp',
+            key: letter,
+            code: `Key${letter.toUpperCase()}`,
+            windowsVirtualKeyCode: letter.toUpperCase().charCodeAt(0),
+          })
+        }
+        await send('Input.insertText', { text: telex.states.at(-1) })
+      }
+    },
     async setViewport({ width, height }) {
       const mobile = width === MOBILE_WIDTH
       await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile })
@@ -392,11 +510,15 @@ async function openPage(cdp) {
       await navigate(pageUrl(app, route))
       let settle = await evaluate(SETTLE_EXPRESSION)
       const want = `#${route}`
-      if ((await evaluate('location.hash')) !== want) {
-        await evaluate(`location.hash = ${JSON.stringify(want)}`)
+      // So phần đường dẫn của hash: trang tự thêm query (vd `/session` ghi `?brick=F01&step=theory`) vẫn là đúng route.
+      const samePath = (hash) => hash.split('?')[0] === want
+      if (!samePath(await evaluate('location.hash'))) {
+        // Tính lại mốc "yên" từ lúc đổi hash: không thì SETTLE trả ngay (lần đổi DOM cuối đã lâu) trước khi router vẽ lại, và
+        // `/` (bị chuyển sang `/welcome` lần đầu) bị đo khi còn là trang Thư nhập học (story 31: `/` thành `wide`).
+        await evaluate(`globalThis.__layoutLastMutation = performance.now(); location.hash = ${JSON.stringify(want)}`)
         settle = await evaluate(SETTLE_EXPRESSION)
         const hash = await evaluate('location.hash')
-        if (hash !== want) return `redirect:${hash}`
+        if (!samePath(hash)) return `redirect:${hash}`
       }
       return settle
     },
@@ -527,7 +649,12 @@ async function main(args, cleanup) {
     for (const route of ROUTES) {
       const settle = await page.load(current, route)
       const metrics = await page.evaluate(
-        measureExpression({ probeScroll: desktop, deepLinkSection: null, railLandmark: RAIL_LANDMARKS[route] ?? null }),
+        measureExpression({
+          probeScroll: desktop,
+          deepLinkSection: null,
+          railLandmark: RAIL_LANDMARKS[route] ?? null,
+          gridSelector: GRID_LANDMARKS[route] ?? null,
+        }),
       )
       const problems = layoutProblems(viewport.width, metrics, layoutOf(route))
       if (settle.startsWith('redirect:')) problems.push(`mở ${route} nhưng trang ở ${settle.slice('redirect:'.length)}`)
@@ -562,6 +689,12 @@ async function main(args, cleanup) {
         results.at(-1).problems.push('không route nào cuộn được để kiểm TopBar dính')
     }
   }
+
+  // Thử phím tắt (story 31) ở 1280×800 trên bản hiện tại.
+  console.log(`Thử phím tắt ở ${HOTKEY_PROBE.width}×${HOTKEY_PROBE.height}…`)
+  await page.setViewport({ width: HOTKEY_PROBE.width, height: HOTKEY_PROBE.height })
+  const probe = await runHotkeyProbe(page, current)
+  results.push({ route: HOTKEY_ROW, width: HOTKEY_PROBE.width, problems: hotkeyProblems(probe), settle: 'ok' })
 
   // Ảnh 375px của bản gốc, cùng trình tự (dữ liệu sạch, cùng đồng hồ/seed).
   if (base) {
@@ -598,7 +731,7 @@ async function main(args, cleanup) {
 
   // ---------- báo cáo ----------
   const widths = WIDTHS.map((w) => w.width)
-  const routes = [...ROUTES, DEEP_LINK.route]
+  const routes = [...ROUTES, DEEP_LINK.route, HOTKEY_ROW]
   const col = Math.max(...routes.map((r) => r.length)) + 2
   const header = 'route'.padEnd(col) + widths.map((w) => String(w).padStart(6)).join('') + (base ? '  ảnh 375' : '')
   console.log(`\n${header}\n${'-'.repeat(header.length)}`)
@@ -629,6 +762,149 @@ async function main(args, cleanup) {
   }
   console.log('\nĐẠT: mọi route × bề rộng đúng bố cục' + (base ? ', ảnh 375px trùng bản gốc.' : '.'))
   return 0
+}
+
+/** Dòng của bước thử phím trong bảng kết quả. */
+const HOTKEY_ROW = 'thử phím tắt'
+
+const errorText = (error) => (error instanceof Error ? error.message : String(error))
+
+/**
+ * Thử phím tắt (xem HotkeyProbe trong check-lib.d.mts): F01 Enter qua màn + gõ trong ô "Từ còn thiếu" + phím 1 ở màn luyện
+ * tập (đang ẩn / đang hiện); kiểm tra hàng A bấm 2 rồi Enter; `/session` → rồi ←;
+ * `/notebook` tạo ghi chú "chào" để ô tìm kiếm hiện, rồi gõ "chào" vào ô tìm kiếm. Mỗi bước mở từ dữ liệu sạch.
+ */
+async function runHotkeyProbe(page, app) {
+  // Chờ yên tính từ sau phím / bấm: React có thể vẽ lại sau khi CDP trả về, nên không dựa vào lần đổi DOM trước đó.
+  const settle = async () => {
+    await page.evaluate('globalThis.__layoutLastMutation = performance.now()')
+    return page.evaluate(SETTLE_EXPRESSION)
+  }
+  const blur = () => page.evaluate('document.activeElement?.blur?.(), window.getSelection()?.removeAllRanges()')
+
+  /** @type {import('./check-lib.d.mts').HotkeyProbe} */
+  const probe = {
+    brick: {
+      screenAfterEnter: null,
+      screenAfterTyping: null,
+      typingGraded: false,
+      checkScreen: null,
+      hiddenCheckState: null,
+      checkStateAfterKey: null,
+    },
+    session: { stepAfterRight: null, stepAfterLeft: null },
+    quiz: { answeredAfterKey: false, headingAfterEnter: null },
+    notebook: { searchValue: null, hashBefore: '', hashAfter: '', scrollBefore: 0, scrollAfter: 0 },
+  }
+
+  try {
+    await page.load(app, HOTKEY_PROBE.brickRoute)
+    await blur()
+    for (let i = 0; i < 3; i++) {
+      await page.press('Enter')
+      await settle()
+    }
+    probe.brick.screenAfterEnter = await page.evaluate(BRICK_SCREEN_EXPRESSION)
+    await page.evaluate(`(() => {
+      const input = document.querySelector('input[aria-label="Từ còn thiếu"]')
+      if (!input) throw new Error('không thấy ô "Từ còn thiếu"')
+      input.focus()
+    })()`)
+    await page.type(HOTKEY_PROBE.brickTyped)
+    await page.press('Enter')
+    await settle()
+    probe.brick.screenAfterTyping = await page.evaluate(BRICK_SCREEN_EXPRESSION)
+    probe.brick.typingGraded = await page.evaluate(`document.querySelector('main').innerText.includes('Chưa đúng')`)
+    // Màn luyện tập: Enter (ngoài ô) sang màn 5; quay lại màn 4, bấm 1 (phần luyện tập đang ẩn, không được trả lời), Enter về
+    // màn 5, rồi bấm 1 ở đó (phải chọn).
+    await blur()
+    await page.press('Enter')
+    await settle()
+    probe.brick.checkScreen = await page.evaluate(BRICK_SCREEN_EXPRESSION)
+    await page.evaluate(clickButtonExpression('Quay lại màn trước'))
+    await settle()
+    await blur()
+    await page.press('1')
+    await settle()
+    await page.press('Enter')
+    await settle()
+    probe.brick.hiddenCheckState = await page.evaluate(CHECK_STATE_EXPRESSION)
+    await page.press('1')
+    await settle()
+    probe.brick.checkStateAfterKey = await page.evaluate(CHECK_STATE_EXPRESSION)
+  } catch (error) {
+    probe.brick.error = errorText(error)
+  }
+
+  try {
+    await page.load(app, HOTKEY_PROBE.quizRoute)
+    await blur()
+    const start = await page.evaluate(QUESTION_STATE_EXPRESSION)
+    if (!start.heading?.startsWith('Câu 1/')) throw new Error(`không mở ở câu 1 (thấy "${start.heading ?? '?'}")`)
+    if (start.answered) throw new Error('câu 1 đã được chọn trước khi bấm phím')
+    await page.press('2')
+    await settle()
+    probe.quiz.answeredAfterKey = (await page.evaluate(QUESTION_STATE_EXPRESSION)).answered
+    await blur()
+    await page.press('Enter')
+    await settle()
+    probe.quiz.headingAfterEnter = (await page.evaluate(QUESTION_STATE_EXPRESSION)).heading
+  } catch (error) {
+    probe.quiz.error = errorText(error)
+  }
+
+  try {
+    await page.load(app, HOTKEY_PROBE.sessionRoute)
+    await blur()
+    const start = await page.evaluate(SESSION_STEP_EXPRESSION)
+    if (start !== 0) throw new Error(`buổi học không mở ở bước 1 (bước ${start === null ? '?' : start + 1})`)
+    await page.press('ArrowRight')
+    await settle()
+    probe.session.stepAfterRight = await page.evaluate(SESSION_STEP_EXPRESSION)
+    await blur()
+    await page.press('ArrowLeft')
+    await settle()
+    probe.session.stepAfterLeft = await page.evaluate(SESSION_STEP_EXPRESSION)
+  } catch (error) {
+    probe.session.error = errorText(error)
+  }
+
+  try {
+    await page.load(app, HOTKEY_PROBE.notebookRoute)
+    await page.evaluate(clickButtonExpression('Thêm ghi chú'))
+    await settle()
+    await page.evaluate(`(() => {
+      const label = [...document.querySelectorAll('label')].find((l) => l.querySelector('span')?.textContent === 'Quy tắc')
+      const field = label?.querySelector('textarea')
+      if (!field) throw new Error('không thấy ô "Quy tắc"')
+      field.focus()
+    })()`)
+    await page.type(HOTKEY_PROBE.searchText)
+    await page.evaluate(clickButtonExpression('Lưu ghi chú'))
+    await settle()
+    await page.evaluate(`(() => {
+      const input = document.querySelector('input[type="search"]')
+      if (!input) throw new Error('không thấy ô tìm kiếm (ghi chú chưa lưu?)')
+      input.focus()
+    })()`)
+    const before = await page.evaluate('({ hash: location.hash, scrollY: window.scrollY })')
+    await page.type(HOTKEY_PROBE.searchText)
+    await settle()
+    const after = await page.evaluate(
+      `({ hash: location.hash, scrollY: window.scrollY, value: document.querySelector('input[type="search"]')?.value ?? null })`,
+    )
+    probe.notebook = {
+      searchValue: after.value,
+      hashBefore: before.hash,
+      hashAfter: after.hash,
+      scrollBefore: before.scrollY,
+      scrollAfter: after.scrollY,
+    }
+  } catch (error) {
+    probe.notebook.error = errorText(error)
+  }
+
+  return probe
 }
 
 async function runCleanup(cleanup) {

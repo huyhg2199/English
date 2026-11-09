@@ -24,8 +24,9 @@ export function StageMap({ stage, progress }: Props) {
   const { checkpoint } = stage
 
   return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-4">
-      <Card className={cn('gap-4', doneCount === lessons.length && 'border-primary/60')}>
+    // Từ 1024px (story 31): thẻ chặng trải 2 cột, các tháng xếp 2 cột (tháng 1 | tháng 2, …; số tháng lẻ thì tháng cuối bên trái).
+    <section aria-labelledby={headingId} className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6">
+      <Card className={cn('gap-4 lg:col-span-2', doneCount === lessons.length && 'border-primary/60')}>
         <CardHeader>
           <p className="text-xs font-semibold tracking-widest text-primary uppercase">{stage.yearLabel}</p>
           <CardTitle>
@@ -101,7 +102,7 @@ export function StageMap({ stage, progress }: Props) {
       </Card>
 
       {stage.months.map((month) => (
-        <div key={month.id}>
+        <div key={month.id} className="lg:min-w-0">
           <h3 className="mb-1 text-sm font-semibold text-muted-foreground">
             Tháng {month.label} · {month.period}
             {month.note && ` · ${month.note}`}

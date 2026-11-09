@@ -5,6 +5,7 @@ import type { FoundationHeroView } from '@/app/today-view'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBrickMeta } from '@/data/foundation'
+import { cn } from '@/lib/utils'
 
 const SMALL_LINK = 'self-start text-sm text-primary underline-offset-4 hover:underline'
 
@@ -13,11 +14,11 @@ const SMALL_LINK = 'self-start text-sm text-primary underline-offset-4 hover:und
  * "học để làm gì" và số phút (hoặc "Ôn lại: Fxx · …"), nút lớn "Bắt đầu buổi 30'", link bức tường và link Soát vé khi
  * còn hàng cần soát ("Tiếp tục Soát vé · hàng X" khi đã làm dở, như thẻ mời trên bức tường). Chỉ là lối vào: không khoá bức tường, bài hay Đo trình độ.
  */
-export function FoundationHero({ hero }: { hero: FoundationHeroView }) {
+export function FoundationHero({ hero, className }: { hero: FoundationHeroView; className?: string }) {
   const brick = hero.brickId ? getBrickMeta(hero.brickId) : undefined
 
   return (
-    <Card className="gap-4 border-primary/60 shadow-[0_0_18px_var(--candle-glow)]">
+    <Card className={cn('gap-4 border-primary/60 shadow-[0_0_18px_var(--candle-glow)]', className)}>
       <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
         <TrainFront
           className="row-span-2 size-9 text-primary drop-shadow-[0_0_10px_var(--candle-glow)]"

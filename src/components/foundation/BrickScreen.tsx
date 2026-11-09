@@ -4,6 +4,7 @@ import { BookOpen, Eye, PartyPopper } from 'lucide-react'
 import { ListenButton } from '@/components/ListenButton'
 import { SpeakPractice } from '@/components/lesson/SpeakPractice'
 import { TenseTimeline } from '@/components/lesson/TenseTimeline'
+import { Kbd } from '@/components/Kbd'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Brick, CheckItem, Screen } from '@/data/foundation'
@@ -202,6 +203,7 @@ export function CheckScreen({
   onNext,
   onStartEasier,
   onSkipEasier,
+  active = true,
 }: {
   brick: Brick
   screen: ScreenOf<'check'>
@@ -211,6 +213,8 @@ export function CheckScreen({
   onNext: () => void
   onStartEasier: () => void
   onSkipEasier: () => void
+  /** Màn check đang hiện (BrickPlayer ẩn nó khi ở màn khác); false thì câu không nhận phím tắt. */
+  active?: boolean
 }) {
   const [reviewOpen, setReviewOpen] = useState(false)
   const total = screen.items.length
@@ -227,9 +231,12 @@ export function CheckScreen({
         heading={`Câu ${flow.index + 1}/${total}`}
         seed={seed}
         onAttempt={(ok) => onAttempt(item, ok)}
+        active={active}
+        onContinue={onNext}
         footer={
-          <Button type="button" className="self-end" onClick={onNext}>
+          <Button type="button" className="self-end" onClick={onNext} aria-keyshortcuts="Enter">
             {last ? 'Xem kết quả' : 'Câu tiếp'}
+            <Kbd>Enter</Kbd>
           </Button>
         }
       />
@@ -277,9 +284,12 @@ export function CheckScreen({
           item={item}
           heading={`Câu dễ hơn ${flow.index + 1}/${screen.easier.length}`}
           seed={seed}
+          active={active}
+          onContinue={onNext}
           footer={
-            <Button type="button" className="self-end" onClick={onNext}>
+            <Button type="button" className="self-end" onClick={onNext} aria-keyshortcuts="Enter">
               {flow.index + 1 === screen.easier.length ? 'Xong' : 'Câu tiếp'}
+              <Kbd>Enter</Kbd>
             </Button>
           }
         />
