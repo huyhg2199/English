@@ -26,7 +26,7 @@ function Cross({ x, faded }: { x: number; faded?: boolean }) {
  */
 export function TenseTimeline({ kind, label }: { kind: TimelineKind; label: string }) {
   return (
-    <figure className="flex flex-col gap-1">
+    <figure className="flex flex-col gap-1 lg:max-w-md">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="h-auto w-full max-w-full"

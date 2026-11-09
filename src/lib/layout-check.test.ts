@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest'
 
 import {
   CHROME_MISSING_MESSAGE,
+  EXPECTED,
   findChrome,
   layoutProblems,
   parseCheckArgs,
+  RAIL_LANDMARKS,
   ROUTES,
+  WIDE_ROUTES,
   WIDTHS,
   type LayoutMetrics,
 } from '../../scripts/layout/check-lib.mjs'
@@ -28,6 +31,23 @@ function good(width: number, height = 800): LayoutMetrics {
     deepLinkTop: null,
     deepLinkScrollMargin: 0,
     deepLinkAtScrollEnd: false,
+    railCount: 0,
+    rails: null,
+    railLandmark: null,
+  }
+}
+
+/** Số đo đạt chuẩn của route `wide` (story 30): main min(1024, innerWidth), một cột phụ dính ở 56 + 16 = 72px. */
+function goodWide(width: number, height = 800): LayoutMetrics {
+  const base = good(width, height)
+  if (width < 1024) return base
+  const mainWidth = Math.min(1024, width)
+  return {
+    ...base,
+    mainWidth,
+    mainLeft: (width - mainWidth) / 2,
+    railCount: 1,
+    rails: [{ top: 72, height: 400, containerBottom: 1500 }],
   }
 }
 
@@ -187,7 +207,8 @@ describe('layout:check — layoutProblems', () => {
       const mainWidth = Math.min(1024, width)
       return { ...good(width), mainWidth, mainLeft: (width - mainWidth) / 2 }
     }
-    for (const width of [1024, 1280, 1920]) expect(layoutProblems(width, wide(width), 'wide')).toEqual([])
+    for (const width of [1024, 1280, 1920])
+      expect(layoutProblems(width, { ...wide(width), railCount: 1 }, 'wide')).toEqual([])
     expect(layoutProblems(1280, good(1280), 'wide')).toContainEqual(expect.stringMatching(/main rộng 768px \(cần 1024px\)/))
     expect(layoutProblems(375, good(375), 'wide')).toEqual([])
   })
@@ -199,5 +220,76 @@ describe('layout:check — layoutProblems', () => {
     expect(layoutProblems(1280, { ...good(1280), navs: [{ top: 736, bottom: 800 }] })).toEqual([
       expect.stringMatching(/nav không nằm trong TopBar/),
     ])
+  })
+})
+
+describe('layout:check — cột phụ hai cột (story 30)', () => {
+  it('WIDE_ROUTES: bài, link sâu, viên gạch, buổi học; mốc dính 16px', () => {
+    expect([...WIDE_ROUTES].sort()).toEqual(
+      ['/foundation/F01', '/roadmap/lesson/s1-t1-w1', '/roadmap/lesson/s1-t1-w1/vocabulary', '/session'].sort(),
+    )
+    expect(EXPECTED.railStickyOffset).toBe(16)
+  })
+
+  it('route wide chuẩn ở 1024/1280/1920 → đạt; 375/1023 không cần cột phụ', () => {
+    for (const { width, height } of WIDTHS) expect(layoutProblems(width, goodWide(width, height), 'wide')).toEqual([])
+  })
+
+  it('cột phụ ở top 72 sau khi cuộn → đạt', () => {
+    expect(layoutProblems(1280, goodWide(1280), 'wide')).toEqual([])
+  })
+
+  it('cột phụ ở top 20 mà khung cha còn đủ chỗ → "cột phụ không dính"', () => {
+    const m = { ...goodWide(1280), rails: [{ top: 20, height: 400, containerBottom: 1500 }] }
+    expect(layoutProblems(1280, m, 'wide')).toEqual([expect.stringMatching(/cột phụ không dính: top 20px/)])
+  })
+
+  it('cột phụ ở top 20 nhưng khung cha đã hết chỗ (đáy < 72 + cao) → đạt (bỏ qua)', () => {
+    const m = { ...goodWide(1280), rails: [{ top: 20, height: 400, containerBottom: 420 }] }
+    expect(layoutProblems(1280, m, 'wide')).toEqual([])
+  })
+
+  it('nhiều cột phụ (buổi học: stepper + lý thuyết của viên) → kiểm từng cột', () => {
+    const m = {
+      ...goodWide(1280),
+      railCount: 2,
+      rails: [
+        { top: 72, height: 300, containerBottom: 1500 },
+        { top: -200, height: 300, containerBottom: 1400 },
+      ],
+    }
+    expect(layoutProblems(1280, m, 'wide')).toEqual([expect.stringMatching(/cột phụ không dính/)])
+  })
+
+  it('cột phụ chưa tới mốc dính (trang mới cuộn ít, top > 72) → đạt', () => {
+    const m = { ...goodWide(1280), rails: [{ top: 300, height: 400, containerBottom: 1500 }] }
+    expect(layoutProblems(1280, m, 'wide')).toEqual([])
+  })
+
+  it('route wide ở 1280 không có [data-split-rail] nào hiện → "thiếu cột phụ"', () => {
+    const m = { ...goodWide(1280), railCount: 0, rails: [] }
+    expect(layoutProblems(1280, m, 'wide')).toEqual([expect.stringMatching(/thiếu cột phụ/)])
+  })
+
+  it('/session có cột phụ (Lý thuyết của viên) nhưng stepper dọc không hiện → "thiếu nội dung cột phụ"', () => {
+    const selector = RAIL_LANDMARKS['/session']
+    expect(selector).toContain('Các phần của buổi')
+    const m = { ...goodWide(1280), railCount: 1, railLandmark: { selector, visible: false } }
+    expect(layoutProblems(1280, m, 'wide')).toEqual([expect.stringMatching(/thiếu nội dung cột phụ: .*Các phần của buổi/)])
+    expect(layoutProblems(1280, { ...m, railLandmark: { selector, visible: true } }, 'wide')).toEqual([])
+  })
+
+  it('dưới 1024px phần cột phụ ẩn là đúng → không kiểm', () => {
+    const selector = RAIL_LANDMARKS['/session']
+    expect(layoutProblems(1023, { ...goodWide(1023), railLandmark: { selector, visible: false } }, 'wide')).toEqual([])
+  })
+
+  it('RAIL_LANDMARKS chỉ gồm route wide', () => {
+    for (const route of Object.keys(RAIL_LANDMARKS)) expect(WIDE_ROUTES).toContain(route)
+  })
+
+  it('route default không cần cột phụ; trang không cuộn được (rails null) → không kiểm dính', () => {
+    expect(layoutProblems(1280, good(1280))).toEqual([])
+    expect(layoutProblems(1280, { ...goodWide(1280), rails: null }, 'wide')).toEqual([])
   })
 })

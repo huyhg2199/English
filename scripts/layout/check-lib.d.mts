@@ -21,12 +21,22 @@ export type LayoutMetrics = {
   deepLinkAtScrollEnd: boolean
   /** check.mjs: có đo link sâu mà không thấy đoạn. */
   deepLinkMissing?: boolean
+  /** Số `[data-split-rail]` (cột phụ của SplitLayout, story 30) đang hiện. */
+  railCount: number
+  /**
+   * Các cột phụ đang hiện, đo sau khi cuộn 600px (`top`, `height` của cột, `containerBottom` = đáy khung cha); null nếu không
+   * đo hoặc trang quá ngắn để cuộn (`scrollY` < 1).
+   */
+  rails: { top: number; height: number; containerBottom: number }[] | null
+  /** Phần phải có trong cột phụ của route (`RAIL_LANDMARKS`) và nó có hiện không; null nếu route không có mục nào. */
+  railLandmark: { selector: string; visible: boolean } | null
 }
 export type CheckArgs = { base: string; skipDiff: boolean; out: string | null }
 export const LG_MIN_WIDTH: number
 export const WIDTHS: readonly Viewport[]
 export const ROUTES: readonly string[]
 export const WIDE_ROUTES: readonly string[]
+export const RAIL_LANDMARKS: Readonly<Record<string, string>>
 export const UNCHECKED_ROUTES: readonly string[]
 export const DEEP_LINK: { route: string; sectionId: string }
 export const EXPECTED: {
@@ -37,6 +47,7 @@ export const EXPECTED: {
   desktopPaddingBottom: number
   topBarHeight: number
   deepLinkGap: number
+  railStickyOffset: number
 }
 export const CHROME_MISSING_MESSAGE: string
 export function parseCheckArgs(argv: readonly string[]): CheckArgs

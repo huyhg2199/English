@@ -31,7 +31,22 @@ export const ROUTES = [
  * Route trong ROUTES (hoặc DEEP_LINK) có `handle: { layout: 'wide' }` (story 30–31). Test `route-handle.test.ts` so danh sách
  * này với `layoutFor` của cây routes, nên gắn `wide` cho route mà quên sửa ở đây thì `npm test` đỏ.
  */
-export const WIDE_ROUTES = []
+export const WIDE_ROUTES = [
+  '/roadmap/lesson/s1-t1-w1',
+  '/roadmap/lesson/s1-t1-w1/vocabulary',
+  '/foundation/F01',
+  '/session',
+]
+
+/**
+ * Phần phải có trong cột phụ đang hiện của route `wide` (story 30). `railCount` chỉ đếm `[data-split-rail]`: ở `/session` cột
+ * "Lý thuyết của viên" cũng là cột phụ, nên mất stepper dọc (chỗ duy nhất có nút Tiếp/Xong buổi từ lg) vẫn đạt nếu không kiểm.
+ */
+export const RAIL_LANDMARKS = {
+  '/session': '[data-split-rail] ol[aria-label="Các phần của buổi"]',
+  '/roadmap/lesson/s1-t1-w1': '[data-split-rail] nav[aria-label="Mục lục bài"]',
+  '/roadmap/lesson/s1-t1-w1/vocabulary': '[data-split-rail] nav[aria-label="Mục lục bài"]',
+}
 
 /** Route tĩnh dưới AppShell cố ý không đo (màn phụ cần dữ liệu riêng hoặc chỉ là luồng một lần). Test kiểm cây routes. */
 export const UNCHECKED_ROUTES = [
@@ -57,6 +72,7 @@ export const EXPECTED = {
   desktopPaddingBottom: 24, // --nav-height 0px + 1.5rem
   topBarHeight: 56, // --topbar-height 3.5rem
   deepLinkGap: 12, // scroll-padding-top = --topbar-height + 0.75rem
+  railStickyOffset: 16, // SplitRail: lg:top-[calc(var(--topbar-height)+1rem)]
 }
 
 const TOLERANCE = 0.5
@@ -158,6 +174,20 @@ export function layoutProblems(width, m, layout = 'default') {
     if (m.topBarVisible) problems.push('TopBar hiện dưới 1024px')
     if (nav && !near(nav.bottom, m.innerHeight))
       problems.push(`bottom nav không sát cạnh dưới (bottom ${px(nav.bottom)}, viewport ${px(m.innerHeight)})`)
+  }
+
+  // Bố cục hai cột (story 30): route `wide` phải có cột phụ hiện; cột phụ dính ngay dưới TopBar + 1rem khi cuộn, trừ khi khung
+  // cha (lưới SplitLayout) đã hết chỗ (đáy khung cao hơn chỗ dính + chiều cao cột thì cột bị đẩy lên là đúng).
+  if (desktop && layout === 'wide' && m.railCount === 0) problems.push('thiếu cột phụ: không có [data-split-rail] nào hiện')
+  if (desktop && m.railLandmark && !m.railLandmark.visible)
+    problems.push(`thiếu nội dung cột phụ: không thấy ${m.railLandmark.selector}`)
+  if (desktop && m.rails) {
+    const stickyTop = m.topBarHeight + EXPECTED.railStickyOffset
+    for (const rail of m.rails) {
+      if (rail.containerBottom < stickyTop + rail.height) continue
+      if (rail.top < stickyTop - TOLERANCE)
+        problems.push(`cột phụ không dính: top ${px(rail.top)} sau khi cuộn (cần ≥ ${px(stickyTop)})`)
+    }
   }
 
   const desktopMain = layout === 'wide' ? Math.min(EXPECTED.desktopWideMax, m.innerWidth) : EXPECTED.desktopMain

@@ -107,7 +107,7 @@ export function SoundTable({
               <GlossaryText text={group.note} />
             </p>
           )}
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2 lg:grid lg:grid-cols-2">
             {group.sounds.map((sound) => (
               <SoundItem key={sound.id} sound={sound} lookup={lookup} />
             ))}

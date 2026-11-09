@@ -15,6 +15,7 @@ import {
   LG_MIN_WIDTH,
   layoutProblems,
   parseCheckArgs,
+  RAIL_LANDMARKS,
   ROUTES,
   WIDE_ROUTES,
   WIDTHS,
@@ -78,8 +79,11 @@ const SETTLE_EXPRESSION = `(async () => {
 
 const frames = `new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`
 
-/** Đo bố cục (xem LayoutMetrics trong check-lib.d.mts). `probeScroll`: cuộn 600px để đo TopBar dính. */
-function measureExpression({ probeScroll, deepLinkSection }) {
+/**
+ * Đo bố cục (xem LayoutMetrics trong check-lib.d.mts). `probeScroll`: cuộn 600px để đo TopBar và cột phụ (`[data-split-rail]`)
+ * dính.
+ */
+function measureExpression({ probeScroll, deepLinkSection, railLandmark = null }) {
   return `(async () => {
   const label = 'Điều hướng chính'
   const visible = (el) => !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden'
@@ -91,12 +95,24 @@ function measureExpression({ probeScroll, deepLinkSection }) {
   const header = [...document.querySelectorAll('header')].find((h) => h.querySelector('nav[aria-label="' + label + '"]'))
   const topBarVisible = visible(header)
   const topBarHeight = topBarVisible ? header.getBoundingClientRect().height : 0
+  const railEls = [...document.querySelectorAll('[data-split-rail]')].filter(visible)
+  const landmarkSelector = ${JSON.stringify(railLandmark)}
+  const railLandmark = landmarkSelector
+    ? { selector: landmarkSelector, visible: [...document.querySelectorAll(landmarkSelector)].some(visible) }
+    : null
   let topBarTopAfterScroll = null
+  let rails = null
   if (${probeScroll} && topBarVisible) {
     window.scrollTo(0, ${SCROLL_PROBE_PX})
     await ${frames}
-    // Trang quá ngắn để cuộn thì không đo được TopBar dính (null), không coi là đạt.
-    if (window.scrollY >= 1) topBarTopAfterScroll = header.getBoundingClientRect().top
+    // Trang quá ngắn để cuộn thì không đo được TopBar / cột phụ dính (null), không coi là đạt.
+    if (window.scrollY >= 1) {
+      topBarTopAfterScroll = header.getBoundingClientRect().top
+      rails = railEls.map((el) => {
+        const r = el.getBoundingClientRect()
+        return { top: r.top, height: r.height, containerBottom: el.parentElement.getBoundingClientRect().bottom }
+      })
+    }
     window.scrollTo(0, 0)
     await ${frames}
   }
@@ -116,6 +132,9 @@ function measureExpression({ probeScroll, deepLinkSection }) {
     deepLinkScrollMargin: section ? parseFloat(getComputedStyle(section).scrollMarginTop) || 0 : 0,
     deepLinkAtScrollEnd: window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 1,
     deepLinkMissing: ${deepLinkSection ? '!section' : 'false'},
+    railCount: railEls.length,
+    rails,
+    railLandmark,
   }
 })()`
 }
@@ -384,6 +403,9 @@ async function openPage(cdp) {
     async screenshot({ fullPage }) {
       let clip
       if (fullPage) {
+        // Chờ 2 frame: ngay sau khi đổi viewport + chuyển hướng (`/` → `/welcome` → `/`), cssContentSize có thể còn là số đo
+        // cũ (812 thay cho 960 của trang Hôm nay), ảnh bị cắt và lệch giả với bản kia (story 30).
+        await evaluate(frames)
         const { cssContentSize } = await send('Page.getLayoutMetrics')
         clip = {
           x: 0,
@@ -504,7 +526,9 @@ async function main(args, cleanup) {
     await page.setViewport(viewport)
     for (const route of ROUTES) {
       const settle = await page.load(current, route)
-      const metrics = await page.evaluate(measureExpression({ probeScroll: desktop, deepLinkSection: null }))
+      const metrics = await page.evaluate(
+        measureExpression({ probeScroll: desktop, deepLinkSection: null, railLandmark: RAIL_LANDMARKS[route] ?? null }),
+      )
       const problems = layoutProblems(viewport.width, metrics, layoutOf(route))
       if (settle.startsWith('redirect:')) problems.push(`mở ${route} nhưng trang ở ${settle.slice('redirect:'.length)}`)
       if (metrics.topBarTopAfterScroll !== null) stickyChecked.add(viewport.width)
@@ -522,7 +546,11 @@ async function main(args, cleanup) {
     if (desktop) {
       const settle = await page.load(current, DEEP_LINK.route)
       const metrics = await page.evaluate(
-        measureExpression({ probeScroll: false, deepLinkSection: DEEP_LINK.sectionId }),
+        measureExpression({
+          probeScroll: false,
+          deepLinkSection: DEEP_LINK.sectionId,
+          railLandmark: RAIL_LANDMARKS[DEEP_LINK.route] ?? null,
+        }),
       )
       const problems = layoutProblems(viewport.width, metrics, layoutOf(DEEP_LINK.route))
       if (settle.startsWith('redirect:'))

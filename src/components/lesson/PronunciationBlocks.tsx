@@ -388,7 +388,7 @@ function SelfReadBlock({ block }: { block: Block<'self-read'> }) {
   return (
     <BlockShell title={block.title} note={block.note}>
       <NgslError state={state} />
-      <ul className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 lg:grid-cols-3">
         {block.words.map((w) => (
           <SelfReadWord key={w} word={w} lookup={lookup} />
         ))}

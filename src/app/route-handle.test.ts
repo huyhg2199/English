@@ -50,10 +50,40 @@ describe('handle của cây routes', () => {
     }
   })
 
-  it.each(['/', '/roadmap', '/session', '/roadmap/lesson/s1-t1-w1', '/foundation/F01'])('%s → default', (path) => {
+  const layoutOfPath = (path: string) => {
     const matches = matchRoutes(routes, path)
-    expect(matches).not.toBeNull()
-    expect(layoutFor(matches!.map((m) => ({ handle: m.route.handle })))).toBe('default')
+    expect(matches, path).not.toBeNull()
+    return layoutFor(matches!.map((m) => ({ handle: m.route.handle })))
+  }
+
+  // Story 30: đúng 3 route học có hai cột → `wide`.
+  it.each(['/session', '/roadmap/lesson/s1-t1-w1', '/roadmap/lesson/s1-t1-w1/vocabulary', '/foundation/F01', '/foundation/f03'])(
+    '%s → wide',
+    (path) => {
+      expect(layoutOfPath(path)).toBe('wide')
+    },
+  )
+
+  it.each([
+    '/',
+    '/roadmap',
+    '/foundation',
+    '/foundation/soat-ve',
+    '/foundation/kiem-tra/A',
+    '/foundation/qua-buc-tuong',
+    '/session/lazy',
+    '/practice',
+  ])('%s → default', (path) => {
+    expect(layoutOfPath(path)).toBe('default')
+  })
+
+  it('chỉ đúng 3 route trong cây có handle wide', () => {
+    const wide: string[] = []
+    for (const route of walk(routes)) {
+      const handle = route.handle as { layout?: unknown } | undefined
+      if (handle?.layout === 'wide') wide.push(route.path ?? '')
+    }
+    expect(wide.sort()).toEqual(['foundation/:brickId', 'roadmap/lesson/:lessonId/:sectionId?', 'session'])
   })
 })
 

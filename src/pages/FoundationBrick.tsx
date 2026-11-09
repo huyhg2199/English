@@ -22,7 +22,7 @@ export function FoundationBrick() {
 
   const meta = getBrickMeta(route.id)
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 lg:mx-auto lg:w-full lg:max-w-3xl">
       <Link
         to="/foundation"
         className="inline-flex items-center gap-1 self-start text-sm text-muted-foreground hover:text-foreground"

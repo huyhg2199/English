@@ -1,16 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  BookOpenCheck,
-  Hammer,
-  Layers,
-  Music,
-  PartyPopper,
-  Sparkles,
-  type LucideIcon,
-} from 'lucide-react'
+import { ArrowLeft, ArrowRight, Hammer, PartyPopper, Sparkles } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 
 import { useLessonParts, useLoadedStore, useSessions, useSkillBoard } from '@/app/store-context'
@@ -21,7 +10,10 @@ import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { VideoList } from '@/components/media/VideoEmbed'
 import { ReadingSourceContext } from '@/components/reading-source'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
+import { SessionRail } from '@/components/session/SessionRail'
 import { BackToToday, LinkList, SessionDoneView, StepClock } from '@/components/session/SessionParts'
+import { STEP_ICONS } from '@/components/session/step-icons'
+import { SplitLayout, SplitMain } from '@/components/SplitLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBrickMeta, type BrickId } from '@/data/foundation'
@@ -47,22 +39,13 @@ import {
   type SessionLesson,
   type SessionPlan,
   type SessionStep,
-  type SessionStepId,
   type TheoryLock,
 } from '@/lib/sessions'
 import { cn } from '@/lib/utils'
 
-const STEP_ICONS: Record<SessionStepId, LucideIcon> = {
-  theory: BookOpen,
-  review: Layers,
-  lesson: BookOpenCheck,
-  srs: Layers,
-  fun: Music,
-}
-
 function Stepper({ steps, step }: { steps: readonly SessionStep[]; step: number }) {
   return (
-    <ol className="grid grid-cols-3 gap-2" aria-label="Các phần của buổi">
+    <ol className="grid grid-cols-3 gap-2 lg:hidden" aria-label="Các phần của buổi">
       {steps.map((s, i) => {
         const Icon = STEP_ICONS[s.id]
         return (
@@ -320,7 +303,7 @@ export function Session() {
 
   if (finished) {
     return (
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6 lg:mx-auto lg:w-full lg:max-w-3xl">
         <SessionDoneView kindLabel="buổi 30'" />
       </section>
     )
@@ -331,70 +314,76 @@ export function Session() {
   return (
     <section className="flex flex-col gap-5">
       <BackToToday />
-      <header className="flex items-center gap-3">
-        <Icon className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
-        <h1 className="text-2xl font-semibold tracking-wide">
-          {meta.title} {meta.minutes}'
-        </h1>
-      </header>
-      <Stepper steps={steps} step={stepIndex} />
+      {/* Từ 1024px (story 30): cột trái dính có stepper dọc và nút Tiếp/Xong buổi; stepper ngang và hàng nút đáy ẩn. */}
+      <SplitLayout cols="rail-left" className="flex flex-col gap-5">
+        <SessionRail steps={steps} stepIndex={stepIndex} onGo={goTo} onFinish={finish} />
+        <SplitMain className="flex flex-col gap-5">
+          <header className="flex items-center gap-3">
+            <Icon className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
+            <h1 className="text-2xl font-semibold tracking-wide">
+              {meta.title} {meta.minutes}'
+            </h1>
+          </header>
+          <Stepper steps={steps} step={stepIndex} />
 
-      <StepClock
-        key={`${meta.id}:${brickId ?? ''}`}
-        minutes={meta.minutes}
-        onExpiredHint={
-          isFlashcards && nextStep ? (
-            <p role="status" className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
-              Hết {meta.minutes}' rồi, sang {nextStep.title.toLowerCase()} nhé. Muốn ôn tiếp thẻ đang dở vẫn được.
-            </p>
-          ) : null
-        }
-      />
+          <StepClock
+            key={`${meta.id}:${brickId ?? ''}`}
+            minutes={meta.minutes}
+            onExpiredHint={
+              isFlashcards && nextStep ? (
+                <p role="status" className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
+                  Hết {meta.minutes}' rồi, sang {nextStep.title.toLowerCase()} nhé. Muốn ôn tiếp thẻ đang dở vẫn được.
+                </p>
+              ) : null
+            }
+          />
 
-      {meta.id === 'theory' && (
-        <TheoryStep brickId={brickId} review={review} note={theory?.note ?? null} followUp={followUp} onFollowUp={followUpTo} />
-      )}
-      {isFlashcards && (
-        <FlashcardSession
-          firstList={sessionWordList(plan)}
-          renderDone={() => (
-            <Card className="items-center text-center">
-              <CardHeader className="w-full items-center">
-                <PartyPopper className="mx-auto size-10 text-primary" aria-hidden="true" />
-                <CardTitle>Phần ôn xong</CardTitle>
-                <CardDescription>
-                  Hết thẻ cho hôm nay.{nextStep ? ` Sang phần ${nextStep.title.toLowerCase()} thôi.` : ''}
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          {meta.id === 'theory' && (
+            <TheoryStep brickId={brickId} review={review} note={theory?.note ?? null} followUp={followUp} onFollowUp={followUpTo} />
           )}
-        />
-      )}
-      {meta.id === 'lesson' && (
-        <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} partId={plan.mode === 'lesson' ? plan.partId : null} />
-      )}
-      {meta.id === 'fun' && <FunStep plan={plan} />}
+          {isFlashcards && (
+            <FlashcardSession
+              firstList={sessionWordList(plan)}
+              renderDone={() => (
+                <Card className="items-center text-center">
+                  <CardHeader className="w-full items-center">
+                    <PartyPopper className="mx-auto size-10 text-primary" aria-hidden="true" />
+                    <CardTitle>Phần ôn xong</CardTitle>
+                    <CardDescription>
+                      Hết thẻ cho hôm nay.{nextStep ? ` Sang phần ${nextStep.title.toLowerCase()} thôi.` : ''}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              )}
+            />
+          )}
+          {meta.id === 'lesson' && (
+            <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} partId={plan.mode === 'lesson' ? plan.partId : null} />
+          )}
+          {meta.id === 'fun' && <FunStep plan={plan} />}
 
-      <div className="flex gap-2">
-        {stepIndex > 0 && (
-          <Button variant="outline" onClick={() => goTo(stepIndex - 1)}>
-            <ArrowLeft aria-hidden="true" />
-            Quay lại
-          </Button>
-        )}
-        {nextStep ? (
-          <Button className="flex-1" onClick={() => goTo(stepIndex + 1)}>
-            Tiếp: {nextStep.title}
-            <ArrowRight aria-hidden="true" />
-          </Button>
-        ) : (
-          <Button className="flex-1" onClick={finish}>
-            Xong buổi
-          </Button>
-        )}
-      </div>
+          <div className="flex gap-2 lg:hidden">
+            {stepIndex > 0 && (
+              <Button variant="outline" onClick={() => goTo(stepIndex - 1)}>
+                <ArrowLeft aria-hidden="true" />
+                Quay lại
+              </Button>
+            )}
+            {nextStep ? (
+              <Button className="flex-1" onClick={() => goTo(stepIndex + 1)}>
+                Tiếp: {nextStep.title}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            ) : (
+              <Button className="flex-1" onClick={finish}>
+                Xong buổi
+              </Button>
+            )}
+          </div>
 
-      {isFlashcards && <VocabAttribution />}
+          {isFlashcards && <VocabAttribution />}
+        </SplitMain>
+      </SplitLayout>
     </section>
   )
 }
