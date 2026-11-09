@@ -74,7 +74,7 @@ context:
 - `.../stack.md` -- dòng "Flashcard SRS" (`10 từ mới/ngày`), dòng "UI" (chưa nói bố cục máy tính).
 - `.../stories.yaml` -- mục 17–31 đã thêm (chưa commit, giữ lại); chỉnh 18, 19, 20, 21, 25, 26.
 - Đối chiếu (KHÔNG sửa): `src/app/nav-items.ts` (NAV_ITEMS 5 mục), `src/app/AppShell.tsx:41` (`max-w-md`), `src/pages/Session.tsx:19-23` (STEPS ôn → bài → giải trí), `src/lib/srs/srs.ts:60` (`NEW_PER_DAY = 10`), `src/lib/trophies/points.ts` (`DAY_POINTS` full 10 / lazy 5), `src/lib/trophies/medals.ts` (3 cấp), `src/lib/quiz/quiz.ts:179` (mọi câu sai vào Sổ lỗi), `src/pages/SortingHat.tsx` (form ETS ngày 1).
-- Nguồn thiết kế (ngoài repo, chỉ tham khảo): `/private/tmp/claude-501/-Users-huyhg2-Desktop-Lab-English/05e331b3-6259-4b55-891e-1898402d6acd/scratchpad/foundation-desktop-synthesis.json` (`foundationRecommendation`, `desktopRecommendation`, `foundationLessons`).
+- Nguồn thiết kế (ngoài repo, chỉ tham khảo): `foundation-desktop-synthesis.json` (scratchpad phiên làm việc, không lưu trong repo) (`foundationRecommendation`, `desktopRecommendation`, `foundationLessons`).
 
 ## Tasks & Acceptance
 
