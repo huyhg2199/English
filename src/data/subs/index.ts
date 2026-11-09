@@ -1,8 +1,9 @@
 import { isSubFile, type SubFile } from '@/lib/subs/types'
 
 /**
- * Phụ đề song ngữ (story 16): mỗi video VOA có sub là một file `<videoId>.json` cạnh file này. Chỉ video kênh
- * VOA Learning English (public domain) mới có file; video có bản quyền không lưu transcript.
+ * Phụ đề song ngữ (story 16): mỗi video có sub là một file `<videoId>.json` cạnh file này. Chỉ video kênh
+ * VOA Learning English (public domain) hoặc video YouTube giấy phép CC BY (caption do kênh đăng) mới có file; video có
+ * bản quyền không lưu transcript.
  * File được tải lười (mỗi file một chunk riêng, không vào chunk chính). Quy trình làm sub: stack.md.
  */
 const FILES = import.meta.glob<{ default: unknown }>('./*.json')

@@ -1,0 +1,1186 @@
+{
+  "videoId": "RGFc-1uNHX8",
+  "source": {
+    "channel": "Englishing",
+    "channelUrl": "https://www.youtube.com/channel/UCwEp6jwM9v3cLo9UOi7BsPw",
+    "url": "https://www.youtube.com/watch?v=RGFc-1uNHX8",
+    "license": "CC BY 3.0 – Englishing",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "translation": "Bản dịch tiếng Việt do Lumos thực hiện",
+    "captionKind": "uploaded"
+  },
+  "cues": [
+    {
+      "start": 20.3,
+      "end": 24.93,
+      "en": "hello everyone how are you today this is Marc I'm doing great",
+      "vi": "Chào mọi người, hôm nay các bạn khỏe không? Mình là Marc. Mình rất khỏe,",
+      "notes": [
+        {
+          "term": "I'm doing great",
+          "kind": "idiom",
+          "noteVi": "Câu đáp khi được hỏi thăm: \"mình rất khỏe / mọi thứ rất ổn\", không phải \"đang làm việc gì tuyệt vời\"."
+        }
+      ]
+    },
+    {
+      "start": 24.93,
+      "end": 31.74,
+      "en": "thanks for asking - He woke up at 6:00 a.m. and had a shower as usual, after",
+      "vi": "cảm ơn đã hỏi thăm. Anh ấy thức dậy lúc 6 giờ sáng và tắm như thường lệ, sau khi",
+      "notes": [
+        {
+          "term": "thanks for asking",
+          "kind": "idiom",
+          "noteVi": "Câu lịch sự sau khi được hỏi thăm: \"cảm ơn bạn đã hỏi\"."
+        },
+        {
+          "term": "a.m.",
+          "kind": "context",
+          "noteVi": "a.m. = buổi sáng (từ nửa đêm tới trước 12 giờ trưa); p.m. = buổi chiều, tối."
+        },
+        {
+          "term": "had a shower",
+          "kind": "context",
+          "noteVi": "have a shower = tắm (vòi sen), have ở đây không có nghĩa là \"có\"; had là quá khứ của have."
+        },
+        {
+          "term": "as usual",
+          "kind": "idiom",
+          "noteVi": "như thường lệ, như mọi ngày."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 31.74,
+      "end": 39.87,
+      "en": "having breakfast he went to work he arrived at work at 8 a.m. to find his",
+      "vi": "ăn sáng xong, anh ấy đi làm. Anh ấy đến chỗ làm lúc 8 giờ sáng thì thấy",
+      "notes": [
+        {
+          "term": "having breakfast",
+          "kind": "context",
+          "noteVi": "have breakfast = ăn sáng, không phải \"có bữa sáng\"."
+        },
+        {
+          "term": "to find",
+          "kind": "context",
+          "noteVi": "to find ở đây = \"thì thấy\" (phát hiện ra điều bất ngờ), không phải \"để tìm\"."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 39.87,
+      "end": 48.45,
+      "en": "office closed - he then returned home disappointed since he realized it wasn't",
+      "vi": "văn phòng đóng cửa. Sau đó anh ấy về nhà, thất vọng vì nhận ra hôm đó không phải",
+      "notes": [
+        {
+          "term": "since",
+          "kind": "context",
+          "noteVi": "since ở đây = \"vì\" (nêu lý do), không phải \"từ khi\"."
+        },
+        {
+          "term": "wasn't",
+          "kind": "reduction",
+          "noteVi": "wasn't = was not (đã không phải là)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 48.45,
+      "end": 55.41,
+      "en": "a working day - it was Saturday - in this lesson we're going to look at",
+      "vi": "ngày làm việc, hôm đó là thứ Bảy. Trong bài này, chúng ta sẽ tìm hiểu",
+      "notes": [
+        {
+          "term": "we're",
+          "kind": "reduction",
+          "noteVi": "we're = we are."
+        },
+        {
+          "term": "look at",
+          "kind": "context",
+          "noteVi": "look at ở đây = \"xem xét, tìm hiểu\" một chủ đề, không chỉ là \"nhìn\"."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 55.41,
+      "end": 69.78,
+      "en": "the simple past or the past simple is the same - two things that I want to say",
+      "vi": "thì quá khứ đơn (simple past hay past simple đều là một). Có hai điều mình muốn nói",
+      "notes": [
+        {
+          "term": "the simple past or the past simple",
+          "kind": "context",
+          "noteVi": "Hai tên gọi của cùng một thì: quá khứ đơn."
+        }
+      ]
+    },
+    {
+      "start": 69.78,
+      "end": 74.85,
+      "en": "about the past simple the first one that I have already talked about the past",
+      "vi": "về thì quá khứ đơn. Điều thứ nhất là mình đã nói về thì quá khứ"
+    },
+    {
+      "start": 74.85,
+      "end": 80.31,
+      "en": "simple in different occations if you want to watch all those lessons you may",
+      "vi": "đơn trong nhiều dịp khác nhau rồi. Nếu bạn muốn xem tất cả các bài đó, bạn có thể",
+      "notes": [
+        {
+          "term": "occations",
+          "kind": "context",
+          "noteVi": "Caption gõ sai chính tả; viết đúng là occasions (dịp, lần)."
+        },
+        {
+          "term": "you may",
+          "kind": "context",
+          "noteVi": "you may = \"bạn có thể\" (gợi ý lịch sự), giống you can."
+        }
+      ]
+    },
+    {
+      "start": 80.31,
+      "end": 84.69,
+      "en": "click here - the other thing that I want to tell you is that we use the past",
+      "vi": "bấm vào đây. Điều còn lại mình muốn nói với bạn là chúng ta dùng thì quá khứ",
+      "notes": [
+        {
+          "term": "click here",
+          "kind": "context",
+          "noteVi": "Thầy chỉ vào đường link hiện trên video YouTube; trong app không bấm được."
+        }
+      ]
+    },
+    {
+      "start": 84.69,
+      "end": 90.66,
+      "en": "simple the past continuous and the past perfect to tell a story so if you want",
+      "vi": "đơn, quá khứ tiếp diễn và quá khứ hoàn thành để kể một câu chuyện. Vậy nếu bạn muốn"
+    },
+    {
+      "start": 90.66,
+      "end": 96.09,
+      "en": "to watch a lesson on this you may click here - so now let's look at the timeline",
+      "vi": "xem một bài về chủ đề này, bạn có thể bấm vào đây. Giờ chúng ta hãy cùng xem trục thời gian",
+      "notes": [
+        {
+          "term": "a lesson on this",
+          "kind": "context",
+          "noteVi": "on ở đây = \"về\" (chủ đề), không phải \"ở trên\"."
+        },
+        {
+          "term": "let's",
+          "kind": "reduction",
+          "noteVi": "let's = let us: \"chúng ta hãy…\" (rủ cùng làm)."
+        }
+      ]
+    },
+    {
+      "start": 96.09,
+      "end": 105.6,
+      "en": "we see the past simple in the past part of the timeline and it's a finished action",
+      "vi": "Ta thấy thì quá khứ đơn nằm ở phần quá khứ của trục thời gian, và đó là một hành động đã xong",
+      "notes": [
+        {
+          "term": "it's",
+          "kind": "reduction",
+          "noteVi": "it's = it is."
+        }
+      ]
+    },
+    {
+      "start": 105.6,
+      "end": 112.74,
+      "en": "and you know when it happened so it's very important that you know when it",
+      "vi": "và bạn biết nó xảy ra lúc nào. Vì vậy, điều rất quan trọng là bạn biết nó",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 112.74,
+      "end": 119.34,
+      "en": "happened - we use the auxiliary to do in the past so DID - when do we use the",
+      "vi": "xảy ra khi nào. Ta dùng trợ động từ do ở dạng quá khứ, tức là DID. Khi nào ta dùng",
+      "notes": [
+        {
+          "term": "the auxiliary",
+          "kind": "context",
+          "noteVi": "trợ động từ: từ đi kèm để làm câu phủ định / câu hỏi (do, does, did)."
+        },
+        {
+          "term": "to do",
+          "kind": "context",
+          "noteVi": "Người dạy gọi tên động từ bằng dạng \"to + động từ\": to do = động từ do, không có nghĩa \"để làm\"."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 119.34,
+      "end": 125.55,
+      "en": "auxiliary ? only for negative sentences and interrogative sentences - let's look",
+      "vi": "trợ động từ? Chỉ dùng cho câu phủ định và câu nghi vấn. Hãy cùng xem",
+      "notes": [
+        {
+          "term": "interrogative sentences",
+          "kind": "context",
+          "noteVi": "câu nghi vấn = câu hỏi."
+        }
+      ]
+    },
+    {
+      "start": 125.55,
+      "end": 132.12,
+      "en": "at the formulas - we have the subject first then we have the auxiliary plus not then",
+      "vi": "các công thức. Đầu tiên là chủ ngữ, sau đó là trợ động từ cộng not, rồi"
+    },
+    {
+      "start": 132.12,
+      "end": 139.01,
+      "en": "the base of the verb then the object and then the time expression if any - an",
+      "vi": "đến động từ nguyên mẫu, rồi tân ngữ, rồi cụm chỉ thời gian nếu có. Một",
+      "notes": [
+        {
+          "term": "the base of the verb",
+          "kind": "context",
+          "noteVi": "động từ nguyên mẫu: dạng gốc, không thêm -ed hay -s (work)."
+        },
+        {
+          "term": "if any",
+          "kind": "idiom",
+          "noteVi": "nếu có."
+        }
+      ]
+    },
+    {
+      "start": 139.01,
+      "end": 146.9,
+      "en": "example he didn't so he did not he didn't work base of the verb to work",
+      "vi": "ví dụ: he didn't, tức là he did not. He didn't work (anh ấy đã không làm việc), work là động từ nguyên mẫu",
+      "notes": [
+        {
+          "term": "didn't",
+          "kind": "reduction",
+          "noteVi": "didn't = did not."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 146.9,
+      "end": 157.4,
+      "en": "last month - easy so interrogative - WH question word if there is - then the auxiliary",
+      "vi": "tháng trước. Dễ mà. Còn câu hỏi: từ để hỏi WH nếu có, rồi đến trợ động từ",
+      "notes": [
+        {
+          "term": "WH question word",
+          "kind": "context",
+          "noteVi": "từ để hỏi bắt đầu bằng wh: what, when, where, why, who (và how)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 157.4,
+      "end": 163.25,
+      "en": "then the subject and the base of the verb again and then the time expression if",
+      "vi": "rồi chủ ngữ và lại là động từ nguyên mẫu, rồi cụm chỉ thời gian nếu"
+    },
+    {
+      "start": 163.25,
+      "end": 172.73,
+      "en": "any so in this case I chose when - when did he work ? when did he work ? now if you",
+      "vi": "có. Ở đây mình chọn when: Anh ấy đã làm việc khi nào? Anh ấy đã làm việc khi nào? Giờ nếu bạn",
+      "notes": [
+        {
+          "term": "in this case",
+          "kind": "idiom",
+          "noteVi": "trong trường hợp này, ở ví dụ này."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 172.73,
+      "end": 179.87,
+      "en": "want to make a positive sentence this is what you have to study - the subject then",
+      "vi": "muốn đặt câu khẳng định, đây là điều bạn phải học: chủ ngữ, rồi",
+      "notes": [
+        {
+          "term": "positive sentence",
+          "kind": "context",
+          "noteVi": "câu khẳng định (không phải \"câu tích cực\")."
+        },
+        {
+          "term": "have to",
+          "kind": "context",
+          "noteVi": "have to = phải (bắt buộc), không phải \"có\"."
+        }
+      ]
+    },
+    {
+      "start": 179.87,
+      "end": 186.8,
+      "en": "the regular or irregular verb and I will get to that in one second then the",
+      "vi": "động từ có quy tắc hoặc bất quy tắc, lát nữa mình sẽ nói tới phần đó, rồi",
+      "notes": [
+        {
+          "term": "get to that",
+          "kind": "idiom",
+          "noteVi": "nói tới / đề cập tới chuyện đó (lát nữa)."
+        },
+        {
+          "term": "in one second",
+          "kind": "idiom",
+          "noteVi": "ngay lát nữa thôi, không phải đúng một giây."
+        }
+      ]
+    },
+    {
+      "start": 186.8,
+      "end": 194.51,
+      "en": "object and then the time expression just like my two examples - He worked this is",
+      "vi": "tân ngữ, rồi cụm chỉ thời gian, giống hệt hai ví dụ của mình. He worked (anh ấy đã làm việc): đây là",
+      "notes": [
+        {
+          "term": "just like",
+          "kind": "context",
+          "noteVi": "just like = giống hệt như."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 194.51,
+      "end": 200.57,
+      "en": "a regular verb I know that because there is a list and you may look at your",
+      "vi": "động từ có quy tắc. Mình biết vậy vì có một danh sách, và bạn có thể tra",
+      "notes": [
+        {
+          "term": "look at",
+          "kind": "context",
+          "noteVi": "look at your dictionary = tra từ điển."
+        }
+      ]
+    },
+    {
+      "start": 200.57,
+      "end": 206.09,
+      "en": "dictionary to see if it's irregular or regular verb - so in this case it's a",
+      "vi": "từ điển xem nó là động từ bất quy tắc hay có quy tắc. Vậy ở đây nó là",
+      "notes": [
+        {
+          "term": "to see if",
+          "kind": "context",
+          "noteVi": "to see if = để xem có phải… không."
+        }
+      ]
+    },
+    {
+      "start": 206.09,
+      "end": 213.74,
+      "en": "regular verb to work so he worked last week regular verb - another example with",
+      "vi": "động từ có quy tắc to work, nên he worked last week (tuần trước anh ấy đã làm việc), động từ có quy tắc. Một ví dụ khác với",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 213.74,
+      "end": 224.06,
+      "en": "an irregular verb to go is - He went to Mexico in 2015 so irregular verb if you",
+      "vi": "động từ bất quy tắc to go: He went to Mexico in 2015 (anh ấy đã đến Mexico năm 2015), động từ bất quy tắc. Nếu bạn",
+      "notes": [
+        {
+          "term": "went",
+          "kind": "context",
+          "noteVi": "went là quá khứ của go (bất quy tắc, không phải goed)."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 224.06,
+      "end": 227.54,
+      "en": "want to watch a lesson on regular and irregular verbs",
+      "vi": "muốn xem một bài về động từ có quy tắc và bất quy tắc"
+    },
+    {
+      "start": 227.54,
+      "end": 235.22,
+      "en": "you may click here - so when do we use the past simple the simple past ? for repeated",
+      "vi": "bạn có thể bấm vào đây. Vậy khi nào ta dùng thì quá khứ đơn? Dùng cho những hành động lặp lại",
+      "notes": [
+        {
+          "term": "repeated",
+          "kind": "context",
+          "noteVi": "repeated actions = hành động lặp đi lặp lại (thói quen)."
+        }
+      ]
+    },
+    {
+      "start": 235.22,
+      "end": 240.68,
+      "en": "actions that no longer happen - if you want to use it in this case you need to",
+      "vi": "mà nay không còn xảy ra nữa. Nếu muốn dùng nó trong trường hợp này, bạn cần",
+      "notes": [
+        {
+          "term": "no longer",
+          "kind": "idiom",
+          "noteVi": "không còn … nữa."
+        }
+      ]
+    },
+    {
+      "start": 240.68,
+      "end": 250.94,
+      "en": "use always, often, sometimes, usually just like my example - I always walked to work",
+      "vi": "dùng always (luôn luôn), often (thường), sometimes (thỉnh thoảng), usually (thường thường), giống ví dụ của mình: Tôi luôn đi bộ đi làm",
+      "notes": [
+        {
+          "term": "walked to work",
+          "kind": "context",
+          "noteVi": "walk to work = đi bộ đi làm."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 250.94,
+      "end": 258.94,
+      "en": "when I lived in Canada - when I lived in Canada is the time expression or when",
+      "vi": "khi tôi sống ở Canada. \"When I lived in Canada\" là cụm chỉ thời gian, hay",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 258.94,
+      "end": 266.24,
+      "en": "the indicator of time when I lived in Canada then I always and this is the adjunct",
+      "vi": "dấu hiệu chỉ thời gian: when I lived in Canada. Rồi đến I always, và đây là trạng ngữ",
+      "notes": [
+        {
+          "term": "the adjunct",
+          "kind": "context",
+          "noteVi": "thuật ngữ ngữ pháp: thành phần phụ bổ nghĩa cho câu (trạng ngữ), ở đây là always."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 266.24,
+      "end": 278.75,
+      "en": "always - I always walked to work so we can use also the used to or would now there",
+      "vi": "always. I always walked to work. Ta cũng có thể dùng used to hoặc would. Có",
+      "notes": [
+        {
+          "term": "used to",
+          "kind": "context",
+          "noteVi": "used to + động từ = \"ngày trước từng…\" (thói quen cũ nay không còn), không phải \"đã dùng\"."
+        },
+        {
+          "term": "would",
+          "kind": "context",
+          "noteVi": "would ở đây kể thói quen trong quá khứ (\"ngày trước hay…\"), không phải \"sẽ\"."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 278.75,
+      "end": 282.17,
+      "en": "is a lesson specifically on used to and would",
+      "vi": "một bài riêng về used to và would"
+    },
+    {
+      "start": 282.17,
+      "end": 289.04,
+      "en": "if you want to watch all those lessons you may click - here so I could say the",
+      "vi": "Nếu bạn muốn xem tất cả các bài đó, bạn có thể bấm vào đây. Vậy mình cũng có thể nói",
+      "notes": [
+        {
+          "term": "could",
+          "kind": "context",
+          "noteVi": "I could say = \"mình cũng có thể nói\" (một cách khác), ở đây không mang nghĩa quá khứ."
+        }
+      ]
+    },
+    {
+      "start": 289.04,
+      "end": 298.58,
+      "en": "same thing that I said before - I used to walk to work when I lived in Canada or I",
+      "vi": "lại điều mình vừa nói: Hồi sống ở Canada, tôi từng đi bộ đi làm, hoặc",
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 298.58,
+      "end": 308.57,
+      "en": "would walk to work when I lived in Canada - now this is the most difficult part of the",
+      "vi": "Hồi sống ở Canada, tôi hay đi bộ đi làm. Giờ đến phần khó nhất của",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 308.57,
+      "end": 314.93,
+      "en": "simple past or the past simple - like I said before we use it for a finished",
+      "vi": "thì quá khứ đơn. Như mình đã nói, ta dùng nó cho một hành động đã xong",
+      "notes": [
+        {
+          "term": "like I said before",
+          "kind": "idiom",
+          "noteVi": "như mình đã nói (like ở đây = \"như\", không phải \"thích\")."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 314.93,
+      "end": 321.92,
+      "en": "action that happened only once in the past - so I have two examples",
+      "vi": "và chỉ xảy ra một lần trong quá khứ. Mình có hai ví dụ",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 321.92,
+      "end": 330.29,
+      "en": "He stopped smoking yesterday - so in the past he smoked 25 cigarettes a day but",
+      "vi": "Hôm qua anh ấy đã bỏ thuốc lá. Trước đây anh ấy hút 25 điếu mỗi ngày, nhưng",
+      "notes": [
+        {
+          "term": "stopped smoking",
+          "kind": "context",
+          "noteVi": "stop + V-ing = thôi hẳn việc gì: stop smoking = bỏ thuốc lá."
+        },
+        {
+          "term": "a day",
+          "kind": "context",
+          "noteVi": "25 cigarettes a day = 25 điếu mỗi ngày (a ở đây = \"mỗi\")."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 330.29,
+      "end": 335.15,
+      "en": "yesterday he decided to stop so it's an action that he decided and he",
+      "vi": "hôm qua anh ấy quyết định bỏ. Vậy đó là việc anh ấy đã quyết định, và anh ấy",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 335.15,
+      "end": 342.32,
+      "en": "stopped smoking in this case he stopped smoking yesterday - another example She",
+      "vi": "đã bỏ thuốc. Ở ví dụ này, hôm qua anh ấy đã bỏ thuốc. Một ví dụ khác: cô ấy",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 342.32,
+      "end": 349.04,
+      "en": "saw me at the fair last week - she saw me at the fair last",
+      "vi": "đã thấy tôi ở hội chợ tuần trước. Cô ấy đã thấy tôi ở hội chợ tuần",
+      "notes": [
+        {
+          "term": "the fair",
+          "kind": "context",
+          "noteVi": "fair ở đây là danh từ = hội chợ (tính từ fair nghĩa là \"công bằng\")."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 349.04,
+      "end": 354.92,
+      "en": "week - so saw is the past of the verb to see - you can check the list of irregular",
+      "vi": "trước. Vậy saw là quá khứ của động từ to see (nhìn thấy). Bạn có thể tra danh sách động từ bất quy tắc",
+      "notes": [
+        {
+          "term": "check",
+          "kind": "context",
+          "noteVi": "check ở đây = tra, xem lại."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 354.92,
+      "end": 362.48,
+      "en": "verbs on your grammar book or on your dictionary - so I know that to see is",
+      "vi": "trong sách ngữ pháp hoặc trong từ điển. Vậy mình biết to see là"
+    },
+    {
+      "start": 362.48,
+      "end": 370.16,
+      "en": "irregular so the past of to see is saw - she saw me at the fair last week - now I'm",
+      "vi": "bất quy tắc, nên quá khứ của to see là saw: Tuần trước cô ấy đã thấy tôi ở hội chợ. Bây giờ mình",
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 370.16,
+      "end": 376.28,
+      "en": "going to erase this and I'm going to explain the little story that I gave you",
+      "vi": "sẽ xoá phần này và giải thích câu chuyện nhỏ mình đã kể cho bạn",
+      "notes": [
+        {
+          "term": "I'm",
+          "kind": "reduction",
+          "noteVi": "I'm = I am."
+        },
+        {
+          "term": "gave you",
+          "kind": "context",
+          "noteVi": "gave là quá khứ của give; ở đây = \"đưa ra, kể cho bạn\"."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 376.28,
+      "end": 383.6,
+      "en": "at the beginning - so we're back with a past simple we use yesterday, last",
+      "vi": "lúc đầu. Vậy quay lại với thì quá khứ đơn, ta dùng yesterday (hôm qua), last",
+      "notes": [
+        {
+          "term": "we're back with",
+          "kind": "idiom",
+          "noteVi": "quay lại với (chủ đề vừa nói)."
+        }
+      ]
+    },
+    {
+      "start": 383.6,
+      "end": 394.55,
+      "en": "week, last month, in 2015, 2015 which is the same, yesterday, ago, etc and obviously",
+      "vi": "week (tuần trước), last month (tháng trước), in 2015, 2015 cũng vậy, yesterday, ago (… trước), v.v. và tất nhiên",
+      "notes": [
+        {
+          "term": "ago",
+          "kind": "context",
+          "noteVi": "ago đứng sau khoảng thời gian: two days ago = hai ngày trước."
+        }
+      ]
+    },
+    {
+      "start": 394.55,
+      "end": 402.4,
+      "en": "when, like when I was in Canada, so don't forget the time expressions they are",
+      "vi": "when, như \"when I was in Canada\" (khi tôi ở Canada). Vậy đừng quên các cụm chỉ thời gian, chúng",
+      "notes": [
+        {
+          "term": "like",
+          "kind": "context",
+          "noteVi": "like ở đây = \"như là, ví dụ\", không phải \"thích\"."
+        },
+        {
+          "term": "don't",
+          "kind": "reduction",
+          "noteVi": "don't = do not."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 402.4,
+      "end": 409.73,
+      "en": "essential to understand this tense so let's look at my little story now I woke",
+      "vi": "rất cần để hiểu thì này. Giờ hãy cùng xem câu chuyện nhỏ của mình. Tôi thức",
+      "notes": [
+        {
+          "term": "essential",
+          "kind": "context",
+          "noteVi": "essential = rất cần thiết, không thể thiếu."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 409.73,
+      "end": 419.82,
+      "en": "up at 6 a.m. and had a shower as usual so in this sentence we have two past tense",
+      "vi": "dậy lúc 6 giờ sáng và tắm như thường lệ. Vậy trong câu này có hai động từ ở thì quá khứ",
+      "notes": [
+        {
+          "term": "had a shower",
+          "kind": "context",
+          "noteVi": "have a shower = tắm (vòi sen), have ở đây không có nghĩa là \"có\"; had là quá khứ của have."
+        },
+        {
+          "term": "as usual",
+          "kind": "idiom",
+          "noteVi": "như thường lệ, như mọi ngày."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 419.82,
+      "end": 433.03,
+      "en": "so to wake up is irregular so woke up then have the past of the",
+      "vi": "to wake up (thức dậy) là bất quy tắc, nên thành woke up; rồi have, quá khứ của",
+      "notes": [
+        {
+          "term": "woke up",
+          "kind": "context",
+          "noteVi": "woke up là quá khứ của wake up (thức dậy), bất quy tắc."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 433.03,
+      "end": 443.1,
+      "en": "verb to have is had so irregular - then after having breakfast he went to work I",
+      "vi": "động từ to have là had, nên là bất quy tắc. Rồi: ăn sáng xong, anh ấy đi làm. Mình",
+      "notes": [
+        {
+          "term": "having breakfast",
+          "kind": "context",
+          "noteVi": "have breakfast = ăn sáng, không phải \"có bữa sáng\"."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 443.1,
+      "end": 451.3,
+      "en": "mentioned before the verb to go is irregular and the past is went - so he",
+      "vi": "đã nói rồi, động từ to go là bất quy tắc và quá khứ của nó là went. Vậy anh ấy",
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 451.3,
+      "end": 461.56,
+      "en": "went to work - he arrived at work at 8 a.m. to find his office closed so",
+      "vi": "đã đi làm. Anh ấy đến chỗ làm lúc 8 giờ sáng thì thấy văn phòng đóng cửa. Vậy",
+      "notes": [
+        {
+          "term": "to find",
+          "kind": "context",
+          "noteVi": "to find ở đây = \"thì thấy\" (phát hiện ra điều bất ngờ), không phải \"để tìm\"."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 461.56,
+      "end": 471.28,
+      "en": "arrived is the past the regular past of the verb to arrive and then closed",
+      "vi": "arrived là quá khứ, quá khứ có quy tắc của động từ to arrive (đến nơi), còn closed",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 471.28,
+      "end": 480.76,
+      "en": "here is an adjective it's not a verb he then returned home disappointed since he",
+      "vi": "ở đây là tính từ (đóng cửa), không phải động từ. Sau đó anh ấy về nhà, thất vọng vì anh ấy",
+      "notes": [
+        {
+          "term": "since",
+          "kind": "context",
+          "noteVi": "since ở đây = \"vì\" (nêu lý do), không phải \"từ khi\"."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 480.76,
+      "end": 489.04,
+      "en": "realised it wasn't a working day so here we have the verb to return is regular",
+      "vi": "nhận ra hôm đó không phải ngày làm việc. Ở đây ta có động từ to return (trở về), là động từ có quy tắc",
+      "notes": [
+        {
+          "term": "realised",
+          "kind": "context",
+          "noteVi": "realised (nhận ra) là cách viết Anh-Anh; Anh-Mỹ viết realized."
+        },
+        {
+          "term": "wasn't",
+          "kind": "reduction",
+          "noteVi": "wasn't = was not (đã không phải là)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 489.04,
+      "end": 495.63,
+      "en": "so returned ED - disappointed is an adjective",
+      "vi": "nên thành returned, thêm ED. Còn disappointed (thất vọng) là tính từ",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 495.63,
+      "end": 504.1,
+      "en": "realised here is regular so realised and in American English would be realized",
+      "vi": "realised ở đây có quy tắc, nên là realised; trong tiếng Anh Mỹ sẽ viết là realized",
+      "notes": [
+        {
+          "term": "would be",
+          "kind": "context",
+          "noteVi": "would be ở đây = \"sẽ là\" (nếu viết theo kiểu Mỹ)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 504.1,
+      "end": 515.79,
+      "en": "with a Z so realized is regular and then the verb to be it was it wasn't a",
+      "vi": "với chữ Z. Vậy realized có quy tắc. Rồi đến động từ to be: it was, hôm đó không phải là một",
+      "notes": [
+        {
+          "term": "wasn't",
+          "kind": "reduction",
+          "noteVi": "wasn't = was not (đã không phải là)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 515.79,
+      "end": 523.15,
+      "en": "working day it was Saturday was is the past of the verb to be and",
+      "vi": "ngày làm việc, hôm đó là thứ Bảy. Was là quá khứ của động từ to be, và",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 523.15,
+      "end": 529.12,
+      "en": "actually I wanted to mention that the verb to be is particular and you know",
+      "vi": "thật ra mình muốn nói rằng động từ to be là trường hợp đặc biệt, và bạn biết",
+      "notes": [
+        {
+          "term": "actually",
+          "kind": "context",
+          "noteVi": "actually = \"thật ra\", không phải \"hiện tại\"."
+        },
+        {
+          "term": "particular",
+          "kind": "context",
+          "noteVi": "particular ở đây = đặc biệt, khác thường (người nói dùng như special)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 529.12,
+      "end": 536.17,
+      "en": "that right - It's an exception almost always so here I gave you the three types of",
+      "vi": "điều đó mà, đúng không? Nó gần như luôn là ngoại lệ. Vậy ở đây mình đã cho bạn ba kiểu",
+      "notes": [
+        {
+          "term": "right",
+          "kind": "context",
+          "noteVi": "right cuối câu = \"đúng không?\" (hỏi lại cho chắc), không phải \"bên phải\"."
+        },
+        {
+          "term": "It's",
+          "kind": "reduction",
+          "noteVi": "it's = it is."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 536.17,
+      "end": 544.9,
+      "en": "sentences subject for a negative sentence subject plus was or were plus",
+      "vi": "câu. Câu phủ định: chủ ngữ cộng was hoặc were cộng"
+    },
+    {
+      "start": 544.9,
+      "end": 553.27,
+      "en": "not plus the object - so it wasn't a working day it wasn't a",
+      "vi": "not cộng phần còn lại. Vậy: hôm đó không phải ngày làm việc, hôm đó không phải",
+      "notes": [
+        {
+          "term": "wasn't",
+          "kind": "reduction",
+          "noteVi": "wasn't = was not (đã không phải là)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 553.27,
+      "end": 562.68,
+      "en": "working day - for interrogative sentence WH question word if any then was or were",
+      "vi": "ngày làm việc. Câu nghi vấn: từ để hỏi WH nếu có, rồi was hoặc were",
+      "notes": [
+        {
+          "term": "if any",
+          "kind": "idiom",
+          "noteVi": "nếu có."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 562.68,
+      "end": 571.51,
+      "en": "then we have the subject and then maybe the time expression- Was it fun ? was it",
+      "vi": "rồi đến chủ ngữ, và có thể thêm cụm chỉ thời gian. Có vui không? Có",
+      "notes": [
+        {
+          "term": "fun",
+          "kind": "context",
+          "noteVi": "Was it fun? = Có vui không? (fun = niềm vui, điều vui)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 571.51,
+      "end": 581.76,
+      "en": "fun? and for a positive sentence subject plus was or were plus object it was",
+      "vi": "vui không? Còn câu khẳng định: chủ ngữ cộng was hoặc were cộng phần còn lại: hôm đó là",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 581.76,
+      "end": 587.77,
+      "en": "Saturday - it was Saturday - so remember this part",
+      "vi": "thứ Bảy. Hôm đó là thứ Bảy. Vậy hãy nhớ phần này",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 587.77,
+      "end": 598.35,
+      "en": "the verb to be doesn't need the auxiliary did - it works by itself - now let's recap",
+      "vi": "động từ to be không cần trợ động từ did, nó tự đứng một mình được. Giờ chúng ta cùng tóm tắt lại",
+      "notes": [
+        {
+          "term": "doesn't",
+          "kind": "reduction",
+          "noteVi": "doesn't = does not."
+        },
+        {
+          "term": "works by itself",
+          "kind": "idiom",
+          "noteVi": "tự nó dùng được, không cần thứ khác (work ở đây = hoạt động, không phải \"làm việc\")."
+        },
+        {
+          "term": "recap",
+          "kind": "context",
+          "noteVi": "recap = tóm tắt lại những ý chính."
+        }
+      ]
+    },
+    {
+      "start": 598.35,
+      "end": 606.16,
+      "en": "in this video we learned the past simple we use the auxiliary DID for making questions",
+      "vi": "Trong video này, chúng ta đã học thì quá khứ đơn. Ta dùng trợ động từ DID để đặt câu hỏi",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 606.16,
+      "end": 613.39,
+      "en": "or for negative sentences we use the past simple for single or repeated",
+      "vi": "hoặc câu phủ định. Ta dùng thì quá khứ đơn cho hành động xảy ra một lần hoặc lặp lại"
+    },
+    {
+      "start": 613.39,
+      "end": 619.06,
+      "en": "actions and you know when they happened - do not forget to learn the regular and",
+      "vi": "và bạn biết chúng xảy ra khi nào. Đừng quên học động từ có quy tắc và",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 619.06,
+      "end": 624.76,
+      "en": "irregular verbs - so that's it for today I hope you enjoyed the lesson if you",
+      "vi": "bất quy tắc. Vậy hôm nay đến đây thôi. Mình mong bạn đã thích bài học. Nếu bạn",
+      "notes": [
+        {
+          "term": "that's it",
+          "kind": "idiom",
+          "noteVi": "vậy là xong, đến đây thôi."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 624.76,
+      "end": 631.15,
+      "en": "haven't subscribed to my channel please do so you'll find a lesson every week if",
+      "vi": "chưa đăng ký kênh của mình thì hãy đăng ký nhé, mỗi tuần bạn sẽ có một bài mới. Nếu",
+      "notes": [
+        {
+          "term": "haven't",
+          "kind": "reduction",
+          "noteVi": "haven't = have not."
+        },
+        {
+          "term": "do so",
+          "kind": "context",
+          "noteVi": "do so = làm việc vừa nói (ở đây: đăng ký kênh)."
+        },
+        {
+          "term": "you'll",
+          "kind": "reduction",
+          "noteVi": "you'll = you will."
+        }
+      ]
+    },
+    {
+      "start": 631.15,
+      "end": 636.73,
+      "en": "you want to share the lesson you may do so I would really appreciate it thank",
+      "vi": "bạn muốn chia sẻ bài học thì cứ chia sẻ nhé, mình sẽ rất cảm kích. Cảm",
+      "notes": [
+        {
+          "term": "I would really appreciate it",
+          "kind": "idiom",
+          "noteVi": "Câu cảm ơn lịch sự: \"mình rất cảm kích, rất biết ơn\"."
+        }
+      ]
+    },
+    {
+      "start": 636.73,
+      "end": 641.68,
+      "en": "you very much for watching and see you next week with a new lesson take care",
+      "vi": "ơn các bạn rất nhiều vì đã xem, hẹn gặp lại tuần sau với một bài mới. Giữ gìn sức khoẻ nhé,",
+      "notes": [
+        {
+          "term": "see you",
+          "kind": "idiom",
+          "noteVi": "hẹn gặp lại."
+        },
+        {
+          "term": "take care",
+          "kind": "idiom",
+          "noteVi": "Lời chào tạm biệt thân mật: \"bảo trọng, giữ gìn sức khoẻ nhé\"."
+        }
+      ]
+    },
+    {
+      "start": 641.68,
+      "end": 660.85,
+      "en": "bye bye",
+      "vi": "tạm biệt!"
+    }
+  ]
+}

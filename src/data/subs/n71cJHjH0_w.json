@@ -1,0 +1,400 @@
+{
+  "videoId": "n71cJHjH0_w",
+  "source": {
+    "channel": "GrammarBank",
+    "channelUrl": "https://www.youtube.com/channel/UCosy24EI2IywQza8MwfpVcw",
+    "url": "https://www.youtube.com/watch?v=n71cJHjH0_w",
+    "license": "CC BY 3.0 – GrammarBank",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "translation": "Bản dịch tiếng Việt do Lumos thực hiện",
+    "captionKind": "uploaded"
+  },
+  "cues": [
+    {
+      "start": 10.08,
+      "end": 12.84,
+      "en": "Hi, and welcome back for more learning through exercises.",
+      "vi": "Xin chào, chào mừng các bạn quay lại để học thêm qua bài tập.",
+      "notes": [
+        {
+          "term": "welcome back",
+          "kind": "context",
+          "noteVi": "Chào mừng quay lại: lời chào người xem đã từng xem kênh."
+        }
+      ]
+    },
+    {
+      "start": 14.28,
+      "end": 21.96,
+      "en": "For this exercise, we are going to fill in the blanks with the appropriate form of the verb 'to be' (am, is, are). Let's begin!",
+      "vi": "Trong bài tập này, chúng ta sẽ điền vào chỗ trống dạng đúng của động từ \"to be\" (am, is, are). Bắt đầu nhé!",
+      "notes": [
+        {
+          "term": "fill in the blanks",
+          "kind": "context",
+          "noteVi": "Điền vào chỗ trống: cách gọi quen thuộc của dạng bài tập điền từ."
+        },
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: rủ cùng làm, \"chúng ta hãy…\". Let's begin! = Mình bắt đầu nhé!"
+        }
+      ]
+    },
+    {
+      "start": 29.16,
+      "end": 30.66,
+      "en": "Tom is a carpenter.",
+      "vi": "Tom là thợ mộc.",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 31.44,
+      "end": 35.7,
+      "en": "We use \"is\", as the verb \"to be\" for \"Tom\", which is a singular third person.",
+      "vi": "Ta dùng \"is\" làm động từ \"to be\" cho \"Tom\", vì Tom là ngôi thứ ba số ít.",
+      "notes": [
+        {
+          "term": "singular third person",
+          "kind": "context",
+          "noteVi": "Ngôi thứ ba số ít: một người hoặc vật được nói tới (he, she, it, Tom…). Luôn đi với is."
+        }
+      ]
+    },
+    {
+      "start": 42.12,
+      "end": 49.14,
+      "en": "Terry and Linda are from Armenia. We use \"are\", as the verb \"to be\" for Terry and Linda, because they are two people.",
+      "vi": "Terry và Linda đến từ Armenia. Ta dùng \"are\" làm động từ \"to be\" cho Terry và Linda, vì họ là hai người.",
+      "notes": [
+        {
+          "term": "are from",
+          "kind": "context",
+          "noteVi": "be from + nơi chốn = đến từ, quê ở. Không dịch \"are\" thành \"là\" ở đây."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 55.8,
+      "end": 60.72,
+      "en": "Jack is a famous movie star. \"Jack\" is singular, so we use \"is\".",
+      "vi": "Jack là một ngôi sao điện ảnh nổi tiếng. \"Jack\" là số ít, nên ta dùng \"is\".",
+      "notes": [
+        {
+          "term": "movie star",
+          "kind": "context",
+          "noteVi": "Ngôi sao điện ảnh (diễn viên nổi tiếng), không phải ngôi sao trên trời."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 67.74,
+      "end": 75.78,
+      "en": "Are Derek and Peter police officers? We use \"Are\", to form a question in the present tense for plural subjects (Derek and Peter).",
+      "vi": "Derek và Peter có phải là cảnh sát không? Ta dùng \"Are\" để đặt câu hỏi ở thì hiện tại cho chủ ngữ số nhiều (Derek và Peter).",
+      "notes": [
+        {
+          "term": "Are Derek and Peter",
+          "kind": "context",
+          "noteVi": "Câu hỏi đưa are lên trước chủ ngữ: Are + S + …? = … có phải … không?"
+        },
+        {
+          "term": "plural subjects",
+          "kind": "context",
+          "noteVi": "Chủ ngữ số nhiều: từ hai người / vật trở lên, đi với are."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 81,
+      "end": 83.28,
+      "en": "BMW is an expensive car brand.",
+      "vi": "BMW là một hãng xe hơi đắt tiền.",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 84.24,
+      "end": 87.78,
+      "en": "\"Is\", is used to indicate the singular nature of the car brand.",
+      "vi": "\"Is\" được dùng để cho thấy hãng xe là số ít.",
+      "notes": [
+        {
+          "term": "singular nature",
+          "kind": "context",
+          "noteVi": "Ở đây nghĩa là \"tính chất số ít\" (chỉ một hãng xe), không phải \"thiên nhiên\"."
+        }
+      ]
+    },
+    {
+      "start": 94.5,
+      "end": 100.02,
+      "en": "Alan's friends are doctors. We use \"are\", for Alan's friends, which is plural.",
+      "vi": "Bạn bè của Alan là bác sĩ. Ta dùng \"are\" cho \"bạn bè của Alan\", vì đó là số nhiều.",
+      "notes": [
+        {
+          "term": "Alan's",
+          "kind": "context",
+          "noteVi": "'s sau tên người là sở hữu: Alan's friends = bạn của Alan (không phải Alan is)."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 106.62,
+      "end": 109.98,
+      "en": "We are at home. We use are, for the plural \"We\".",
+      "vi": "Chúng tôi đang ở nhà. Ta dùng \"are\" cho \"We\", vì \"We\" là số nhiều.",
+      "notes": [
+        {
+          "term": "at home",
+          "kind": "context",
+          "noteVi": "at home = ở nhà, không có \"the\". \"are\" ở đây nghĩa là \"đang ở\", không phải \"là\"."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 117.18,
+      "end": 118.62,
+      "en": "I am a diligent student.",
+      "vi": "Tôi là một học sinh chăm chỉ.",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 119.64,
+      "end": 123.42,
+      "en": "We use 'am', as the verb \"to be\", for the singular first person.",
+      "vi": "Ta dùng \"am\" làm động từ \"to be\" cho ngôi thứ nhất số ít.",
+      "notes": [
+        {
+          "term": "singular first person",
+          "kind": "context",
+          "noteVi": "Ngôi thứ nhất số ít = I (tôi). I luôn đi với am."
+        }
+      ]
+    },
+    {
+      "start": 130.2,
+      "end": 135.48,
+      "en": "They are my friend's cousins. We use \"are\", because, \"they\" is plural!",
+      "vi": "Họ là anh chị em họ của bạn tôi. Ta dùng \"are\", vì \"they\" là số nhiều!",
+      "notes": [
+        {
+          "term": "my friend's cousins",
+          "kind": "context",
+          "noteVi": "friend's = của bạn (sở hữu 's). cousins = anh chị em họ."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 140.58,
+      "end": 142.44,
+      "en": "Mr. Jackson is a pianist.",
+      "vi": "Ông Jackson là nghệ sĩ dương cầm.",
+      "notes": [
+        {
+          "term": "Mr.",
+          "kind": "context",
+          "noteVi": "Mr. = ông / anh, đặt trước họ của người đàn ông, lịch sự."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 143.28,
+      "end": 146.52,
+      "en": "We use \"is\", for the singular third-person Mr. Jackson.",
+      "vi": "Ta dùng \"is\" cho ông Jackson, ngôi thứ ba số ít."
+    },
+    {
+      "start": 153.3,
+      "end": 159.42,
+      "en": "Daniel and Ryan are mechanical engineers. Daniel and Ryan are two people so we use \"are\".",
+      "vi": "Daniel và Ryan là kỹ sư cơ khí. Daniel và Ryan là hai người nên ta dùng \"are\".",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 165.48,
+      "end": 170.22,
+      "en": "Are they soldiers? \"Soldiers\" is plural, so we use \"are\" to form a question.",
+      "vi": "Họ có phải là lính không? \"Soldiers\" là số nhiều, nên ta dùng \"are\" để đặt câu hỏi.",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 176.52,
+      "end": 180.66,
+      "en": "His shoes are new. \"Shoes\", is plural, so we use \"are\".",
+      "vi": "Giày của anh ấy còn mới. \"Shoes\" là số nhiều, nên ta dùng \"are\".",
+      "notes": [
+        {
+          "term": "His shoes are new",
+          "kind": "context",
+          "noteVi": "Tiếng Việt không cần \"là\" trước tính từ (\"giày mới\"), tiếng Anh bắt buộc có are."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 186.66,
+      "end": 187.68,
+      "en": "Are you the boss?",
+      "vi": "Bạn có phải là sếp không?",
+      "notes": [
+        {
+          "term": "the boss",
+          "kind": "context",
+          "noteVi": "the boss = sếp, người quản lý (ở đây là sếp của nơi này)."
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 188.64,
+      "end": 193.14,
+      "en": "'Are', to form a question in the present tense for the second-person singular \"you\".",
+      "vi": "Dùng \"Are\" để đặt câu hỏi ở thì hiện tại cho \"you\" ở ngôi thứ hai số ít.",
+      "notes": [
+        {
+          "term": "second-person singular",
+          "kind": "context",
+          "noteVi": "Ngôi thứ hai số ít = you khi nói với một người. you luôn đi với are, dù là một người."
+        }
+      ]
+    },
+    {
+      "start": 199.32,
+      "end": 200.7,
+      "en": "Is Judy the judge?",
+      "vi": "Judy có phải là thẩm phán không?",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 201.42,
+      "end": 205.5,
+      "en": "'Is', to form a question in the present tense for the third-person \"Judy\".",
+      "vi": "Dùng \"Is\" để đặt câu hỏi ở thì hiện tại cho \"Judy\" ở ngôi thứ ba."
+    },
+    {
+      "start": 211.74,
+      "end": 213.3,
+      "en": "Am I the only one here?",
+      "vi": "Có phải chỉ có mình tôi ở đây không?",
+      "notes": [
+        {
+          "term": "the only one",
+          "kind": "context",
+          "noteVi": "the only one = người duy nhất. Am I the only one here? = Chỉ có mình tôi ở đây à?"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 214.14,
+      "end": 218.76,
+      "en": "Forming a question with \"am\" in the present tense for the first-person singular subject.",
+      "vi": "Đặt câu hỏi với \"am\" ở thì hiện tại cho chủ ngữ ngôi thứ nhất số ít."
+    },
+    {
+      "start": 224.64,
+      "end": 225.9,
+      "en": "The children are playing.",
+      "vi": "Bọn trẻ đang chơi.",
+      "notes": [
+        {
+          "term": "are playing",
+          "kind": "context",
+          "noteVi": "are + động từ -ing = đang làm gì (thì hiện tại tiếp diễn). Ở đây are không có nghĩa \"là\"."
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-continuous"
+      ]
+    },
+    {
+      "start": 226.68,
+      "end": 230.94,
+      "en": "'Children' is the plural of 'child', so we use the plural form of the verb \"to be\".",
+      "vi": "\"Children\" là số nhiều của \"child\", nên ta dùng dạng số nhiều của động từ \"to be\".",
+      "notes": [
+        {
+          "term": "Children",
+          "kind": "context",
+          "noteVi": "child (một đứa trẻ) → children (nhiều đứa trẻ): số nhiều bất quy tắc, không thêm -s."
+        }
+      ]
+    },
+    {
+      "start": 234.12,
+      "end": 238.62,
+      "en": "That's all for this exercise, thanks for watching! If you've enjoyed this video,",
+      "vi": "Bài tập này đến đây là hết, cảm ơn các bạn đã xem! Nếu bạn thích video này,",
+      "notes": [
+        {
+          "term": "That's all",
+          "kind": "idiom",
+          "noteVi": "That's all = vậy là hết, đến đây là xong. That's = That is."
+        },
+        {
+          "term": "you've",
+          "kind": "reduction",
+          "noteVi": "you've = you have. If you've enjoyed = nếu bạn đã thích."
+        }
+      ]
+    },
+    {
+      "start": 238.62,
+      "end": 246.06,
+      "en": "please hit the like button and consider subscribing to our channel for more content like this! Goodbye, and see you next time!",
+      "vi": "hãy bấm nút thích và cân nhắc đăng ký kênh của chúng tôi để xem thêm những video như thế này! Tạm biệt, hẹn gặp lại lần sau!",
+      "notes": [
+        {
+          "term": "hit the like button",
+          "kind": "context",
+          "noteVi": "hit (đánh) ở đây nghĩa là bấm: bấm nút thích (like) dưới video."
+        },
+        {
+          "term": "see you next time",
+          "kind": "idiom",
+          "noteVi": "Hẹn gặp lại lần sau: câu chào tạm biệt quen thuộc."
+        }
+      ]
+    }
+  ]
+}

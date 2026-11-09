@@ -11,3 +11,6 @@ dev-dist/
 
 # Cấu hình build công khai (chỉ URL + anon key Supabase)
 !.env.production
+
+# Caption gốc tải bằng yt-dlp (story 16): tải lại được; chỉ commit bản đã chuẩn hoá scripts/subs/captions/<id>.json
+scripts/subs/captions/source/

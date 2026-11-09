@@ -1,27 +1,32 @@
-// Kiểm lại mọi video bài học (story 15) qua YouTube oEmbed: 200 = video tồn tại và cho nhúng.
+// Kiểm lại mọi video (bài học story 15: videos.json; giải trí Sân ga story 21: foundation-videos.json) qua YouTube oEmbed:
+// 200 = video tồn tại và cho nhúng. Giấy phép (`license`) không kiểm được qua oEmbed: kiểm tay trên trang video.
 // Không chạy trong CI (cần mạng). Exit 0: mọi ID OK · 1: có ID hỏng (liệt kê) hoặc danh sách rỗng ·
-// 2: lỗi mạng / YouTube trả lỗi tạm / videos.json không đọc được hoặc sai cấu trúc.
+// 2: lỗi mạng / YouTube trả lỗi tạm / file dữ liệu không đọc được hoặc sai cấu trúc.
 // Tiêu đề / kênh lệch so với oEmbed chỉ cảnh báo (kênh hay đổi tiêu đề), không làm fail.
 import { readFileSync } from 'node:fs'
 
-const FILE = new URL('../../src/data/videos/videos.json', import.meta.url)
+const FILES = ['videos.json', 'foundation-videos.json'].map((f) => new URL(`../../src/data/videos/${f}`, import.meta.url))
 const TIMEOUT_MS = 15_000
 const CONCURRENCY = 6
 
 /** Không đọc được / sai cấu trúc → exit 2 (không phải ID hỏng); danh sách rỗng → exit 1. */
-let videos
-try {
-  videos = JSON.parse(readFileSync(FILE, 'utf8'))
-} catch (e) {
-  console.error(`videos:check: không đọc được videos.json: ${e instanceof Error ? e.message : e}`)
-  process.exit(2)
-}
-if (!Array.isArray(videos) || videos.some((v) => !v || typeof v !== 'object' || typeof v.id !== 'string')) {
-  console.error('videos:check: videos.json sai cấu trúc (phải là mảng các mục có `id` dạng chuỗi).')
-  process.exit(2)
+const videos = []
+for (const file of FILES) {
+  let list
+  try {
+    list = JSON.parse(readFileSync(file, 'utf8'))
+  } catch (e) {
+    console.error(`videos:check: không đọc được ${file.pathname}: ${e instanceof Error ? e.message : e}`)
+    process.exit(2)
+  }
+  if (!Array.isArray(list) || list.some((v) => !v || typeof v !== 'object' || typeof v.id !== 'string')) {
+    console.error(`videos:check: ${file.pathname} sai cấu trúc (phải là mảng các mục có \`id\` dạng chuỗi).`)
+    process.exit(2)
+  }
+  videos.push(...list)
 }
 if (videos.length === 0) {
-  console.error('videos:check: videos.json không có video nào.')
+  console.error('videos:check: không có video nào.')
   process.exit(1)
 }
 const oembed = (id) =>
@@ -43,7 +48,7 @@ for (let i = 0; i < videos.length; i += CONCURRENCY) {
   results.push(...(await Promise.all(videos.slice(i, i + CONCURRENCY).map(check))))
 }
 
-const label = (v) => `${v.id} (${v.lessonId}/${v.sectionId}) "${v.title}"`
+const label = (v) => `${v.id} (${v.lessonId ? `${v.lessonId}/${v.sectionId}` : 'Sân ga'}) "${v.title}"`
 // 400/401/403/404: ID sai, video bị xoá/riêng tư hoặc chặn nhúng → hỏng. 429/5xx hay lỗi kết nối → không kết luận được.
 const BROKEN = new Set([400, 401, 403, 404])
 const broken = results.filter((r) => r.status !== undefined && BROKEN.has(r.status))

@@ -2,8 +2,27 @@
 export type RawCue = { start: number; end: number; en: string }
 export type CaptionTrack = { languageCode?: string; kind?: string; baseUrl?: string; vssId?: string }
 
+export type TranscriptSource = {
+  channel: string
+  channelUrl?: string
+  url: string
+  license: string
+  licenseUrl?: string
+  translation?: string
+  captionKind: 'uploaded' | 'asr'
+}
+
 export const VOA_CHANNEL: string
 export const VOA_LICENSE: string
+export const CC_BY_LICENSE_URL: string
+export const CHANNEL_URL_RE: RegExp
+export const TRANSLATION_CREDIT: string
+export function ccByLicense(channel: string): string
+export function transcriptSource(
+  video: { id: string; channel: string; channelUrl?: string; license?: string },
+  captionKind: 'uploaded' | 'asr',
+): TranscriptSource | null
+export function canStoreTranscript(video: { id: string; channel: string; channelUrl?: string; license?: string }): boolean
 export const MAX_CUE_SECONDS: number
 export const MAX_CUE_CHARS: number
 

@@ -102,7 +102,7 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
 - Không dùng hay kiểm tra kiến thức chưa dạy: lời giải thích, ví dụ, câu luyện và câu kiểm tra chỉ dùng khái niệm đã dạy ở viên gạch hoặc bài trước đó. Ngoại lệ: Soát vé và kiểm tra "Tôi biết rồi" của Sân ga (tuỳ chọn, câu sai không ghi Sổ lỗi), "Đo trình độ" (đề ETS làm ngoài app). Nội dung giải trí (video, nhạc, tin) không thuộc luật này.
 - Mọi lỗi đều giải thích bằng tiếng Việt, kèm quy tắc và ví dụ.
 - Test nào cũng bám bài: mỗi câu gắn tag bài nguồn (viên gạch `fNN` của Sân ga cũng là bài nguồn), sai thì có link về đúng đoạn bài đó.
-- Nội dung chỉ lấy từ nguồn miễn phí, uy tín (`nguon-hoc-mien-phi.md`). Chỉ NGSL/TSL (CC BY-SA 4.0) được đóng gói vào app, có ghi nguồn. Oxford 3000/5000 và ETS chỉ được link. Mini test tự build chỉ theo khuôn format ETS, không copy nội dung đề.
+- Nội dung chỉ lấy từ nguồn miễn phí, uy tín (`nguon-hoc-mien-phi.md`; thêm video YouTube CC BY đã kiểm giấy phép, story 16). Chỉ NGSL/TSL (CC BY-SA 4.0) và phụ đề của video VOA (public domain) hoặc video YouTube CC BY có caption do kênh đăng (story 16, sửa 2026-11-10) được đóng gói vào app, có ghi nguồn. Oxford 3000/5000 và ETS chỉ được link. Mini test tự build chỉ theo khuôn format ETS, không copy nội dung đề.
 - Repo public trên GitHub Pages, nên asset Harry Potter chỉ được tự vẽ hoặc AI-gen "lấy cảm hứng". Không dùng logo hay nhân vật gốc.
 - Không commit API key, PAT, token bot, gist id hay dữ liệu học cá nhân. Những thứ này chỉ nằm ở localStorage hoặc GitHub Secrets.
 - Giao diện sinh động, có animation, điều hướng gọn và ít mục.

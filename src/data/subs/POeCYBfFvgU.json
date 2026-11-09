@@ -1,0 +1,538 @@
+{
+  "videoId": "POeCYBfFvgU",
+  "source": {
+    "channel": "pascualbravovirtual",
+    "channelUrl": "https://www.youtube.com/channel/UCzYurNoOyQdoknDrGLdMWrw",
+    "url": "https://www.youtube.com/watch?v=POeCYBfFvgU",
+    "license": "CC BY 3.0 – pascualbravovirtual",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "translation": "Bản dịch tiếng Việt do Lumos thực hiện",
+    "captionKind": "uploaded"
+  },
+  "cues": [
+    {
+      "start": 14.88,
+      "end": 21.58,
+      "en": "Hello! I am your teacher, Gary Vernier Welcome to \"Activate Your Grammar\"",
+      "vi": "Xin chào! Tôi là giáo viên của bạn, Gary Vernier. Chào mừng bạn đến với \"Activate Your Grammar\" (Kích hoạt ngữ pháp)."
+    },
+    {
+      "start": 22.06,
+      "end": 29.82,
+      "en": "Today you are going to learn how to use the Present Tense in affirmative sentences in English",
+      "vi": "Hôm nay bạn sẽ học cách dùng thì hiện tại trong câu khẳng định tiếng Anh.",
+      "notes": [
+        {
+          "term": "Present Tense",
+          "kind": "context",
+          "noteVi": "Ở video này là thì hiện tại đơn (present simple): nói thói quen, sự thật, việc thường ngày."
+        },
+        {
+          "term": "affirmative sentences",
+          "kind": "context",
+          "noteVi": "Câu khẳng định: câu nói điều gì đó là có/đúng, không phải câu phủ định hay câu hỏi."
+        }
+      ]
+    },
+    {
+      "start": 30.66,
+      "end": 38.1,
+      "en": "Let's begin with what you already know the Present Tense in Spanish In Spanish,",
+      "vi": "Hãy bắt đầu với điều bạn đã biết: thì hiện tại trong tiếng Tây Ban Nha. Trong tiếng Tây Ban Nha,",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: \"chúng ta hãy…\", dùng để rủ cùng làm."
+        },
+        {
+          "term": "Spanish",
+          "kind": "context",
+          "noteVi": "Video làm cho người nói tiếng Tây Ban Nha nên thầy so với tiếng Tây Ban Nha; bạn cứ hiểu là so với tiếng mẹ đẻ của người học."
+        }
+      ]
+    },
+    {
+      "start": 38.1,
+      "end": 43.56,
+      "en": "to make a sentence in the Present Tense you have to conjugate the verb",
+      "vi": "để đặt một câu ở thì hiện tại, bạn phải chia động từ.",
+      "notes": [
+        {
+          "term": "have to",
+          "kind": "context",
+          "noteVi": "have to + động từ = phải làm gì."
+        },
+        {
+          "term": "conjugate",
+          "kind": "context",
+          "noteVi": "Chia động từ: đổi hình dạng động từ theo chủ ngữ (tôi, bạn, anh ấy…)."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 44.08,
+      "end": 52.62,
+      "en": "To conjugate a verb means to change it Here is an example the verb hablar changes to",
+      "vi": "Chia động từ nghĩa là thay đổi nó. Đây là một ví dụ: động từ hablar đổi thành",
+      "notes": [
+        {
+          "term": "hablar",
+          "kind": "context",
+          "noteVi": "Từ tiếng Tây Ban Nha, nghĩa là \"nói\" (= speak trong tiếng Anh)."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 52.62,
+      "end": 58.6,
+      "en": "hablo, hablas habla, hablamos hablan You can easily see",
+      "vi": "hablo, hablas, habla, hablamos, hablan. Bạn có thể dễ dàng thấy",
+      "notes": [
+        {
+          "term": "hablo, hablas",
+          "kind": "context",
+          "noteVi": "Các dạng của hablar trong tiếng Tây Ban Nha: tôi nói, bạn nói, anh ấy nói, chúng tôi nói, họ nói. Đây không phải tiếng Anh."
+        }
+      ]
+    },
+    {
+      "start": 58.6,
+      "end": 67.18,
+      "en": "how in Spanish we change the verb to express the Present Tense So what do we do with verbs in English",
+      "vi": "rằng trong tiếng Tây Ban Nha, ta đổi động từ để diễn đạt thì hiện tại. Vậy với động từ tiếng Anh thì ta làm gì",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 67.18,
+      "end": 69.02,
+      "en": "to form the Present Tense?",
+      "vi": "để tạo thì hiện tại?",
+      "notes": [
+        {
+          "term": "form",
+          "kind": "context",
+          "noteVi": "form ở đây là động từ: tạo, lập (câu, thì); không phải \"mẫu đơn\"."
+        }
+      ]
+    },
+    {
+      "start": 69.78,
+      "end": 72.18,
+      "en": "The answer is NOTHING!",
+      "vi": "Câu trả lời là: KHÔNG LÀM GÌ CẢ!"
+    },
+    {
+      "start": 72.76,
+      "end": 80.82,
+      "en": "In English you ALWAYS use the simple form of the verb with one very important exception",
+      "vi": "Trong tiếng Anh, bạn LUÔN dùng dạng gốc của động từ, chỉ có một ngoại lệ rất quan trọng.",
+      "notes": [
+        {
+          "term": "simple form",
+          "kind": "context",
+          "noteVi": "Dạng gốc của động từ, không thêm gì, vd speak, love."
+        },
+        {
+          "term": "exception",
+          "kind": "context",
+          "noteVi": "Ngoại lệ: trường hợp không theo quy tắc chung."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 81.58,
+      "end": 88.48,
+      "en": "Let's look at some examples for example the VERB: SPEAK",
+      "vi": "Hãy xem vài ví dụ, chẳng hạn động từ SPEAK (nói).",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: \"chúng ta hãy…\", dùng để rủ cùng làm."
+        }
+      ]
+    },
+    {
+      "start": 88.48,
+      "end": 95.18,
+      "en": "I speak, You speak He speaks, She speaks",
+      "vi": "Tôi nói, bạn nói, anh ấy nói, cô ấy nói",
+      "notes": [
+        {
+          "term": "He speaks",
+          "kind": "context",
+          "noteVi": "Chủ ngữ He/She/It thì động từ thêm -s: speak → speaks."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 95.18,
+      "end": 102.28,
+      "en": "It speaks, We speak They speak Did you notice the exception?",
+      "vi": "nó nói, chúng tôi nói, họ nói. Bạn có để ý thấy ngoại lệ không?",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 102.94,
+      "end": 108.36,
+      "en": "If the subject is He, She or It,",
+      "vi": "Nếu chủ ngữ là He, She hoặc It,",
+      "notes": [
+        {
+          "term": "subject",
+          "kind": "context",
+          "noteVi": "Chủ ngữ: người hoặc vật làm hành động, đứng trước động từ."
+        }
+      ]
+    },
+    {
+      "start": 108.36,
+      "end": 115.8,
+      "en": "you have to add an -s to the end of the verb It really is that simple",
+      "vi": "bạn phải thêm -s vào cuối động từ. Thật sự chỉ đơn giản vậy thôi",
+      "notes": [
+        {
+          "term": "that simple",
+          "kind": "context",
+          "noteVi": "that ở đây = \"đến mức đó\": \"đơn giản đến thế\", không phải \"cái kia\"."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 115.8,
+      "end": 123.34,
+      "en": "to form the Present Tense in affirmative sentences in English The video will now stop",
+      "vi": "để tạo thì hiện tại trong câu khẳng định tiếng Anh. Bây giờ video sẽ dừng",
+      "notes": [
+        {
+          "term": "The video will now stop",
+          "kind": "context",
+          "noteVi": "Video gốc dùng trong lớp học có bài tập riêng; ở đây không có bài tập đó, bạn cứ xem tiếp."
+        }
+      ]
+    },
+    {
+      "start": 123.34,
+      "end": 130.58,
+      "en": "and you will have an activity to identify verbs in the Present Tense in affirmative sentences",
+      "vi": "và bạn sẽ làm một bài tập nhận ra động từ ở thì hiện tại trong câu khẳng định.",
+      "notes": [
+        {
+          "term": "activity",
+          "kind": "context",
+          "noteVi": "Ở đây là bài tập trên lớp."
+        },
+        {
+          "term": "identify",
+          "kind": "context",
+          "noteVi": "Nhận ra, tìm ra."
+        }
+      ]
+    },
+    {
+      "start": 134.34,
+      "end": 142.78,
+      "en": "OK Let's Review really quick Remember, all you need to do to form a sentence",
+      "vi": "Được rồi, cùng ôn lại thật nhanh. Hãy nhớ, tất cả những gì bạn cần làm để đặt một câu",
+      "notes": [
+        {
+          "term": "really quick",
+          "kind": "context",
+          "noteVi": "Văn nói: \"thật nhanh\" (viết chuẩn là really quickly)."
+        },
+        {
+          "term": "all you need to do",
+          "kind": "idiom",
+          "noteVi": "\"Tất cả những gì bạn cần làm là…\" = chỉ cần…"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 142.78,
+      "end": 150.38,
+      "en": "in the Present Tense is use the simple form of the verb if the subject is I",
+      "vi": "ở thì hiện tại là dùng dạng gốc của động từ, nếu chủ ngữ là I"
+    },
+    {
+      "start": 150.98,
+      "end": 159.58,
+      "en": "YOU THEY or WE If the subject is HE SHE or IT",
+      "vi": "YOU, THEY hoặc WE. Nếu chủ ngữ là HE, SHE hoặc IT"
+    },
+    {
+      "start": 159.59,
+      "end": 165.14,
+      "en": "you have to add an -s to the end of the verb There is, however,",
+      "vi": "bạn phải thêm -s vào cuối động từ. Tuy nhiên, có",
+      "notes": [
+        {
+          "term": "however",
+          "kind": "context",
+          "noteVi": "Tuy nhiên. Câu đầy đủ nối sang câu sau: \"There is, however, one big difference\" = \"Tuy nhiên, có một khác biệt lớn\"."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 165.54,
+      "end": 169.92,
+      "en": "one BIG difference between Spanish and English",
+      "vi": "một khác biệt LỚN giữa tiếng Tây Ban Nha và tiếng Anh."
+    },
+    {
+      "start": 170.62,
+      "end": 179.28,
+      "en": "In English, you ALWAYS have to say the subject before the verb, in Spanish you do not",
+      "vi": "Trong tiếng Anh, bạn LUÔN phải nói chủ ngữ trước động từ; trong tiếng Tây Ban Nha thì không cần.",
+      "notes": [
+        {
+          "term": "you do not",
+          "kind": "context",
+          "noteVi": "Nói gọn của \"you do not have to say the subject\": không cần nói chủ ngữ."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 180.04,
+      "end": 187.56,
+      "en": "Here is an example hablo equals yo hablo But it is not necessary in",
+      "vi": "Đây là một ví dụ: hablo bằng với yo hablo. Nhưng không cần thiết",
+      "notes": [
+        {
+          "term": "yo hablo",
+          "kind": "context",
+          "noteVi": "Tiếng Tây Ban Nha: yo = I, hablo = speak. Chỉ nói \"hablo\" cũng đủ nghĩa \"tôi nói\"."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 187.56,
+      "end": 195.92,
+      "en": "Spanish to say \"yo\" which is the subject In English you MUST ALWAYS say the subject",
+      "vi": "phải nói \"yo\", tức chủ ngữ, trong tiếng Tây Ban Nha. Trong tiếng Anh, bạn BẮT BUỘC LUÔN phải nói chủ ngữ.",
+      "notes": [
+        {
+          "term": "MUST",
+          "kind": "context",
+          "noteVi": "must = bắt buộc phải."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 196.62,
+      "end": 204.28,
+      "en": "For Example I speak You cannot simply say \"speak\" in English",
+      "vi": "Ví dụ: I speak (tôi nói). Bạn không thể chỉ nói \"speak\" trong tiếng Anh",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 204.28,
+      "end": 210.12,
+      "en": "or we have no idea who or what you are talking about",
+      "vi": "nếu không, ta sẽ không biết bạn đang nói về ai hay về cái gì.",
+      "notes": [
+        {
+          "term": "have no idea",
+          "kind": "idiom",
+          "noteVi": "Hoàn toàn không biết."
+        },
+        {
+          "term": "or",
+          "kind": "context",
+          "noteVi": "or ở đầu câu này = \"nếu không thì\"."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 210.98,
+      "end": 217.78,
+      "en": "Here are some examples of the Present Tense in affirmative sentences in English",
+      "vi": "Đây là vài ví dụ về thì hiện tại trong câu khẳng định tiếng Anh."
+    },
+    {
+      "start": 218.42,
+      "end": 225.6,
+      "en": "Let's take the VERB: love the affirmative sentence: I love Pizza!",
+      "vi": "Hãy lấy động từ love. Câu khẳng định: Tôi mê pizza!",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: \"chúng ta hãy…\", dùng để rủ cùng làm."
+        },
+        {
+          "term": "love",
+          "kind": "context",
+          "noteVi": "love với đồ ăn, sở thích = rất thích, mê; không phải \"yêu\" như với người."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 226.6,
+      "end": 229.6,
+      "en": "You love Pizza!",
+      "vi": "Bạn mê pizza!",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 232.86,
+      "end": 235.94,
+      "en": "He loves Pizza!",
+      "vi": "Anh ấy mê pizza!",
+      "notes": [
+        {
+          "term": "loves",
+          "kind": "context",
+          "noteVi": "Chủ ngữ He nên love thêm -s thành loves."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 236.64,
+      "end": 241.5,
+      "en": "Did you notice how we added -s to the end of love?",
+      "vi": "Bạn có để ý ta đã thêm -s vào cuối love không?",
+      "notes": [
+        {
+          "term": "added",
+          "kind": "context",
+          "noteVi": "added là quá khứ của add (thêm): việc đã làm ở phía trên."
+        }
+      ]
+    },
+    {
+      "start": 241.5,
+      "end": 243.18,
+      "en": "Do you remember why?",
+      "vi": "Bạn có nhớ vì sao không?"
+    },
+    {
+      "start": 243.82,
+      "end": 244.98,
+      "en": "That is right!",
+      "vi": "Đúng rồi!",
+      "notes": [
+        {
+          "term": "That is right",
+          "kind": "idiom",
+          "noteVi": "Câu khen khi trả lời đúng: \"Đúng rồi!\" (hay nói gọn That's right)."
+        }
+      ]
+    },
+    {
+      "start": 245.32,
+      "end": 253.14,
+      "en": "Because the subject is \"He\" I love Pizza You love Pizza",
+      "vi": "Vì chủ ngữ là \"He\". Tôi mê pizza, bạn mê pizza",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 253.14,
+      "end": 261.28,
+      "en": "We love Pizza They love Pizza BUT He loves Pizza",
+      "vi": "Chúng tôi mê pizza, họ mê pizza, NHƯNG anh ấy mê pizza (loves, có -s)",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 261.28,
+      "end": 268.96,
+      "en": "She loves Pizza It loves Pizza The video will now stop",
+      "vi": "Cô ấy mê pizza, nó mê pizza. Bây giờ video sẽ dừng",
+      "notes": [
+        {
+          "term": "It loves Pizza",
+          "kind": "context",
+          "noteVi": "It dùng cho con vật hoặc đồ vật; câu này chỉ để minh hoạ quy tắc thêm -s."
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 268.96,
+      "end": 275.02,
+      "en": "and you will have an activity to form the Present Tense in affirmative sentences",
+      "vi": "và bạn sẽ làm một bài tập đặt câu khẳng định ở thì hiện tại."
+    },
+    {
+      "start": 279.48,
+      "end": 280.9,
+      "en": "Congratulations!",
+      "vi": "Chúc mừng bạn!"
+    },
+    {
+      "start": 281.32,
+      "end": 286.12,
+      "en": "Now you know how to form affirmative sentences in the Present Tense",
+      "vi": "Giờ bạn đã biết cách đặt câu khẳng định ở thì hiện tại.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 286.78,
+      "end": 292.48,
+      "en": "I will see you back here again for the next lesson Good Luck!",
+      "vi": "Hẹn gặp lại bạn ở đây trong bài sau. Chúc may mắn!",
+      "notes": [
+        {
+          "term": "see you back here",
+          "kind": "idiom",
+          "noteVi": "Hẹn gặp lại ở đây (lời chào cuối bài)."
+        }
+      ]
+    }
+  ]
+}

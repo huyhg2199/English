@@ -1,21 +1,25 @@
 import { describe, expect, it } from 'vitest'
 
 import { allTenses } from '@/data/lessons'
-import { LESSON_VIDEOS } from '@/data/videos'
+import { FOUNDATION_FUN_VIDEOS, LESSON_VIDEOS, type Video } from '@/data/videos'
 import { isSubFile, type SubFile } from '@/lib/subs/types'
+
+import { canStoreTranscript, transcriptSource, type TranscriptSource } from '../../../scripts/subs/parse.mjs'
 
 import { hasSubs, loadSubs, SUBTITLED_VIDEO_IDS } from './index'
 
 const VOA = 'VOA Learning English'
 const FILES = import.meta.glob<unknown>('./*.json', { eager: true, import: 'default' })
-/** Caption gốc do scripts/subs/fetch-captions.mjs ghi (nếu có trong repo): sub phải giữ nguyên mốc và câu Anh. */
-const RAW = import.meta.glob<{ cues: { start: number; end: number; en: string }[] }>('../../../scripts/subs/captions/*.json', {
-  eager: true,
-  import: 'default',
-})
-const rawFor = (id: string) => Object.entries(RAW).find(([p]) => p.endsWith(`/${id}.json`))?.[1]
+/** Caption gốc do scripts/subs/fetch-captions.mjs ghi (commit trong repo): sub phải giữ nguyên mốc và câu Anh. */
+type RawCaption = { videoId: string; title: string; source: TranscriptSource; cues: { start: number; end: number; en: string }[] }
+const RAW = import.meta.glob<RawCaption>('../../../scripts/subs/captions/*.json', { eager: true, import: 'default' })
+const rawEntries = Object.entries(RAW).map(([path, data]) => [path.replace(/^.*\/|\.json$/g, ''), data] as const)
+const rawFor = (id: string) => rawEntries.find(([rid]) => rid === id)?.[1]
 const entries = Object.entries(FILES).map(([path, data]) => [path.replace(/^\.\/|\.json$/g, ''), data] as const)
 const tenseIds = new Set(allTenses().map((t) => t.id))
+/** Mọi video trong app (bài học story 15 + giải trí Sân ga story 21). */
+const ALL_VIDEOS: readonly Video[] = [...LESSON_VIDEOS, ...FOUNDATION_FUN_VIDEOS]
+const videosWith = (id: string) => ALL_VIDEOS.filter((v) => v.id === id)
 
 describe('dữ liệu phụ đề song ngữ (story 16)', () => {
   it('danh sách video có sub khớp các file', () => {
@@ -23,16 +27,15 @@ describe('dữ liệu phụ đề song ngữ (story 16)', () => {
     expect(hasSubs('khong-co')).toBe(false)
   })
 
-  it.each(entries)('%s: chỉ cho video kênh VOA có trong dữ liệu story 15, ghi nguồn public domain', (id, data) => {
+  it.each(entries)('%s: chỉ cho video VOA public domain hoặc CC BY có trong dữ liệu video, ghi đúng nguồn', (id, data) => {
     expect(isSubFile(data), id).toBe(true)
     const file = data as SubFile
     expect(file.videoId).toBe(id)
-    const videos = LESSON_VIDEOS.filter((v) => v.id === id)
-    expect(videos.length, `${id} không có trong videos.json`).toBeGreaterThan(0)
-    for (const v of videos) expect(v.channel).toBe(VOA)
-    expect(file.source.channel).toBe(VOA)
-    expect(file.source.license).toBe('public domain – VOA')
-    expect(file.source.url).toBe(`https://www.youtube.com/watch?v=${id}`)
+    const videos = videosWith(id)
+    expect(videos.length, `${id} không có trong videos.json / foundation-videos.json`).toBeGreaterThan(0)
+    for (const v of videos) expect(canStoreTranscript(v), `${id}: kênh "${v.channel}" giấy phép "${v.license}"`).toBe(true)
+    // Nguồn ghi đúng như script làm (kênh, link kênh, link video, giấy phép + link, ghi chú bản dịch, loại caption).
+    expect(file.source).toEqual(transcriptSource(videos[0], file.source.captionKind))
   })
 
   it.each(entries)('%s: cue tăng dần, không chồng nhau, có cả en và vi; chú thích nằm trong câu; thì có thật', (id, data) => {
@@ -48,15 +51,37 @@ describe('dữ liệu phụ đề song ngữ (story 16)', () => {
     })
   })
 
-  it.each(entries)('%s: mốc thời gian và câu Anh lấy nguyên từ caption gốc (nếu có file caption)', (id, data) => {
+  it.each(entries)('%s: có file caption gốc; mốc thời gian và câu Anh lấy nguyên từ đó', (id, data) => {
     const raw = rawFor(id)
-    if (!raw) return
-    expect((data as SubFile).cues.map(({ start, end, en }) => ({ start, end, en }))).toEqual(raw.cues)
+    expect(raw, `thiếu scripts/subs/captions/${id}.json`).toBeDefined()
+    expect((data as SubFile).cues.map(({ start, end, en }) => ({ start, end, en }))).toEqual(raw!.cues)
   })
 
-  it('số file sub hiện có (đổi khi thêm / bớt file, để kiểm từng file ở trên không lặng lẽ chạy 0 lần)', () => {
-    // Story 16: chưa lấy được caption VOA có mốc thời gian nên chưa có file nào (xem stack.md, "Phụ đề song ngữ").
-    expect(entries.length).toBe(0)
+  it('có file caption gốc và file sub trong repo (để các kiểm tra từng file không lặng lẽ chạy 0 lần)', () => {
+    // 2026-11-10: 7 video CC BY trong bài đều có caption do kênh đăng và file sub tiếng Việt.
+    expect(rawEntries.length).toBeGreaterThanOrEqual(7)
+    expect(entries.length).toBeGreaterThanOrEqual(7)
+  })
+
+  it('mọi video CC BY đều có file sub (video CC BY chỉ được thêm khi đã có caption do kênh đăng và bản dịch)', () => {
+    const ccBy = ALL_VIDEOS.filter((v) => v.license === 'cc-by')
+    expect(ccBy.length).toBeGreaterThan(0)
+    for (const v of ccBy) expect(hasSubs(v.id), v.id).toBe(true)
+  })
+
+  it.each(rawEntries)('caption %s: video VOA / CC BY có trong dữ liệu, nguồn đúng, cue tăng dần không chồng nhau', (id, raw) => {
+    expect(raw.videoId).toBe(id)
+    const videos = videosWith(id)
+    expect(videos.length, `${id} không có trong dữ liệu video`).toBeGreaterThan(0)
+    for (const v of videos) expect(canStoreTranscript(v), id).toBe(true)
+    expect(raw.source).toEqual(transcriptSource(videos[0], raw.source.captionKind))
+    expect(raw.cues.length).toBeGreaterThan(0)
+    raw.cues.forEach((c, i) => {
+      expect(c.end, `${id}#${i}`).toBeGreaterThan(c.start)
+      if (i > 0) expect(c.start, `${id}#${i}`).toBeGreaterThanOrEqual(raw.cues[i - 1].end)
+      expect(c.en.trim(), `${id}#${i}`).not.toBe('')
+      expect(c.en, `${id}#${i}`).not.toMatch(/&[a-z#0-9]+;/i)
+    })
   })
 
   it('video không có sub → loadSubs reject (player giữ như story 15)', async () => {

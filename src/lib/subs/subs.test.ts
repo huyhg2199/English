@@ -195,6 +195,16 @@ describe('isSubFile', () => {
     expect(isSubFile({ ...ok, cues: [] })).toBe(false)
     expect(isSubFile(null)).toBe(false)
   })
+
+  it('nguồn CC BY: link kênh, link giấy phép, ghi chú bản dịch là chuỗi nếu có', () => {
+    const ccBy = {
+      ...ok,
+      source: { ...ok.source, channelUrl: 'c', licenseUrl: 'l', translation: 'Bản dịch tiếng Việt do Lumos thực hiện' },
+    }
+    expect(isSubFile(ccBy)).toBe(true)
+    expect(isSubFile({ ...ok, source: { ...ok.source, channelUrl: 1 } })).toBe(false)
+    expect(isSubFile({ ...ok, source: { ...ok.source, licenseUrl: null } })).toBe(false)
+  })
 })
 
 describe('videoPractice (store)', () => {

@@ -4,8 +4,8 @@ import { Loader2, RotateCcw } from 'lucide-react'
 import { useVideoPractice } from '@/app/store-context'
 import { Button } from '@/components/ui/button'
 import { loadSubs } from '@/data/subs'
-import type { LessonVideo } from '@/data/videos'
-import { cueAt, fillDue, highlightReason, pickBlanks, shouldRecordRun, subLessonContext, type SubFile } from '@/lib/subs'
+import type { PlayableVideo } from '@/data/videos'
+import { cueAt, fillDue, highlightReason, pickBlanks, shouldRecordRun, subLessonContext, type SubFile, type SubSource } from '@/lib/subs'
 import { cn } from '@/lib/utils'
 import { attachPlayer, YT_STATE, type PlayerHandle } from '@/lib/youtube-player'
 
@@ -28,7 +28,8 @@ type SubsState = { status: 'loading' } | { status: 'ready'; file: SubFile; known
 type PlayerState = { status: 'connecting' } | { status: 'ready'; player: PlayerHandle } | { status: 'failed' }
 
 /**
- * Phụ đề song ngữ cho một video VOA (story 16), hiện dưới iframe khi video đã được bấm phát.
+ * Phụ đề song ngữ cho một video VOA hoặc CC BY (story 16), hiện dưới iframe khi video đã được bấm phát. Cuối khối ghi
+ * nguồn: kênh (link), giấy phép (link), video gốc và "Bản dịch tiếng Việt do Lumos thực hiện".
  * Sub tải lười; player gắn qua IFrame API vào iframe có sẵn. Sub lỗi / API lỗi thì video vẫn xem được, chỉ báo lỗi.
  * Chế độ "Điền từ": hết câu có từ ẩn thì dừng video, gõ từ thiếu; kết quả lưu khi video hết, khi đổi chế độ, khi rời
  * trang, ẩn app hoặc đóng app (best = max, attempts + 1), chỉ khi lượt đủ dài (`shouldRecordRun`).
@@ -38,7 +39,7 @@ export default function SubtitledVideo({
   iframe,
   onRetryPlayer,
 }: {
-  video: LessonVideo
+  video: PlayableVideo
   iframe: RefObject<HTMLIFrameElement | null>
   /** Dựng lại iframe để gắn player mới (VideoEmbed đổi key). */
   onRetryPlayer: () => void
@@ -48,7 +49,7 @@ export default function SubtitledVideo({
   useEffect(() => {
     knownRef.current = knownWords
   }, [knownWords])
-  const lesson = useMemo(() => subLessonContext(video.lessonId), [video.lessonId])
+  const lesson = useMemo(() => subLessonContext(video.lessonId ?? ''), [video.lessonId])
 
   const [attempt, setAttempt] = useState(0)
   const [subs, setSubs] = useState<SubsState>({ status: 'loading' })
@@ -308,10 +309,41 @@ export default function SubtitledVideo({
           onSeek={playerHandle ? seek : null}
         />
       )}
-      <p className="text-[11px] text-muted-foreground">
-        Phụ đề Anh: caption {file.source.captionKind === 'asr' ? 'tự động' : 'do kênh đăng'} của {file.source.channel} ({file.source.license}).
-        Bản dịch và chú thích do AI làm.
-      </p>
+      <SubAttribution source={file.source} />
     </div>
+  )
+}
+
+const linkClass = 'break-words text-primary underline-offset-4 hover:underline'
+
+/**
+ * Ghi nguồn phụ đề (bắt buộc với CC BY): kênh + link kênh, giấy phép + link, video gốc, các thay đổi (gộp câu, bỏ ký hiệu
+ * âm thanh ở bản Anh; bản dịch tiếng Việt lấy từ `source.translation`).
+ */
+function SubAttribution({ source }: { source: SubSource }) {
+  return (
+    <p className="text-[11px] leading-relaxed break-words text-muted-foreground">
+      Phụ đề Anh: caption {source.captionKind === 'asr' ? 'tự động' : 'do kênh đăng'} (đã gộp câu, bỏ ký hiệu âm thanh) của{' '}
+      {source.channelUrl ? (
+        <a href={source.channelUrl} target="_blank" rel="noreferrer" className={linkClass}>
+          {source.channel}
+        </a>
+      ) : (
+        source.channel
+      )}
+      {' · '}
+      {source.licenseUrl ? (
+        <a href={source.licenseUrl} target="_blank" rel="noreferrer license" className={linkClass}>
+          {source.license}
+        </a>
+      ) : (
+        source.license
+      )}
+      {' · '}
+      <a href={source.url} target="_blank" rel="noreferrer" className={linkClass}>
+        video gốc
+      </a>
+      . {source.translation ?? 'Bản dịch tiếng Việt do Lumos thực hiện'} (dịch và chú thích bằng AI).
+    </p>
   )
 }

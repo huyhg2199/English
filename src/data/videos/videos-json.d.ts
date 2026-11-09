@@ -3,3 +3,7 @@ declare module '*/videos.json' {
   const videos: unknown
   export default videos
 }
+declare module '*/foundation-videos.json' {
+  const videos: unknown
+  export default videos
+}
