@@ -3,7 +3,7 @@ import { createDefaultFoundation, isBrickProgress, isRowResult } from '@/lib/fou
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem } from '@/lib/pronunciation'
-import { isMistakeItem, isQuizAttempt } from '@/lib/quiz'
+import { isBrickInviteDismissal, isMistakeItem, isQuizAttempt } from '@/lib/quiz'
 import { isLessonProgress, readCompletedLessonIds } from '@/lib/roadmap-progress'
 import { isReminders } from '@/lib/reminders/reminders'
 import { isSavedWord, readSavedWords } from '@/lib/saved-words'
@@ -163,6 +163,11 @@ export function sanitizeBackupData(data: Record<string, unknown>): Record<string
       clean.bricks = Object.fromEntries(Object.entries(clean.bricks as Record<string, unknown>).filter(([id]) => isBrickId(id)))
       const rows = isPlainObject(value.rows) ? safeEntries(value.rows, isRowResult) : {}
       clean.rows = Object.fromEntries(Object.entries(rows).filter(([id]) => (ROW_IDS as readonly string[]).includes(id)))
+    }
+    if (key === 'mistakes' && 'brickInvites' in clean) {
+      // Dấu "Để sau" của lời mời ôn viên (story 28): chỉ id viên F01–F18 với mục hợp lệ.
+      const invites = isPlainObject(value.brickInvites) ? safeEntries(value.brickInvites, isBrickInviteDismissal) : {}
+      clean.brickInvites = Object.fromEntries(Object.entries(invites).filter(([id]) => isBrickId(id)))
     }
     out[key] = clean
   }

@@ -156,6 +156,27 @@ export function skipEasier(flow: CheckFlow): CheckFlow {
   return flow.stage === 'invite' || flow.stage === 'easier' ? { ...flow, stage: 'finished', index: 0 } : flow
 }
 
+// --- Cột lý thuyết (máy tính, story 30) ---
+
+/** Loại màn lý thuyết của viên: hiện lại ở cột trái khi đã qua. */
+export const THEORY_SCREEN_KINDS = ['explain', 'contrast', 'worked'] as const
+
+export type TheoryScreenKind = (typeof THEORY_SCREEN_KINDS)[number]
+
+/**
+ * Các màn lý thuyết (`explain` / `contrast` / `worked`) đứng trước màn `index` (đã qua), theo thứ tự trong viên. `index`
+ * ngoài khoảng được kẹp về [0, số màn]; màn đang hiện không bao giờ nằm trong danh sách.
+ */
+export function passedTheoryScreens<S extends { kind: string }>(
+  screens: readonly S[],
+  index: number,
+): Extract<S, { kind: TheoryScreenKind }>[] {
+  const end = Math.min(Math.max(index, 0), screens.length)
+  const isTheory = (s: S): s is Extract<S, { kind: TheoryScreenKind }> =>
+    (THEORY_SCREEN_KINDS as readonly string[]).includes(s.kind)
+  return screens.slice(0, end).filter(isTheory)
+}
+
 // --- Bức tường ---
 
 /** Viên tiếp theo: viên chưa xong đầu tiên F01 → F18, có nội dung, không thuộc hàng đã xong. Không có → null. */
@@ -232,3 +253,6 @@ export function resolveBrickRoute(param: string | undefined, hasContent: (id: Br
 export function brickHref(id: BrickId): string {
   return `/foundation/${id}`
 }
+
+/** Màn ăn mừng "Qua bức tường" (story 26); segment tĩnh, đặt trước `/foundation/:brickId` trong routes. */
+export const WALL_PASSED_HREF = '/foundation/qua-buc-tuong'

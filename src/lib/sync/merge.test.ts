@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { completeBrick, finishPlacement, foundationState, markRowTested, readFoundation, skipFoundation } from '@/lib/foundation'
-import { readCompletedLessonIds } from '@/lib/roadmap-progress'
+import { dismissBrickInvite, recordMistake } from '@/lib/quiz'
+import { markLessonPartSeen, readCompletedLessonIds, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { readSavedWords, saveWord, savedWordsOn } from '@/lib/saved-words'
 import { computeStreak, readSessionDays, recordSession, todaySession } from '@/lib/sessions'
 import { buildSession, gradeCard, readSrs } from '@/lib/srs'
@@ -12,6 +13,7 @@ import {
   InvalidRemoteError,
   mergeCards,
   mergeLessons,
+  mergeMistakes,
   mergePlacement,
   mergePronunciationItems,
   mergeSavedWordItems,
@@ -623,5 +625,86 @@ describe('sessions — lessonId dạng fNN (buổi Sân ga, story 21)', () => {
     expect(mergeSessionDays(lesson, brick)[key]).toMatchObject({ kind: 'full', lessonId: 'f03' })
     expect(mergeSessionDays(brick, lesson)[key]).toMatchObject({ kind: 'full', lessonId: 'f03' })
     expect(mergeSessionDays(brick, {})[key]).toEqual(brick[key])
+  })
+})
+
+describe('phần bài T1 và "Để sau" của lời mời ôn viên (story 28)', () => {
+  const W1 = 's1-t1-w1'
+  const P1 = 's1-t1-w1-p1'
+  const P2 = 's1-t1-w1-p2'
+  const empty = (): Store => local({})
+  const at = (h: number) => new Date(Date.UTC(2026, 10, 5, h))
+  const lessonOf = (s: Store) => (s.data.progress as { lessons: Record<string, unknown> }).lessons[W1]
+
+  it('Đồng bộ phần: máy A xem p1, máy B xem p2 → partsSeen = [p1, p2]; gộp lại lần hai không đổi, không đẩy vòng', () => {
+    const a = markLessonPartSeen(empty(), W1, P1)
+    const b = markLessonPartSeen(empty(), W1, P2)
+    const r = mergeWithRemote(a, remote(b.data))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    expect(lessonOf(r.store)).toEqual({ done: false, updatedAt: LEGACY_UPDATED_AT, partsSeen: [P1, P2] })
+    expect(r.push).toBe(true)
+    // Máy B kéo bản đã gộp về: được [p1, p2]; gộp lại lần hai không đổi, không đẩy.
+    const again = mergeWithRemote(r.store, remote(r.store.data))
+    expect(again).toMatchObject({ kind: 'merged', changedLocal: false, push: false })
+    const back = mergeWithRemote(b, remote(r.store.data))
+    if (back.kind !== 'merged') throw new Error('expected merged')
+    expect([...readSeenPartIds(back.store, W1)]).toEqual([P1, P2])
+    expect(mergeWithRemote(back.store, remote(r.store.data))).toMatchObject({ changedLocal: false, push: false })
+  })
+
+  it('done / updatedAt theo bên mới hơn như cũ; partsSeen sai dạng ở một bên → chỉ lấy chuỗi hợp lệ', () => {
+    const merged = mergeLessons(
+      { a: { done: true, updatedAt: T1, partsSeen: [P2, 7, null, P2] }, b: { done: false, updatedAt: T2, partsSeen: 'x' } },
+      { a: { done: false, updatedAt: T2, partsSeen: [P1] }, b: { done: true, updatedAt: T1 } },
+    )
+    expect(merged).toEqual({
+      a: { done: false, updatedAt: T2, partsSeen: [P1, P2] },
+      // Không bên nào có chuỗi hợp lệ → bỏ field.
+      b: { done: false, updatedAt: T2 },
+    })
+  })
+
+  it('Không đè "đã xong": máy A done: true (t0); máy B chưa đồng bộ, xem p1 (mục mới LEGACY) → done: true, partsSeen = [p1]', () => {
+    const a = setLessonCompleted(empty(), W1, true, at(1))
+    const b = markLessonPartSeen(empty(), W1, P1)
+    for (const [l, srv] of [
+      [a, b],
+      [b, a],
+    ] as const) {
+      const r = mergeWithRemote(l, remote(srv.data))
+      if (r.kind !== 'merged') throw new Error('expected merged')
+      expect(lessonOf(r.store)).toEqual({ done: true, updatedAt: at(1).toISOString(), partsSeen: [P1] })
+      expect(readCompletedLessonIds(r.store)).toEqual([W1])
+      expect(mergeWithRemote(r.store, remote(r.store.data))).toMatchObject({ changedLocal: false, push: false })
+    }
+  })
+
+  it('Đồng bộ "Để sau": hai máy cùng có brickInvites.F09 → lấy dismissedAt muộn hơn; items gộp như cũ', () => {
+    const q = { id: 'q-s1-t1-w1-03', tag: 'thì' as const, lessonId: W1, sectionId: 'grammar' as const }
+    const a = dismissBrickInvite(recordMistake(empty(), q, 'x', at(1)), 'F09', at(2))
+    const b = dismissBrickInvite(empty(), 'F09', at(5))
+    const r = mergeWithRemote(a, remote(b.data))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    const m = r.store.data.mistakes as { items: Record<string, unknown>; brickInvites: Record<string, { dismissedAt: string }> }
+    expect(Object.keys(m.items)).toEqual(['q-s1-t1-w1-03'])
+    expect(m.brickInvites.F09.dismissedAt).toBe(at(5).toISOString())
+    expect(mergeWithRemote(r.store, remote(r.store.data))).toMatchObject({ changedLocal: false, push: false })
+  })
+
+  it('mergeMistakes: brickInvites chỉ có key khi một bên có; một bên sai dạng → bên hợp lệ; bằng nhau theo updatedAt', () => {
+    const items = { items: {} }
+    expect(mergeMistakes(items, items)).toEqual({ items: {} })
+    const d = (dismissedAt: string, updatedAt = dismissedAt) => ({ dismissedAt, updatedAt })
+    expect(mergeMistakes({ items: {} }, { items: {}, brickInvites: { F09: d(T1) } })).toEqual({
+      items: {},
+      brickInvites: { F09: d(T1) },
+    })
+    expect(
+      mergeMistakes(
+        { items: {}, brickInvites: { F09: d(T2, T1), F13: 'junk', F14: d(T1, T1) } },
+        { items: {}, brickInvites: { F09: d(T1, T2), F13: d(T1), F14: d(T1, T2) } },
+      ),
+    ).toEqual({ items: {}, brickInvites: { F09: d(T2, T1), F13: d(T1), F14: d(T1, T2) } })
+    expect(mergeMistakes(undefined, undefined)).toBeUndefined()
   })
 })

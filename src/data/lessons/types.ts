@@ -1,3 +1,5 @@
+import type { RequiredConcept } from '@/data/questions/concepts'
+
 /**
  * Nội dung học thật của bài (story 6): bảng âm + câu luyện nói cho đoạn Phát âm,
  * các thì + câu thoại thật + thần chú cho đoạn Ngữ pháp. Bài không có nội dung thì trang bài giữ như cũ.
@@ -183,12 +185,32 @@ export type GrammarContent = {
   review?: { summary: readonly string[]; note: string; quizId?: string }
 }
 
+/**
+ * Một phần của đoạn Phát âm bài T1 (story 28): mỗi buổi 30' sau Sân ga học một phần. `soundIds` trỏ vào âm đã có trong
+ * `pronunciation.groups` (không chép dữ liệu âm). Câu luyện nói chỉ dùng kiến thức đã dạy (`requires` khai báo tay: khái
+ * niệm viên gạch, hoặc khái niệm của bài T1 này hay bài T1 trước).
+ */
+export type LessonPart = {
+  /** `${lessonId}-p${n}`, n đếm từ 1. */
+  id: string
+  title: string
+  /** Một câu ghi chú. */
+  note: string
+  soundIds: readonly string[]
+  /** 2–3 câu luyện nói, id `${id}-say-${k}`. */
+  sentences: readonly PracticeSentence[]
+  requires: readonly RequiredConcept[]
+}
+
 export type LessonContent = {
   lessonId: string
   pronunciation?: PronunciationContent
+  /**
+   * Các phần của đoạn Phát âm (story 28, chỉ W1–W3). Câu mẫu cũ của tuần (`pronunciation.sentences`) thành khối
+   * "Luyện cả tuần" sau các phần. Bài không có thì đoạn Phát âm hiện như cũ.
+   */
+  parts?: readonly LessonPart[]
   grammar?: GrammarContent
-  /** Tuần 1: nút "Làm bài đầu vào" sang Mũ Phân Loại. */
-  placementLink?: boolean
   /** Tuần Tết: chỉ nhắc chạy chế độ ngày lười, không có nội dung mới. */
   lazyWeek?: boolean
   /**

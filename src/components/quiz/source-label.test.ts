@@ -11,6 +11,18 @@ describe('nguồn câu', () => {
     expect(questionSourceHref('f18', 'grammar')).toBe('/foundation/F18')
   })
 
+  it('kiểm tra cuối hàng B: câu sai q-f11-02 → "Xem lại: Viên gạch F11 · a/an/the + đếm được" mở F11', () => {
+    expect(sourceLabel('f11', 'grammar')).toBe('Viên gạch F11 · a/an/the + đếm được')
+    expect(questionSourceHref('f11', 'grammar')).toBe('/foundation/F11')
+    expect(sourceLabel('f07', 'grammar')).toBe('Viên gạch F07 · Từ loại')
+  })
+
+  it('kiểm tra cuối hàng C: câu sai q-f14-02 → "Xem lại: Viên gạch F14 · …" mở F14 (đã có nội dung)', () => {
+    expect(sourceLabel('f14', 'grammar')).toBe('Viên gạch F14 · to be phủ định, hỏi + từ để hỏi')
+    expect(questionSourceHref('f14', 'grammar')).toBe('/foundation/F14')
+    expect(questionSourceHref('f17', 'grammar')).toBe('/foundation/F17')
+  })
+
   it('bài lộ trình giữ như cũ', () => {
     expect(questionSourceHref('s1-t1-w1', 'grammar')).toBe(sectionHref('s1-t1-w1', 'grammar'))
     expect(sourceLabel('s1-t1-w1', 'grammar')).toMatch(/ · Ngữ pháp$/)

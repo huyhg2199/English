@@ -76,3 +76,23 @@ export function comebackCount(days: Record<string, unknown>): number {
   }
   return count
 }
+
+/** Lần đầu xong mỗi viên gạch Sân ga: +5 điểm Nhà (story 26, `hp-theme.md`). Học lại không cộng thêm. */
+export const BRICK_FIRST_DONE_POINTS = 5
+
+export type HousePointsWithBricks = HousePoints & {
+  /** Điểm viên gạch: `brickCount` × 5. */
+  brickPoints: number
+  /** Số viên đã xong lần đầu (có `firstDoneAt`); hàng qua bằng kiểm tra không tạo mục viên nên không tính. */
+  brickCount: number
+}
+
+/**
+ * Cộng điểm viên gạch vào điểm Nhà (`housePoints` giữ nguyên). `brickCount` là số viên có `firstDoneAt`
+ * (`foundationState(store).doneBrickIds.length`); không phải số nguyên ≥ 0 thì tính 0.
+ */
+export function withBrickPoints(points: HousePoints, brickCount: number): HousePointsWithBricks {
+  const count = Number.isInteger(brickCount) && brickCount >= 0 ? brickCount : 0
+  const brickPoints = count * BRICK_FIRST_DONE_POINTS
+  return { ...points, total: points.total + brickPoints, brickPoints, brickCount: count }
+}

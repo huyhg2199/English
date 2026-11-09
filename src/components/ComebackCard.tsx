@@ -4,19 +4,22 @@ import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { COMEBACK_HREF, type ComebackBreak } from '@/lib/comeback'
+import { cn } from '@/lib/utils'
 
 /** Thẻ "Chào mừng quay lại" (story 11, CAP-6): mời test 5', bỏ qua được ("Để sau"), không ép. */
 export function ComebackCard({
   pending,
   questionCount,
   onSkip,
+  className,
 }: {
   pending: ComebackBreak
   questionCount: number
   onSkip: () => void
+  className?: string
 }) {
   return (
-    <Card className="gap-3 border-primary/50">
+    <Card className={cn('gap-3 border-primary/50', className)}>
       <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
         <Sparkles className="row-span-2 size-9 text-primary drop-shadow-[0_0_10px_var(--candle-glow)]" aria-hidden="true" />
         <CardTitle className="text-lg">

@@ -1,5 +1,7 @@
 import type { SectionId } from '@/data/roadmap/types'
 
+import type { RequiredConcept } from './concepts'
+
 /**
  * Ngân hàng câu hỏi (story 9): câu tĩnh tự soạn theo khuôn ETS (không chép đề).
  * Mọi id là chuỗi viết tay, ổn định: lần làm (`quizzes`) và Sổ lỗi sai (`mistakes`) lưu theo id câu.
@@ -33,4 +35,9 @@ export type Question = {
   answer: string
   /** Giải thích tiếng Việt ngắn. */
   explanation: string
+  /**
+   * Khái niệm cần để hiểu đề, chọn đúng đáp án và đọc hiểu giải thích (lựa chọn sai không tính), khai báo tay
+   * (story 27). Quiz bài và mini test bỏ câu cần viên gạch chưa dạy. Câu T2–T4 chưa khai báo → không bao giờ bị lọc.
+   */
+  requires?: readonly RequiredConcept[]
 }

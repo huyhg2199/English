@@ -28,7 +28,7 @@ const VOA_L20 = {
 
 export const TO_BE: Tense = {
   id: 'to-be',
-  name: 'Động từ to be (am / is / are)',
+  name: 'Ôn lại: viên gạch F13–F14 · to be (am / is / are)',
   use: 'Nói ai là gì, ở đâu, thế nào ngay lúc này: tên, nghề, cảm xúc, nơi chốn.',
   timeline: { kind: 'state', label: 'Trạng thái đang đúng ở hiện tại' },
   formulas: [

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { LEVEL_LABELS, type LevelUp } from '@/lib/trophies'
+import { LEVEL_LABELS, type OwlLetter } from '@/lib/trophies'
 
 import { MedalIcon } from './MedalIcon'
 
@@ -29,15 +29,17 @@ function OwlSvg() {
   )
 }
 
-const letterText = (l: LevelUp) => `Huy chương ${l.name} ${LEVEL_LABELS[l.level]}`
+/** "Huy chương Hermione đồng"; huy chương một lần không cấp (`level` null): "Huy chương Lên tàu Năm 1". */
+const letterText = (l: OwlLetter) => (l.level ? `Huy chương ${l.name} ${LEVEL_LABELS[l.level]}` : `Huy chương ${l.name}`)
 
 /**
  * Lớp thông báo "cú đưa thư": cú bay tới thả thư (≤ 2 giây) rồi hiện thẻ huy chương mới; chạm hoặc Escape để đóng.
  * Lớp phủ cả màn hình nhưng trong suốt và `pointer-events-none` (chỉ thẻ nhận chạm) để cú bay không bị cắt.
  * `prefers-reduced-motion` thì ẩn cú, chỉ hiện thẻ (CSS trong index.css). Không âm thanh.
- * Vùng `role="status"` luôn có mặt để trình đọc màn hình đọc thư mới.
+ * Vùng `role="status"` luôn có mặt để trình đọc màn hình đọc thư mới. Thư là cấp huy chương (`LevelUp`) hoặc huy chương
+ * một lần (`level` null, vd "Lên tàu Năm 1" ở màn Qua bức tường): hiện huy chương vàng.
  */
-export function OwlPost({ letters, onClose }: { letters: readonly LevelUp[]; onClose: () => void }) {
+export function OwlPost({ letters, onClose }: { letters: readonly OwlLetter[]; onClose: () => void }) {
   const open = letters.length > 0
   useEffect(() => {
     if (!open) return
@@ -72,7 +74,7 @@ export function OwlPost({ letters, onClose }: { letters: readonly LevelUp[]; onC
               <span className="text-xs text-muted-foreground">Cú đưa thư tới!</span>
               {letters.map((l) => (
                 <span key={l.key} className="flex items-center gap-3">
-                  <MedalIcon level={l.level} className="size-10" />
+                  <MedalIcon level={l.level ?? 'gold'} className="size-10" />
                   <span className="font-semibold">{letterText(l)}</span>
                 </span>
               ))}

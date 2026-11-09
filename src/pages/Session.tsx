@@ -1,26 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  BookOpenCheck,
-  Hammer,
-  Layers,
-  Music,
-  PartyPopper,
-  Sparkles,
-  type LucideIcon,
-} from 'lucide-react'
+import { ArrowLeft, ArrowRight, Hammer, PartyPopper, Sparkles } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 
-import { useLoadedStore, useSessions, useSkillBoard } from '@/app/store-context'
+import { useLessonParts, useLoadedStore, useSessions, useSkillBoard } from '@/app/store-context'
+import { useHotkeys, type HotkeyBindings } from '@/app/use-hotkeys'
 import { BrickPlayer } from '@/components/foundation/BrickPlayer'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
+import type { PronunciationView } from '@/components/lesson/LessonContentParts'
 import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { VideoList } from '@/components/media/VideoEmbed'
 import { ReadingSourceContext } from '@/components/reading-source'
+import { Kbd } from '@/components/Kbd'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
+import { SessionRail } from '@/components/session/SessionRail'
 import { BackToToday, LinkList, SessionDoneView, StepClock } from '@/components/session/SessionParts'
+import { STEP_ICONS } from '@/components/session/step-icons'
+import { SplitLayout, SplitMain } from '@/components/SplitLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBrickMeta, type BrickId } from '@/data/foundation'
@@ -34,6 +29,7 @@ import {
   sectionHref,
 } from '@/data/roadmap'
 import { foundationFunVideos, funStepVideos } from '@/data/videos'
+import { stepForKey } from '@/lib/hotkeys'
 import { prioritizeSections } from '@/lib/placement'
 import {
   followUpBrickId,
@@ -46,22 +42,13 @@ import {
   type SessionLesson,
   type SessionPlan,
   type SessionStep,
-  type SessionStepId,
   type TheoryLock,
 } from '@/lib/sessions'
 import { cn } from '@/lib/utils'
 
-const STEP_ICONS: Record<SessionStepId, LucideIcon> = {
-  theory: BookOpen,
-  review: Layers,
-  lesson: BookOpenCheck,
-  srs: Layers,
-  fun: Music,
-}
-
 function Stepper({ steps, step }: { steps: readonly SessionStep[]; step: number }) {
   return (
-    <ol className="grid grid-cols-3 gap-2" aria-label="Các phần của buổi">
+    <ol className="grid grid-cols-3 gap-2 lg:hidden" aria-label="Các phần của buổi">
       {steps.map((s, i) => {
         const Icon = STEP_ICONS[s.id]
         return (
@@ -160,8 +147,11 @@ function TheoryStep({
   )
 }
 
-/** Bài chính: thẻ đoạn kèm nội dung (bảng âm, TenseCard, nút thi O.W.L.) hiện ngay trong buổi, lý thuyết trước. */
-function LessonStep({ current }: { current: SessionLesson | null }) {
+/**
+ * Bài chính: thẻ đoạn kèm nội dung (bảng âm, TenseCard, nút thi O.W.L.) hiện ngay trong buổi, lý thuyết trước.
+ * Bài T1 chia phần (story 28): đoạn Phát âm chỉ hiện phần của buổi (`partId`); đã xem hết thì hiện mọi phần để ôn cả tuần.
+ */
+function LessonStep({ current, partId }: { current: SessionLesson | null; partId: string | null }) {
   const { weakest } = useSkillBoard()
   if (!current) {
     return (
@@ -180,6 +170,8 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
   }
   const { lesson, stage } = current
   const content = getLessonContent(lesson.id)
+  const partCount = content?.parts?.length ?? 0
+  const view: PronunciationView = partId ? { kind: 'part', partId } : { kind: 'all' }
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -188,6 +180,11 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
         </p>
         <h2 className="text-xl font-semibold break-words">{lesson.title}</h2>
       </div>
+      {partCount > 0 && !partId && (
+        <p className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
+          Đã xem đủ {partCount} phần, hôm nay ôn lại cả tuần.
+        </p>
+      )}
       {/* Lý thuyết (phát âm, ngữ pháp) luôn trước; đoạn luyện của kỹ năng yếu nhất lên trước đoạn luyện khác, nhãn "Ưu tiên". */}
       {prioritizeSections(
         lesson.sections.filter((s) => s.id !== 'entertainment'),
@@ -198,7 +195,13 @@ function LessonStep({ current }: { current: SessionLesson | null }) {
           value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
         >
           <LessonSectionCard lesson={lesson} stage={stage} section={section} priority={priority}>
-            <LessonSectionContent lesson={lesson} stage={stage} section={section} content={content} />
+            <LessonSectionContent
+              lesson={lesson}
+              stage={stage}
+              section={section}
+              content={content}
+              pronunciationView={view}
+            />
           </LessonSectionCard>
         </ReadingSourceContext.Provider>
       ))}
@@ -241,20 +244,23 @@ function FunStep({ plan }: { plan: SessionPlan }) {
 /**
  * Buổi 30' theo kế hoạch (`resolveSessionPlan`, story 21): lý thuyết luôn trước. Đang ở Sân ga: Lý thuyết 12' (viên gạch
  * chạy ngay trong buổi) → Ôn & từ mới 8' → Giải trí nhẹ 10'; sau Sân ga: Bài chính 15' → Ôn flashcard 5' → Giải trí 10'.
- * Kế hoạch và bước chốt trên URL (`?brick=F03&step=theory` / `?lesson=…&step=lesson`), nên mở trang khác rồi quay lại
+ * Kế hoạch và bước chốt trên URL (`?brick=F03&step=theory` / `?lesson=…&part=…&step=lesson`), nên mở trang khác rồi quay lại
  * vẫn đúng buổi. Rời buổi giữa chừng không ghi gì; chỉ "Xong buổi" mới ghi nhật ký.
  */
 export function Session() {
   const { record } = useSessions()
+  const { markSessionSeen } = useLessonParts()
   const { store } = useLoadedStore()
   const [params, setParams] = useSearchParams()
   const [finished, setFinished] = useState(false)
   const brickParam = params.get('brick')
   const lessonParam = params.get('lesson')
+  const partParam = params.get('part')
   const stepParam = params.get('step')
   const { plan, stepIndex, search } = useMemo(
-    () => resolveSessionPlan({ brick: brickParam, lesson: lessonParam, step: stepParam }, store, hasBrickContent),
-    [brickParam, lessonParam, stepParam, store],
+    () =>
+      resolveSessionPlan({ brick: brickParam, lesson: lessonParam, part: partParam, step: stepParam }, store, hasBrickContent),
+    [brickParam, lessonParam, partParam, stepParam, store],
   )
   const canonical = new URLSearchParams(search).toString()
   const brickId = plan.mode === 'foundation' ? plan.brickId : null
@@ -283,6 +289,9 @@ export function Session() {
   function goTo(index: number) {
     setParams(sessionSearch(plan, index), { replace: true })
     window.scrollTo(0, 0)
+    // Nút "Tiếp" / "Quay lại" ở cột phụ và hàng đáy vẫn là cùng nút sau khi đổi bước: bỏ focus để Space (lật thẻ) / Enter ở
+    // bước mới không bấm lại nút đó (story 31).
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
   }
 
   function followUpTo(id: BrickId) {
@@ -292,13 +301,23 @@ export function Session() {
 
   function finish() {
     record('full', new Date(), { lessonId: sessionRecordLessonId(plan) })
+    // Buổi học một phần của bài T1 (story 28): "Xong buổi" cũng tính phần đó là đã xem (đã có thì store không đổi).
+    markSessionSeen(plan)
     setFinished(true)
     window.scrollTo(0, 0)
   }
 
+  // Phím tắt (story 31): → bước sau, ← bước trước (cùng `goTo` với nút). Bước cuối → không tự "Xong buổi"; view xong không có phím.
+  const stepKeys: HotkeyBindings = {}
+  for (const name of ['ArrowLeft', 'ArrowRight'] as const) {
+    const to = stepForKey(name, stepIndex, steps.length)
+    if (to !== null) stepKeys[name] = () => goTo(to)
+  }
+  useHotkeys(stepKeys, !finished)
+
   if (finished) {
     return (
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6 lg:mx-auto lg:w-full lg:max-w-3xl">
         <SessionDoneView kindLabel="buổi 30'" />
       </section>
     )
@@ -309,68 +328,78 @@ export function Session() {
   return (
     <section className="flex flex-col gap-5">
       <BackToToday />
-      <header className="flex items-center gap-3">
-        <Icon className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
-        <h1 className="text-2xl font-semibold tracking-wide">
-          {meta.title} {meta.minutes}'
-        </h1>
-      </header>
-      <Stepper steps={steps} step={stepIndex} />
+      {/* Từ 1024px (story 30): cột trái dính có stepper dọc và nút Tiếp/Xong buổi; stepper ngang và hàng nút đáy ẩn. */}
+      <SplitLayout cols="rail-left" className="flex flex-col gap-5">
+        <SessionRail steps={steps} stepIndex={stepIndex} onGo={goTo} onFinish={finish} />
+        <SplitMain className="flex flex-col gap-5">
+          <header className="flex items-center gap-3">
+            <Icon className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
+            <h1 className="text-2xl font-semibold tracking-wide">
+              {meta.title} {meta.minutes}'
+            </h1>
+          </header>
+          <Stepper steps={steps} step={stepIndex} />
 
-      <StepClock
-        key={`${meta.id}:${brickId ?? ''}`}
-        minutes={meta.minutes}
-        onExpiredHint={
-          isFlashcards && nextStep ? (
-            <p role="status" className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
-              Hết {meta.minutes}' rồi, sang {nextStep.title.toLowerCase()} nhé. Muốn ôn tiếp thẻ đang dở vẫn được.
-            </p>
-          ) : null
-        }
-      />
+          <StepClock
+            key={`${meta.id}:${brickId ?? ''}`}
+            minutes={meta.minutes}
+            onExpiredHint={
+              isFlashcards && nextStep ? (
+                <p role="status" className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
+                  Hết {meta.minutes}' rồi, sang {nextStep.title.toLowerCase()} nhé. Muốn ôn tiếp thẻ đang dở vẫn được.
+                </p>
+              ) : null
+            }
+          />
 
-      {meta.id === 'theory' && (
-        <TheoryStep brickId={brickId} review={review} note={theory?.note ?? null} followUp={followUp} onFollowUp={followUpTo} />
-      )}
-      {isFlashcards && (
-        <FlashcardSession
-          firstList={sessionWordList(plan)}
-          renderDone={() => (
-            <Card className="items-center text-center">
-              <CardHeader className="w-full items-center">
-                <PartyPopper className="mx-auto size-10 text-primary" aria-hidden="true" />
-                <CardTitle>Phần ôn xong</CardTitle>
-                <CardDescription>
-                  Hết thẻ cho hôm nay.{nextStep ? ` Sang phần ${nextStep.title.toLowerCase()} thôi.` : ''}
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          {meta.id === 'theory' && (
+            <TheoryStep brickId={brickId} review={review} note={theory?.note ?? null} followUp={followUp} onFollowUp={followUpTo} />
           )}
-        />
-      )}
-      {meta.id === 'lesson' && <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} />}
-      {meta.id === 'fun' && <FunStep plan={plan} />}
+          {isFlashcards && (
+            <FlashcardSession
+              firstList={sessionWordList(plan)}
+              renderDone={() => (
+                <Card className="items-center text-center">
+                  <CardHeader className="w-full items-center">
+                    <PartyPopper className="mx-auto size-10 text-primary" aria-hidden="true" />
+                    <CardTitle>Phần ôn xong</CardTitle>
+                    <CardDescription>
+                      Hết thẻ cho hôm nay.{nextStep ? ` Sang phần ${nextStep.title.toLowerCase()} thôi.` : ''}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              )}
+            />
+          )}
+          {meta.id === 'lesson' && (
+            <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} partId={plan.mode === 'lesson' ? plan.partId : null} />
+          )}
+          {meta.id === 'fun' && <FunStep plan={plan} />}
 
-      <div className="flex gap-2">
-        {stepIndex > 0 && (
-          <Button variant="outline" onClick={() => goTo(stepIndex - 1)}>
-            <ArrowLeft aria-hidden="true" />
-            Quay lại
-          </Button>
-        )}
-        {nextStep ? (
-          <Button className="flex-1" onClick={() => goTo(stepIndex + 1)}>
-            Tiếp: {nextStep.title}
-            <ArrowRight aria-hidden="true" />
-          </Button>
-        ) : (
-          <Button className="flex-1" onClick={finish}>
-            Xong buổi
-          </Button>
-        )}
-      </div>
+          <div className="flex gap-2 lg:hidden">
+            {stepIndex > 0 && (
+              <Button variant="outline" onClick={() => goTo(stepIndex - 1)} aria-keyshortcuts="ArrowLeft">
+                <ArrowLeft aria-hidden="true" />
+                Quay lại
+                <Kbd>←</Kbd>
+              </Button>
+            )}
+            {nextStep ? (
+              <Button className="flex-1" onClick={() => goTo(stepIndex + 1)} aria-keyshortcuts="ArrowRight">
+                Tiếp: {nextStep.title}
+                <ArrowRight aria-hidden="true" />
+                <Kbd>→</Kbd>
+              </Button>
+            ) : (
+              <Button className="flex-1" onClick={finish}>
+                Xong buổi
+              </Button>
+            )}
+          </div>
 
-      {isFlashcards && <VocabAttribution />}
+          {isFlashcards && <VocabAttribution />}
+        </SplitMain>
+      </SplitLayout>
     </section>
   )
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { BrickId, CheckItem } from '@/data/foundation'
+import type { BrickId, CheckItem, Screen } from '@/data/foundation'
+import { getBrick } from '@/data/foundation/content'
 import { CURRENT_VERSION, type Store } from '@/lib/storage'
 
 import {
@@ -15,6 +16,7 @@ import {
   markRowTested,
   needsReview,
   nextBrickId,
+  passedTheoryScreens,
   readFoundation,
   recordAnswer,
   resolveBrickRoute,
@@ -282,5 +284,47 @@ describe('route /foundation/:brickId', () => {
     expect(tests(both)[0]).toBe('final')
     // Hàng chưa đạt kiểm tra (có kết quả) vẫn là know.
     expect(tests(markRowTested(empty(), 'B', 2, 8, day(6)))[1]).toBe('know')
+  })
+})
+
+describe('passedTheoryScreens (cột lý thuyết máy tính, story 30)', () => {
+  const fake = [
+    { kind: 'explain' },
+    { kind: 'contrast' },
+    { kind: 'worked' },
+    { kind: 'faded' },
+    { kind: 'check' },
+    { kind: 'apply' },
+  ] as const
+  const kinds = (index: number) => passedTheoryScreens(fake, index).map((s) => s.kind)
+
+  it('index 0 / 1 / 3 / 5 → [] / [explain] / [explain, contrast, worked] / như 3', () => {
+    expect(kinds(0)).toEqual([])
+    expect(kinds(1)).toEqual(['explain'])
+    expect(kinds(2)).toEqual(['explain', 'contrast'])
+    expect(kinds(3)).toEqual(['explain', 'contrast', 'worked'])
+    expect(kinds(5)).toEqual(['explain', 'contrast', 'worked'])
+  })
+
+  it('index ngoài khoảng → kẹp', () => {
+    expect(kinds(-3)).toEqual([])
+    expect(kinds(99)).toEqual(['explain', 'contrast', 'worked'])
+  })
+
+  it('màn lý thuyết nằm sau màn hiện tại không hiện; thứ tự giữ theo viên', () => {
+    const mixed = [{ kind: 'worked' }, { kind: 'check' }, { kind: 'explain' }] as const
+    expect(passedTheoryScreens(mixed, 2).map((s) => s.kind)).toEqual(['worked'])
+    expect(passedTheoryScreens(mixed, 3).map((s) => s.kind)).toEqual(['worked', 'explain'])
+  })
+
+  it('F01 thật: màn 4–6 có đủ Giải thích, So sánh, Ví dụ mẫu (cùng object của viên)', () => {
+    const brick = getBrick('F01')!
+    const screens: readonly Screen[] = brick.screens
+    for (const index of [3, 4, 5]) {
+      const passed = passedTheoryScreens(screens, index)
+      expect(passed.map((s) => s.kind)).toEqual(['explain', 'contrast', 'worked'])
+      for (const s of passed) expect(screens.indexOf(s)).toBeLessThan(index)
+    }
+    expect(passedTheoryScreens(screens, 0)).toEqual([])
   })
 })

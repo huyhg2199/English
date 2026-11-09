@@ -4,11 +4,12 @@ import { Link, useNavigate } from 'react-router'
 
 import { useFoundation } from '@/app/store-context'
 import { BrickWall } from '@/components/foundation/BrickWall'
+import { WallPassedCard } from '@/components/foundation/WallPassedCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBrickMeta, type RowId } from '@/data/foundation'
 import { hasBrickContent } from '@/data/foundation/content'
-import { brickHref, nextBrickIdFromState, wallRows } from '@/lib/foundation'
+import { brickHref, nextBrickIdFromState, wallRows, WALL_PASSED_HREF } from '@/lib/foundation'
 import { PLACEMENT_HREF } from '@/lib/foundation/row-test'
 
 /** Thẻ mời Soát vé (chỉ khi Soát vé còn `pending`): bắt đầu / tiếp tục, hoặc "Bỏ qua, học từ viên 1". */
@@ -39,10 +40,11 @@ function TicketInvite({ row, started, onSkip }: { row: RowId; started: boolean; 
 
 /**
  * Sân ga 9¾: bức tường 18 viên gạch (story 19) và thẻ mời Soát vé (story 20). Không khoá viên nào; "Học tiếp" chỉ là
- * gợi ý, bức tường vẫn bấm được khi Soát vé còn `pending`.
+ * gợi ý, bức tường vẫn bấm được khi Soát vé còn `pending`. Qua tường (story 26): thẻ "Qua bức tường" khi còn chờ ăn
+ * mừng, hết chờ thì link "Xem lại màn Qua bức tường".
  */
 export function Foundation() {
-  const { state, needsPlacement, placementRow, placementStarted, skipPlacement } = useFoundation()
+  const { state, needsPlacement, placementRow, placementStarted, skipPlacement, wallCelebrationPending } = useFoundation()
   const navigate = useNavigate()
   const rows = useMemo(() => wallRows(state, hasBrickContent), [state])
   const nextId = useMemo(() => nextBrickIdFromState(state, hasBrickContent), [state])
@@ -74,6 +76,13 @@ export function Foundation() {
           </strong>
         </p>
       </header>
+
+      <WallPassedCard />
+      {state.status === 'completed' && !wallCelebrationPending && (
+        <Link to={WALL_PASSED_HREF} className="self-start text-sm text-primary underline-offset-4 hover:underline">
+          Xem lại màn Qua bức tường
+        </Link>
+      )}
 
       {needsPlacement && placementRow && (
         <TicketInvite row={placementRow} started={placementStarted} onSkip={skipTicket} />

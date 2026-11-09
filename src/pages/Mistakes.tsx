@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 
 import { useMistakes } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
+import { Kbd } from '@/components/Kbd'
 import { GeminiSettings } from '@/components/quiz/GeminiSettings'
 import { MistakeCard } from '@/components/quiz/MistakeCard'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
@@ -44,19 +45,16 @@ function ReviewSession({ ids, onDone }: { ids: readonly string[]; onDone: () => 
   const id = ids[index]
   const question = getQuestion(id)
   const last = index === ids.length - 1
-  const nextButton = (
-    <Button
-      onClick={() => {
-        if (last) onDone()
-        else {
-          setIndex((i) => i + 1)
-          setChosen(null)
-        }
-      }}
-    >
-      {last ? 'Xong' : 'Câu tiếp'}
-    </Button>
-  )
+  // Nút "Câu tiếp" / "Xong" và phím Enter của câu trắc nghiệm (story 31) dùng chung handler. Thẻ tự chấm từ đọc
+  // (`WordReviewCard`) không có phím tắt nên nút của nó không có gợi ý phím.
+  const next = () => {
+    if (last) onDone()
+    else {
+      setIndex((i) => i + 1)
+      setChosen(null)
+    }
+  }
+  const nextButton = <Button onClick={next}>{last ? 'Xong' : 'Câu tiếp'}</Button>
   const entry = items[id]
   if (!question) {
     // Từ đọc chưa đúng ở O.W.L.: ôn bằng tự chấm (đúng = Nhớ, chưa đúng = Quên).
@@ -88,7 +86,13 @@ function ReviewSession({ ids, onDone }: { ids: readonly string[]; onDone: () => 
         review(id, option === question.answer, option)
       }}
       heading={`Ôn sổ · câu ${index + 1}/${ids.length}`}
-      footer={nextButton}
+      footer={
+        <Button onClick={next} aria-keyshortcuts="Enter">
+          {last ? 'Xong' : 'Câu tiếp'}
+          <Kbd>Enter</Kbd>
+        </Button>
+      }
+      onNext={next}
     />
   )
 }

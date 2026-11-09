@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { completeBrick, createDefaultFoundation, finishPlacement, foundationState, markRowTested, readFoundation, resumeFoundation, skipFoundation } from '@/lib/foundation'
-import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
+import { markLessonPartSeen, readCompletedLessonIds, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { getQuestion } from '@/data/questions'
-import { gradeAttempt, listAttempts, readMistakes, recordAttempt } from '@/lib/quiz'
+import { dismissBrickInvite, gradeAttempt, listAttempts, readBrickInvites, readMistakes, recordAttempt } from '@/lib/quiz'
 import { createNote, deleteNote, listNotes, readNotes } from '@/lib/notes'
 import { deleteSavedWord, readSavedWords, saveWord, savedWordId } from '@/lib/saved-words'
 import { readSessionDays, recordSession } from '@/lib/sessions'
@@ -614,5 +614,34 @@ describe('sessions — lessonId dạng fNN (buổi Sân ga, story 21)', () => {
     expect(Object.values(readSessionDays(restored))).toEqual([
       expect.objectContaining({ kind: 'full', minutes: 25, lessonId: 'f03' }),
     ])
+  })
+})
+
+describe('phần bài T1 và "Để sau" của lời mời ôn viên trong sao lưu (story 28)', () => {
+  it('partsSeen đi theo mục bài; brickInvites hợp lệ được giữ và gộp lấy dismissedAt muộn hơn', () => {
+    let s = markLessonPartSeen(empty(), 's1-t1-w1', 's1-t1-w1-p1')
+    s = dismissBrickInvite(s, 'F09', T1)
+    const backup = roundTrip(s)
+    const r = restoreBackup(empty(), backup)
+    expect([...readSeenPartIds(r.store, 's1-t1-w1')]).toEqual(['s1-t1-w1-p1'])
+    expect(readCompletedLessonIds(r.store)).toEqual([])
+    expect(readBrickInvites(r.store)).toEqual({ F09: { dismissedAt: T1.toISOString(), updatedAt: T1.toISOString() } })
+    const later = dismissBrickInvite(empty(), 'F09', T2)
+    expect(readBrickInvites(restoreBackup(later, backup).store).F09).toMatchObject({ dismissedAt: T2.toISOString() })
+  })
+
+  it('viên lạ, mục sai dạng và id __proto__ trong brickInvites bị bỏ; brickInvites sai dạng → rỗng; không có thì không thêm', () => {
+    const t = T1.toISOString()
+    const good = JSON.stringify({ dismissedAt: t, updatedAt: t })
+    const text =
+      '{"app":"lumos-english","kind":"backup","schemaVersion":' + CURRENT_VERSION + ',"exportedAt":"' + t + '","data":{"mistakes":{"items":{},' +
+      '"brickInvites":{"F09":' + good + ',"F99":' + good + ',"f13":' + good + ',"F13":{"dismissedAt":"x","updatedAt":"' + t + '"},"__proto__":' + good + '}}}}'
+    const parsed = parseBackup(text)
+    if (!parsed.ok) throw new Error(parsed.message)
+    expect((parsed.backup.data.mistakes as { brickInvites: object }).brickInvites).toEqual({ F09: { dismissedAt: t, updatedAt: t } })
+    const odd = parseBackup(JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: t, data: { mistakes: { items: {}, brickInvites: [1] } } }))
+    expect(odd.ok && odd.backup.data.mistakes).toEqual({ items: {}, brickInvites: {} })
+    const none = parseBackup(JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: t, data: { mistakes: { items: {} } } }))
+    expect(none.ok && none.backup.data.mistakes).toEqual({ items: {} })
   })
 })

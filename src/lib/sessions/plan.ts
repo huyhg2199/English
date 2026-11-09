@@ -1,5 +1,7 @@
 import { BRICKS, brickLessonId, isBrickId, type BrickId } from '@/data/foundation'
+import { lessonPartIds } from '@/data/lessons'
 import { foundationState, isInFoundation, nextBrickIdFromState, readFoundation } from '@/lib/foundation'
+import { markLessonPartSeen, nextLessonPartId, readSeenPartIds } from '@/lib/roadmap-progress'
 import type { Store } from '@/lib/storage'
 
 import { resolveSessionLesson, sessionLesson, wordListForLesson, type SessionLesson } from './sessions'
@@ -9,6 +11,7 @@ import { resolveSessionLesson, sessionLesson, wordListForLesson, type SessionLes
  * - Đang ở Sân ga: Lý thuyết 12' (1 viên gạch) → Ôn & từ mới 8' → Giải trí nhẹ 10'.
  * - Sau Sân ga: Bài chính 15' → Ôn flashcard 5' → Giải trí 10'.
  * Cả hai đều tính 25 phút học (`SESSION_MINUTES.full`). Kế hoạch chốt trên URL (`?brick=` / `?lesson=` + `?step=`).
+ * Bài T1 chia phần (story 28): buổi bài học một phần, chốt bằng `?part=` (phần chưa xem đầu tiên lúc vào buổi).
  *
  * Module thuần: chỉ import danh mục `@/data/foundation` và `@/lib/foundation` (không kéo nội dung viên); nơi gọi truyền
  * `hasContent` (thường là `hasBrickContent` của `@/data/foundation/content`).
@@ -39,7 +42,16 @@ export type SessionPlan =
       review: boolean
       steps: readonly SessionStep[]
     }
-  | { mode: 'lesson'; lesson: SessionLesson | null; steps: readonly SessionStep[] }
+  | {
+      mode: 'lesson'
+      lesson: SessionLesson | null
+      /**
+       * Phần của đoạn Phát âm học trong buổi (story 28): phần chưa xem đầu tiên lúc vào buổi. null khi bài không chia
+       * phần, đã xem hết (buổi ôn cả tuần) hoặc không có bài.
+       */
+      partId: string | null
+      steps: readonly SessionStep[]
+    }
 
 type HasContent = (id: BrickId) => boolean
 
@@ -92,10 +104,17 @@ export function lazyFoundationBrick(store: Store, hasContent: HasContent): LazyF
   return first ? { brickId: first.id, mode: 'review' } : null
 }
 
+/** Phần của buổi bài: phần chưa xem đầu tiên của bài; bài không chia / đã xem hết / không có bài → null. */
+function lessonPartOf(store: Store, lesson: SessionLesson | null): string | null {
+  if (!lesson) return null
+  return nextLessonPartId(lessonPartIds(lesson.lesson.id), readSeenPartIds(store, lesson.lesson.id))
+}
+
 /** Kế hoạch tính từ store: đang ở Sân ga (`isInFoundation`) → buổi Sân ga; không thì buổi bài (`sessionLesson`). */
 export function sessionPlan(store: Store, hasContent: HasContent): SessionPlan {
   if (isInFoundation(store)) return { mode: 'foundation', ...foundationBrick(store, hasContent), steps: FOUNDATION_STEPS }
-  return { mode: 'lesson', lesson: sessionLesson(store), steps: LESSON_STEPS }
+  const lesson = sessionLesson(store)
+  return { mode: 'lesson', lesson, partId: lessonPartOf(store, lesson), steps: LESSON_STEPS }
 }
 
 /** `?step=` số của bản cũ (0 ôn, 1 bài, 2 giải trí) → tên bước theo loại buổi. */
@@ -108,13 +127,18 @@ export const LEGACY_STEP_MAP: Readonly<Record<'0' | '1' | '2', Readonly<Record<S
 export type SessionParams = {
   brick?: string | null
   lesson?: string | null
+  /** Phần của bài (story 28); chỉ hợp lệ khi thuộc bài của buổi. */
+  part?: string | null
   step?: string | null
 }
 
 export type ResolvedSessionPlan = {
   plan: SessionPlan
   stepIndex: number
-  /** Tham số chuẩn để `replace` URL: `{ brick, step }` / `{ lesson, step }` (thiếu viên / bài thì chỉ `step`). */
+  /**
+   * Tham số chuẩn để `replace` URL: `{ brick, step }` / `{ lesson, part?, step }` (thiếu viên / bài thì chỉ `step`;
+   * `part` chỉ có khi buổi học một phần).
+   */
   search: Record<string, string>
 }
 
@@ -135,13 +159,16 @@ function stepIndexOf(plan: SessionPlan, step: string | null | undefined): number
 export function sessionSearch(plan: SessionPlan, stepIndex: number): Record<string, string> {
   const step = plan.steps[stepIndex]?.id ?? plan.steps[0].id
   if (plan.mode === 'foundation') return plan.brickId ? { brick: plan.brickId, step } : { step }
-  return plan.lesson ? { lesson: plan.lesson.lesson.id, step } : { step }
+  if (!plan.lesson) return { step }
+  return plan.partId ? { lesson: plan.lesson.lesson.id, part: plan.partId, step } : { lesson: plan.lesson.lesson.id, step }
 }
 
 /**
  * Chốt kế hoạch theo URL. `brick` hợp lệ → luôn là buổi Sân ga với viên đó (kể cả khi đã qua / bỏ qua tường giữa buổi);
  * có cả `brick` lẫn `lesson` thì `brick` thắng. `lesson` hợp lệ → buổi bài đó. Tham số lạ bị bỏ qua, kế hoạch tính lại
  * từ store. `step`: tên bước của kế hoạch hoặc số cũ (`LEGACY_STEP_MAP`); thiếu / sai → bước đầu.
+ * `part` (story 28): phần thuộc bài của buổi thì giữ (đánh dấu phần giữa buổi hay đồng bộ không đổi phần đang học);
+ * thiếu, sai hoặc của bài khác → tính lại từ store (phần chưa xem đầu tiên).
  */
 export function resolveSessionPlan(params: SessionParams, store: Store, hasContent: HasContent): ResolvedSessionPlan {
   const brickId = parseBrickParam(params.brick, hasContent)
@@ -151,9 +178,13 @@ export function resolveSessionPlan(params: SessionParams, store: Store, hasConte
     // Ôn = không còn viên tiếp theo (cùng nghĩa với `sessionPlan`).
     plan = { mode: 'foundation', brickId, review: nextBrickIdFromState(foundationState(store), hasContent) === null, steps: FOUNDATION_STEPS }
   } else if (pinnedLesson) {
-    plan = { mode: 'lesson', lesson: pinnedLesson, steps: LESSON_STEPS }
+    plan = { mode: 'lesson', lesson: pinnedLesson, partId: lessonPartOf(store, pinnedLesson), steps: LESSON_STEPS }
   } else {
     plan = sessionPlan(store, hasContent)
+  }
+  if (plan.mode === 'lesson' && plan.lesson) {
+    const part = (params.part ?? '').trim()
+    if (lessonPartIds(plan.lesson.lesson.id).includes(part)) plan = { ...plan, partId: part }
   }
   const stepIndex = stepIndexOf(plan, params.step)
   return { plan, stepIndex, search: sessionSearch(plan, stepIndex) }
@@ -163,6 +194,15 @@ export function resolveSessionPlan(params: SessionParams, store: Store, hasConte
 export function sessionRecordLessonId(plan: SessionPlan): string | undefined {
   if (plan.mode === 'foundation') return plan.brickId ? brickLessonId(plan.brickId) : undefined
   return plan.lesson?.lesson.id
+}
+
+/**
+ * "Xong buổi" (story 28): buổi học một phần của bài T1 cũng tính phần đó là đã xem (`markLessonPartSeen`, đã có thì trả store
+ * cũ). Buổi Sân ga, buổi bài không chia phần hay buổi ôn cả tuần (`partId` null) → store cũ.
+ */
+export function markSessionPartSeen(store: Store, plan: SessionPlan): Store {
+  if (plan.mode !== 'lesson' || !plan.lesson || !plan.partId) return store
+  return markLessonPartSeen(store, plan.lesson.lesson.id, plan.partId)
 }
 
 /** Viên cho nút "Học tiếp viên sau": viên tiếp theo khi khác viên đang học; không có → null. */

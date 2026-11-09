@@ -1,20 +1,32 @@
 import { describe, expect, it } from 'vitest'
 
+import { BRICKS, ROW_IDS } from '@/data/foundation'
+import { completeBrick, foundationState, markRowTested, resumeFoundation, skipFoundation } from '@/lib/foundation'
 import { isQuizAttempt } from '@/lib/quiz'
 import { computeStreak, localDayKey } from '@/lib/sessions'
 import { mergeData } from '@/lib/sync/merge'
 import type { Store } from '@/lib/storage'
 
 import {
+  BOARDING_LETTER,
+  BOARDING_MEDAL,
+  boardingMedal,
+  BRICK_FIRST_DONE_POINTS,
   comebackCount,
   dayNumber,
   housePoints,
+  isWallCelebrationPending,
   levelFor,
   longestStreak,
   markSeen,
+  markWallCelebrated,
+  MEDAL_IDS,
   medalProgress,
   readSeen,
+  storeHousePoints,
   unseenLevelUps,
+  WALL_CELEBRATION_KEY,
+  withBrickPoints,
 } from './index'
 
 const T = '2026-11-01T10:00:00.000Z'
@@ -214,5 +226,154 @@ describe('nhật ký buổi có lessonId dạng fNN (buổi Sân ga, story 21)',
     expect(longestStreak(brick)).toBe(8)
     expect(comebackCount(brick)).toBe(comebackCount(days))
     expect(medalProgress(store({ sessions: { days: brick } }))).toEqual(medalProgress(store({ sessions: { days } })))
+  })
+})
+
+describe('Qua bức tường: huy chương Lên tàu Năm 1, ăn mừng, điểm viên gạch (story 26)', () => {
+  const at = (d: number, h = 9) => new Date(2026, 10, d, h)
+  const fresh = (): Store => ({ schemaVersion: 13, data: {} })
+  /** Qua cả 4 hàng bằng kiểm tra (Soát vé / "Tôi biết rồi"), không học viên nào. */
+  const passAllRows = (s: Store, d = 5) => ROW_IDS.reduce((acc, r) => markRowTested(acc, r, 7, 8, at(d)), s)
+  const learnAll = (s: Store, d = 5) => BRICKS.reduce((acc, b, i) => completeBrick(acc, b.id, at(d, 8 + (i % 10))), s)
+
+  it('không nằm trong MEDAL_IDS; thư Lên tàu không cấp', () => {
+    expect((MEDAL_IDS as readonly string[]).includes(BOARDING_MEDAL.id)).toBe(false)
+    expect(BOARDING_MEDAL).toEqual({ id: 'board-year-1', name: 'Lên tàu Năm 1', condition: 'Xong cả 4 hàng của Sân ga 9¾' })
+    expect(BOARDING_LETTER).toEqual({ key: 'board-year-1', name: 'Lên tàu Năm 1', level: null })
+    expect(WALL_CELEBRATION_KEY).toBe('wall-passed')
+  })
+
+  it('store mới: chưa có huy chương, không chờ ăn mừng; markWallCelebrated trả store cũ', () => {
+    const s = fresh()
+    expect(boardingMedal(s)).toEqual({ earned: false, earnedAt: null, delivered: false })
+    expect(isWallCelebrationPending(s)).toBe(false)
+    expect(markWallCelebrated(s, at(9))).toBe(s)
+  })
+
+  it('bỏ qua Sân ga, chưa quay lại: không huy chương, không chờ ăn mừng', () => {
+    const s = skipFoundation(fresh(), at(3))
+    expect(boardingMedal(s).earned).toBe(false)
+    expect(isWallCelebrationPending(s)).toBe(false)
+    expect(markWallCelebrated(s, at(9))).toBe(s)
+  })
+
+  it('bỏ qua rồi quay lại và xong 4 hàng: có huy chương, chờ ăn mừng', () => {
+    const s = passAllRows(resumeFoundation(skipFoundation(fresh(), at(1)), at(2)), 6)
+    expect(boardingMedal(s)).toEqual({ earned: true, earnedAt: at(6).toISOString(), delivered: false })
+    expect(isWallCelebrationPending(s)).toBe(true)
+  })
+
+  it('qua tường bằng học (F17 rồi F18 sau cùng): completedAt = lúc xong F18, chờ ăn mừng', () => {
+    const others = BRICKS.filter((b) => b.id !== 'F18')
+    let s = others.reduce((acc, b) => completeBrick(acc, b.id, at(4)), fresh())
+    expect(isWallCelebrationPending(s)).toBe(false)
+    s = completeBrick(s, 'F18', at(7))
+    expect(boardingMedal(s).earnedAt).toBe(at(7).toISOString())
+    expect(isWallCelebrationPending(s)).toBe(true)
+  })
+
+  it('ăn mừng lần đầu ghi wall-passed + board-year-1; ghi lần nữa → đúng store cũ, không lặp', () => {
+    const pending = passAllRows(fresh())
+    const once = markWallCelebrated(pending, at(9))
+    expect(readSeen(once)).toEqual({
+      'wall-passed': { updatedAt: at(9).toISOString() },
+      'board-year-1': { updatedAt: at(9).toISOString() },
+    })
+    expect(isWallCelebrationPending(once)).toBe(false)
+    expect(boardingMedal(once).delivered).toBe(true)
+    expect(markWallCelebrated(once, at(10))).toBe(once)
+  })
+
+  it('giữ mục cũ: đã có board-year-1 (thời điểm sớm) → chỉ thêm wall-passed; mục huy chương khác giữ nguyên', () => {
+    const early = { updatedAt: '2026-11-01T00:00:00.000Z' }
+    const base = passAllRows(fresh())
+    const s: Store = { ...base, data: { ...base.data, trophies: { seen: { 'board-year-1': early, 'hermione:bronze': early } } } }
+    const out = markWallCelebrated(s, at(9))
+    expect(readSeen(out)).toEqual({
+      'board-year-1': early,
+      'hermione:bronze': early,
+      'wall-passed': { updatedAt: at(9).toISOString() },
+    })
+  })
+
+  it('dữ liệu cũ có completedAt từ trước bản này, chưa có mục ăn mừng → chờ ăn mừng', () => {
+    const s = store({ foundation: { completedAt: '2026-11-03T02:00:00.000Z', bricks: {}, rows: {} } })
+    expect(isWallCelebrationPending(s)).toBe(true)
+    expect(boardingMedal(s)).toMatchObject({ earned: true, earnedAt: '2026-11-03T02:00:00.000Z' })
+  })
+
+  it('huy chương cũ: có wall-passed, board-year-1 trong seen → medalProgress, unseenLevelUps giống hệt khi không có', () => {
+    const data = { quizzes: { attempts: { a0: attempt(5, 5) } }, sessions: { days: run(D(2026, 11, 1), 3) } }
+    const without = store(data)
+    const withEntries = store({
+      ...data,
+      trophies: { seen: { 'wall-passed': { updatedAt: T }, 'board-year-1': { updatedAt: T } } },
+    })
+    expect(medalProgress(withEntries)).toEqual(medalProgress(without))
+    expect(unseenLevelUps(withEntries)).toEqual(unseenLevelUps(without))
+    expect(unseenLevelUps(withEntries).map((u) => u.key)).toEqual(['hermione:bronze'])
+  })
+
+  it('hai máy: máy A đã ăn mừng, gộp sang máy B → B giữ 2 mục, không chờ ăn mừng, không thư', () => {
+    const b = passAllRows(fresh(), 5)
+    const a = markWallCelebrated(b, at(6))
+    const merged = store(mergeData(b.data, a.data))
+    expect(isWallCelebrationPending(merged)).toBe(false)
+    expect(boardingMedal(merged).delivered).toBe(true)
+    expect(Object.keys(readSeen(merged)).sort()).toEqual(['board-year-1', 'wall-passed'])
+    // Ngược chiều (B gộp lên A) cũng vậy, mục sớm hơn thắng.
+    const later = markWallCelebrated(b, at(8))
+    const both = store(mergeData(later.data, a.data))
+    expect(readSeen(both)['wall-passed']).toEqual({ updatedAt: at(6).toISOString() })
+  })
+
+  describe('điểm Nhà + điểm viên gạch', () => {
+    it('18 viên firstDoneAt, 10 ngày buổi chuẩn → housePoints(days).total + 90', () => {
+      const days = run(D(2026, 11, 1), 10)
+      const s = learnAll(fresh())
+      const count = foundationState(s).doneBrickIds.length
+      expect(count).toBe(18)
+      const p = withBrickPoints(housePoints(days), count)
+      expect(p.total).toBe(housePoints(days).total + 90)
+      expect(p).toMatchObject({ brickPoints: 90, brickCount: 18, base: housePoints(days).base })
+      expect(BRICK_FIRST_DONE_POINTS).toBe(5)
+    })
+
+    it('học lại một viên không đổi điểm; hàng qua kiểm tra không cộng; học viên của hàng ấy lần đầu +5', () => {
+      let s = completeBrick(fresh(), 'F01', at(1))
+      const once = foundationState(s).doneBrickIds.length
+      s = completeBrick(s, 'F01', at(3))
+      expect(foundationState(s).doneBrickIds.length).toBe(once)
+      const tested = markRowTested(fresh(), 'B', 7, 8, at(2))
+      expect(withBrickPoints(housePoints({}), foundationState(tested).doneBrickIds.length).brickPoints).toBe(0)
+      const learned = completeBrick(tested, 'F09', at(4))
+      expect(withBrickPoints(housePoints({}), foundationState(learned).doneBrickIds.length).brickPoints).toBe(5)
+    })
+
+    it('qua tường bằng Soát vé (không học viên) → điểm viên gạch 0', () => {
+      const s = passAllRows(fresh())
+      expect(withBrickPoints(housePoints({}), foundationState(s).doneBrickIds.length)).toMatchObject({
+        total: 0,
+        brickPoints: 0,
+        brickCount: 0,
+      })
+    })
+
+    it('storeHousePoints (Phòng Cúp, màn Qua bức tường): Soát vé đủ 4 hàng → 0 điểm viên; học đủ 18 viên → +90', () => {
+      expect(storeHousePoints(passAllRows(fresh()))).toMatchObject({ total: 0, brickPoints: 0, brickCount: 0 })
+      const learned = learnAll(fresh())
+      expect(storeHousePoints(learned)).toMatchObject({ brickPoints: 90, brickCount: 18 })
+      expect(storeHousePoints(learned).total).toBe(housePoints({}).total + 90)
+      // Qua bằng Soát vé rồi học thêm một viên: chỉ viên ấy được +5.
+      expect(storeHousePoints(completeBrick(passAllRows(fresh()), 'F13', at(7)))).toMatchObject({ brickPoints: 5, brickCount: 1 })
+    })
+
+    it('brickCount âm / không nguyên / NaN → 0; housePoints giữ nguyên', () => {
+      const base = housePoints(run(D(2026, 11, 1), 3))
+      for (const bad of [-1, 2.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+        expect(withBrickPoints(base, bad)).toEqual({ ...base, brickPoints: 0, brickCount: 0 })
+      }
+      expect(withBrickPoints(base, 2).total).toBe(base.total + 10)
+    })
   })
 })

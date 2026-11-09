@@ -18,6 +18,57 @@ import {
 const SECTION_IDS = ['pronunciation', 'grammar', 'vocabulary', 'entertainment', 'main', 'checkpoint']
 const SINGLE_LETTER = /^[A-Za-z]\.?$/
 
+/**
+ * Token cấm trong câu hàng B (story 25): to be, have, do, khuyết thiếu do F13–F16 dạy hoặc thuộc Năm 1.
+ * Khai báo lặp (cùng `isForbidden`, `englishParts`) ở `src/data/foundation/foundation.test.ts` (luật câu tiếng Anh của
+ * viên F07–F12); sửa thì sửa cả hai.
+ */
+const ROW_B_FORBIDDEN = new Set([
+  'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', "it's", "that's", "he's", "she's", "there's", "what's",
+  'have', 'has', 'had', 'do', 'does', 'did',
+  'can', 'could', 'will', 'would', 'shall', 'should', 'may', 'might', 'must',
+])
+const FORBIDDEN_CONTRACTION = /n't$|'(m|re|ve|ll|d)$/
+const isForbidden = (token: string) => ROW_B_FORBIDDEN.has(token) || FORBIDDEN_CONTRACTION.test(token)
+const VIETNAMESE = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i
+const tokensOf = (text: string) =>
+  (text.replace(/[’‘ʼ`]/g, "'").match(/[A-Za-z']+/g) ?? []).map((t) => t.toLowerCase())
+/** Chuỗi lẫn tiếng Việt: chỉ lấy câu trong ngoặc kép không dấu và phần còn lại sau khi bỏ ngoặc đơn (nếu hết dấu). */
+function englishParts(text: string): string[] {
+  if (!VIETNAMESE.test(text)) return [text]
+  const parts = [...text.matchAll(/[“"]([^”"]+)[”"]/g)].map((m) => m[1]).filter((q) => !VIETNAMESE.test(q))
+  const rest = text.replace(/\([^)]*\)/g, '')
+  if (!VIETNAMESE.test(rest)) parts.push(rest)
+  return parts
+}
+
+/**
+ * Luật câu tiếng Anh hàng C–D (story 26): không do / does / did, khuyết thiếu, 've / 'll / 'd, n't ngoài isn't / aren't;
+ * câu quiz không dùng was / were / been / being / had (viên chỉ nhắc để nhận ra). Khai báo lặp (`rowCdForbidden`) ở
+ * `src/data/foundation/foundation.test.ts` (luật câu của viên F13–F18); sửa thì sửa cả hai.
+ */
+const ROW_CD_FORBIDDEN = new Set([
+  'do', 'does', 'did', 'can', 'could', 'will', 'would', 'shall', 'should', 'may', 'might', 'must',
+  'was', 'were', 'been', 'being', 'had',
+])
+const ROW_CD_CONTRACTION = /n't$|'(ve|ll|d)$/
+const ROW_CD_NT_ALLOWED = new Set(["isn't", "aren't"])
+const isRowCdForbidden = (token: string) =>
+  ROW_CD_FORBIDDEN.has(token) || (ROW_CD_CONTRACTION.test(token) && !ROW_CD_NT_ALLOWED.has(token))
+/** Token cấm hàng C–D trong chuỗi; "in / on May" là tên tháng, không phải khuyết thiếu may ("May I go?" vẫn bị bắt). */
+const rowCdForbiddenIn = (text: string) =>
+  englishParts(text)
+    .map((part) => part.replace(/\b(in|on) May\b/g, '$1'))
+    .flatMap(tokensOf)
+    .filter(isRowCdForbidden)
+/** Hàng C chỉ dùng F01–F16: không giới từ thời gian / trạng từ tần suất của F18, không going / gone của F17. */
+const ROW_C_LATER = new Set(['at', 'every', 'always', 'never', 'often', 'going', 'gone'])
+
+const ROW_C_IDS = ['q-f13-01', 'q-f13-02', 'q-f13-03', 'q-f14-01', 'q-f14-02', 'q-f15-01', 'q-f15-02', 'q-f15-03', 'q-f16-01', 'q-f16-02']
+const ROW_D_IDS = ['q-f17-01', 'q-f17-02', 'q-f17-03', 'q-f17-04', 'q-f17-05', 'q-f18-01', 'q-f18-02', 'q-f18-03', 'q-f18-04', 'q-f18-05']
+
+const ROW_B_IDS = ['q-f07-01', 'q-f07-02', 'q-f08-01', 'q-f08-02', 'q-f09-01', 'q-f10-01', 'q-f10-02', 'q-f11-01', 'q-f11-02', 'q-f12-01']
+
 function rowOf(lessonId: string): RowId | undefined {
   return ROW_IDS.find((r) => bricksOfRow(r).some((b) => brickLessonId(b.id) === lessonId))
 }
@@ -108,6 +159,87 @@ describe('ngân hàng câu Sân ga', () => {
     expect(QUIZZES.some((z) => z.lessonIds.some((id) => /^f\d{2}$/.test(id)))).toBe(false)
     expect(QUIZZES.some((z) => z.id.startsWith('lesson-f'))).toBe(false)
     for (const z of FOUNDATION_QUIZZES) expect(getQuiz(z.id)).toBeUndefined()
+  })
+
+  it('hàng B giữ đủ 10 id cũ (Sổ lỗi tham chiếu theo id), theo đúng thứ tự', () => {
+    expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'B').map((q) => q.id)).toEqual(ROW_B_IDS)
+    for (const id of ROW_B_IDS) expect(getQuestion(id)?.id, id).toBe(id)
+  })
+
+  it('hàng B: đề (đã điền), lựa chọn, đáp án, audioText, giải thích không có to be, have, do, khuyết thiếu', () => {
+    const bad: string[] = []
+    for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === 'B')) {
+      const filled = q.prompt.replace('___', q.answer)
+      for (const text of [filled, ...q.options, q.answer, q.audioText ?? '', q.explanation]) {
+        const hit = englishParts(text).flatMap(tokensOf).filter(isForbidden)
+        if (hit.length > 0) bad.push(`${q.id}: "${text}" (${hit.join(', ')})`)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+
+  it('Sổ lỗi cũ: getQuestion("q-f11-02") trả câu đã viết lại (không to be)', () => {
+    const q = getQuestion('q-f11-02')!
+    expect(q.lessonId).toBe('f11')
+    expect(q.answer).toBe('I buy a bag.')
+    expect(getQuestion('q-f12-01')?.answer).toBe('these')
+  })
+
+  it('hàng C–D giữ đủ 20 id (Sổ lỗi tham chiếu theo id), đúng thứ tự, getQuestion tra được', () => {
+    expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'C').map((q) => q.id)).toEqual(ROW_C_IDS)
+    expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'D').map((q) => q.id)).toEqual(ROW_D_IDS)
+    for (const id of [...ROW_C_IDS, ...ROW_D_IDS]) expect(getQuestion(id)?.id, id).toBe(id)
+  })
+
+  it('hàng C: F13 3, F14 2, F15 3, F16 2; hàng D: F17 5, F18 5; mỗi hàng đúng 2 câu nghe', () => {
+    const count = (row: RowId) => {
+      const out: Record<string, number> = {}
+      for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === row)) out[q.lessonId] = (out[q.lessonId] ?? 0) + 1
+      return out
+    }
+    expect(count('C')).toEqual({ f13: 3, f14: 2, f15: 3, f16: 2 })
+    expect(count('D')).toEqual({ f17: 5, f18: 5 })
+    for (const row of ['C', 'D'] as const) {
+      expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === row && q.kind === 'listening'), row).toHaveLength(2)
+    }
+  })
+
+  it('hàng C–D: đề (đã điền), lựa chọn, đáp án, audioText, giải thích không có do/does/did, khuyết thiếu, rút gọn lạ, was/had', () => {
+    const bad: string[] = []
+    for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === 'C' || rowOf(x.lessonId) === 'D')) {
+      const filled = q.prompt.replace('___', q.answer)
+      for (const text of [filled, ...q.options, q.answer, q.audioText ?? '', q.explanation]) {
+        const hit = rowCdForbiddenIn(text)
+        if (hit.length > 0) bad.push(`${q.id}: "${text}" (${hit.join(', ')})`)
+      }
+    }
+    expect(bad).toEqual([])
+    // Tự kiểm helper.
+    expect(["isn't", "aren't", "doesn't", "you'll", 'had', 'do'].filter(isRowCdForbidden)).toEqual(["doesn't", "you'll", 'had', 'do'])
+    expect(rowCdForbiddenIn('My birthday is in May. You may go.')).toEqual(['may'])
+    expect(rowCdForbiddenIn('May I sit here?')).toEqual(['may'])
+  })
+
+  it('hàng C không có at / every / always / never / often / going / gone (chỉ dùng F01–F16)', () => {
+    const bad: string[] = []
+    for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === 'C')) {
+      const filled = q.prompt.replace('___', q.answer)
+      for (const text of [filled, ...q.options, q.answer, q.audioText ?? '', q.explanation]) {
+        const hit = englishParts(text).flatMap(tokensOf).filter((t) => ROW_C_LATER.has(t))
+        if (hit.length > 0) bad.push(`${q.id}: "${text}" (${hit.join(', ')})`)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+
+  it('Sổ lỗi cũ: q-f17-04, q-f14-02, q-f16-01 trả câu đã viết lại (không Does/Do, không at home, không having)', () => {
+    const q = getQuestion('q-f17-04')!
+    expect(q.lessonId).toBe('f17')
+    expect(q.answer).toBe('go')
+    expect(q.options).toEqual(['go', 'goes', 'going', 'gone'])
+    expect(getQuestion('q-f14-02')!.options).not.toContain("don't")
+    expect(getQuestion('q-f14-02')!.prompt).not.toMatch(/\bat\b/)
+    expect(getQuestion('q-f16-01')!.options).toEqual(['has', 'have', 'is', 'haves'])
   })
 
   it('getQuestion tra được câu Sân ga và câu cũ', () => {

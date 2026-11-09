@@ -5,6 +5,7 @@ import { Link, Navigate, useNavigate } from 'react-router'
 import { useFoundation, useLoadedStore } from '@/app/store-context'
 import { RowTestResult } from '@/components/foundation/RowTestResult'
 import { RowTestRun, type RowTestOutcome } from '@/components/foundation/RowTestRun'
+import { WallPassedButton } from '@/components/foundation/WallPassedCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBrickMeta, ROW_IDS, ROW_TITLES, type RowId } from '@/data/foundation'
@@ -56,10 +57,13 @@ function summaryText(s: RowSummary, startBrick: string): string {
   }
 }
 
-/** Tổng kết sau hàng cuối: hàng đạt / chưa đạt, viên tiếp theo; cả 4 hàng xong thì "Sân ga xong" (không ăn mừng ở đây). */
+/**
+ * Tổng kết sau hàng cuối: hàng đạt / chưa đạt, viên tiếp theo; cả 4 hàng xong thì "Sân ga xong" và nút chính "Qua bức
+ * tường" tới màn ăn mừng khi còn chờ (story 26), "Về Lộ trình" thành link phụ.
+ */
 function PlacementSummary() {
   const { store } = useLoadedStore()
-  const { state } = useFoundation()
+  const { state, wallCelebrationPending } = useFoundation()
   const rows = rowSummaries(store)
   const wallDone = state.status === 'completed' || state.rowsDone.length === ROW_IDS.length
   return (
@@ -94,7 +98,14 @@ function PlacementSummary() {
             )
           })}
         </ul>
-        {wallDone ? (
+        {wallDone && wallCelebrationPending ? (
+          <>
+            <WallPassedButton />
+            <Button asChild variant="ghost">
+              <Link to="/roadmap">Về Lộ trình</Link>
+            </Button>
+          </>
+        ) : wallDone ? (
           <Button asChild>
             <Link to="/roadmap">Về Lộ trình</Link>
           </Button>

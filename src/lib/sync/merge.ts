@@ -2,8 +2,8 @@ import { mergeFoundation } from '@/lib/foundation'
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
-import { isMistakeItem, isQuizAttempt, mergeMistakeItem } from '@/lib/quiz'
-import { isLessonProgress } from '@/lib/roadmap-progress'
+import { isMistakeItem, isQuizAttempt, mergeBrickInvites, mergeMistakeItem } from '@/lib/quiz'
+import { isLessonProgress, seenPartIdsOf, type LessonProgress } from '@/lib/roadmap-progress'
 import { isSavedWord } from '@/lib/saved-words'
 import { isReminders } from '@/lib/reminders/reminders'
 import { isSessionDay } from '@/lib/sessions'
@@ -83,9 +83,17 @@ function mergeEntries<T extends { updatedAt: string }>(
   return out
 }
 
-/** Gộp `progress.lessons` theo từng bài (xem `mergeEntries`). */
+/**
+ * Gộp `progress.lessons` theo từng bài (xem `mergeEntries`): `done` / `updatedAt` theo bên mới hơn; `partsSeen` (story 28)
+ * lấy hợp các chuỗi hợp lệ của hai bên, sắp tăng dần, bỏ field khi rỗng. Một bên sai dạng thì lấy nguyên bên hợp lệ.
+ */
 export function mergeLessons(local: unknown, server: unknown): Record<string, unknown> {
-  return mergeEntries(local, server, isLessonProgress)
+  return mergeEntries(local, server, isLessonProgress, (a: LessonProgress, b: LessonProgress) => {
+    const winner: Record<string, unknown> = { ...newer(a, b) }
+    delete winner.partsSeen
+    const partsSeen = [...new Set([...seenPartIdsOf(a), ...seenPartIdsOf(b)])].sort()
+    return (partsSeen.length > 0 ? { ...winner, partsSeen } : winner) as LessonProgress
+  })
 }
 
 /** Gộp `srs.cards` theo từng thẻ (xem `mergeEntries`), cùng luật với `progress.lessons`. */
@@ -234,7 +242,20 @@ export const mergeVideoPractice = mergeKeyed('items', mergeVideoPracticeItems)
 export const mergeTrophies = mergeKeyed('seen', mergeSeen)
 export const mergeNotes = mergeKeyed('items', mergeNoteItems)
 export const mergeQuizzes = mergeKeyed('attempts', mergeQuizAttempts)
-export const mergeMistakes = mergeKeyed('items', mergeMistakeItems)
+const mergeMistakeBook = mergeKeyed('items', mergeMistakeItems)
+
+/**
+ * Gộp `mistakes`: `items` theo câu như cũ; `brickInvites` (dấu "Để sau" của lời mời ôn viên, story 28) theo viên lấy
+ * `dismissedAt` muộn hơn, chỉ có key khi một bên có.
+ */
+export function mergeMistakes(local: unknown, server: unknown): unknown {
+  const merged = mergeMistakeBook(local, server)
+  if (!isPlainObject(merged)) return merged
+  const l = isPlainObject(local) ? local.brickInvites : undefined
+  const s = isPlainObject(server) ? server.brickInvites : undefined
+  if (l === undefined && s === undefined) return merged
+  return { ...merged, brickInvites: mergeBrickInvites(l, s) }
+}
 export const mergeSessions = mergeKeyed('days', mergeSessionDays)
 export const mergePronunciation = mergeKeyed('items', mergePronunciationItems)
 export const mergeSavedWords = mergeKeyed('items', mergeSavedWordItems)

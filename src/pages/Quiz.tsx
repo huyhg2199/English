@@ -1,16 +1,19 @@
-import { useMemo, useState, type ReactNode } from 'react'
-import { ArrowLeft, ClipboardCheck, Compass, MapPinOff } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { ArrowLeft, BookOpen, ClipboardCheck, Compass, MapPinOff } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
 
 import { useComeback, useLoadedStore, useQuizzes } from '@/app/store-context'
+import { Kbd } from '@/components/Kbd'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { QuizResult } from '@/components/quiz/QuizResult'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+import { getBrickMeta, type BrickId } from '@/data/foundation'
 import { getQuiz, QUESTION_BANK, type Question, type QuizDef } from '@/data/questions'
 import { getLesson, lessonHref, SECTION_TITLES, sectionHref, type SectionId } from '@/data/roadmap'
 import { COMEBACK_QUIZ_ID, pickComebackTest, weakestSectionFrom } from '@/lib/comeback'
-import { attemptId, gradeAttempt, pickQuiz, shuffleOptions, type AttemptKind, type GradedAttempt } from '@/lib/quiz'
+import { brickHref, isBrickTaught } from '@/lib/foundation'
+import { attemptId, gradeAttempt, planQuiz, shuffleOptions, type AttemptKind, type GradedAttempt } from '@/lib/quiz'
 import { currentLessonId } from '@/lib/schedule'
 import { canSpeak } from '@/lib/speech'
 
@@ -87,6 +90,8 @@ function QuizRun({ quizId, questions, run, kind, renderResult }: RunProps) {
     setGraded(result)
     window.scrollTo(0, 0)
   }
+  // Nút "Câu tiếp" / "Xem kết quả" và phím Enter (story 31) dùng chung handler.
+  const next = last ? finish : () => setIndex((i) => i + 1)
 
   return (
     <div className="flex flex-col gap-3">
@@ -111,26 +116,90 @@ function QuizRun({ quizId, questions, run, kind, renderResult }: RunProps) {
         onChoose={(option) => setChosen((c) => ({ ...c, [question.id]: option }))}
         heading={`Câu ${index + 1}/${questions.length}`}
         footer={
-          <Button onClick={last ? finish : () => setIndex((i) => i + 1)}>{last ? 'Xem kết quả' : 'Câu tiếp'}</Button>
+          <Button onClick={next} aria-keyshortcuts="Enter">
+            {last ? 'Xem kết quả' : 'Câu tiếp'}
+            <Kbd>Enter</Kbd>
+          </Button>
         }
+        onNext={next}
       />
       <p className="text-xs text-muted-foreground">Rời trang giữa chừng thì lần làm này không được lưu.</p>
     </div>
   )
 }
 
-/** Bài test định nghĩa sẵn (`QUIZZES`): chọn câu theo `pickQuiz`. */
-function DefinedQuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () => void }) {
-  const questions = useMemo(() => pickQuiz(QUESTION_BANK, quiz, run.seed, { canSpeak: canSpeak() }), [quiz, run.seed])
+const brickLabel = (id: BrickId) => `${id} · ${getBrickMeta(id)?.title ?? id}`
+
+/** Quiz bài / mini test còn ít hơn `MIN_QUIZ_QUESTIONS` câu đủ nền: mời học viên còn thiếu, không chạy, không ghi gì. */
+function QuizNotReady({
+  quiz,
+  missingBrickIds,
+  startBrickId,
+}: {
+  quiz: QuizDef
+  missingBrickIds: readonly BrickId[]
+  startBrickId: BrickId | null
+}) {
+  // Học theo thứ tự Sân ga: viên chưa dạy đầu tiên (luôn ≤ viên thiếu đầu tiên), không nhảy cóc tới viên đề cần.
+  const first = startBrickId ?? missingBrickIds[0]
   return (
-    <QuizRun
-      quizId={quiz.id}
-      questions={questions}
-      run={run}
-      renderResult={(graded) => (
-        <QuizResult homeLessonId={quiz.homeLessonId} questions={questions} graded={graded} onRetry={onRetry} />
+    <Card>
+      <CardHeader>
+        <CardDescription className="break-words">
+          Bài test này cần vài viên gạch bạn chưa học ở Sân ga 9¾: {missingBrickIds.map(brickLabel).join(', ')}.
+        </CardDescription>
+        <CardDescription>Học xong rồi quay lại nhé. Bài học vẫn đánh dấu xong được như thường.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2">
+        {first && (
+          <Button asChild className="h-auto min-h-9 justify-start whitespace-normal text-left">
+            <Link to={brickHref(first)}>
+              <BookOpen aria-hidden="true" />
+              Học {brickLabel(first)}
+            </Link>
+          </Button>
+        )}
+        <Button asChild variant="outline" className="self-start">
+          <Link to={lessonHref(quiz.homeLessonId)}>
+            <ArrowLeft aria-hidden="true" />
+            Về bài
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+/**
+ * Bài test định nghĩa sẵn (`QUIZZES`): lập đề bằng `planQuiz` (bỏ câu cần viên gạch chưa học, story 27).
+ * Đề chốt lúc bắt đầu lần làm: đồng bộ hay xong viên giữa chừng không đổi đề đang làm.
+ */
+function DefinedQuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () => void }) {
+  const { store } = useLoadedStore()
+  const [plan] = useState(() =>
+    planQuiz(QUESTION_BANK, quiz, run.seed, { canSpeak: canSpeak() }, (id) => isBrickTaught(store, id)),
+  )
+  if (plan.status === 'not-ready') {
+    return <QuizNotReady quiz={quiz} missingBrickIds={plan.missingBrickIds} startBrickId={plan.startBrickId} />
+  }
+  const { questions } = plan
+  return (
+    <div className="flex flex-col gap-3">
+      {plan.skipped > 0 && (
+        <p className="text-sm text-muted-foreground break-words">
+          Đề lần này có {questions.length} câu, chỉ lấy câu bạn đã đủ nền. Đã bỏ {plan.skipped} câu cần viên gạch chưa
+          học: {plan.missingBrickIds.map(brickLabel).join(', ')}.
+        </p>
       )}
-    />
+      <QuizRun
+        quizId={quiz.id}
+        questions={questions}
+        run={run}
+        renderResult={(graded) => (
+          <QuizResult homeLessonId={quiz.homeLessonId} questions={questions} graded={graded} onRetry={onRetry} />
+        )}
+      />
+    </div>
   )
 }
 
@@ -270,7 +339,8 @@ export function Quiz() {
         </div>
         <p className="text-sm text-muted-foreground">{quiz.description}</p>
       </header>
-      <DefinedQuizRun key={run.seed} quiz={quiz} run={run} onRetry={() => setRun(newRun())} />
+      {/* Key theo cả id test: chuyển sang test khác trong app (cùng route) phải lập đề mới, không giữ đề đã chốt. */}
+      <DefinedQuizRun key={`${quiz.id}|${run.seed}`} quiz={quiz} run={run} onRetry={() => setRun(newRun())} />
     </section>
   )
 }

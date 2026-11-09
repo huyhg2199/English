@@ -1,9 +1,13 @@
 import type { Store } from '@/lib/storage'
-import { isPlainObject } from '@/lib/storage'
+import { isPlainObject, LEGACY_UPDATED_AT } from '@/lib/storage'
 import { isTimeString, nextUpdatedAt } from '@/lib/updated-at'
 
-/** Trạng thái một bài. Bỏ đánh dấu là `done: false` (không xoá key) để đồng bộ không làm sống lại. */
-export type LessonProgress = { done: boolean; updatedAt: string }
+/**
+ * Trạng thái một bài. Bỏ đánh dấu là `done: false` (không xoá key) để đồng bộ không làm sống lại.
+ * `partsSeen` (story 28): id các phần đã xem của đoạn Phát âm bài T1, sắp tăng dần, không trùng. Đánh dấu phần không đổi
+ * `done` / `updatedAt` (mốc của việc đánh dấu xong bài); gộp lấy hợp của hai bên.
+ */
+export type LessonProgress = { done: boolean; updatedAt: string; partsSeen?: readonly string[] }
 
 /** `store.data.progress` từ schema v3. Story 4/6 ghi vào cùng field. */
 export type Progress = { lessons: Record<string, LessonProgress> }
@@ -17,6 +21,7 @@ export type RoadmapProgress = {
   skipped: ReadonlySet<string>
 }
 
+/** Giữ lỏng: không kiểm `partsSeen` (đọc qua `seenPartIdsOf`, chỉ lấy chuỗi). */
 export function isLessonProgress(value: unknown): value is LessonProgress {
   return (
     isPlainObject(value) &&
@@ -48,11 +53,51 @@ export function setLessonCompleted(store: Store, lessonId: string, done: boolean
   const currentlyDone = isLessonProgress(current) && current.done
   if (currentlyDone === done) return store
   const previousAt = isLessonProgress(current) ? current.updatedAt : undefined
-  const entry: LessonProgress = { done, updatedAt: nextUpdatedAt(previousAt, now) }
+  // Giữ field khác của mục (vd `partsSeen`, story 28); chỉ đổi `done` và `updatedAt`.
+  const rest = isPlainObject(current) ? current : {}
+  const entry = { ...rest, done, updatedAt: nextUpdatedAt(previousAt, now) }
   return {
     ...store,
     data: { ...store.data, progress: { ...progress, lessons: { ...lessons, [lessonId]: entry } } },
   }
+}
+
+/** Id phần hợp lệ (chuỗi không rỗng) trong `partsSeen` của một mục, sắp tăng dần, không trùng; sai dạng → `[]`. */
+export function seenPartIdsOf(entry: unknown): string[] {
+  if (!isPlainObject(entry) || !Array.isArray(entry.partsSeen)) return []
+  return [...new Set(entry.partsSeen.filter((id): id is string => typeof id === 'string' && id !== ''))].sort()
+}
+
+/** Phần đã xem của bài (story 28); dữ liệu thiếu hoặc sai dạng → rỗng. */
+export function readSeenPartIds(store: Store, lessonId: string): ReadonlySet<string> {
+  return new Set(seenPartIdsOf(readLessons(store)[lessonId]))
+}
+
+/**
+ * Đánh dấu đã xem một phần (story 28): thêm `partId` vào `partsSeen` (sắp tăng dần), không đổi `done` / `updatedAt`.
+ * Bài chưa có mục (hoặc mục sai dạng) → tạo `{ done: false, updatedAt: LEGACY_UPDATED_AT, partsSeen }`, nên đánh dấu phần
+ * không bao giờ đè "đã xong" của máy khác khi gộp. Đã có → trả về đúng store cũ.
+ */
+export function markLessonPartSeen(store: Store, lessonId: string, partId: string): Store {
+  if (partId === '') return store
+  const lessons = readLessons(store)
+  const current = lessons[lessonId]
+  const seen = seenPartIdsOf(current)
+  if (seen.includes(partId)) return store
+  const partsSeen = [...seen, partId].sort()
+  const entry = isLessonProgress(current)
+    ? { ...current, partsSeen }
+    : { done: false, updatedAt: LEGACY_UPDATED_AT, partsSeen }
+  const progress = isPlainObject(store.data.progress) ? store.data.progress : {}
+  return {
+    ...store,
+    data: { ...store.data, progress: { ...progress, lessons: { ...lessons, [lessonId]: entry } } },
+  }
+}
+
+/** Phần tiếp theo: phần chưa xem đầu tiên theo thứ tự `partIds`; xem hết (hoặc bài không chia) → null. */
+export function nextLessonPartId(partIds: readonly string[], seen: ReadonlySet<string>): string | null {
+  return partIds.find((id) => !seen.has(id)) ?? null
 }
 
 /**

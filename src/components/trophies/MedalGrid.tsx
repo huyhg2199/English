@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LEVEL_LABELS, UPCOMING_MEDALS, type MedalProgress } from '@/lib/trophies'
+import { BOARDING_MEDAL, LEVEL_LABELS, UPCOMING_MEDALS, type BoardingMedal, type MedalProgress } from '@/lib/trophies'
 import { cn } from '@/lib/utils'
 
 import { MedalIcon } from './MedalIcon'
@@ -35,21 +35,46 @@ function MedalTile({ medal: m }: { medal: MedalProgress }) {
   )
 }
 
-/** Lưới huy chương: khoá / đồng / bạc / vàng kèm tiến độ; Hagrid, Sirius là ô "Sắp có". */
-export function MedalGrid({ medals }: { medals: readonly MedalProgress[] }) {
+/** Ô huy chương một lần "Lên tàu Năm 1" (story 26): nhận rồi thì vàng, "Đã nhận · một lần"; chưa thì "Chưa mở" + điều kiện. */
+export function BoardingTile({ boarding }: { boarding: BoardingMedal }) {
+  return (
+    <li
+      className={cn(
+        'flex min-w-0 flex-col items-center gap-2 rounded-xl border bg-card p-3 text-center',
+        boarding.earned && 'border-primary/40',
+      )}
+    >
+      <MedalIcon level={boarding.earned ? 'gold' : null} className={cn(!boarding.earned && 'opacity-70')} />
+      <div className="min-w-0">
+        <h3 className="font-semibold break-words">{BOARDING_MEDAL.name}</h3>
+        <p className="text-xs text-muted-foreground">{boarding.earned ? 'Đã nhận · một lần' : 'Chưa mở'}</p>
+      </div>
+      <p className="text-xs leading-snug">{BOARDING_MEDAL.condition}</p>
+    </li>
+  )
+}
+
+/**
+ * Lưới huy chương: khoá / đồng / bạc / vàng kèm tiến độ; "Lên tàu Năm 1" trao một lần, không cấp (khi có `boarding`);
+ * Hagrid, Sirius là ô "Sắp có".
+ */
+export function MedalGrid({ medals, boarding }: { medals: readonly MedalProgress[]; boarding?: BoardingMedal }) {
   return (
     <Card className="gap-4">
       <CardHeader>
         <CardTitle className="text-lg">
           <h2>Huy chương</h2>
         </CardTitle>
-        <CardDescription>Đồng → bạc → vàng khi đạt 1 / 5 / 20 lần. Đã nhận thì không bao giờ mất.</CardDescription>
+        <CardDescription>
+          Đồng → bạc → vàng khi đạt 1 / 5 / 20 lần; Lên tàu Năm 1 trao một lần. Đã nhận thì không bao giờ mất.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ul className="grid grid-cols-2 gap-3">
           {medals.map((m) => (
             <MedalTile key={m.id} medal={m} />
           ))}
+          {boarding && <BoardingTile boarding={boarding} />}
           {UPCOMING_MEDALS.map((m) => (
             <li
               key={m.id}

@@ -1,3 +1,5 @@
 export * from './quiz'
 export * from './mistakes'
+export * from './requires'
+export * from './brick-invite'
 export { seededRandom, shuffle } from './random'

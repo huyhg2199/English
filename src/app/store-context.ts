@@ -30,6 +30,7 @@ import {
   completeBrick,
   foundationState,
   markWelcomeSeen,
+  readFoundation,
   needsPlacement,
   resumeFoundation,
   skipFoundation,
@@ -45,6 +46,8 @@ import { activeReviewPlan, listOwlAttempts, recordOwlAttempt, type OwlAttemptInp
 import { planFor } from '@/lib/schedule'
 import {
   attemptId,
+  brickReviewInvite,
+  dismissBrickInvite,
   listGradedAttempts,
   readMistakes,
   recordAttempt,
@@ -53,7 +56,7 @@ import {
   type AttemptInput,
 } from '@/lib/quiz'
 import type { RecognitionResult } from '@/lib/speech-recognition'
-import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
+import { markLessonPartSeen, readCompletedLessonIds, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { createNote, deleteNote, noteId, readNotes, updateNote, type NoteInput } from '@/lib/notes'
 import {
   addToSrs,
@@ -64,19 +67,31 @@ import {
   type SavedWordSource,
 } from '@/lib/saved-words'
 import type { StudyWord } from '@/data/vocab'
-import { getBrick } from '@/data/foundation/content'
+import { getBrick, hasBrickContent } from '@/data/foundation/content'
 import type { BrickId, RuleCard } from '@/data/foundation'
 import { newWordOptions } from '@/lib/flashcard-session'
 import {
   computeStreak,
+  markSessionPartSeen,
   newWordListFor,
   readSessionDays,
   recordSession,
   sessionLesson,
   type SessionKind,
+  type SessionPlan,
 } from '@/lib/sessions'
 import { unlockedSpells } from '@/lib/spells'
-import { housePoints, longestStreak, markSeen, medalProgress, unseenLevelUps, type LevelUp } from '@/lib/trophies'
+import {
+  boardingMedal,
+  isWallCelebrationPending,
+  longestStreak,
+  markSeen,
+  markWallCelebrated,
+  medalProgress,
+  storeHousePoints,
+  unseenLevelUps,
+  type LevelUp,
+} from '@/lib/trophies'
 import { gradeCard, markCardKnown, readSrs, type Grade } from '@/lib/srs'
 import { knownWordsFromStore } from '@/lib/subs/highlight'
 import { readVideoPractice, recordVideoPractice } from '@/lib/subs/practice'
@@ -161,6 +176,47 @@ export function useProgress() {
 }
 
 /**
+ * Phần đã xem của bài T1 (story 28, `progress.lessons[id].partsSeen`): `seenPartIds(lessonId)` và `markSeen` (thêm phần,
+ * không đổi "đã xong" của bài). Ghi qua `handle.update` nên lưu local và đồng bộ như tiến độ.
+ */
+export function useLessonParts() {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const seenPartIds = useCallback((lessonId: string) => readSeenPartIds(store, lessonId), [store])
+  const markSeen = useCallback(
+    (lessonId: string, partId: string) => handle.update((s) => markLessonPartSeen(s, lessonId, partId)),
+    [handle],
+  )
+  /** "Xong buổi": thêm phần của buổi vào `partsSeen` (`markSessionPartSeen`). */
+  const markSessionSeen = useCallback((plan: SessionPlan) => handle.update((s) => markSessionPartSeen(s, plan)), [handle])
+  return { seenPartIds, markSeen, markSessionSeen }
+}
+
+/**
+ * Lời mời ôn viên gạch mà Hôm nay hiện (story 28): nối `brickReviewInvite` với `lastDoneAt` thật của viên
+ * (`readFoundation`) và `hasBrickContent` (viên "Đang soạn" không mời).
+ */
+export function brickInviteFor(store: Store, now: Date, hasContent: (id: BrickId) => boolean = hasBrickContent) {
+  const { bricks } = readFoundation(store)
+  return brickReviewInvite(store, now, { lastDoneAt: (id) => bricks[id]?.lastDoneAt, hasContent })
+}
+
+/**
+ * Lời mời "Ôn viên gạch X n'?" (story 28) tại `now`: `invite` (null khi không có) và `dismiss` ("Để sau", ghi
+ * `mistakes.brickInvites`, đồng bộ). Viên đã ôn xong sau câu sai mới nhất hoặc chưa có nội dung thì không mời.
+ */
+export function useBrickInvite(now: Date) {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const invite = useMemo(() => brickInviteFor(store, now), [store, now])
+  const dismiss = useCallback(
+    (brickId: string, at: Date = new Date()) => handle.update((s) => dismissBrickInvite(s, brickId, at)),
+    [handle],
+  )
+  return { invite, dismiss }
+}
+
+/**
  * Mũ Phân Loại (`store.data.placement`): các lần nhập điểm, Nhà, bài bắt đầu và hàm ghi.
  * Lần nhập đầu tiên tự xếp bài bắt đầu; các lần sau chỉ đổi khi gọi `applyPlacement`.
  */
@@ -213,7 +269,8 @@ export function useSrs() {
  * Sân ga 9¾ (story 19, 20): trạng thái (`status`, `rowsDone`, `taughtCount` cho "x/18", `doneBrickIds`), xong viên (đi tới
  * màn Áp dụng), "Bỏ qua Sân ga" và "Quay lại Sân ga"; Soát vé (`needsPlacement`, hàng tiếp theo `placementRow`, đã làm
  * hàng nào chưa `placementStarted`), ghi một lần kiểm tra hàng (`recordRowTest`) và "Bỏ qua, học từ viên 1"
- * (`skipPlacement`). Ghi qua `handle.update` nên lưu local và đồng bộ.
+ * (`skipPlacement`). Qua bức tường (story 26): còn chờ ăn mừng (`wallCelebrationPending`) và ghi đã ăn mừng + đã đưa thư
+ * Lên tàu Năm 1 (`markWallCelebrated`, 2 mục `trophies.seen`). Ghi qua `handle.update` nên lưu local và đồng bộ.
  */
 export function useFoundation() {
   const handle = useStoreHandle()
@@ -238,7 +295,22 @@ export function useFoundation() {
   )
   const skip = useCallback((now: Date = new Date()) => handle.update((s) => skipFoundation(s, now)), [handle])
   const resume = useCallback((now: Date = new Date()) => handle.update((s) => resumeFoundation(s, now)), [handle])
-  return { state, ...placement, completeBrick: complete, skip, resume, recordRowTest: recordRow, skipPlacement: skipTicket }
+  const wallCelebrationPending = useMemo(() => isWallCelebrationPending(store), [store])
+  const celebrate = useCallback(
+    (now: Date = new Date()) => handle.update((s) => markWallCelebrated(s, now)),
+    [handle],
+  )
+  return {
+    state,
+    ...placement,
+    completeBrick: complete,
+    skip,
+    resume,
+    recordRowTest: recordRow,
+    skipPlacement: skipTicket,
+    wallCelebrationPending,
+    markWallCelebrated: celebrate,
+  }
 }
 
 /**
@@ -516,17 +588,22 @@ export function useSpells() {
   return useMemo(() => unlockedSpells(store), [store])
 }
 
-/** Phòng Cúp (story 12): điểm Nhà, chuỗi hiện tại / dài nhất, tiến độ huy chương. Tính lại từ dữ liệu, không có key riêng. */
+/**
+ * Phòng Cúp (story 12): điểm Nhà (cộng +5 mỗi viên gạch xong lần đầu, story 26), chuỗi hiện tại / dài nhất, tiến độ huy
+ * chương và huy chương một lần "Lên tàu Năm 1" (`boarding`). Tính lại từ dữ liệu, không có key riêng.
+ */
 export function useTrophies(now: Date) {
   const { store } = useLoadedStore()
   return useMemo(() => {
     const days = readSessionDays(store)
     return {
       house: readPlacement(store).house,
-      points: housePoints(days),
+      // Điểm Nhà + 5 cho mỗi viên gạch đã xong lần đầu (story 26).
+      points: storeHousePoints(store),
       streak: computeStreak(days, now),
       longest: longestStreak(days),
       medals: medalProgress(store),
+      boarding: boardingMedal(store),
     }
   }, [store, now])
 }

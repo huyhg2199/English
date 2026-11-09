@@ -4,11 +4,11 @@ import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { HOUSE_LABELS, type House } from '@/lib/placement'
-import { STREAK_BONUS, STREAK_BONUS_EVERY, type HousePoints } from '@/lib/trophies'
+import { BRICK_FIRST_DONE_POINTS, STREAK_BONUS, STREAK_BONUS_EVERY, type HousePointsWithBricks } from '@/lib/trophies'
 
-type Props = { house: House | null; points: HousePoints; streak: number; longest: number }
+type Props = { house: House | null; points: HousePointsWithBricks; streak: number; longest: number }
 
-/** Điểm Nhà (tên + màu Nhà qua `data-house`), chuỗi hiện tại và dài nhất. Chưa có Nhà thì mời đội Mũ; có Nhà thì link "Đổi Nhà". */
+/** Điểm Nhà (tên + màu Nhà qua `data-house`; có dòng điểm viên gạch khi đã xong viên nào), chuỗi hiện tại và dài nhất. Chưa có Nhà thì mời đội Mũ; có Nhà thì link "Đổi Nhà". */
 export function HousePointsCard({ house, points, streak, longest }: Props) {
   return (
     <Card className="gap-4 border-primary/50">
@@ -18,7 +18,8 @@ export function HousePointsCard({ house, points, streak, longest }: Props) {
           <h2>{house ? `Nhà ${HOUSE_LABELS[house]}` : 'Chưa phân Nhà'}</h2>
         </CardTitle>
         <CardDescription>
-          Buổi chuẩn +10, ngày lười +5; mỗi {STREAK_BONUS_EVERY} ngày liền thưởng +{STREAK_BONUS}. Không bao giờ bị trừ.
+          Buổi chuẩn +10, ngày lười +5; mỗi {STREAK_BONUS_EVERY} ngày liền thưởng +{STREAK_BONUS}; lần đầu xong mỗi viên
+          gạch +{BRICK_FIRST_DONE_POINTS}. Không bao giờ bị trừ.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -30,6 +31,11 @@ export function HousePointsCard({ house, points, streak, longest }: Props) {
           {points.base} điểm buổi học
           {points.bonusCount > 0 ? ` + ${points.bonus} thưởng chuỗi (${points.bonusCount} lần)` : ''}
         </p>
+        {points.brickCount > 0 && (
+          <p className="text-sm text-muted-foreground">
+            +{points.brickPoints} điểm viên gạch ({points.brickCount} viên)
+          </p>
+        )}
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-lg bg-muted px-3 py-2">
             <dt className="text-muted-foreground">Chuỗi hiện tại</dt>

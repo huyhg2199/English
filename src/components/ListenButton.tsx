@@ -10,6 +10,7 @@ export function ListenButton({
   size = 'icon',
   rate,
   disabled = false,
+  hotkey,
 }: {
   text: string
   label: string
@@ -17,6 +18,8 @@ export function ListenButton({
   rate?: number
   /** Tắt tạm (vd khi micro đang nghe, để micro không thu lại giọng máy). */
   disabled?: boolean
+  /** Phím tắt máy tính (story 31, vd "L"): thêm `aria-keyshortcuts` và nhắc trong `title`. */
+  hotkey?: string
 }) {
   if (!canSpeak()) return null
   return (
@@ -29,7 +32,8 @@ export function ListenButton({
         speak(text, rate === undefined ? {} : { rate })
       }}
       aria-label={label}
-      title={label}
+      aria-keyshortcuts={hotkey}
+      title={hotkey ? `${label} (phím ${hotkey})` : label}
       disabled={disabled}
       className="shrink-0"
     >

@@ -1,9 +1,10 @@
+import { foundationState, readFoundation } from '@/lib/foundation'
 import { KNOWN_ATTEMPT_KINDS, listAttempts } from '@/lib/quiz'
 import { readSessionDays } from '@/lib/sessions'
 import { isPlainObject, type Store } from '@/lib/storage'
 import { isTimeString, nextUpdatedAt } from '@/lib/updated-at'
 
-import { comebackCount } from './points'
+import { comebackCount, housePoints, withBrickPoints, type HousePointsWithBricks } from './points'
 
 /**
  * Huy chương 3 cấp (story 12): đồng → bạc → vàng khi đạt 1 / 5 / 20 lần. Cấp tính lại từ dữ liệu nguồn
@@ -144,3 +145,67 @@ export function markSeen(store: Store, levelUps: readonly Pick<LevelUp, 'id' | '
   const trophies = isPlainObject(store.data.trophies) ? store.data.trophies : {}
   return { ...store, data: { ...store.data, trophies: { ...trophies, seen: { ...seen, ...added } } } }
 }
+
+/**
+ * Huy chương "Lên tàu Năm 1" (story 26, `hp-theme.md`): xong cả 4 hàng của Sân ga 9¾ (học hết viên hoặc qua kiểm tra hàng),
+ * tức `foundation.completedAt` có giá trị. Bỏ qua Sân ga thì chưa có; quay lại và xong thì có. Trao một lần, không cấp,
+ * không nằm trong `MEDAL_IDS` (nên `medalProgress`, `unseenLevelUps`, cú đưa thư khi mở app không đổi).
+ */
+export const BOARDING_MEDAL = {
+  id: 'board-year-1',
+  name: 'Lên tàu Năm 1',
+  condition: 'Xong cả 4 hàng của Sân ga 9¾',
+} as const
+
+/** Mục `trophies.seen` ghi "đã ăn mừng qua bức tường" (màn `/foundation/qua-buc-tuong` đã mở lần đầu). */
+export const WALL_CELEBRATION_KEY = 'wall-passed'
+
+export type BoardingMedal = {
+  /** Đã xong cả 4 hàng (`completedAt` có giá trị). */
+  earned: boolean
+  /** Ngày qua bức tường lần đầu; null khi chưa. */
+  earnedAt: string | null
+  /** Đã đưa thư "Huy chương Lên tàu Năm 1" (mục `board-year-1` trong `trophies.seen`). */
+  delivered: boolean
+}
+
+export function boardingMedal(store: Store): BoardingMedal {
+  const { completedAt } = readFoundation(store)
+  return { earned: completedAt !== null, earnedAt: completedAt, delivered: isSeenEntry(readSeen(store)[BOARDING_MEDAL.id]) }
+}
+
+/**
+ * Điểm Nhà của store (story 26): `housePoints` theo nhật ký buổi học + 5 cho mỗi viên gạch có `firstDoneAt`
+ * (`foundationState(store).doneBrickIds`). Hàng qua bằng kiểm tra không tạo mục viên nên không cộng. Phòng Cúp và màn
+ * Qua bức tường dùng chung hàm này để không lệch nhau.
+ */
+export function storeHousePoints(store: Store): HousePointsWithBricks {
+  return withBrickPoints(housePoints(readSessionDays(store)), foundationState(store).doneBrickIds.length)
+}
+
+/** Còn chờ ăn mừng: đã qua bức tường mà chưa có mục `wall-passed` (kể cả dữ liệu cũ có `completedAt` từ trước). */
+export function isWallCelebrationPending(store: Store): boolean {
+  return readFoundation(store).completedAt !== null && !isSeenEntry(readSeen(store)[WALL_CELEBRATION_KEY])
+}
+
+/**
+ * Ghi "đã ăn mừng" và "đã đưa thư Lên tàu Năm 1" (2 mục `SeenEntry` còn thiếu; mục đã có giữ nguyên thời điểm đầu).
+ * Chưa qua bức tường, hoặc đủ cả 2 mục rồi → trả về đúng store cũ. Gộp hai máy dùng `mergeSeen` (sớm hơn thắng).
+ */
+export function markWallCelebrated(store: Store, now: Date): Store {
+  if (readFoundation(store).completedAt === null) return store
+  const seen = readSeen(store)
+  const added: Record<string, SeenEntry> = {}
+  for (const key of [WALL_CELEBRATION_KEY, BOARDING_MEDAL.id]) {
+    if (!isSeenEntry(seen[key])) added[key] = { updatedAt: nextUpdatedAt(undefined, now) }
+  }
+  if (Object.keys(added).length === 0) return store
+  const trophies = isPlainObject(store.data.trophies) ? store.data.trophies : {}
+  return { ...store, data: { ...store.data, trophies: { ...trophies, seen: { ...seen, ...added } } } }
+}
+
+/** Một lá thư của cú đưa thư: cấp huy chương (`LevelUp`) hoặc huy chương một lần không cấp (`level: null`). */
+export type OwlLetter = { key: string; name: string; level: MedalLevel | null }
+
+/** Thư "Huy chương Lên tàu Năm 1" (màn Qua bức tường). */
+export const BOARDING_LETTER: OwlLetter = { key: BOARDING_MEDAL.id, name: BOARDING_MEDAL.name, level: null }

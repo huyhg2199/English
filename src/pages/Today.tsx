@@ -3,6 +3,7 @@ import { Bell, BookOpenCheck, Check, Coffee, Flame, Gauge, Play, Sparkles, X } f
 import { Link, Navigate } from 'react-router'
 
 import {
+  useBrickInvite,
   useComeback,
   useLoadedStore,
   useOwl,
@@ -14,7 +15,9 @@ import {
 import { todayView } from '@/app/today-view'
 import { useNow } from '@/app/use-now'
 import { ComebackCard } from '@/components/ComebackCard'
+import { BrickReviewInvite } from '@/components/foundation/BrickReviewInvite'
 import { FoundationHero } from '@/components/foundation/FoundationHero'
+import { WallPassedCard } from '@/components/foundation/WallPassedCard'
 import { OwlPlanCard } from '@/components/owl/ReviewPlan'
 import { ScheduleCard } from '@/components/ScheduleCard'
 import { SkillGapCard } from '@/components/SkillGapCard'
@@ -73,7 +76,10 @@ function ReminderBanner({ now }: { now: Date }) {
   const [dismissed, setDismissed] = useState(() => readDismissedDay())
   if (!showReminderBanner(store, now, dismissed)) return null
   return (
-    <div role="status" className="flex items-center gap-3 rounded-xl border border-primary/50 bg-accent/40 px-3 py-2 text-sm">
+    <div
+      role="status"
+      className="flex items-center gap-3 rounded-xl border border-primary/50 bg-accent/40 px-3 py-2 text-sm lg:col-span-2"
+    >
       <Bell className="size-5 shrink-0 text-primary" aria-hidden="true" />
       <p className="min-w-0 flex-1">
         Cú đưa thư nhắc: hôm nay chưa học đó. Lười thì <Link to="/session/lazy" className="font-medium underline">10 phút thôi</Link>.
@@ -100,7 +106,8 @@ function ReminderBanner({ now }: { now: Date }) {
  *   đồng hồ giờ học khi đã có điểm ETS; ẩn Bài hiện tại, lịch 750, Đo trình độ và bảng kỹ năng (`todayView`).
  * - Sau Sân ga: bố cục cũ (nút 30', ngày lười, bài hiện tại, ngày dự kiến 750); cuối trang lời mời Mũ (chưa Nhà), bảng kỹ
  *   năng + đồng hồ (có điểm ETS) hoặc "Đo trình độ (tuỳ chọn)".
- * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày và kế hoạch ôn O.W.L. 1 khi trượt.
+ * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, kế hoạch ôn O.W.L. 1 khi trượt và dải mời "Ôn viên gạch
+ * X n'?" (story 28) ngay dưới nhóm nút khi sai lặp lại cùng một khái niệm nền.
  */
 export function Today() {
   const { store } = useLoadedStore()
@@ -111,6 +118,7 @@ export function Today() {
   const plan = useSchedule(now)
   const comeback = useComeback(now)
   const { activePlan } = useOwl(now)
+  const brickInvite = useBrickInvite(now)
   const view = useMemo(() => todayView(store, hasBrickContent), [store])
   const streak = useMemo(() => computeStreak(days, now), [days, now])
   const hours = useMemo(() => studyHours(days, now), [days, now])
@@ -120,8 +128,9 @@ export function Today() {
   if (welcome.show) return <Navigate to="/welcome" replace />
 
   return (
-    <section className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
+    // Từ 1024px (story 31): lưới 2 cột theo thứ tự DOM; header, dải nhắc và các thẻ lớn trải 2 cột, thẻ còn lại mỗi thẻ một ô.
+    <section className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
+      <header className="flex items-center gap-3 lg:col-span-2">
         <Flame className="size-7 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]" aria-hidden="true" />
         <h1 className="text-2xl font-semibold tracking-wide">Hôm nay</h1>
       </header>
@@ -129,12 +138,20 @@ export function Today() {
       <ReminderBanner now={now} />
 
       {comeback.pending && comeback.questionCount > 0 && (
-        <ComebackCard pending={comeback.pending} questionCount={comeback.questionCount} onSkip={comeback.skip} />
+        <ComebackCard
+          pending={comeback.pending}
+          questionCount={comeback.questionCount}
+          onSkip={comeback.skip}
+          className="lg:col-span-2"
+        />
       )}
 
-      {activePlan && <OwlPlanCard active={activePlan} />}
+      {activePlan && <OwlPlanCard active={activePlan} className="lg:col-span-2" />}
 
-      {view.mode === 'foundation' && <FoundationHero hero={view.hero} />}
+      {/* Qua bức tường mà chưa ăn mừng (kể cả qua trong buổi 30' hay đồng bộ từ máy khác, story 26). */}
+      <WallPassedCard className="lg:col-span-2" />
+
+      {view.mode === 'foundation' && <FoundationHero hero={view.hero} className="lg:col-span-2" />}
 
       <Card className="gap-3">
         <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
@@ -183,6 +200,15 @@ export function Today() {
         </Button>
         {today && <p className="text-center text-xs text-muted-foreground">Muốn học thêm thì cứ bắt đầu lại.</p>}
       </div>
+
+      {/* Lời mời ôn viên gạch (story 28): dải nhỏ dưới nhóm nút, ở cả Sân ga lẫn sau Sân ga; không chặn gì. */}
+      {brickInvite.invite && (
+        <BrickReviewInvite
+          invite={brickInvite.invite}
+          onDismiss={(id) => brickInvite.dismiss(id)}
+          className="lg:col-span-2"
+        />
+      )}
 
       {view.mode === 'roadmap' && (
         <>

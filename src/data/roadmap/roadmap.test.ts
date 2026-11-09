@@ -55,6 +55,17 @@ function tableRows(headerPrefix: string, nth = 0): string[][] {
 
 const stageLessons = (stage: Stage): Lesson[] => stage.months.flatMap((m) => [...m.lessons])
 
+/**
+ * Ô Phát âm của bảng tuần chặng 1 mà app cố ý khác md (SPEC thắng md về Sân ga; không sửa md). Mỗi dòng: bài → [chữ gốc
+ * trong md, chữ trong app]. Test kiểm ô md vẫn là chữ gốc, để md đổi thì phải xem lại ngoại lệ.
+ */
+const MD_OVERRIDES: Readonly<Record<string, readonly [md: string, app: string]>> = {
+  // CAP-3: Mũ Phân Loại chỉ chọn Nhà, bỏ bài đầu vào (chỗ bắt đầu do Soát vé của Sân ga xếp).
+  's1-t1-w1': ['Làm bài đầu vào · 12 nguyên âm đơn', '12 nguyên âm đơn'],
+  // Luật "chỉ dùng kiến thức đã dạy": đuôi -ed (quá khứ) học ở T2 tuần 3, tuần 4 T1 chỉ còn đuôi -s.
+  's1-t1-w4': ['Âm cuối, đọc -s và -ed', 'Âm cuối, đọc -s'],
+}
+
 describe('cấu trúc dữ liệu lộ trình', () => {
   it('3 chặng, 12 tháng, 48 bài, mỗi tháng 4 tuần', () => {
     expect(STAGES).toHaveLength(3)
@@ -219,7 +230,13 @@ describe('đối chiếu với lo-trinh-toeic-12-thang.md', () => {
       expect(month, label).toBe(`${m.label} (${m.period}${m.note ? `, ${m.note}` : ''})`)
       expect(String(lesson.week), label).toBe(weekCell)
 
-      expect(getSection(lesson.id, 'pronunciation')?.task, label).toBe(pron)
+      const override = MD_OVERRIDES[lesson.id]
+      if (override) {
+        expect(pron, `${label}: ô md đã đổi, xem lại MD_OVERRIDES`).toBe(override[0])
+        expect(getSection(lesson.id, 'pronunciation')?.task, label).toBe(override[1])
+      } else {
+        expect(getSection(lesson.id, 'pronunciation')?.task, label).toBe(pron)
+      }
 
       if (grammar === '—') {
         expect(getSection(lesson.id, 'grammar'), label).toBeUndefined()

@@ -2,19 +2,25 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, BookOpenCheck, Check, ClipboardCheck, MapPinOff, NotebookPen } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 
-import { useNotes, useProgress, useSkillBoard } from '@/app/store-context'
+import { useLoadedStore, useNotes, useProgress, useSkillBoard } from '@/app/store-context'
+import { LessonNoteInline, LessonToc } from '@/components/lesson/LessonRail'
 import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { RoleplayButton } from '@/components/lesson/RoleplayButton'
 import { NoteForm } from '@/components/notebook/NoteForm'
 import { ReadingSourceContext } from '@/components/reading-source'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
+import { SplitLayout, SplitMain, SplitRail } from '@/components/SplitLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { getLessonContent } from '@/data/lessons'
-import { getQuiz, lessonQuizId, quizHref } from '@/data/questions'
+import { getQuiz, lessonQuizId, QUESTION_BANK, quizHref } from '@/data/questions'
 import { resolveLessonRoute, sectionHref } from '@/data/roadmap'
+import { isBrickTaught } from '@/lib/foundation'
+import { lessonTocGroups } from '@/lib/lesson-toc'
 import { prioritizeSections } from '@/lib/placement'
+import { quizButtonCount } from '@/lib/quiz'
+import { canSpeak } from '@/lib/speech'
 
 function BackLink() {
   return (
@@ -28,13 +34,16 @@ function BackLink() {
   )
 }
 
-/** Ghi chú gắn với bài (story 8): mở Sheet có form 3 ô; lưu xong ghi chú có link về bài trong Sổ tay. */
+/**
+ * Ghi chú gắn với bài (story 8): mở Sheet có form 3 ô; lưu xong ghi chú có link về bài trong Sổ tay.
+ * Từ 1024px nút ẩn, thay bằng ô ghi chú mở sẵn ở cột phụ (`LessonNoteInline`, story 30).
+ */
 function LessonNoteButton({ lessonId }: { lessonId: string }) {
   const { create } = useNotes()
   const [open, setOpen] = useState(false)
   const [saved, setSaved] = useState(false)
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 lg:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="outline" onClick={() => setSaved(false)}>
@@ -73,6 +82,7 @@ export function Lesson() {
   const { entry, targetSectionId: target } = resolveLessonRoute(lessonId, sectionId)
   const { completedLessonIds, setCompleted } = useProgress()
   const { weakest } = useSkillBoard()
+  const { store } = useLoadedStore()
   const { key: locationKey } = useLocation()
 
   // Có đoạn hợp lệ thì cuộn tới đó, không thì về đầu trang (kể cả khi reload).
@@ -89,7 +99,7 @@ export function Lesson() {
 
   if (!entry) {
     return (
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6 lg:mx-auto lg:w-full lg:max-w-3xl">
         <header className="flex items-center gap-3">
           <MapPinOff className="size-7 text-primary" aria-hidden="true" />
           <h1 className="text-2xl font-semibold tracking-wide">Không tìm thấy bài</h1>
@@ -114,73 +124,86 @@ export function Lesson() {
   const content = getLessonContent(lesson.id)
   // Câu hỏi kiểm tra bài (story 10): mọi bài có đủ câu trong ngân hàng.
   const quiz = getQuiz(lessonQuizId(lesson.id))
+  // Số câu đủ nền (story 27): bỏ câu cần viên gạch chưa học, tính cả việc thay câu nghe khi không có TTS; còn < 4 câu thì nhãn không có số.
+  const quizCount = quiz ? quizButtonCount(QUESTION_BANK, quiz, { canSpeak: canSpeak() }, (id) => isBrickTaught(store, id)) : null
+  const ordered = prioritizeSections(lesson.sections, weakest)
 
   return (
     <section className="flex flex-col gap-6">
       <BackLink />
-      <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
-          <BookOpenCheck
-            className="size-7 shrink-0 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]"
-            aria-hidden="true"
-          />
-          <h1 className="text-2xl font-semibold tracking-wide break-words">{lesson.title}</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {stage.yearLabel} · Chặng {stage.number} {stage.name} · {month.label} ({month.period}) · Tuần{' '}
-          {lesson.week}
-        </p>
-        {done && (
-          <p className="inline-flex items-center gap-1 self-start rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground shadow-[0_0_12px_var(--candle-glow)]">
-            <Check className="size-3.5" aria-hidden="true" />
-            Đã học xong
-          </p>
-        )}
-      </header>
+      {/* Từ 1024px (story 30): thẻ đoạn bên trái; cột phải dính có mục lục, các nút việc và ô ghi chú mở sẵn. */}
+      <SplitLayout cols="rail-right" className="flex flex-col gap-6">
+        <SplitMain className="flex flex-col gap-6">
+          <header className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <BookOpenCheck
+                className="size-7 shrink-0 text-primary drop-shadow-[0_0_8px_var(--candle-glow)]"
+                aria-hidden="true"
+              />
+              <h1 className="text-2xl font-semibold tracking-wide break-words">{lesson.title}</h1>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {stage.yearLabel} · Chặng {stage.number} {stage.name} · {month.label} ({month.period}) · Tuần{' '}
+              {lesson.week}
+            </p>
+            {done && (
+              <p className="inline-flex items-center gap-1 self-start rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground shadow-[0_0_12px_var(--candle-glow)]">
+                <Check className="size-3.5" aria-hidden="true" />
+                Đã học xong
+              </p>
+            )}
+          </header>
 
-      {/* Lý thuyết (phát âm, ngữ pháp) luôn trước; đoạn luyện của kỹ năng yếu nhất lên trước đoạn luyện khác, nhãn "Ưu tiên". */}
-      {prioritizeSections(lesson.sections, weakest).map(({ section, priority }) => (
-        <ReadingSourceContext.Provider
-          key={section.id}
-          value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
-        >
-          <LessonSectionCard
-            lesson={lesson}
-            stage={stage}
-            section={section}
-            highlighted={section.id === target}
-            priority={priority}
-          >
-            <LessonSectionContent lesson={lesson} stage={stage} section={section} content={content} />
-          </LessonSectionCard>
-        </ReadingSourceContext.Provider>
-      ))}
+          {/* Lý thuyết (phát âm, ngữ pháp) luôn trước; đoạn luyện của kỹ năng yếu nhất lên trước đoạn luyện khác, nhãn "Ưu tiên". */}
+          {ordered.map(({ section, priority }) => (
+            <ReadingSourceContext.Provider
+              key={section.id}
+              value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
+            >
+              <LessonSectionCard
+                lesson={lesson}
+                stage={stage}
+                section={section}
+                highlighted={section.id === target}
+                priority={priority}
+              >
+                <LessonSectionContent lesson={lesson} stage={stage} section={section} content={content} />
+              </LessonSectionCard>
+            </ReadingSourceContext.Provider>
+          ))}
+        </SplitMain>
 
-      {quiz && (
-        <Button asChild variant="outline" className="self-start">
-          <Link to={quizHref(quiz.id)}>
-            <ClipboardCheck aria-hidden="true" />
-            Kiểm tra bài ({quiz.size} câu)
-          </Link>
-        </Button>
-      )}
+        <SplitRail className="flex flex-col gap-6">
+          <LessonToc lessonId={lesson.id} groups={lessonTocGroups(ordered, target)} />
 
-      {content?.roleplay && <RoleplayButton lesson={{ lessonId: lesson.id, roleplay: content.roleplay }} />}
+          {quiz && (
+            <Button asChild variant="outline" className="self-start lg:self-stretch">
+              <Link to={quizHref(quiz.id)}>
+                <ClipboardCheck aria-hidden="true" />
+                {quizCount === null ? 'Kiểm tra bài' : `Kiểm tra bài (${quizCount} câu)`}
+              </Link>
+            </Button>
+          )}
 
-      <LessonNoteButton lessonId={lesson.id} />
+          {content?.roleplay && <RoleplayButton lesson={{ lessonId: lesson.id, roleplay: content.roleplay }} />}
 
-      <div className="flex flex-col gap-2">
-        <Button
-          variant={done ? 'outline' : 'default'}
-          onClick={() => setCompleted(lesson.id, !done)}
-          aria-pressed={done}
-        >
-          {done ? 'Bỏ đánh dấu' : 'Đánh dấu đã học xong'}
-        </Button>
-        <p className="text-xs text-muted-foreground">
-          Nút tạm: sau này buổi học sẽ tự ghi tiến độ khi bạn học xong.
-        </p>
-      </div>
+          <LessonNoteButton lessonId={lesson.id} />
+          <LessonNoteInline lessonId={lesson.id} />
+
+          <div className="flex flex-col gap-2">
+            <Button
+              variant={done ? 'outline' : 'default'}
+              onClick={() => setCompleted(lesson.id, !done)}
+              aria-pressed={done}
+            >
+              {done ? 'Bỏ đánh dấu' : 'Đánh dấu đã học xong'}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Nút tạm: sau này buổi học sẽ tự ghi tiến độ khi bạn học xong.
+            </p>
+          </div>
+        </SplitRail>
+      </SplitLayout>
     </section>
   )
 }

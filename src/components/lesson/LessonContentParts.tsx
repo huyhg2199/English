@@ -1,16 +1,18 @@
-import { ClipboardCheck, CloudMoon, GraduationCap } from 'lucide-react'
+import { Check, ClipboardCheck, CloudMoon } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { useSpells } from '@/app/store-context'
+import { useLessonParts, useSpells } from '@/app/store-context'
 import { Button } from '@/components/ui/button'
-import type { GrammarContent, LessonContent } from '@/data/lessons'
+import type { GrammarContent, LessonContent, LessonPart, PronunciationContent, SoundGroup } from '@/data/lessons'
 import { quizHref } from '@/data/questions'
+import { nextLessonPartId } from '@/lib/roadmap-progress'
 
 import { IrregularVerbTable } from './IrregularVerbTable'
 import { PronunciationBlockView } from './PronunciationBlocks'
 import { SoundTable } from './SoundTable'
 import { SpeakPractice } from './SpeakPractice'
 import { TenseCard } from './TenseCard'
+import { GlossaryText } from './TermChip'
 
 /** Tuần Tết: không có nội dung mới, chỉ nhắc chạy chế độ ngày lười 10'. */
 function LazyWeekNotice() {
@@ -33,20 +35,146 @@ function LazyWeekNotice() {
   )
 }
 
-/** Nội dung đoạn Phát âm: (tuần 1) nút làm bài đầu vào, bảng âm, các khối phát âm mới và luyện nói câu mẫu; tuần Tết chỉ có lời nhắc ngày lười. */
-export function PronunciationSection({ content }: { content: LessonContent }) {
-  if (content.lazyWeek) return <LazyWeekNotice />
-  if (!content.pronunciation) return null
+/** Cách hiện đoạn Phát âm của bài chia phần (story 28): mọi phần (trang bài, buổi ôn cả tuần) hoặc một phần (buổi bài). */
+export type PronunciationView = { kind: 'all' } | { kind: 'part'; partId: string }
+
+const ALL: PronunciationView = { kind: 'all' }
+
+/** Nhóm âm của một phần: giữ nhóm của bài (tiêu đề, ghi chú), chỉ lấy âm của phần, theo thứ tự `soundIds`. */
+function partGroups(pronunciation: PronunciationContent, part: LessonPart): SoundGroup[] {
+  return pronunciation.groups.flatMap((group) => {
+    const sounds = part.soundIds.flatMap((id) => group.sounds.filter((sound) => sound.id === id))
+    if (sounds.length === 0) return []
+    return [{ ...group, title: `${sounds.length} trong ${group.title}`, sounds }]
+  })
+}
+
+const BADGE = 'inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold'
+
+/** Một phần: tiêu đề + nhãn, ghi chú, bảng âm của phần, luyện nói câu của phần, nút "Xong phần này" (ẩn khi đã xem). */
+function PartBlock({
+  part,
+  pronunciation,
+  seen,
+  isNext,
+  onSeen,
+}: {
+  part: LessonPart
+  pronunciation: PronunciationContent
+  seen: boolean
+  isNext: boolean
+  onSeen: () => void
+}) {
   return (
-    <div className="flex flex-col gap-5">
-      {content.placementLink && (
-        <Button asChild variant="outline" className="self-start">
-          <Link to="/sorting-hat">
-            <GraduationCap aria-hidden="true" />
-            Làm bài đầu vào (Mũ Phân Loại)
-          </Link>
+    <section id={`part-${part.id}`} className="flex scroll-mt-20 flex-col gap-4 rounded-lg border p-3" aria-labelledby={`part-title-${part.id}`}>
+      <div className="flex flex-wrap items-center gap-2">
+        <h3 id={`part-title-${part.id}`} className="min-w-0 font-semibold break-words">
+          {part.title}
+        </h3>
+        {seen ? (
+          <span className={`${BADGE} bg-secondary text-secondary-foreground`}>
+            <Check className="size-3" aria-hidden="true" />
+            Đã xem
+          </span>
+        ) : (
+          isNext && <span className={`${BADGE} bg-primary text-primary-foreground`}>Phần tiếp theo</span>
+        )}
+      </div>
+      <SoundTable
+        content={{ intro: part.note, groups: partGroups(pronunciation, part), sentences: [] }}
+        groupHeading="h4"
+      />
+      <SpeakPractice sentences={part.sentences} title="Luyện nói phần này" titleAs="h4" />
+      {!seen && (
+        <Button type="button" variant="outline" className="self-start" onClick={onSeen}>
+          <Check aria-hidden="true" />
+          Xong phần này
         </Button>
       )}
+    </section>
+  )
+}
+
+/**
+ * Đoạn Phát âm của bài chia phần (W1–W3, story 28). Không khoá phần nào: trang bài hiện mọi phần theo thứ tự, phần nào cũng
+ * đủ nội dung, cuối là "Luyện cả tuần" (câu mẫu cũ). Buổi bài chỉ hiện phần của buổi, kèm nhãn "Phần n/N".
+ */
+function PartedPronunciation({
+  content,
+  pronunciation,
+  parts,
+  view,
+}: {
+  content: LessonContent
+  pronunciation: PronunciationContent
+  parts: readonly LessonPart[]
+  view: PronunciationView
+}) {
+  const { seenPartIds, markSeen } = useLessonParts()
+  const seen = seenPartIds(content.lessonId)
+  const next = nextLessonPartId(
+    parts.map((p) => p.id),
+    seen,
+  )
+  const block = (part: LessonPart) => (
+    <PartBlock
+      key={part.id}
+      part={part}
+      pronunciation={pronunciation}
+      seen={seen.has(part.id)}
+      isNext={part.id === next}
+      onSeen={() => markSeen(content.lessonId, part.id)}
+    />
+  )
+
+  const index = view.kind === 'part' ? parts.findIndex((p) => p.id === view.partId) : -1
+  if (index >= 0) {
+    return (
+      <div className="flex flex-col gap-3">
+        {/* Lời giới thiệu của tuần (định nghĩa, cách luyện, dấu ★) vẫn hiện ở buổi chỉ học một phần. */}
+        <p className="text-sm text-muted-foreground">
+          <GlossaryText text={pronunciation.intro} />
+        </p>
+        <p className="text-sm font-semibold text-primary">
+          Phần {index + 1}/{parts.length}
+        </p>
+        {block(parts[index])}
+      </div>
+    )
+  }
+
+  const seenCount = parts.filter((p) => seen.has(p.id)).length
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-1">
+        <p className="text-sm text-muted-foreground">
+          <GlossaryText text={pronunciation.intro} />
+        </p>
+        <p className="text-sm font-medium">
+          Đã xem {seenCount}/{parts.length} phần
+        </p>
+      </div>
+      {parts.map(block)}
+      {pronunciation.blocks?.map((b, i) => (
+        <PronunciationBlockView key={`${b.kind}-${i}`} block={b} />
+      ))}
+      <SpeakPractice sentences={pronunciation.sentences} title="Luyện cả tuần" />
+    </div>
+  )
+}
+
+/**
+ * Nội dung đoạn Phát âm: bảng âm, các khối phát âm mới và luyện nói câu mẫu; tuần Tết chỉ có lời nhắc ngày lười.
+ * Bài chia phần (story 28) hiện theo `view` (mặc định mọi phần); bài không chia giữ nguyên như cũ.
+ */
+export function PronunciationSection({ content, view = ALL }: { content: LessonContent; view?: PronunciationView }) {
+  if (content.lazyWeek) return <LazyWeekNotice />
+  if (!content.pronunciation) return null
+  if (content.parts && content.parts.length > 0) {
+    return <PartedPronunciation content={content} pronunciation={content.pronunciation} parts={content.parts} view={view} />
+  }
+  return (
+    <div className="flex flex-col gap-5">
       <SoundTable content={content.pronunciation} />
       {content.pronunciation.blocks?.map((block, i) => (
         <PronunciationBlockView key={`${block.kind}-${i}`} block={block} />

@@ -2,8 +2,9 @@ import type { Question } from './types'
 
 /**
  * 24 câu tháng T1 (6 câu mỗi bài `s1-t1-w1…w4`), bám nội dung story 6: to be, hiện tại đơn (khẳng định,
- * hỏi, phủ định), nguyên âm đơn / đôi, phụ âm /θ ð ʃ ʒ/, âm cuối -s / -ed, trọng âm (từ trong bảng âm). Tự soạn, không chép đề ETS.
- * Câu nghe chỉ dùng ngữ pháp đã học ở T1 (không có thì quá khứ).
+ * hỏi, phủ định), nguyên âm đơn / đôi, phụ âm /θ ð ʃ ʒ/, âm cuối và đuôi -s, trọng âm (từ trong bảng âm). Tự soạn, không chép đề ETS.
+ * Chỉ dùng kiến thức đã dạy (story 27): không thì quá khứ, không đuôi -ed (học ở T2 tuần 3). Mỗi câu khai báo tay
+ * `requires` (khái niệm viên gạch hoặc khái niệm bài T1 đứng trước / chính bài của câu), xem `concepts.ts`.
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
@@ -20,6 +21,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['is', 'am', 'are', 'be'],
     answer: 'is',
     explanation: 'He / she / it và danh từ số ít đi với is: She is my teacher.',
+    requires: ['be-affirmative', 'subject-pronouns', 'possessive-adjectives'],
   },
   {
     id: 'q-s1-t1-w1-02',
@@ -30,7 +32,8 @@ export const T1_QUESTIONS: readonly Question[] = [
     prompt: '___ you ready for the class?',
     options: ['Are', 'Is', 'Am', 'Do'],
     answer: 'Are',
-    explanation: 'Câu hỏi với to be đảo am / is / are lên đầu; you đi với are. Có tính từ ready nên không dùng do.',
+    explanation: 'Câu hỏi với to be: đưa am / is / are lên trước chủ ngữ. you đi với are → Are you ready?',
+    requires: ['be-questions', 'subject-pronouns', 'articles'],
   },
   {
     id: 'q-s1-t1-w1-03',
@@ -41,7 +44,8 @@ export const T1_QUESTIONS: readonly Question[] = [
     prompt: 'I ___ busy right now.',
     options: ['am not', 'not am', 'is not', "don't"],
     answer: 'am not',
-    explanation: "Phủ định của to be: thêm not ngay sau am / is / are. I đi với am → I am not (I'm not).",
+    explanation: "Phủ định của to be: thêm not ngay sau am / is / are. I đi với am → I am not (I'm not). is not dùng cho he / she / it.",
+    requires: ['be-negative', 'subject-pronouns'],
   },
   {
     id: 'q-s1-t1-w1-04',
@@ -53,6 +57,8 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['from', 'at', 'on', 'to'],
     answer: 'from',
     explanation: 'Nói quê / nước mình đến từ đâu dùng be from: We are from Vietnam.',
+    // "from" mở ở F14 (cổng hư từ `ngsl-from`; F14 dạy "I'm from Vietnam" trong khái niệm wh-questions).
+    requires: ['be-affirmative', 'subject-pronouns', 'wh-questions'],
   },
   {
     id: 'q-s1-t1-w1-05',
@@ -64,6 +70,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['ship', 'sit', 'fish', 'sheep'],
     answer: 'sheep',
     explanation: 'sheep có /iː/ (dài, căng môi như cười). ship, sit, fish có /ɪ/ (ngắn, thả lỏng).',
+    requires: ['ipa', 'long-vowel-mark', 'long-short-i', 'monophthongs'],
   },
   {
     id: 'q-s1-t1-w1-06',
@@ -75,7 +82,9 @@ export const T1_QUESTIONS: readonly Question[] = [
     audioText: 'Is it hot today?',
     options: ['Is it hot today?', 'It is hot today.', 'Is it cold today?', 'Is it hot to stay?'],
     answer: 'Is it hot today?',
-    explanation: 'Câu hỏi bắt đầu bằng Is và giọng lên ở cuối; "hot" /hɑːt/ có /ɑː/ (a dài, miệng mở rộng), khác "cold" có /oʊ/.',
+    explanation:
+      'Câu hỏi này bắt đầu bằng Is (Is it…?), không phải It is. "hot" /hɑːt/ có /ɑː/ (a dài, mở rộng miệng); "cold" là từ khác (lạnh). Cuối câu là "today", không phải "to stay".',
+    requires: ['be-questions', 'subject-pronouns', 'ipa', 'long-vowel-mark', 'monophthongs'],
   },
 
   // ── Tuần 2: hiện tại đơn khẳng định · nguyên âm đôi ──
@@ -89,6 +98,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['works', 'work', 'working', 'is work'],
     answer: 'works',
     explanation: 'Thói quen / việc thường ngày dùng hiện tại đơn; she là ngôi thứ ba số ít nên động từ thêm -s.',
+    requires: ['present-simple', 'subject-pronouns', 'articles', 'prepositions-of-place'],
   },
   {
     id: 'q-s1-t1-w2-02',
@@ -96,10 +106,11 @@ export const T1_QUESTIONS: readonly Question[] = [
     sectionId: 'grammar',
     tag: 'thì',
     kind: 'choice',
-    prompt: 'My brother ___ English every evening.',
+    prompt: 'My brother ___ English.',
     options: ['studies', 'study', 'studys', 'is study'],
     answer: 'studies',
     explanation: 'Phụ âm + y thì đổi y thành -ies: study → studies. "is study" sai vì không đặt is trước động từ thường.',
+    requires: ['present-simple', 'possessive-adjectives', 'be-affirmative'],
   },
   {
     id: 'q-s1-t1-w2-03',
@@ -111,6 +122,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['has', 'have', 'haves', 'having'],
     answer: 'has',
     explanation: 'have là bất quy tắc: he / she / it has (không phải haves).',
+    requires: ['have-has', 'subject-pronouns', 'articles', 'adjective-before-noun'],
   },
   {
     id: 'q-s1-t1-w2-04',
@@ -122,6 +134,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['at', 'in', 'on', 'to'],
     answer: 'at',
     explanation: 'Giờ cụ thể dùng at: at eight, at 7:30. in dùng cho tháng / năm, on cho thứ / ngày.',
+    requires: ['prepositions-of-time', 'clock-time', 'present-simple', 'articles'],
   },
   {
     id: 'q-s1-t1-w2-05',
@@ -133,6 +146,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['go', 'home', 'know', 'now'],
     answer: 'now',
     explanation: 'now có /aʊ/ (a → u, như "ao"). go, home, know có /oʊ/ (ô → u, như "âu" kéo dài).',
+    requires: ['ipa', 'diphthongs'],
   },
   {
     id: 'q-s1-t1-w2-07',
@@ -144,7 +158,9 @@ export const T1_QUESTIONS: readonly Question[] = [
     audioText: 'He likes his new job.',
     options: ['He likes his new job.', 'She likes her new job.', 'He likes his old job.', 'They like their new job.'],
     answer: 'He likes his new job.',
-    explanation: 'Nghe /h/ ở đầu "he" (khác /ʃ/ của "she"), âm /s/ cuối "likes" (he thêm -s) và "new" /uː/ khác "old" /oʊ/.',
+    explanation:
+      'Nghe "he" (không phải "she") ở đầu câu, âm s ở cuối "likes" (he nên động từ thêm -s), và "new" (mới) chứ không phải "old" (cũ).',
+    requires: ['present-simple', 'possessive-adjectives', 'adjective-before-noun'],
   },
 
   // ── Tuần 3: hiện tại đơn câu hỏi, phủ định · 24 phụ âm ──
@@ -155,9 +171,10 @@ export const T1_QUESTIONS: readonly Question[] = [
     tag: 'thì',
     kind: 'choice',
     prompt: 'She doesn’t ___ here.',
-    options: ['live', 'lives', 'living', 'lived'],
+    options: ['live', 'lives', 'living', 'is live'],
     answer: 'live',
     explanation: "Đã có does (doesn't) thì động từ chính về nguyên mẫu, bỏ -s: She doesn't live here.",
+    requires: ['present-simple-negative', 'subject-pronouns'],
   },
   {
     id: 'q-s1-t1-w3-02',
@@ -169,6 +186,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['Does', 'Do', 'Is', 'Are'],
     answer: 'Does',
     explanation: 'Câu hỏi hiện tại đơn với động từ thường mượn do / does; your mother = she nên dùng does.',
+    requires: ['present-simple-questions', 'possessive-adjectives', 'prepositions-of-time', 'days-months'],
   },
   {
     id: 'q-s1-t1-w3-03',
@@ -179,7 +197,9 @@ export const T1_QUESTIONS: readonly Question[] = [
     prompt: 'What ___ you do? — I’m a developer.',
     options: ['do', 'does', 'are', 'is'],
     answer: 'do',
-    explanation: 'Câu hỏi Wh-: What + do / does + chủ ngữ + động từ nguyên mẫu. you đi với do.',
+    explanation:
+      'Câu hỏi Wh-: What + do / does + chủ ngữ + động từ nguyên mẫu. you đi với do. do thứ hai là động từ chính, nghĩa là "làm": What do you do? = Bạn làm nghề gì?',
+    requires: ['present-simple-questions', 'wh-questions', 'be-affirmative', 'articles'],
   },
   {
     id: 'q-s1-t1-w3-04',
@@ -191,6 +211,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['think', 'thank', 'three', 'this'],
     answer: 'this',
     explanation: 'this có /ð/ (rung dây thanh). think, thank, three có /θ/ (chỉ thổi hơi, không rung). Cả hai đều đặt lưỡi giữa hai răng.',
+    requires: ['ipa', 'consonants'],
   },
   {
     id: 'q-s1-t1-w3-07',
@@ -202,6 +223,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['because', 'music', 'usually', 'television'],
     answer: 'because',
     explanation: 'because /bɪˈkɑːz/ nhấn âm thứ hai (be-CAUSE). music /ˈmjuːzɪk/, usually /ˈjuːʒuəli/, television /ˈteləvɪʒən/ nhấn âm đầu.',
+    requires: ['ipa', 'syllables', 'stress'],
   },
   {
     id: 'q-s1-t1-w3-06',
@@ -211,22 +233,26 @@ export const T1_QUESTIONS: readonly Question[] = [
     kind: 'listening',
     prompt: LISTEN_PROMPT,
     audioText: 'She doesn’t watch TV.',
-    options: ['She doesn’t watch TV.', 'She watches TV.', 'She didn’t watch TV.', 'He doesn’t watch TV.'],
+    options: ['She doesn’t watch TV.', 'She watches TV.', 'They don’t watch TV.', 'He doesn’t watch TV.'],
     answer: 'She doesn’t watch TV.',
-    explanation: "Nghe /ʃ/ ở đầu \"she\" (khác /h/ của \"he\") và \"doesn't\" ở giữa câu; câu phủ định nên watch không có -es.",
+    explanation:
+      "Nghe /ʃ/ ở đầu \"she\" (khác /h/ của \"he\") và \"doesn't\" ở giữa câu (she đi với doesn't, không phải don't); câu phủ định nên watch không có -es.",
+    requires: ['present-simple-negative', 'subject-pronouns', 'ipa', 'consonants'],
   },
 
-  // ── Tuần 4: ôn lại · âm cuối -s / -ed ──
+  // ── Tuần 4: ôn lại · âm cuối, đuôi -s ──
   {
     id: 'q-s1-t1-w4-01',
     lessonId: 's1-t1-w4',
     sectionId: 'pronunciation',
     tag: 'phát âm',
     kind: 'pronunciation',
-    prompt: 'Chọn từ có đuôi -ed đọc là /ɪd/.',
-    options: ['started', 'worked', 'played', 'helped'],
-    answer: 'started',
-    explanation: 'Động từ tận cùng /t/ hoặc /d/ thì -ed đọc /ɪd/: started, needed. worked, helped đọc /t/; played đọc /d/.',
+    prompt: 'Chọn từ có đuôi -s đọc là /z/.',
+    options: ['plays', 'works', 'helps', 'likes'],
+    answer: 'plays',
+    explanation:
+      'Sau âm hữu thanh (nguyên âm, /b d ɡ v m n l r/…) đuôi -s đọc /z/: plays /pleɪz/. works, helps, likes tận cùng /k p/ vô thanh nên đọc /s/.',
+    requires: ['ipa', 'final-sounds', 'plural-s-sounds', 'present-simple', 'verb-s-endings'],
   },
   {
     id: 'q-s1-t1-w4-02',
@@ -238,6 +264,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['watches', 'books', 'plays', 'likes'],
     answer: 'watches',
     explanation: 'Tận cùng /s z ʃ ʒ tʃ dʒ/ thì đọc /ɪz/: watches, buses. books, likes đọc /s/; plays đọc /z/.',
+    requires: ['ipa', 'plural-s-sounds', 'verb-s-endings'],
   },
   {
     id: 'q-s1-t1-w4-07',
@@ -249,6 +276,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['family', 'again', 'about', 'around'],
     answer: 'family',
     explanation: 'family /ˈfæməli/ nhấn âm đầu (FAM-i-ly). again /əˈɡen/, about /əˈbaʊt/, around /əˈraʊnd/ nhấn âm thứ hai; âm đầu là /ə/ rất nhẹ.',
+    requires: ['ipa', 'syllables', 'stress', 'schwa'],
   },
   {
     id: 'q-s1-t1-w4-04',
@@ -260,6 +288,7 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['doesn’t drink', 'don’t drink', 'doesn’t drinks', 'not drink'],
     answer: 'doesn’t drink',
     explanation: "He dùng does; phủ định = doesn't + động từ nguyên mẫu (không thêm -s lần nữa).",
+    requires: ['present-simple-negative', 'subject-pronouns'],
   },
   {
     id: 'q-s1-t1-w4-05',
@@ -271,6 +300,8 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['work', 'am work', 'works', 'is work'],
     answer: 'work',
     explanation: 'Không trộn to be với động từ thường: "I am work" sai. I đi với động từ nguyên mẫu: I work.',
+    // "from" mở ở F14 (như q-s1-t1-w1-04); giải thích nói về to be ("I am work" sai) nên cần be-affirmative.
+    requires: ['present-simple', 'subject-pronouns', 'be-affirmative', 'wh-questions', 'days-months'],
   },
   {
     id: 'q-s1-t1-w4-08',
@@ -288,5 +319,6 @@ export const T1_QUESTIONS: readonly Question[] = [
     ],
     answer: 'My friend watches movies on Fridays.',
     explanation: 'Nghe âm cuối: "watches" có /ɪz/ (thêm một âm tiết), "movies" và "Fridays" có /z/; "friend" không có -s nên động từ là watches.',
+    requires: ['present-simple', 'possessive-adjectives', 'plurals', 'plural-s-sounds', 'verb-s-endings', 'prepositions-of-time', 'days-months'],
   },
 ]

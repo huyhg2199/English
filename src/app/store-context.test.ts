@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { loadStore, STORAGE_KEY, type StorageLike } from '@/lib/storage'
+import { hasBrickContent } from '@/data/foundation/content'
+import { getQuestion } from '@/data/questions'
+import { completeBrick } from '@/lib/foundation'
+import { recordMistake } from '@/lib/quiz'
+import { CURRENT_VERSION, loadStore, STORAGE_KEY, type StorageLike, type Store } from '@/lib/storage'
 import { readCompletedLessonIds, setLessonCompleted } from '@/lib/roadmap-progress'
 
 import { readSeen } from '@/lib/trophies'
@@ -8,7 +12,7 @@ import { readSeen } from '@/lib/trophies'
 import { createGistWriter, GIST_ID_STORAGE, GIST_STATUS_FILE, GIST_TOKEN_STORAGE } from '@/lib/gist'
 import { readSessionDays } from '@/lib/sessions'
 
-import { createStoreHandle, deliverOwlPost, mergeGistBackup, recordSessionAndBackup } from './store-context'
+import { brickInviteFor, createStoreHandle, deliverOwlPost, mergeGistBackup, recordSessionAndBackup } from './store-context'
 
 function fakeStorage(initial: Record<string, string> = {}) {
   const map = new Map(Object.entries(initial))
@@ -155,6 +159,19 @@ describe('deliverOwlPost (story 12)', () => {
   })
 })
 
+describe('deliverOwlPost khi đã qua bức tường (story 26)', () => {
+  it('không trả thư Lên tàu Năm 1 và không ghi wall-passed / board-year-1 (thư đó chỉ ở màn Qua bức tường)', () => {
+    const T = '2026-11-03T02:00:00.000Z'
+    const raw = JSON.stringify({ schemaVersion: 13, data: { foundation: { completedAt: T, bricks: {}, rows: {} } } })
+    const storage = fakeStorage({ [STORAGE_KEY]: raw })
+    const handle = createStoreHandle(loadStore({ storage, warn }), { storage, warn })
+    const now = new Date('2026-11-04T08:00:00.000Z')
+
+    expect(deliverOwlPost(handle, now)).toEqual([])
+    expect(readSeen(handle.getSnapshot().store)).toEqual({})
+  })
+})
+
 describe('recordSessionAndBackup (story 13: xong buổi → ghi Gist)', () => {
   it('ghi buổi vào store trước, rồi đúng một PATCH lên Gist với status.json studied true và đúng loại buổi', async () => {
     const storage = fakeStorage()
@@ -188,5 +205,26 @@ describe('recordSessionAndBackup (story 13: xong buổi → ghi Gist)', () => {
     const r = recordSessionAndBackup(handle, null, 'full', new Date('2026-11-02T05:00:00.000Z'))
     expect(r.saved).toBe(true)
     await expect(r.backup).resolves.toBeUndefined()
+  })
+})
+
+describe('brickInviteFor (story 28, dải mời trên Hôm nay)', () => {
+  const NOW = new Date('2026-11-20T12:00:00.000Z')
+  const at = (hoursAgo: number) => new Date(NOW.getTime() - hoursAgo * 3600_000)
+  const wrong = (s: Store, id: string, when: Date) => recordMistake(s, getQuestion(id)!, 'x', when)
+  /** Matrix "Mời ôn": hai câu cần subject-pronouns (F09). */
+  const f09 = (): Store => wrong(wrong({ schemaVersion: CURRENT_VERSION, data: {} }, 'q-s1-t1-w1-03', at(72)), 'q-s1-t1-w4-04', at(24))
+
+  it('nối lastDoneAt thật: học xong F09 (completeBrick) sau câu sai mới nhất → null; chưa học → mời F09', () => {
+    expect(brickInviteFor(f09(), NOW, () => true)?.brickId).toBe('F09')
+    expect(brickInviteFor(completeBrick(f09(), 'F09', at(1)), NOW, () => true)).toBeNull()
+    // Học F09 trước câu sai mới nhất thì vẫn mời.
+    expect(brickInviteFor(completeBrick(f09(), 'F09', at(48)), NOW, () => true)?.brickId).toBe('F09')
+  })
+
+  it('nối hasContent: mặc định hasBrickContent; viên "Đang soạn" không mời', () => {
+    expect(hasBrickContent('F09')).toBe(true)
+    expect(brickInviteFor(f09(), NOW)?.brickId).toBe('F09')
+    expect(brickInviteFor(f09(), NOW, (id) => id !== 'F09')?.brickId).not.toBe('F09')
   })
 })

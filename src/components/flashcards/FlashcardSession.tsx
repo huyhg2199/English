@@ -3,17 +3,21 @@ import { BookmarkCheck, Eye, ExternalLink, RotateCw } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useNewWordList, useNewWordOptions, useSavedWords, useSrs } from '@/app/store-context'
+import { useHotkeys } from '@/app/use-hotkeys'
 import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { isBrickId } from '@/data/foundation'
+import { Kbd } from '@/components/Kbd'
 import { cambridgeUrl, POS_LABELS, VOCAB_ATTRIBUTION, type StudyWord, type WordList } from '@/data/vocab'
 import { ListenButton } from '@/components/ListenButton'
 import { ReadableText } from '@/components/ReadableText'
 import { buildStudySession, functionWordCloze, rankLabel, type FlashcardGates } from '@/lib/flashcard-session'
 import { brickHref, FOUNDATION_GATES } from '@/lib/foundation'
+import { flashcardBindings, flashcardKeyState, GRADE_KEYS, type FlashcardCard } from '@/lib/hotkeys'
 import { originsByWord, safeSourceHref, type Origin } from '@/lib/saved-words'
+import { canSpeak, speak } from '@/lib/speech'
 import {
   formatDelay,
   isCustomWord,
@@ -29,12 +33,13 @@ import {
 } from '@/lib/srs'
 import { cn } from '@/lib/utils'
 
-const GRADE_BUTTONS: { grade: Grade; label: string; className: string }[] = [
-  { grade: 'again', label: 'Quên', className: 'border-destructive/60 text-destructive hover:bg-destructive/10' },
-  { grade: 'hard', label: 'Khó', className: '' },
-  { grade: 'good', label: 'Nhớ', className: 'border-primary/60 text-primary' },
-  { grade: 'easy', label: 'Dễ', className: '' },
-]
+/** Nhãn và màu nút chấm; thứ tự nút là `GRADE_KEYS` (Quên / Khó / Nhớ / Dễ ↔ phím 1–4). */
+const GRADE_STYLES: Record<Grade, { label: string; className: string }> = {
+  again: { label: 'Quên', className: 'border-destructive/60 text-destructive hover:bg-destructive/10' },
+  hard: { label: 'Khó', className: '' },
+  good: { label: 'Nhớ', className: 'border-primary/60 text-primary' },
+  easy: { label: 'Dễ', className: '' },
+}
 
 const KIND_LABELS: Record<SessionItem['kind'], string> = {
   new: 'Từ mới',
@@ -151,18 +156,56 @@ type FlashcardProps = {
   onKnown: () => void
 }
 
+/**
+ * Phím tắt của thẻ (story 31): Space lật, 1–4 chấm Quên/Khó/Nhớ/Dễ (đã lật, không phải "Làm quen"), Enter "Đã xem" (thẻ
+ * "Làm quen"), K "Đã biết", L nghe từ. Chỉ gắn phím có hành động (`flashcardBindings`), nên phím khác không bị chặn. Mỗi phím
+ * gọi đúng handler của nút.
+ */
+function useFlashcardKeys(
+  card: FlashcardCard,
+  on: { flip: () => void; grade: (grade: Grade) => void; known: () => void },
+  enabled = true,
+) {
+  useHotkeys(flashcardBindings(flashcardKeyState(card), { ...on, listen: (text) => speak(text) }), enabled)
+}
+
+/** Nút "Lật thẻ" (Space). */
+function FlipButton({ onFlip }: { onFlip: () => void }) {
+  return (
+    <Button type="button" onClick={onFlip} aria-keyshortcuts="Space">
+      <RotateCw aria-hidden="true" />
+      Lật thẻ
+      <Kbd>Space</Kbd>
+    </Button>
+  )
+}
+
+/** Nút "Đã biết …" (K). */
+function KnownButton({ label, onKnown }: { label: string; onKnown: () => void }) {
+  return (
+    <Button type="button" variant="ghost" onClick={onKnown} aria-keyshortcuts="K">
+      {label}
+      <Kbd>K</Kbd>
+    </Button>
+  )
+}
+
 function GradeButtons({ previous, now, onGrade }: Pick<FlashcardProps, 'previous' | 'now' | 'onGrade'>) {
   return (
     <div className="grid grid-cols-4 gap-2">
-      {GRADE_BUTTONS.map(({ grade, label, className }) => (
+      {GRADE_KEYS.map((grade, i) => (
         <Button
           key={grade}
           type="button"
           variant="outline"
           onClick={() => onGrade(grade)}
-          className={cn('h-auto min-w-0 flex-col gap-0.5 px-1 py-2', className)}
+          aria-keyshortcuts={String(i + 1)}
+          className={cn('h-auto min-w-0 flex-col gap-0.5 px-1 py-2', GRADE_STYLES[grade].className)}
         >
-          <span className="font-semibold">{label}</span>
+          <span className="font-semibold">
+            {GRADE_STYLES[grade].label}
+            <Kbd>{i + 1}</Kbd>
+          </span>
           <span className="text-[11px] font-normal text-muted-foreground">{formatDelay(review(previous, grade, now).due, now)}</span>
         </Button>
       ))}
@@ -176,6 +219,10 @@ function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<F
   kind: SessionItem['kind']
 }) {
   const [flipped, setFlipped] = useState(false)
+  useFlashcardKeys(
+    { variant: 'custom', flipped, isNew: kind === 'new', word: word.word, canSpeak: canSpeak() },
+    { flip: () => setFlipped(true), grade: onGrade, known: onKnown },
+  )
   return (
     <Card className="gap-4">
       <CardHeader className="gap-3">
@@ -187,26 +234,19 @@ function CustomFlashcard({ word, kind, previous, now, onGrade, onKnown }: Omit<F
           <h2 className="min-w-0 text-2xl font-semibold break-words" lang="en">
             {word.word}
           </h2>
-          <ListenButton text={word.word} label={`Nghe "${word.word}"`} />
+          <ListenButton text={word.word} label={`Nghe "${word.word}"`} hotkey="L" />
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {!flipped ? (
-          <Button type="button" onClick={() => setFlipped(true)}>
-            <RotateCw aria-hidden="true" />
-            Lật thẻ
-          </Button>
+          <FlipButton onFlip={() => setFlipped(true)} />
         ) : (
           <>
             <p className="text-lg">{word.meaningVi}</p>
             <Origins origins={word.sentence ? [{ sentence: word.sentence, source: word.source }] : []} />
             {!word.sentence && <SourceLink source={word.source} />}
             <GradeButtons previous={previous} now={now} onGrade={onGrade} />
-            {kind === 'new' && (
-              <Button type="button" variant="ghost" onClick={onKnown}>
-                Đã biết cụm này (ôn lại sau 2 tháng)
-              </Button>
-            )}
+            {kind === 'new' && <KnownButton label="Đã biết cụm này (ôn lại sau 2 tháng)" onKnown={onKnown} />}
           </>
         )}
       </CardContent>
@@ -253,6 +293,10 @@ function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardPro
   kind: SessionItem['kind']
 }) {
   const [flipped, setFlipped] = useState(false)
+  useFlashcardKeys(
+    { variant: 'rule', flipped },
+    { flip: () => setFlipped(true), grade: onGrade, known: () => {} },
+  )
   const parts = ruleParts(word)
   return (
     <Card className="gap-4">
@@ -265,10 +309,7 @@ function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardPro
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {!flipped ? (
-          <Button type="button" onClick={() => setFlipped(true)}>
-            <RotateCw aria-hidden="true" />
-            Lật thẻ
-          </Button>
+          <FlipButton onFlip={() => setFlipped(true)} />
         ) : (
           <>
             <p className="text-base">{word.vi}</p>
@@ -318,6 +359,24 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
   const intro = item.intro === true
   const [flipped, setFlipped] = useState(intro)
   const { word: sessionWord, kind } = item
+  // Thẻ từ NGSL/TSL (không phải thẻ riêng / thẻ quy tắc, hai loại đó có hook riêng).
+  const plainWord = isCustomWord(sessionWord) || isRuleWord(sessionWord) ? null : sessionWord
+  // Hư từ (story 24): mặt trước là câu ví dụ có chỗ trống + nghĩa câu, không bao giờ hiện từ đứng một mình.
+  const cloze = plainWord ? functionWordCloze(plainWord) : null
+  // Hook gọi trước các `return` sớm; nút nghe từ của thẻ hư từ chỉ hiện sau khi lật (L không lộ đáp án).
+  useFlashcardKeys(
+    {
+      variant: 'word',
+      flipped,
+      intro,
+      isNew: kind === 'new',
+      word: plainWord?.word ?? '',
+      cloze: cloze !== null,
+      canSpeak: plainWord !== null && canSpeak(),
+    },
+    { flip: () => setFlipped(true), grade: onGrade, known: onKnown },
+    plainWord !== null,
+  )
   if (isCustomWord(sessionWord)) {
     return <CustomFlashcard word={sessionWord} kind={kind} previous={previous} now={now} onGrade={onGrade} onKnown={onKnown} />
   }
@@ -325,14 +384,12 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
     return <RuleFlashcard word={sessionWord} kind={kind} previous={previous} now={now} onGrade={onGrade} />
   }
   const word = sessionWord
-  // Hư từ (story 24): mặt trước là câu ví dụ có chỗ trống + nghĩa câu, không bao giờ hiện từ đứng một mình.
-  const cloze = functionWordCloze(word)
   const wordTitle = (
     <div className="flex items-center justify-between gap-3">
       <h2 className="min-w-0 text-3xl font-semibold break-words" lang="en">
         {word.word}
       </h2>
-      <ListenButton text={word.word} label={`Nghe "${word.word}"`} />
+      <ListenButton text={word.word} label={`Nghe "${word.word}"`} hotkey="L" />
     </div>
   )
 
@@ -361,15 +418,8 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
       <CardContent className="flex flex-col gap-4">
         {!flipped ? (
           <div className="flex flex-col gap-2">
-            <Button type="button" onClick={() => setFlipped(true)}>
-              <RotateCw aria-hidden="true" />
-              Lật thẻ
-            </Button>
-            {kind === 'new' && (
-              <Button type="button" variant="ghost" onClick={onKnown}>
-                Đã biết từ này (ôn lại sau 2 tháng)
-              </Button>
-            )}
+            <FlipButton onFlip={() => setFlipped(true)} />
+            {kind === 'new' && <KnownButton label="Đã biết từ này (ôn lại sau 2 tháng)" onKnown={onKnown} />}
           </div>
         ) : (
           <>
@@ -404,18 +454,15 @@ function Flashcard({ item, previous, now, origins, gates, onGrade, onKnown }: Fl
 
             {intro ? (
               // "Đã xem" = Nhớ trên từ mới: ra khỏi bước học, gặp lại 0h ngày mai. Không có nút sai.
-              <Button type="button" onClick={() => onGrade('good')}>
+              <Button type="button" onClick={() => onGrade('good')} aria-keyshortcuts="Enter">
                 <Eye aria-hidden="true" />
                 Đã xem
+                <Kbd>Enter</Kbd>
               </Button>
             ) : (
               <GradeButtons previous={previous} now={now} onGrade={onGrade} />
             )}
-            {kind === 'new' && (
-              <Button type="button" variant="ghost" onClick={onKnown}>
-                Đã biết từ này (ôn lại sau 2 tháng)
-              </Button>
-            )}
+            {kind === 'new' && <KnownButton label="Đã biết từ này (ôn lại sau 2 tháng)" onKnown={onKnown} />}
           </>
         )}
       </CardContent>
