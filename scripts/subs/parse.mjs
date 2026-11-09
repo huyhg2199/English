@@ -1,9 +1,56 @@
-// Logic thuần cho script lấy caption (story 16): chọn track caption, parse json3 / WebVTT / SRT, chuẩn hoá thành cue
-// tăng dần, không chồng nhau, gộp mảnh caption thành câu. Mốc thời gian luôn lấy từ caption thật: không bịa, không tự canh.
+// Logic thuần cho script lấy caption (story 16): video nào được lưu transcript (VOA public domain hoặc CC BY), chọn track
+// caption, parse json3 / WebVTT / SRT, chuẩn hoá thành cue tăng dần, không chồng nhau, gộp mảnh caption thành câu.
+// Mốc thời gian luôn lấy từ caption thật: không bịa, không tự canh.
 
-/** Kênh duy nhất được lưu transcript (public domain). */
+/** Kênh public domain: video của kênh này được lưu transcript (giấy phép `public-domain` trong videos.json). */
 export const VOA_CHANNEL = 'VOA Learning English'
 export const VOA_LICENSE = 'public domain – VOA'
+
+/** Giấy phép Creative Commons của YouTube ("Creative Commons Attribution license (reuse allowed)") là CC BY 3.0. */
+export const CC_BY_LICENSE_URL = 'https://creativecommons.org/licenses/by/3.0/'
+/** Ghi chú thay đổi theo CC BY (bản dịch là tác phẩm phái sinh). */
+export const TRANSLATION_CREDIT = 'Bản dịch tiếng Việt do Lumos thực hiện'
+
+/** Chuỗi giấy phép ghi trong file caption / file sub của video CC BY. */
+export const ccByLicense = (channel) => `CC BY 3.0 – ${channel}`
+
+/** Link kênh YouTube dạng cố định (`/channel/UC…`), dùng để ghi nguồn video CC BY (cùng mẫu với test dữ liệu video). */
+export const CHANNEL_URL_RE = /^https:\/\/www\.youtube\.com\/channel\/UC[A-Za-z0-9_-]{22}$/
+
+/**
+ * Nguồn ghi vào file caption / file sub nếu video được lưu transcript, ngược lại null (video có bản quyền: không lưu).
+ * Được lưu: kênh VOA Learning English với giấy phép `public-domain`, hoặc video giấy phép `cc-by` có `channelUrl`
+ * (để ghi nguồn) và caption do kênh đăng (CC BY không dùng caption tự động). Mọi giấy phép khác (`youtube-standard`,
+ * thiếu, lạ) → null.
+ * @param {{ id: string, channel: string, channelUrl?: string, license?: string }} video
+ * @param {'uploaded' | 'asr'} captionKind
+ */
+export function transcriptSource(video, captionKind) {
+  const url = `https://www.youtube.com/watch?v=${video.id}`
+  if (video.license === 'public-domain' && video.channel === VOA_CHANNEL) {
+    return { channel: video.channel, url, license: VOA_LICENSE, captionKind }
+  }
+  if (
+    video.license === 'cc-by' &&
+    captionKind === 'uploaded' &&
+    typeof video.channelUrl === 'string' &&
+    CHANNEL_URL_RE.test(video.channelUrl)
+  ) {
+    return {
+      channel: video.channel,
+      channelUrl: video.channelUrl,
+      url,
+      license: ccByLicense(video.channel),
+      licenseUrl: CC_BY_LICENSE_URL,
+      translation: TRANSLATION_CREDIT,
+      captionKind,
+    }
+  }
+  return null
+}
+
+/** Video được lưu transcript (VOA public domain hoặc CC BY có ghi nguồn). */
+export const canStoreTranscript = (video) => transcriptSource(video, 'uploaded') !== null
 
 /** Gộp mảnh caption tới khi hết câu, nhưng không dài quá chừng này. */
 export const MAX_CUE_SECONDS = 9
@@ -45,7 +92,9 @@ export function pickLocalCaption(id, names, opts = {}) {
     if (!m) continue
     const [, base, lang, ext] = m
     if (base !== id && !base.endsWith(`[${id}]`)) continue
-    found.push({ name, ext, kind: lang === 'asr' ? 'asr' : 'uploaded', exact: lang === 'en' })
+    // `en-orig` là caption tự động bản gốc mà yt-dlp ghi khi tải caption tự động (`--write-auto-subs`).
+    const asr = lang === 'asr' || /^en[-_]orig$/i.test(lang)
+    found.push({ name, ext, kind: asr ? 'asr' : 'uploaded', exact: lang === 'en' })
   }
   const rank = (f) => (f.exact ? 0 : 1) * 10 + LOCAL_EXTS.indexOf(f.ext)
   const best = (kind) => found.filter((f) => f.kind === kind).sort((a, b) => rank(a) - rank(b))[0]
@@ -55,17 +104,23 @@ export function pickLocalCaption(id, names, opts = {}) {
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'" }
 
-/** Bỏ thẻ, giải mã entity, gộp khoảng trắng, bỏ dấu đổi người nói `>>` và chú thích âm thanh `[MUSIC]`. */
+const decodeEntities = (s) =>
+  s.replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (m, e) => {
+    if (e[0] === '#') {
+      const code = e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10)
+      return Number.isInteger(code) && code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : m
+    }
+    return ENTITIES[e.toLowerCase()] ?? m
+  })
+
+/**
+ * Bỏ thẻ, giải mã entity (cả entity bị mã hoá hai lần như `&amp;nbsp;` trong caption tải từ YouTube), gộp khoảng trắng,
+ * bỏ dấu đổi người nói `>>` và chú thích âm thanh `[MUSIC]`.
+ */
 export function cleanText(text) {
-  return String(text)
-    .replace(/<[^>]*>/g, '')
-    .replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (m, e) => {
-      if (e[0] === '#') {
-        const code = e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10)
-        return Number.isInteger(code) && code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : m
-      }
-      return ENTITIES[e.toLowerCase()] ?? m
-    })
+  // Bỏ thẻ cả trước và sau khi giải mã (thẻ bị mã hoá như `&lt;i&gt;` chỉ lộ ra sau khi giải mã).
+  return decodeEntities(decodeEntities(String(text).replace(/<[^>]*>/g, '')))
+    .replace(/<\/?[a-z][^<>]*>/gi, '')
     .replace(/[‘’ʼ]/g, "'")
     .replace(/[“”]/g, '"')
     .replace(/>>+/g, ' ')

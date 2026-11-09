@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  canStoreTranscript,
+  CC_BY_LICENSE_URL,
   captionTracksFromWatchHtml,
   cleanText,
   normalizeCues,
@@ -10,7 +12,59 @@ import {
   pickCaptionTrack,
   pickLocalCaption,
   stripRollingOverlap,
+  TRANSLATION_CREDIT,
+  transcriptSource,
+  VOA_LICENSE,
 } from '../../../scripts/subs/parse.mjs'
+
+describe('transcriptSource (video nào được lưu transcript)', () => {
+  const voa = { id: 'WR9_nsLyaEY', channel: 'VOA Learning English', license: 'public-domain' }
+  const ccBy = {
+    id: 'n71cJHjH0_w',
+    channel: 'GrammarBank',
+    channelUrl: 'https://www.youtube.com/channel/UCosy24EI2IywQza8MwfpVcw',
+    license: 'cc-by',
+  }
+  it('VOA public domain: nguồn "public domain – VOA"', () => {
+    expect(transcriptSource(voa, 'uploaded')).toEqual({
+      channel: 'VOA Learning English',
+      url: 'https://www.youtube.com/watch?v=WR9_nsLyaEY',
+      license: VOA_LICENSE,
+      captionKind: 'uploaded',
+    })
+  })
+
+  it('CC BY: ghi kênh + link kênh, link video, giấy phép CC BY 3.0 + link, ghi chú bản dịch Lumos', () => {
+    expect(transcriptSource(ccBy, 'uploaded')).toEqual({
+      channel: 'GrammarBank',
+      channelUrl: ccBy.channelUrl,
+      url: 'https://www.youtube.com/watch?v=n71cJHjH0_w',
+      license: 'CC BY 3.0 – GrammarBank',
+      licenseUrl: CC_BY_LICENSE_URL,
+      translation: TRANSLATION_CREDIT,
+      captionKind: 'uploaded',
+    })
+    expect(TRANSLATION_CREDIT).toBe('Bản dịch tiếng Việt do Lumos thực hiện')
+  })
+
+  it('giấy phép chuẩn YouTube, thiếu giấy phép, CC BY thiếu link kênh, kênh khác ghi public-domain → không lưu', () => {
+    expect(canStoreTranscript(voa)).toBe(true)
+    expect(canStoreTranscript(ccBy)).toBe(true)
+    expect(canStoreTranscript({ id: 'x', channel: 'BBC Learning English', license: 'youtube-standard' })).toBe(false)
+    expect(canStoreTranscript({ id: 'x', channel: 'TED-Ed' })).toBe(false)
+    expect(canStoreTranscript({ ...ccBy, channelUrl: undefined })).toBe(false)
+    expect(canStoreTranscript({ ...ccBy, channelUrl: 'https://evil.example/x' })).toBe(false)
+    expect(canStoreTranscript({ id: 'x', channel: "Rachel's English", license: 'public-domain' })).toBe(false)
+    expect(canStoreTranscript({ ...voa, license: undefined })).toBe(false)
+    // Link kênh phải là dạng cố định /channel/UC… (cùng mẫu với test dữ liệu video).
+    expect(canStoreTranscript({ ...ccBy, channelUrl: 'https://www.youtube.com/@GrammarBank' })).toBe(false)
+  })
+
+  it('CC BY chỉ lưu caption do kênh đăng: caption tự động → null (VOA vẫn được dùng caption tự động)', () => {
+    expect(transcriptSource(ccBy, 'asr')).toBeNull()
+    expect(transcriptSource(voa, 'asr')?.captionKind).toBe('asr')
+  })
+})
 
 describe('pickCaptionTrack', () => {
   const up = { languageCode: 'en', baseUrl: 'u1' }
@@ -34,6 +88,11 @@ describe('pickLocalCaption', () => {
     expect(pickLocalCaption(id, [`Let's Learn English Lesson 1 - Welcome! [${id}].en.vtt`])?.kind).toBe('uploaded')
     expect(pickLocalCaption(id, [`${id}.en-US.vtt`, `${id}.en.srt`])?.name).toBe(`${id}.en.srt`)
     expect(pickLocalCaption(id, [`${id}.en.vtt`], { allowAsr: true })?.kind).toBe('uploaded')
+    // Kênh chỉ đăng en-US (vd video CC BY): tên yt-dlp `<id>.en-US.vtt` vẫn là caption do kênh đăng.
+    expect(pickLocalCaption(id, [`${id}.en-US.vtt`])).toEqual({ name: `${id}.en-US.vtt`, ext: 'vtt', kind: 'uploaded' })
+    // yt-dlp ghi caption tự động bản gốc là `<id>.en-orig.vtt`: là caption tự động, không phải bản do kênh đăng.
+    expect(pickLocalCaption(id, [`${id}.en-orig.vtt`])).toBeNull()
+    expect(pickLocalCaption(id, [`${id}.en-orig.vtt`], { allowAsr: true })?.kind).toBe('asr')
   })
 
   it('file tự động (.asr.*) chỉ dùng khi có allowAsr và không có bản đăng; file của video khác bị bỏ', () => {
@@ -65,6 +124,11 @@ describe('parse caption', () => {
   it('cleanText: thẻ, entity, nháy cong, khoảng trắng', () => {
     expect(cleanText('<i>It&amp;s</i>  “fine”  ’ok’')).toBe('It&s "fine" \'ok\'')
     expect(cleanText('a &#1114112; &#x110000; b &#65;')).toBe('a &#1114112; &#x110000; b A')
+    // Caption tải từ YouTube đôi khi mã hoá entity hai lần.
+    expect(cleanText('for&nbsp; Tom&amp;nbsp;&amp;nbsp;is')).toBe('for Tom is')
+    // Thẻ bị mã hoá (`&lt;i&gt;`) cũng bị bỏ sau khi giải mã; dấu < > trong câu thường vẫn giữ.
+    expect(cleanText('&lt;i&gt;Hello&lt;/i&gt; &amp;lt;font color=&quot;red&quot;&amp;gt;there&amp;lt;/font&amp;gt;')).toBe('Hello there')
+    expect(cleanText('3 &lt; 5')).toBe('3 < 5')
   })
 })
 

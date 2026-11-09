@@ -3,7 +3,7 @@ import { Captions, ExternalLink, Play, WifiOff } from 'lucide-react'
 
 import { useOnline } from '@/app/use-online'
 import { hasSubs } from '@/data/subs'
-import { embedUrl, thumbnailUrl, watchUrl, type LessonVideo } from '@/data/videos'
+import { CC_BY_URL, embedUrl, thumbnailUrl, watchUrl, type PlayableVideo } from '@/data/videos'
 
 /** Chunk phụ đề không tải được (offline, hash cũ sau khi deploy): video vẫn xem bình thường. */
 function SubsUnavailable() {
@@ -20,10 +20,10 @@ const SubtitledVideo = lazy(() => import('./SubtitledVideo').catch(() => ({ defa
 /**
  * Player nhẹ (story 15): ban đầu chỉ có thumbnail + nút phát; bấm mới tạo iframe youtube-nocookie và phát
  * ngay trong trang (không rời PWA). Offline thì không tạo iframe, chỉ báo cần mạng (iframe đã mở thì giữ nguyên). Luôn có link mở trên YouTube.
- * Video VOA có file sub (story 16): iframe bật IFrame API và bên dưới có phụ đề Anh–Việt, transcript, điền từ.
- * Video không có sub giữ nguyên như story 15.
+ * Video có file sub (story 16, VOA hoặc CC BY): iframe bật IFrame API và bên dưới có phụ đề Anh–Việt, transcript,
+ * điền từ. Video không có sub (kể cả video CC BY chưa dịch) giữ nguyên như story 15. Video CC BY ghi giấy phép ở chú thích.
  */
-export function VideoEmbed({ video }: { video: LessonVideo }) {
+export function VideoEmbed({ video }: { video: PlayableVideo }) {
   const online = useOnline()
   const [playing, setPlaying] = useState(false)
   const subtitled = hasSubs(video.id)
@@ -89,7 +89,20 @@ export function VideoEmbed({ video }: { video: LessonVideo }) {
           {video.title}
         </span>
         <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground">
-          {video.channel}
+          <span className="inline-flex items-center gap-1">
+            {video.channel}
+            {video.license === 'cc-by' && (
+              <a
+                href={CC_BY_URL}
+                target="_blank"
+                rel="noreferrer license"
+                title="Giấy phép Creative Commons Ghi công 3.0"
+                className="rounded border px-1 text-[10px] leading-4 font-medium underline-offset-4 hover:underline"
+              >
+                CC BY
+              </a>
+            )}
+          </span>
           {subtitled && (
             <span className="inline-flex items-center gap-1 text-primary">
               <Captions className="size-3.5" aria-hidden="true" />
@@ -112,7 +125,7 @@ export function VideoEmbed({ video }: { video: LessonVideo }) {
 }
 
 /** Các video của một đoạn (không có thì không hiện gì). */
-export function VideoList({ videos }: { videos: readonly LessonVideo[] }) {
+export function VideoList({ videos }: { videos: readonly PlayableVideo[] }) {
   if (videos.length === 0) return null
   return (
     <div className="flex flex-col gap-4">

@@ -3,32 +3,66 @@ import { describe, expect, it } from 'vitest'
 import { LESSON_CONTENTS } from '@/data/lessons'
 import { FOUNDATION_FUN_LINKS, getLesson, STAGES } from '@/data/roadmap'
 
+import { CC_BY_LICENSE_URL } from '../../../scripts/subs/parse.mjs'
+
 import {
+  CC_BY_URL,
   embedUrl,
-  FOUNDATION_FUN_VIDEO_IDS,
+  FOUNDATION_FUN_VIDEOS,
   foundationFunVideos,
   funStepVideos,
   LESSON_VIDEOS,
   thumbnailUrl,
+  VIDEO_LICENSES,
   videosFor,
   watchUrl,
+  type Video,
 } from './index'
 
-/** Kênh miễn phí, uy tín trong `nguon-hoc-mien-phi.md`. */
-const CHANNELS = ['VOA Learning English', 'BBC Learning English', "Rachel's English", 'TED-Ed']
+/** Kênh miễn phí, uy tín trong `nguon-hoc-mien-phi.md`, theo giấy phép của kênh. */
+const PUBLIC_DOMAIN_CHANNELS = ['VOA Learning English']
+/** Kênh có bản quyền (giấy phép chuẩn YouTube): chỉ nhúng, không lưu transcript. */
+const STANDARD_CHANNELS = ['BBC Learning English', "Rachel's English", 'TED-Ed']
+/** Kênh có video CC BY đã kiểm tay (giấy phép, caption do kênh đăng, không phải bản đăng lại), story 16 (2026-11-10). */
+const CC_BY_CHANNELS = ['GrammarBank', 'pascualbravovirtual', 'English Moment', 'Englishing', 'English Lessons with Kate']
 
-describe('dữ liệu video bài học', () => {
-  it('mỗi video: id 11 ký tự, có tiêu đề và kênh uy tín, startSec (nếu có) là số giây ≥ 0', () => {
+const ALL_VIDEOS: readonly Video[] = [...LESSON_VIDEOS, ...FOUNDATION_FUN_VIDEOS]
+
+describe('dữ liệu video', () => {
+  it('mỗi video: id 11 ký tự, có tiêu đề, startSec (nếu có) là số giây ≥ 0', () => {
     expect(LESSON_VIDEOS.length).toBeGreaterThan(0)
-    for (const v of LESSON_VIDEOS) {
+    for (const v of ALL_VIDEOS) {
       expect(v.id).toMatch(/^[A-Za-z0-9_-]{11}$/)
       expect(v.title.trim()).not.toBe('')
-      expect(CHANNELS).toContain(v.channel)
       if (v.startSec !== undefined) {
         expect(Number.isInteger(v.startSec)).toBe(true)
         expect(v.startSec).toBeGreaterThanOrEqual(0)
       }
     }
+  })
+
+  it('giấy phép khớp kênh: VOA public domain; BBC, Rachel, TED-Ed giấy phép chuẩn; CC BY chỉ từ kênh đã kiểm, có link kênh', () => {
+    for (const v of ALL_VIDEOS) {
+      expect(VIDEO_LICENSES, v.id).toContain(v.license)
+      if (v.license === 'public-domain') expect(PUBLIC_DOMAIN_CHANNELS, v.id).toContain(v.channel)
+      if (v.license === 'youtube-standard') expect(STANDARD_CHANNELS, v.id).toContain(v.channel)
+      if (v.license === 'cc-by') {
+        expect(CC_BY_CHANNELS, v.id).toContain(v.channel)
+        expect(v.channelUrl, v.id).toMatch(/^https:\/\/www\.youtube\.com\/channel\/UC[A-Za-z0-9_-]{22}$/)
+      } else {
+        expect(v.channelUrl, v.id).toBeUndefined()
+      }
+    }
+  })
+
+  it('một kênh chỉ có một loại giấy phép (không trộn video có bản quyền với CC BY của cùng kênh)', () => {
+    const byChannel = new Map<string, Set<string>>()
+    for (const v of ALL_VIDEOS) byChannel.set(v.channel, (byChannel.get(v.channel) ?? new Set()).add(v.license))
+    for (const [channel, licenses] of byChannel) expect(licenses.size, channel).toBe(1)
+  })
+
+  it('link giấy phép CC BY trong app và trong script phụ đề là một', () => {
+    expect(CC_BY_URL).toBe(CC_BY_LICENSE_URL)
   })
 
   it('bài và đoạn được gắn đều tồn tại', () => {
@@ -114,24 +148,19 @@ describe('URL video', () => {
 })
 
 describe('giải trí nhẹ của buổi Sân ga (story 21)', () => {
-  it("mỗi id có trong LESSON_VIDEOS, kênh VOA Learning English, là Let's Learn English", () => {
-    expect(FOUNDATION_FUN_VIDEO_IDS).toEqual(['WR9_nsLyaEY', '1-U7o9xjWQc'])
-    for (const id of FOUNDATION_FUN_VIDEO_IDS) {
-      const v = LESSON_VIDEOS.find((x) => x.id === id)
-      expect(v, id).toBeDefined()
-      expect(v!.channel).toBe('VOA Learning English')
-      expect(v!.title).toMatch(/Let's Learn English/)
+  it("VOA Let's Learn English Lesson 1, 2 theo thứ tự, kênh VOA, public domain", () => {
+    expect(foundationFunVideos().map((v) => v.id)).toEqual(['WR9_nsLyaEY', '1-U7o9xjWQc'])
+    for (const v of foundationFunVideos()) {
+      expect(v.channel).toBe('VOA Learning English')
+      expect(v.license).toBe('public-domain')
+      expect(v.title).toMatch(/Let's Learn English/)
     }
   })
 
-  it('foundationFunVideos giữ thứ tự, mỗi id một lần', () => {
-    expect(foundationFunVideos().map((v) => v.id)).toEqual([...FOUNDATION_FUN_VIDEO_IDS])
-  })
-
-  it('id không còn trong dữ liệu bị bỏ qua (không có video → chỉ link)', () => {
-    const second = LESSON_VIDEOS.find((v) => v.id === FOUNDATION_FUN_VIDEO_IDS[1])!
-    expect(foundationFunVideos([second]).map((v) => v.id)).toEqual([second.id])
-    expect(foundationFunVideos([])).toEqual([])
+  it('không gắn bài nào và không trùng nhau', () => {
+    const ids = foundationFunVideos().map((v) => v.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    for (const v of foundationFunVideos()) expect(v).not.toHaveProperty('lessonId')
   })
 
   it('FOUNDATION_FUN_LINKS là VOA Learning English', () => {

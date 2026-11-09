@@ -1,0 +1,1089 @@
+{
+  "videoId": "n7RA6XxfpNU",
+  "source": {
+    "channel": "English Moment",
+    "channelUrl": "https://www.youtube.com/channel/UCo6OLFc-OLws90UoRB8pKlQ",
+    "url": "https://www.youtube.com/watch?v=n7RA6XxfpNU",
+    "license": "CC BY 3.0 – English Moment",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "translation": "Bản dịch tiếng Việt do Lumos thực hiện",
+    "captionKind": "uploaded"
+  },
+  "cues": [
+    {
+      "start": 2.6,
+      "end": 7.77,
+      "en": "In this video, we're going to practice English together by listening to a simple and fun story.",
+      "vi": "Trong video này, chúng ta sẽ cùng nhau luyện tiếng Anh bằng cách nghe một câu chuyện đơn giản và vui.",
+      "notes": [
+        {
+          "term": "we're going to",
+          "kind": "context",
+          "noteVi": "we're = we are. be going to + động từ: sẽ làm (việc đã định trước)."
+        }
+      ]
+    },
+    {
+      "start": 7.93,
+      "end": 10.67,
+      "en": "Our story today is called 'My Weekend'.",
+      "vi": "Câu chuyện hôm nay của chúng ta có tên là 'Cuối tuần của tôi'.",
+      "notes": [
+        {
+          "term": "is called",
+          "kind": "context",
+          "noteVi": "be called + tên: có tên là, được gọi là."
+        }
+      ]
+    },
+    {
+      "start": 10.8,
+      "end": 16.37,
+      "en": "Just follow along, listen closely, try your best, and don't be afraid to repeat after me.",
+      "vi": "Bạn chỉ cần nghe theo, nghe thật kỹ, cố gắng hết sức, và đừng ngại nhắc lại theo mình.",
+      "notes": [
+        {
+          "term": "follow along",
+          "kind": "idiom",
+          "noteVi": "follow along: làm theo, nghe theo từng bước cùng người nói."
+        },
+        {
+          "term": "try your best",
+          "kind": "idiom",
+          "noteVi": "try your best: cố gắng hết sức."
+        },
+        {
+          "term": "don't",
+          "kind": "reduction",
+          "noteVi": "don't = do not. Don't be afraid to…: đừng ngại…"
+        },
+        {
+          "term": "repeat after me",
+          "kind": "context",
+          "noteVi": "repeat after me: nhắc lại theo tôi (câu quen thuộc của giáo viên)."
+        }
+      ]
+    },
+    {
+      "start": 16.57,
+      "end": 22.4,
+      "en": "By the end of this lesson, I'm sure you'll feel more confident and see how much you've improved.",
+      "vi": "Đến cuối bài học này, mình chắc rằng bạn sẽ thấy tự tin hơn và nhận ra mình đã tiến bộ nhiều thế nào.",
+      "notes": [
+        {
+          "term": "By the end of",
+          "kind": "context",
+          "noteVi": "by the end of + thời điểm: đến cuối…, trước khi… kết thúc."
+        },
+        {
+          "term": "you'll",
+          "kind": "reduction",
+          "noteVi": "you'll = you will: bạn sẽ."
+        },
+        {
+          "term": "you've improved",
+          "kind": "reduction",
+          "noteVi": "you've = you have. have + V3 (hiện tại hoàn thành): đã tiến bộ, tính tới bây giờ."
+        }
+      ],
+      "highlight": [
+        "present-perfect"
+      ]
+    },
+    {
+      "start": 24.7,
+      "end": 29.53,
+      "en": "LISTEN CAREFULLY Hi! I'm Amy.",
+      "vi": "NGHE KỸ NHÉ. Chào! Mình là Amy.",
+      "notes": [
+        {
+          "term": "LISTEN CAREFULLY",
+          "kind": "context",
+          "noteVi": "Dòng chữ tiêu đề trên màn hình, báo bắt đầu phần nghe: hãy nghe thật kỹ."
+        }
+      ]
+    },
+    {
+      "start": 29.53,
+      "end": 32.2,
+      "en": "I'm excited to share my weekend with you!",
+      "vi": "Mình rất háo hức kể cho bạn nghe về cuối tuần của mình!",
+      "notes": [
+        {
+          "term": "share my weekend",
+          "kind": "context",
+          "noteVi": "share ở đây là kể lại, chia sẻ chuyện của mình (không phải chia đồ)."
+        }
+      ]
+    },
+    {
+      "start": 32.63,
+      "end": 35.27,
+      "en": "My weekend began on Saturday morning.",
+      "vi": "Cuối tuần của mình bắt đầu vào sáng thứ Bảy.",
+      "notes": [
+        {
+          "term": "began",
+          "kind": "context",
+          "noteVi": "began là quá khứ của begin (bắt đầu), động từ bất quy tắc."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 35.5,
+      "end": 39.23,
+      "en": "I woke up early and made myself a cup of hot coffee.",
+      "vi": "Mình dậy sớm và tự pha cho mình một cốc cà phê nóng.",
+      "notes": [
+        {
+          "term": "woke up",
+          "kind": "context",
+          "noteVi": "woke up là quá khứ của wake up (thức dậy), bất quy tắc."
+        },
+        {
+          "term": "made myself",
+          "kind": "context",
+          "noteVi": "make myself + đồ ăn, đồ uống: tự làm, tự pha cho mình. made là quá khứ của make."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 39.23,
+      "end": 41.4,
+      "en": "It was the perfect way to start the day!",
+      "vi": "Đó là cách tuyệt nhất để bắt đầu một ngày!",
+      "notes": [
+        {
+          "term": "the perfect way to",
+          "kind": "context",
+          "noteVi": "the perfect way to + động từ: cách tuyệt nhất để làm gì."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 41.87,
+      "end": 45.83,
+      "en": "After breakfast, I went for a jog in the park nearby.",
+      "vi": "Ăn sáng xong, mình đi chạy bộ ở công viên gần nhà.",
+      "notes": [
+        {
+          "term": "went for a jog",
+          "kind": "idiom",
+          "noteVi": "go for a jog: đi chạy bộ nhẹ. went là quá khứ của go (bất quy tắc)."
+        },
+        {
+          "term": "the park nearby",
+          "kind": "context",
+          "noteVi": "nearby đứng sau danh từ: ở gần đây, gần nhà."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 46.23,
+      "end": 50.57,
+      "en": "The fresh air and green trees always make me feel refreshed.",
+      "vi": "Không khí trong lành và cây xanh lúc nào cũng làm mình thấy sảng khoái.",
+      "notes": [
+        {
+          "term": "make me feel refreshed",
+          "kind": "context",
+          "noteVi": "make + ai + feel + tính từ: làm ai cảm thấy thế nào. refreshed: khoẻ khoắn, sảng khoái trở lại."
+        }
+      ]
+    },
+    {
+      "start": 51.37,
+      "end": 58.67,
+      "en": "Later in the morning, I decided to meet my friend Lucy for brunch at a cozy café.",
+      "vi": "Lát sau, cũng trong buổi sáng đó, mình quyết định hẹn gặp bạn mình là Lucy để ăn bữa sáng muộn ở một quán cà phê ấm cúng.",
+      "notes": [
+        {
+          "term": "brunch",
+          "kind": "context",
+          "noteVi": "brunch = breakfast + lunch: bữa ăn giữa bữa sáng và bữa trưa."
+        },
+        {
+          "term": "cozy",
+          "kind": "context",
+          "noteVi": "cozy: ấm cúng, dễ chịu (nói về nơi chốn)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 58.67,
+      "end": 62.77,
+      "en": "We ordered pancakes and chatted for hours about our week.",
+      "vi": "Bọn mình gọi bánh pancake và trò chuyện hàng giờ liền về tuần vừa qua.",
+      "notes": [
+        {
+          "term": "ordered",
+          "kind": "context",
+          "noteVi": "order ở quán ăn: gọi món."
+        },
+        {
+          "term": "chatted for hours",
+          "kind": "context",
+          "noteVi": "chat: trò chuyện thoải mái; for hours: hàng giờ liền, rất lâu. chat → chatted (gấp đôi t)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 62.77,
+      "end": 64.73,
+      "en": "It was so nice to catch up with her!",
+      "vi": "Được gặp lại và hàn huyên với cô ấy thật là vui!",
+      "notes": [
+        {
+          "term": "catch up with",
+          "kind": "idiom",
+          "noteVi": "catch up with + ai: gặp lại để hỏi han, kể cho nhau nghe chuyện gần đây."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 65.4,
+      "end": 69.17,
+      "en": "In the afternoon, I visited a local bookstore.",
+      "vi": "Buổi chiều, mình ghé một hiệu sách gần nhà.",
+      "notes": [
+        {
+          "term": "local",
+          "kind": "context",
+          "noteVi": "local: ở khu mình sống, gần nhà (không phải \"địa phương\" chung chung)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 69.17,
+      "end": 75.3,
+      "en": "I love spending time there, exploring new books and getting lost in stories.",
+      "vi": "Mình rất thích dành thời gian ở đó, khám phá sách mới và đắm chìm vào những câu chuyện.",
+      "notes": [
+        {
+          "term": "spending time",
+          "kind": "context",
+          "noteVi": "spend time + V-ing: dành thời gian làm gì."
+        },
+        {
+          "term": "getting lost in stories",
+          "kind": "idiom",
+          "noteVi": "get lost in + sách, truyện: mải mê, đắm chìm vào (không phải bị lạc đường)."
+        }
+      ]
+    },
+    {
+      "start": 75.3,
+      "end": 78.37,
+      "en": "I bought a mystery novel that looked exciting!",
+      "vi": "Mình mua một cuốn tiểu thuyết trinh thám trông có vẻ rất hấp dẫn!",
+      "notes": [
+        {
+          "term": "bought",
+          "kind": "context",
+          "noteVi": "bought là quá khứ của buy (mua), bất quy tắc."
+        },
+        {
+          "term": "mystery novel",
+          "kind": "context",
+          "noteVi": "tiểu thuyết trinh thám, truyện có điều bí ẩn cần giải."
+        },
+        {
+          "term": "looked exciting",
+          "kind": "context",
+          "noteVi": "look + tính từ: trông có vẻ… (không phải \"nhìn\")."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 79.17,
+      "end": 83.23,
+      "en": "On Sunday, I spent most of my day at home.",
+      "vi": "Chủ nhật, mình ở nhà gần như cả ngày.",
+      "notes": [
+        {
+          "term": "spent most of my day",
+          "kind": "context",
+          "noteVi": "spend (spent là quá khứ, bất quy tắc): dành, trải qua (thời gian). most of my day: phần lớn ngày của mình."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 83.23,
+      "end": 87.93,
+      "en": "I wanted a quiet day, so I decided to do some baking.",
+      "vi": "Mình muốn có một ngày yên tĩnh, nên quyết định làm bánh.",
+      "notes": [
+        {
+          "term": "do some baking",
+          "kind": "context",
+          "noteVi": "do some + V-ing: làm một chút việc gì. baking: nướng bánh."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 87.93,
+      "end": 92.43,
+      "en": "I made chocolate chip cookies, and the whole house smelled amazing!",
+      "vi": "Mình làm bánh quy sô-cô-la chip, và cả nhà thơm phức!",
+      "notes": [
+        {
+          "term": "chocolate chip cookies",
+          "kind": "context",
+          "noteVi": "bánh quy có rắc những mẩu sô-cô-la nhỏ."
+        },
+        {
+          "term": "smelled amazing",
+          "kind": "context",
+          "noteVi": "smell + tính từ: có mùi…; ở đây là thơm tuyệt. smell → smelled."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 92.7,
+      "end": 100.3,
+      "en": "I also spent time cleaning my room and organizing my closet, which made me feel really productive.",
+      "vi": "Mình còn dành thời gian dọn phòng và sắp xếp lại tủ quần áo, việc đó khiến mình thấy thật năng suất.",
+      "notes": [
+        {
+          "term": "closet",
+          "kind": "context",
+          "noteVi": "closet: tủ quần áo (thường là tủ âm tường)."
+        },
+        {
+          "term": "productive",
+          "kind": "context",
+          "noteVi": "productive: làm được nhiều việc có ích, năng suất."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 101.1,
+      "end": 105.43,
+      "en": "In the evening, I relaxed with a good movie and some popcorn.",
+      "vi": "Buổi tối, mình thư giãn với một bộ phim hay và ít bỏng ngô.",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 105.77,
+      "end": 108.33,
+      "en": "It was the perfect way to end my weekend.",
+      "vi": "Đó là cách tuyệt nhất để khép lại cuối tuần của mình.",
+      "notes": [
+        {
+          "term": "the perfect way to",
+          "kind": "context",
+          "noteVi": "the perfect way to + động từ: cách tuyệt nhất để làm gì."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 108.33,
+      "end": 112.97,
+      "en": "I enjoyed every moment, and now I'm ready for a new week!",
+      "vi": "Mình tận hưởng từng phút giây, và giờ mình đã sẵn sàng cho một tuần mới!",
+      "notes": [
+        {
+          "term": "ready for",
+          "kind": "context",
+          "noteVi": "be ready for + việc gì: sẵn sàng cho việc đó."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 113.77,
+      "end": 115.37,
+      "en": "What about you?",
+      "vi": "Còn bạn thì sao?",
+      "notes": [
+        {
+          "term": "What about you?",
+          "kind": "idiom",
+          "noteVi": "What about you?: Còn bạn thì sao? (hỏi lại người nghe cùng câu đó)."
+        }
+      ]
+    },
+    {
+      "start": 115.37,
+      "end": 117.27,
+      "en": "How did you spend your weekend?",
+      "vi": "Cuối tuần của bạn thế nào, bạn đã làm gì?",
+      "notes": [
+        {
+          "term": "How did you spend",
+          "kind": "context",
+          "noteVi": "Câu hỏi quá khứ: Did + chủ ngữ + động từ nguyên mẫu, nên là spend (không phải spent). spend your weekend: trải qua cuối tuần."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 117.27,
+      "end": 119.97,
+      "en": "Did you try something new or relax at home?",
+      "vi": "Bạn có thử làm điều gì mới không, hay chỉ nghỉ ngơi ở nhà?",
+      "notes": [
+        {
+          "term": "Did you try",
+          "kind": "context",
+          "noteVi": "Câu hỏi quá khứ: Did + chủ ngữ + động từ nguyên mẫu (try, relax)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 120.27,
+      "end": 123.67,
+      "en": "I'd love to hear about your weekend in the comments below!",
+      "vi": "Mình rất muốn nghe về cuối tuần của bạn ở phần bình luận bên dưới!",
+      "notes": [
+        {
+          "term": "I'd love to",
+          "kind": "reduction",
+          "noteVi": "I'd = I would. I'd love to + động từ: mình rất muốn…"
+        },
+        {
+          "term": "in the comments below",
+          "kind": "context",
+          "noteVi": "phần bình luận bên dưới video YouTube."
+        }
+      ]
+    },
+    {
+      "start": 123.67,
+      "end": 126.27,
+      "en": "Let me know your favorite part of the weekend.",
+      "vi": "Hãy cho mình biết phần bạn thích nhất trong cuối tuần nhé.",
+      "notes": [
+        {
+          "term": "Let me know",
+          "kind": "idiom",
+          "noteVi": "Let me know: cho tôi biết nhé."
+        }
+      ]
+    },
+    {
+      "start": 133.67,
+      "end": 137.53,
+      "en": "Hi, I'm Amy. Now it's time for speaking practice.",
+      "vi": "Chào bạn, mình là Amy. Giờ là lúc luyện nói.",
+      "notes": [
+        {
+          "term": "it's time for",
+          "kind": "idiom",
+          "noteVi": "it's = it is. It's time for + việc gì: đã đến lúc làm việc đó."
+        }
+      ]
+    },
+    {
+      "start": 137.9,
+      "end": 141.53,
+      "en": "Listen carefully and do your best to repeat after me.",
+      "vi": "Hãy nghe kỹ và cố hết sức nhắc lại theo mình.",
+      "notes": [
+        {
+          "term": "do your best",
+          "kind": "idiom",
+          "noteVi": "do your best: cố gắng hết sức."
+        },
+        {
+          "term": "repeat after me",
+          "kind": "context",
+          "noteVi": "repeat after me: nhắc lại theo tôi."
+        }
+      ]
+    },
+    {
+      "start": 142.2,
+      "end": 158.53,
+      "en": "Hi! I'm Amy. I'm excited to share my weekend with you!",
+      "vi": "Chào! Mình là Amy. Mình rất háo hức kể cho bạn nghe về cuối tuần của mình!",
+      "notes": [
+        {
+          "term": "share my weekend",
+          "kind": "context",
+          "noteVi": "share ở đây là kể lại, chia sẻ chuyện của mình (không phải chia đồ)."
+        }
+      ]
+    },
+    {
+      "start": 158.53,
+      "end": 179.87,
+      "en": "My weekend began on Saturday morning. I woke up early and made myself a cup of hot coffee.",
+      "vi": "Cuối tuần của mình bắt đầu vào sáng thứ Bảy. Mình dậy sớm và tự pha cho mình một cốc cà phê nóng.",
+      "notes": [
+        {
+          "term": "began",
+          "kind": "context",
+          "noteVi": "began là quá khứ của begin (bắt đầu), động từ bất quy tắc."
+        },
+        {
+          "term": "woke up",
+          "kind": "context",
+          "noteVi": "woke up là quá khứ của wake up (thức dậy), bất quy tắc."
+        },
+        {
+          "term": "made myself",
+          "kind": "context",
+          "noteVi": "make myself + đồ ăn, đồ uống: tự làm, tự pha cho mình. made là quá khứ của make."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 179.87,
+      "end": 204.73,
+      "en": "It was the perfect way to start the day! After breakfast, I went for a jog in the park nearby.",
+      "vi": "Đó là cách tuyệt nhất để bắt đầu một ngày! Ăn sáng xong, mình đi chạy bộ ở công viên gần nhà.",
+      "notes": [
+        {
+          "term": "the perfect way to",
+          "kind": "context",
+          "noteVi": "the perfect way to + động từ: cách tuyệt nhất để làm gì."
+        },
+        {
+          "term": "went for a jog",
+          "kind": "idiom",
+          "noteVi": "go for a jog: đi chạy bộ nhẹ. went là quá khứ của go (bất quy tắc)."
+        },
+        {
+          "term": "the park nearby",
+          "kind": "context",
+          "noteVi": "nearby đứng sau danh từ: ở gần đây, gần nhà."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 204.73,
+      "end": 217.17,
+      "en": "The fresh air and green trees always make me feel refreshed.",
+      "vi": "Không khí trong lành và cây xanh lúc nào cũng làm mình thấy sảng khoái.",
+      "notes": [
+        {
+          "term": "make me feel refreshed",
+          "kind": "context",
+          "noteVi": "make + ai + feel + tính từ: làm ai cảm thấy thế nào. refreshed: khoẻ khoắn, sảng khoái trở lại."
+        }
+      ]
+    },
+    {
+      "start": 217.17,
+      "end": 242.47,
+      "en": "Later in the morning, I decided to meet my friend Lucy for brunch at a cozy café.",
+      "vi": "Lát sau, cũng trong buổi sáng đó, mình quyết định hẹn gặp bạn mình là Lucy để ăn bữa sáng muộn ở một quán cà phê ấm cúng.",
+      "notes": [
+        {
+          "term": "brunch",
+          "kind": "context",
+          "noteVi": "brunch = breakfast + lunch: bữa ăn giữa bữa sáng và bữa trưa."
+        },
+        {
+          "term": "cozy",
+          "kind": "context",
+          "noteVi": "cozy: ấm cúng, dễ chịu (nói về nơi chốn)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 242.47,
+      "end": 263.33,
+      "en": "We ordered pancakes and chatted for hours about our week. It was so nice to catch up with her!",
+      "vi": "Bọn mình gọi bánh pancake và trò chuyện hàng giờ liền về tuần vừa qua. Được gặp lại và hàn huyên với cô ấy thật là vui!",
+      "notes": [
+        {
+          "term": "ordered",
+          "kind": "context",
+          "noteVi": "order ở quán ăn: gọi món."
+        },
+        {
+          "term": "chatted for hours",
+          "kind": "context",
+          "noteVi": "chat: trò chuyện thoải mái; for hours: hàng giờ liền, rất lâu. chat → chatted (gấp đôi t)."
+        },
+        {
+          "term": "catch up with",
+          "kind": "idiom",
+          "noteVi": "catch up with + ai: gặp lại để hỏi han, kể cho nhau nghe chuyện gần đây."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 263.33,
+      "end": 278.07,
+      "en": "In the afternoon, I visited a local bookstore.",
+      "vi": "Buổi chiều, mình ghé một hiệu sách gần nhà.",
+      "notes": [
+        {
+          "term": "local",
+          "kind": "context",
+          "noteVi": "local: ở khu mình sống, gần nhà (không phải \"địa phương\" chung chung)."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 278.07,
+      "end": 297.6,
+      "en": "I love spending time there, exploring new books and getting lost in stories.",
+      "vi": "Mình rất thích dành thời gian ở đó, khám phá sách mới và đắm chìm vào những câu chuyện.",
+      "notes": [
+        {
+          "term": "spending time",
+          "kind": "context",
+          "noteVi": "spend time + V-ing: dành thời gian làm gì."
+        },
+        {
+          "term": "getting lost in stories",
+          "kind": "idiom",
+          "noteVi": "get lost in + sách, truyện: mải mê, đắm chìm vào (không phải bị lạc đường)."
+        }
+      ]
+    },
+    {
+      "start": 297.6,
+      "end": 307.13,
+      "en": "I bought a mystery novel that looked exciting!",
+      "vi": "Mình mua một cuốn tiểu thuyết trinh thám trông có vẻ rất hấp dẫn!",
+      "notes": [
+        {
+          "term": "bought",
+          "kind": "context",
+          "noteVi": "bought là quá khứ của buy (mua), bất quy tắc."
+        },
+        {
+          "term": "mystery novel",
+          "kind": "context",
+          "noteVi": "tiểu thuyết trinh thám, truyện có điều bí ẩn cần giải."
+        },
+        {
+          "term": "looked exciting",
+          "kind": "context",
+          "noteVi": "look + tính từ: trông có vẻ… (không phải \"nhìn\")."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 307.13,
+      "end": 321.73,
+      "en": "On Sunday, I spent most of my day at home.",
+      "vi": "Chủ nhật, mình ở nhà gần như cả ngày.",
+      "notes": [
+        {
+          "term": "spent most of my day",
+          "kind": "context",
+          "noteVi": "spend (spent là quá khứ, bất quy tắc): dành, trải qua (thời gian). most of my day: phần lớn ngày của mình."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 321.73,
+      "end": 337.93,
+      "en": "I wanted a quiet day, so I decided to do some baking.",
+      "vi": "Mình muốn có một ngày yên tĩnh, nên quyết định làm bánh.",
+      "notes": [
+        {
+          "term": "do some baking",
+          "kind": "context",
+          "noteVi": "do some + V-ing: làm một chút việc gì. baking: nướng bánh."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 337.93,
+      "end": 354.4,
+      "en": "I made chocolate chip cookies, and the whole house smelled amazing!",
+      "vi": "Mình làm bánh quy sô-cô-la chip, và cả nhà thơm phức!",
+      "notes": [
+        {
+          "term": "chocolate chip cookies",
+          "kind": "context",
+          "noteVi": "bánh quy có rắc những mẩu sô-cô-la nhỏ."
+        },
+        {
+          "term": "smelled amazing",
+          "kind": "context",
+          "noteVi": "smell + tính từ: có mùi…; ở đây là thơm tuyệt. smell → smelled."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 354.4,
+      "end": 380.2,
+      "en": "I also spent time cleaning my room and organizing my closet, which made me feel really productive.",
+      "vi": "Mình còn dành thời gian dọn phòng và sắp xếp lại tủ quần áo, việc đó khiến mình thấy thật năng suất.",
+      "notes": [
+        {
+          "term": "closet",
+          "kind": "context",
+          "noteVi": "closet: tủ quần áo (thường là tủ âm tường)."
+        },
+        {
+          "term": "productive",
+          "kind": "context",
+          "noteVi": "productive: làm được nhiều việc có ích, năng suất."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 380.2,
+      "end": 396.07,
+      "en": "In the evening, I relaxed with a good movie and some popcorn.",
+      "vi": "Buổi tối, mình thư giãn với một bộ phim hay và ít bỏng ngô.",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 396.07,
+      "end": 421.87,
+      "en": "It was the perfect way to end my weekend. I enjoyed every moment, and now I'm ready for a new week!\"",
+      "vi": "Đó là cách tuyệt nhất để khép lại cuối tuần của mình. Mình tận hưởng từng phút giây, và giờ mình đã sẵn sàng cho một tuần mới!",
+      "notes": [
+        {
+          "term": "the perfect way to",
+          "kind": "context",
+          "noteVi": "the perfect way to + động từ: cách tuyệt nhất để làm gì."
+        },
+        {
+          "term": "ready for",
+          "kind": "context",
+          "noteVi": "be ready for + việc gì: sẵn sàng cho việc đó."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 625.3,
+      "end": 635.53,
+      "en": "Jog: A light run. Example: \"I like to jog in the morning to stay fit.\"",
+      "vi": "Jog: chạy bộ nhẹ nhàng. Ví dụ: \"Mình thích chạy bộ vào buổi sáng để giữ dáng.\"",
+      "notes": [
+        {
+          "term": "stay fit",
+          "kind": "idiom",
+          "noteVi": "stay fit: giữ cơ thể khoẻ mạnh, cân đối."
+        }
+      ]
+    },
+    {
+      "start": 635.53,
+      "end": 645.13,
+      "en": "Fresh: Cool or clean feeling. Example: \"The fresh air feels so nice.\"",
+      "vi": "Fresh: cảm giác mát mẻ, sạch sẽ, trong lành. Ví dụ: \"Không khí trong lành thật dễ chịu.\""
+    },
+    {
+      "start": 645.13,
+      "end": 655.87,
+      "en": "Brunch: A meal between breakfast and lunch. Example: \"We had brunch at a new café.\"",
+      "vi": "Brunch: bữa ăn giữa bữa sáng và bữa trưa. Ví dụ: \"Bọn mình ăn bữa sáng muộn ở một quán cà phê mới.\"",
+      "notes": [
+        {
+          "term": "had brunch",
+          "kind": "context",
+          "noteVi": "have + bữa ăn: ăn bữa đó. had là quá khứ của have."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 655.87,
+      "end": 665.97,
+      "en": "Cozy: Comfortable and warm. Example: \"The café was cozy and inviting.\"",
+      "vi": "Cozy: thoải mái và ấm áp, ấm cúng. Ví dụ: \"Quán cà phê ấm cúng, khiến người ta muốn ghé vào.\"",
+      "notes": [
+        {
+          "term": "inviting",
+          "kind": "context",
+          "noteVi": "inviting: hấp dẫn, khiến người ta muốn bước vào (không phải \"đang mời\")."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 665.97,
+      "end": 675.93,
+      "en": "Chat: To talk casually. Example: \"I like to chat with friends over coffee.\"",
+      "vi": "Chat: nói chuyện thoải mái, tán gẫu. Ví dụ: \"Mình thích tán gẫu với bạn bè bên ly cà phê.\"",
+      "notes": [
+        {
+          "term": "over coffee",
+          "kind": "idiom",
+          "noteVi": "over coffee: trong lúc cùng uống cà phê."
+        }
+      ]
+    },
+    {
+      "start": 675.93,
+      "end": 686.5,
+      "en": "Exploring: Looking around to discover. Example: \"I enjoy exploring new places.\"",
+      "vi": "Exploring: đi xem xung quanh để khám phá. Ví dụ: \"Mình thích khám phá những nơi mới.\""
+    },
+    {
+      "start": 686.5,
+      "end": 697.63,
+      "en": "Mystery: Something unknown or a puzzle to solve. Example: \"I'm reading a mystery novel.\"",
+      "vi": "Mystery: điều chưa ai biết, hoặc một câu đố cần giải. Ví dụ: \"Mình đang đọc một cuốn tiểu thuyết trinh thám.\""
+    },
+    {
+      "start": 697.63,
+      "end": 707.17,
+      "en": "Baking: Cooking in the oven. Example: \"I'm baking cookies for dessert.\"",
+      "vi": "Baking: nấu bằng lò nướng (nướng bánh). Ví dụ: \"Mình đang nướng bánh quy để tráng miệng.\"",
+      "notes": [
+        {
+          "term": "for dessert",
+          "kind": "context",
+          "noteVi": "for dessert: làm món tráng miệng."
+        }
+      ]
+    },
+    {
+      "start": 707.17,
+      "end": 716.97,
+      "en": "Organize: Arrange neatly. Example: \"I like to organize my books.\"",
+      "vi": "Organize: sắp xếp gọn gàng. Ví dụ: \"Mình thích sắp xếp sách của mình.\""
+    },
+    {
+      "start": 716.97,
+      "end": 727.17,
+      "en": "Productive: Getting things done. Example: \"A clean room makes me feel productive.\"",
+      "vi": "Productive: làm được việc, năng suất. Ví dụ: \"Phòng gọn sạch khiến mình thấy làm việc năng suất hơn.\"",
+      "notes": [
+        {
+          "term": "Getting things done",
+          "kind": "idiom",
+          "noteVi": "get things done: làm xong việc, làm được việc."
+        }
+      ]
+    },
+    {
+      "start": 727.17,
+      "end": 736.43,
+      "en": "Relax: To rest. Example: \"I relax by reading a book.\"",
+      "vi": "Relax: nghỉ ngơi, thư giãn. Ví dụ: \"Mình thư giãn bằng cách đọc sách.\""
+    },
+    {
+      "start": 736.43,
+      "end": 747.2,
+      "en": "Popcorn: A snack made from corn kernels. Example: \"I eat popcorn during movies.\"",
+      "vi": "Popcorn: bỏng ngô, món ăn vặt làm từ hạt ngô. Ví dụ: \"Mình ăn bỏng ngô khi xem phim.\""
+    },
+    {
+      "start": 747.2,
+      "end": 758.87,
+      "en": "Routine: Regular way of doing things. Example: \"My weekend routine includes exercise and relaxation.\"",
+      "vi": "Routine: cách làm việc đều đặn, nếp sinh hoạt quen thuộc. Ví dụ: \"Nếp sinh hoạt cuối tuần của mình gồm tập thể dục và thư giãn.\""
+    },
+    {
+      "start": 758.87,
+      "end": 769.07,
+      "en": "Nearby: Close to a place. Example: \"There's a park nearby my house.\"",
+      "vi": "Nearby: ở gần một nơi nào đó. Ví dụ: \"Có một công viên gần nhà mình.\"",
+      "notes": [
+        {
+          "term": "There's",
+          "kind": "reduction",
+          "noteVi": "There's = There is: có (một cái gì đó)."
+        },
+        {
+          "term": "nearby my house",
+          "kind": "context",
+          "noteVi": "Người bản xứ thường nói \"near my house\"; nearby hay đứng một mình hoặc sau danh từ: a park nearby."
+        }
+      ]
+    },
+    {
+      "start": 769.07,
+      "end": 778.1,
+      "en": "Perfect: Just right or ideal. Example: \"The weather was perfect for a walk.\"",
+      "vi": "Perfect: vừa đúng, lý tưởng, hoàn hảo. Ví dụ: \"Thời tiết thật lý tưởng để đi dạo.\"",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 781.23,
+      "end": 783.23,
+      "en": "\"Thanks for listening to Amy's story!",
+      "vi": "Cảm ơn bạn đã nghe câu chuyện của Amy!",
+      "notes": [
+        {
+          "term": "Thanks for listening",
+          "kind": "context",
+          "noteVi": "Thanks for + V-ing: cảm ơn vì đã…"
+        }
+      ]
+    },
+    {
+      "start": 783.3,
+      "end": 787.27,
+      "en": "I hope you enjoyed hearing about her weekend and learned some new words.",
+      "vi": "Mong là bạn đã thích nghe về cuối tuần của cô ấy và học được vài từ mới.",
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 787.43,
+      "end": 790.5,
+      "en": "Remember to leave a comment about how you spent your weekend.",
+      "vi": "Nhớ để lại bình luận kể bạn đã trải qua cuối tuần thế nào nhé.",
+      "notes": [
+        {
+          "term": "leave a comment",
+          "kind": "context",
+          "noteVi": "leave a comment: viết bình luận (dưới video)."
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "past-simple-irregular"
+      ]
+    },
+    {
+      "start": 790.67,
+      "end": 796.77,
+      "en": "If you enjoyed the story, don't forget to like, share, and subscribe to keep practicing with us!",
+      "vi": "Nếu bạn thích câu chuyện, đừng quên bấm thích, chia sẻ và đăng ký kênh để tiếp tục luyện tập cùng chúng mình nhé!",
+      "notes": [
+        {
+          "term": "don't forget to",
+          "kind": "reduction",
+          "noteVi": "don't = do not. don't forget to + động từ: đừng quên…"
+        },
+        {
+          "term": "like, share, and subscribe",
+          "kind": "context",
+          "noteVi": "Các nút trên YouTube: bấm thích, chia sẻ, đăng ký kênh."
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 797.03,
+      "end": 802.2,
+      "en": "Also, if you have any suggestions for what themes you'd like to see in future stories,",
+      "vi": "Ngoài ra, nếu bạn có gợi ý về những chủ đề bạn muốn xem trong các câu chuyện sau,",
+      "notes": [
+        {
+          "term": "you'd like",
+          "kind": "reduction",
+          "noteVi": "you'd = you would. would like: muốn (cách nói lịch sự)."
+        }
+      ]
+    },
+    {
+      "start": 802.37,
+      "end": 807.4,
+      "en": "please leave a comment. I'll see you in the next lesson. Goodbye!\"",
+      "vi": "hãy để lại bình luận nhé. Hẹn gặp bạn ở bài học sau. Tạm biệt!",
+      "notes": [
+        {
+          "term": "I'll see you",
+          "kind": "idiom",
+          "noteVi": "I'll = I will. I'll see you…: hẹn gặp lại bạn…"
+        }
+      ]
+    }
+  ]
+}

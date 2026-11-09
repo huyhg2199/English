@@ -1,0 +1,2116 @@
+{
+  "videoId": "VvZs9S-gtFs",
+  "source": {
+    "channel": "English Moment",
+    "channelUrl": "https://www.youtube.com/channel/UCo6OLFc-OLws90UoRB8pKlQ",
+    "url": "https://www.youtube.com/watch?v=VvZs9S-gtFs",
+    "license": "CC BY 3.0 – English Moment",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "translation": "Bản dịch tiếng Việt do Lumos thực hiện",
+    "captionKind": "uploaded"
+  },
+  "cues": [
+    {
+      "start": 2.8,
+      "end": 3.93,
+      "en": "Hello everyone!",
+      "vi": "Xin chào mọi người!"
+    },
+    {
+      "start": 4.2,
+      "end": 6,
+      "en": "Today will spend a day with Jessica.",
+      "vi": "Hôm nay chúng ta sẽ trải qua một ngày cùng Jessica.",
+      "notes": [
+        {
+          "term": "Today will spend",
+          "kind": "context",
+          "noteVi": "Caption ghi thiếu chữ: người nói nói \"Today we'll spend\" (we'll = we will) = hôm nay chúng ta sẽ …"
+        },
+        {
+          "term": "spend a day",
+          "kind": "context",
+          "noteVi": "spend + thời gian = trải qua, dành thời gian (không phải tiêu tiền)"
+        }
+      ],
+      "highlight": [
+        "will"
+      ]
+    },
+    {
+      "start": 6,
+      "end": 9.33,
+      "en": "Who will take us through her daily routine, from morning until night.",
+      "vi": "Cô ấy sẽ dẫn chúng ta đi qua những việc thường ngày của mình, từ sáng đến tối.",
+      "notes": [
+        {
+          "term": "take us through",
+          "kind": "idiom",
+          "noteVi": "take someone through = dẫn ai đi qua từng bước, kể lần lượt cho ai xem"
+        },
+        {
+          "term": "daily routine",
+          "kind": "context",
+          "noteVi": "những việc làm đều đặn mỗi ngày, nếp sinh hoạt hằng ngày"
+        }
+      ],
+      "highlight": [
+        "will"
+      ]
+    },
+    {
+      "start": 9.63,
+      "end": 11.83,
+      "en": "This story will help you learn some useful.",
+      "vi": "Câu chuyện này sẽ giúp bạn học vài điều hữu ích:",
+      "notes": [
+        {
+          "term": "useful.",
+          "kind": "context",
+          "noteVi": "Caption cắt câu giữa chừng: câu nối sang dòng sau, \"some useful English phrases\" = vài cụm từ tiếng Anh hữu ích"
+        }
+      ],
+      "highlight": [
+        "will"
+      ]
+    },
+    {
+      "start": 11.83,
+      "end": 14.73,
+      "en": "English phrases in a simple relatable way.",
+      "vi": "những cụm từ tiếng Anh, theo cách đơn giản và gần gũi.",
+      "notes": [
+        {
+          "term": "relatable",
+          "kind": "context",
+          "noteVi": "gần gũi, dễ thấy giống chuyện của chính mình"
+        }
+      ]
+    },
+    {
+      "start": 15,
+      "end": 18.73,
+      "en": "Listen closely and try to repeat some of the phrases yourself.",
+      "vi": "Hãy nghe thật kỹ và thử tự nhắc lại một vài cụm từ.",
+      "notes": [
+        {
+          "term": "closely",
+          "kind": "context",
+          "noteVi": "ở đây là kỹ, chăm chú (không phải \"gần\")"
+        }
+      ]
+    },
+    {
+      "start": 18.9,
+      "end": 23.4,
+      "en": "It's a great way, to improve your English and get comfortable with everyday expressions.",
+      "vi": "Đó là cách rất hay để cải thiện tiếng Anh và quen dần với những cách nói hằng ngày.",
+      "notes": [
+        {
+          "term": "It's",
+          "kind": "reduction",
+          "noteVi": "It's = It is (nó là / thật là)"
+        },
+        {
+          "term": "get comfortable with",
+          "kind": "idiom",
+          "noteVi": "trở nên quen, thấy thoải mái với điều gì"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 24.23,
+      "end": 25.97,
+      "en": "Now I'd love to hear from you.",
+      "vi": "Giờ thì mình rất muốn nghe bạn chia sẻ.",
+      "notes": [
+        {
+          "term": "I'd love to",
+          "kind": "reduction",
+          "noteVi": "I'd = I would. I'd love to + động từ = mình rất muốn …"
+        },
+        {
+          "term": "hear from you",
+          "kind": "idiom",
+          "noteVi": "hear from someone = nghe ai đó chia sẻ, nhận tin từ ai"
+        }
+      ]
+    },
+    {
+      "start": 26.03,
+      "end": 30.83,
+      "en": "What's your daily routine like do you have any special habits or favorite activities?",
+      "vi": "Một ngày của bạn thường diễn ra thế nào? Bạn có thói quen đặc biệt hay hoạt động yêu thích nào không?",
+      "notes": [
+        {
+          "term": "What's",
+          "kind": "reduction",
+          "noteVi": "What's = What is"
+        },
+        {
+          "term": "What's your daily routine like",
+          "kind": "idiom",
+          "noteVi": "What is … like? = … như thế nào? (like ở đây không phải \"thích\")"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple-questions"
+      ]
+    },
+    {
+      "start": 30.97,
+      "end": 34.73,
+      "en": "Or maybe there's a story theme you'd love to see in future videos?",
+      "vi": "Hoặc có chủ đề câu chuyện nào bạn muốn xem trong các video sau không?",
+      "notes": [
+        {
+          "term": "there's",
+          "kind": "reduction",
+          "noteVi": "there's = there is (có …)"
+        },
+        {
+          "term": "you'd love to",
+          "kind": "reduction",
+          "noteVi": "you'd = you would. you'd love to = bạn rất muốn"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 34.9,
+      "end": 36.6,
+      "en": "Let me know in the comments below.",
+      "vi": "Hãy cho mình biết ở phần bình luận bên dưới nhé.",
+      "notes": [
+        {
+          "term": "Let me know",
+          "kind": "idiom",
+          "noteVi": "cho mình / tôi biết"
+        }
+      ]
+    },
+    {
+      "start": 36.8,
+      "end": 39.73,
+      "en": "Your ideas might just be featured in our next video.",
+      "vi": "Biết đâu ý tưởng của bạn sẽ xuất hiện trong video tiếp theo của chúng mình.",
+      "notes": [
+        {
+          "term": "might just",
+          "kind": "context",
+          "noteVi": "biết đâu, có khi (có thể xảy ra)"
+        },
+        {
+          "term": "be featured",
+          "kind": "context",
+          "noteVi": "được giới thiệu, được đưa vào (video)"
+        }
+      ]
+    },
+    {
+      "start": 40,
+      "end": 44.83,
+      "en": "Let's learn and grow together thanks for watching and enjoy the story with Jessica.",
+      "vi": "Cùng nhau học và tiến bộ nhé! Cảm ơn bạn đã xem, chúc bạn thích câu chuyện cùng Jessica.",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: cùng … nào, hãy cùng …"
+        },
+        {
+          "term": "grow",
+          "kind": "context",
+          "noteVi": "ở đây là tiến bộ, trưởng thành hơn (không phải \"mọc\", \"trồng\")"
+        }
+      ]
+    },
+    {
+      "start": 45.37,
+      "end": 46.2,
+      "en": "Here we go!",
+      "vi": "Bắt đầu nào!",
+      "notes": [
+        {
+          "term": "Here we go",
+          "kind": "idiom",
+          "noteVi": "Bắt đầu nào! / Đi thôi! (nói khi sắp bắt đầu việc gì)"
+        }
+      ]
+    },
+    {
+      "start": 48.77,
+      "end": 53.23,
+      "en": "LISTEN CAREFULLY Hi! I'm Jessica.",
+      "vi": "NGHE KỸ NHÉ. Chào bạn! Mình là Jessica.",
+      "notes": [
+        {
+          "term": "LISTEN CAREFULLY",
+          "kind": "context",
+          "noteVi": "chữ tiêu đề hiện trên màn hình: Nghe kỹ"
+        },
+        {
+          "term": "I'm",
+          "kind": "reduction",
+          "noteVi": "I'm = I am (mình là / mình đang)"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 53.7,
+      "end": 55.67,
+      "en": "My day starts at 7 a.m.",
+      "vi": "Ngày của mình bắt đầu lúc 7 giờ sáng.",
+      "notes": [
+        {
+          "term": "a.m.",
+          "kind": "context",
+          "noteVi": "giờ buổi sáng (từ nửa đêm đến trước 12 giờ trưa)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 56.07,
+      "end": 57.9,
+      "en": "I wake up and stretch.",
+      "vi": "Mình thức dậy và vươn vai.",
+      "notes": [
+        {
+          "term": "wake up",
+          "kind": "context",
+          "noteVi": "thức dậy, tỉnh giấc"
+        },
+        {
+          "term": "stretch",
+          "kind": "context",
+          "noteVi": "vươn vai, duỗi người"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 58.2,
+      "end": 60.9,
+      "en": "I take a deep breath to wake up my body.",
+      "vi": "Mình hít một hơi thật sâu để đánh thức cơ thể.",
+      "notes": [
+        {
+          "term": "take a deep breath",
+          "kind": "idiom",
+          "noteVi": "hít một hơi thật sâu (take ở đây không phải \"lấy\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 61.23,
+      "end": 63.97,
+      "en": "Then, I brush my teeth and wash my face.",
+      "vi": "Sau đó, mình đánh răng và rửa mặt.",
+      "notes": [
+        {
+          "term": "brush my teeth",
+          "kind": "context",
+          "noteVi": "đánh răng; tiếng Anh dùng my (răng của mình), không dùng the"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 66.03,
+      "end": 68.87,
+      "en": "After that, I put on my favorite nightgown.",
+      "vi": "Sau đó, mình mặc chiếc váy ngủ yêu thích.",
+      "notes": [
+        {
+          "term": "put on",
+          "kind": "idiom",
+          "noteVi": "mặc vào, đeo vào (quần áo, giày, kính…)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 69.27,
+      "end": 71.2,
+      "en": "It's light blue and soft.",
+      "vi": "Nó màu xanh nhạt và mềm mại.",
+      "notes": [
+        {
+          "term": "It's",
+          "kind": "reduction",
+          "noteVi": "It's = It is (nó là / thật là)"
+        },
+        {
+          "term": "light blue",
+          "kind": "context",
+          "noteVi": "xanh nhạt (light đi với màu = nhạt, không phải \"ánh sáng\")"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 71.53,
+      "end": 72.9,
+      "en": "I head to the kitchen.",
+      "vi": "Mình đi vào bếp.",
+      "notes": [
+        {
+          "term": "head to",
+          "kind": "idiom",
+          "noteVi": "đi tới, đi về phía (head ở đây là động từ, không phải \"cái đầu\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 73.3,
+      "end": 77.07,
+      "en": "For breakfast, I make toast, scrambled eggs, and coffee.",
+      "vi": "Bữa sáng, mình làm bánh mì nướng, trứng bác và pha cà phê.",
+      "notes": [
+        {
+          "term": "scrambled eggs",
+          "kind": "context",
+          "noteVi": "trứng bác: trứng đánh tan rồi đảo chín trên chảo"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 77.73,
+      "end": 82.23,
+      "en": "\"Breakfast is the most important meal of the day,\" I say to myself.",
+      "vi": "“Bữa sáng là bữa quan trọng nhất trong ngày”, mình tự nhủ.",
+      "notes": [
+        {
+          "term": "say to myself",
+          "kind": "idiom",
+          "noteVi": "tự nhủ, nói thầm với bản thân"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 84.47,
+      "end": 87.13,
+      "en": "After breakfast, I change into my work clothes.",
+      "vi": "Ăn sáng xong, mình thay đồ đi làm.",
+      "notes": [
+        {
+          "term": "change into",
+          "kind": "idiom",
+          "noteVi": "thay sang (bộ đồ khác)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 87.37,
+      "end": 89.3,
+      "en": "I wear a blouse and trousers.",
+      "vi": "Mình mặc áo sơ mi nữ và quần dài.",
+      "notes": [
+        {
+          "term": "trousers",
+          "kind": "context",
+          "noteVi": "quần dài (cách nói Anh; người Mỹ hay nói pants)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 89.63,
+      "end": 92.93,
+      "en": "I grab my bag and my keys, and I head out.",
+      "vi": "Mình vớ lấy túi và chìa khoá rồi ra khỏi nhà.",
+      "notes": [
+        {
+          "term": "grab",
+          "kind": "context",
+          "noteVi": "cầm vội, chộp lấy"
+        },
+        {
+          "term": "head out",
+          "kind": "idiom",
+          "noteVi": "ra ngoài, rời nhà / rời đi"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 93.33,
+      "end": 94.93,
+      "en": "I take the bus to work.",
+      "vi": "Mình đi xe buýt đi làm.",
+      "notes": [
+        {
+          "term": "take the bus",
+          "kind": "idiom",
+          "noteVi": "take + phương tiện = đi bằng phương tiện đó (đi xe buýt)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 95.47,
+      "end": 97.77,
+      "en": "On the bus, I listen to a podcast.",
+      "vi": "Trên xe buýt, mình nghe podcast.",
+      "notes": [
+        {
+          "term": "podcast",
+          "kind": "context",
+          "noteVi": "chương trình nói (như radio) nghe trên điện thoại"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 98.03,
+      "end": 100.63,
+      "en": "I enjoy learning something new each day.",
+      "vi": "Mình thích học một điều mới mỗi ngày.",
+      "notes": [
+        {
+          "term": "enjoy learning",
+          "kind": "context",
+          "noteVi": "enjoy + V-ing = thích làm gì"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 101.3,
+      "end": 103.87,
+      "en": "\"Every day is a chance to grow,\" I think.",
+      "vi": "“Mỗi ngày là một cơ hội để tiến bộ”, mình nghĩ.",
+      "notes": [
+        {
+          "term": "grow",
+          "kind": "context",
+          "noteVi": "ở đây là tiến bộ, trưởng thành hơn (không phải \"mọc\", \"trồng\")"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 106.1,
+      "end": 107.83,
+      "en": "I work as a project manager.",
+      "vi": "Mình làm quản lý dự án.",
+      "notes": [
+        {
+          "term": "work as",
+          "kind": "context",
+          "noteVi": "work as + nghề = làm nghề …, làm ở vị trí …"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 108.23,
+      "end": 110.93,
+      "en": "My day begins with checking emails.",
+      "vi": "Ngày làm việc của mình bắt đầu bằng việc kiểm tra email.",
+      "notes": [
+        {
+          "term": "begins with",
+          "kind": "context",
+          "noteVi": "begin with + việc = bắt đầu bằng việc gì"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 111.17,
+      "end": 113.23,
+      "en": "I plan my tasks for the day.",
+      "vi": "Mình lên kế hoạch các việc cần làm trong ngày.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 113.93,
+      "end": 116.77,
+      "en": "Around noon, I have lunch with my coworkers.",
+      "vi": "Khoảng giữa trưa, mình ăn trưa với đồng nghiệp.",
+      "notes": [
+        {
+          "term": "have lunch",
+          "kind": "context",
+          "noteVi": "ăn trưa (have ở đây = ăn, không phải \"có\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 117.17,
+      "end": 119.57,
+      "en": "We talk about the weekend or news.",
+      "vi": "Bọn mình nói chuyện về cuối tuần hoặc tin tức.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 119.97,
+      "end": 122.1,
+      "en": "\"It's nice to take a break,\" I think.",
+      "vi": "“Được nghỉ một lát thật dễ chịu”, mình nghĩ.",
+      "notes": [
+        {
+          "term": "It's",
+          "kind": "reduction",
+          "noteVi": "It's = It is (nó là / thật là)"
+        },
+        {
+          "term": "take a break",
+          "kind": "idiom",
+          "noteVi": "nghỉ giải lao, nghỉ một lát"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 124.23,
+      "end": 126.5,
+      "en": "After lunch, I go back to my desk.",
+      "vi": "Ăn trưa xong, mình quay lại bàn làm việc.",
+      "notes": [
+        {
+          "term": "go back to",
+          "kind": "context",
+          "noteVi": "quay lại (chỗ nào đó)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 127,
+      "end": 129.53,
+      "en": "Sometimes, I feel sleepy in the afternoon.",
+      "vi": "Đôi khi, mình thấy buồn ngủ vào buổi chiều.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 129.87,
+      "end": 132.1,
+      "en": "I take a short walk around the office.",
+      "vi": "Mình đi bộ một lát quanh văn phòng.",
+      "notes": [
+        {
+          "term": "take a short walk",
+          "kind": "idiom",
+          "noteVi": "đi bộ một lát, đi dạo một chút"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 132.6,
+      "end": 136.13,
+      "en": "\"A little movement keeps me energized,\" I remind myself.",
+      "vi": "“Vận động một chút giúp mình luôn tràn đầy năng lượng”, mình tự nhắc.",
+      "notes": [
+        {
+          "term": "keeps me energized",
+          "kind": "context",
+          "noteVi": "keep + người + tính từ = giữ cho ai luôn … (ở đây: luôn tỉnh táo, có năng lượng)"
+        },
+        {
+          "term": "remind myself",
+          "kind": "idiom",
+          "noteVi": "tự nhắc bản thân"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 138.4,
+      "end": 140.47,
+      "en": "I finish work at 5 p.m.",
+      "vi": "Mình tan làm lúc 5 giờ chiều.",
+      "notes": [
+        {
+          "term": "finish work",
+          "kind": "idiom",
+          "noteVi": "tan làm, xong việc trong ngày"
+        },
+        {
+          "term": "p.m.",
+          "kind": "context",
+          "noteVi": "giờ buổi chiều / tối (từ 12 giờ trưa đến trước nửa đêm)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 140.83,
+      "end": 143.33,
+      "en": "I head home and change into a warm sweater.",
+      "vi": "Mình về nhà và thay sang chiếc áo len ấm.",
+      "notes": [
+        {
+          "term": "head home",
+          "kind": "idiom",
+          "noteVi": "đi về nhà (trước home không có to)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 143.73,
+      "end": 145.47,
+      "en": "I make myself some tea.",
+      "vi": "Mình pha cho mình chút trà.",
+      "notes": [
+        {
+          "term": "make myself some tea",
+          "kind": "context",
+          "noteVi": "make tea = pha trà; make myself … = tự làm cho mình"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 146,
+      "end": 149.8,
+      "en": "For dinner, I have something light, like a salad or soup.",
+      "vi": "Bữa tối, mình ăn món gì đó nhẹ, như salad hoặc súp.",
+      "notes": [
+        {
+          "term": "something light",
+          "kind": "context",
+          "noteVi": "món ăn nhẹ, không no nặng bụng (light ở đây = nhẹ)"
+        },
+        {
+          "term": "like",
+          "kind": "context",
+          "noteVi": "ở đây là \"như là, chẳng hạn\", không phải \"thích\""
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 151.9,
+      "end": 153.83,
+      "en": "In the evening, I like to relax.",
+      "vi": "Buổi tối, mình thích thư giãn.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 154.2,
+      "end": 156.1,
+      "en": "I read a book or watch a show.",
+      "vi": "Mình đọc sách hoặc xem một chương trình.",
+      "notes": [
+        {
+          "term": "watch a show",
+          "kind": "context",
+          "noteVi": "xem một chương trình / phim bộ trên TV hoặc trên mạng"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 156.57,
+      "end": 159.23,
+      "en": "At 9 p.m., I start my night routine.",
+      "vi": "Lúc 9 giờ tối, mình bắt đầu các việc trước khi ngủ.",
+      "notes": [
+        {
+          "term": "night routine",
+          "kind": "context",
+          "noteVi": "những việc làm đều đặn mỗi tối trước khi đi ngủ"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 159.53,
+      "end": 162.03,
+      "en": "I wash up and change into my nightgown.",
+      "vi": "Mình rửa ráy rồi thay váy ngủ.",
+      "notes": [
+        {
+          "term": "wash up",
+          "kind": "idiom",
+          "noteVi": "rửa mặt, rửa tay chân (ở Anh còn có nghĩa là rửa bát)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 162.4,
+      "end": 163.8,
+      "en": "I write in my journal.",
+      "vi": "Mình viết nhật ký.",
+      "notes": [
+        {
+          "term": "journal",
+          "kind": "context",
+          "noteVi": "sổ nhật ký (ở đây không phải \"tạp chí\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 164.37,
+      "end": 166.6,
+      "en": "\"Today was a good day,\" I write.",
+      "vi": "“Hôm nay là một ngày tốt lành”, mình viết.",
+      "notes": [
+        {
+          "term": "was",
+          "kind": "context",
+          "noteVi": "was là quá khứ của is: một ngày đã sắp qua nên nhìn lại bằng was"
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 167,
+      "end": 170.1,
+      "en": "I go to bed at 10 p.m., ready for a new day.",
+      "vi": "Mình đi ngủ lúc 10 giờ tối, sẵn sàng cho một ngày mới.",
+      "notes": [
+        {
+          "term": "go to bed",
+          "kind": "idiom",
+          "noteVi": "đi ngủ (trước bed không có the)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 172.37,
+      "end": 174.43,
+      "en": "Thank you for spending the day with me!",
+      "vi": "Cảm ơn bạn đã dành cả ngày cùng mình!",
+      "notes": [
+        {
+          "term": "spending the day",
+          "kind": "context",
+          "noteVi": "spend + thời gian = dành, trải qua thời gian (không phải tiêu tiền)"
+        }
+      ]
+    },
+    {
+      "start": 174.77,
+      "end": 177.97,
+      "en": "I hope my story helped you learn some English phrases.",
+      "vi": "Mình mong câu chuyện đã giúp bạn học được vài cụm từ tiếng Anh.",
+      "highlight": [
+        "present-simple",
+        "past-simple"
+      ]
+    },
+    {
+      "start": 180,
+      "end": 182.03,
+      "en": "Now, I'd love to hear about your day!",
+      "vi": "Giờ thì mình rất muốn nghe về một ngày của bạn!",
+      "notes": [
+        {
+          "term": "I'd love to",
+          "kind": "reduction",
+          "noteVi": "I'd = I would. I'd love to + động từ = mình rất muốn …"
+        }
+      ]
+    },
+    {
+      "start": 182.53,
+      "end": 188.6,
+      "en": "What's something you do every day, like a special morning habit or a way you relax in the evening?",
+      "vi": "Có việc gì bạn làm mỗi ngày không, như một thói quen buổi sáng đặc biệt hay cách bạn thư giãn buổi tối?",
+      "notes": [
+        {
+          "term": "What's",
+          "kind": "reduction",
+          "noteVi": "What's = What is"
+        },
+        {
+          "term": "like",
+          "kind": "context",
+          "noteVi": "ở đây là \"như là, chẳng hạn\", không phải \"thích\""
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 188.9,
+      "end": 193.4,
+      "en": "Share it in the comments, and try using one of the words we practiced today.",
+      "vi": "Hãy chia sẻ ở phần bình luận, và thử dùng một trong những từ chúng ta đã luyện hôm nay.",
+      "notes": [
+        {
+          "term": "try using",
+          "kind": "context",
+          "noteVi": "try + V-ing = thử làm gì xem sao"
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 195.83,
+      "end": 200.23,
+      "en": "Remember, small steps every day can make a big difference in your English skills.",
+      "vi": "Hãy nhớ, mỗi ngày một bước nhỏ có thể tạo nên khác biệt lớn cho kỹ năng tiếng Anh của bạn.",
+      "notes": [
+        {
+          "term": "make a big difference",
+          "kind": "idiom",
+          "noteVi": "tạo ra thay đổi lớn, có tác dụng lớn"
+        }
+      ],
+      "highlight": [
+        "modals"
+      ]
+    },
+    {
+      "start": 200.6,
+      "end": 203.23,
+      "en": "Thanks again for joining me, and see you next time!",
+      "vi": "Cảm ơn bạn lần nữa vì đã đi cùng mình, hẹn gặp lại lần sau!",
+      "notes": [
+        {
+          "term": "joining me",
+          "kind": "context",
+          "noteVi": "join someone = tham gia, đi cùng ai"
+        },
+        {
+          "term": "see you next time",
+          "kind": "idiom",
+          "noteVi": "hẹn gặp lại lần sau (câu chào tạm biệt)"
+        }
+      ]
+    },
+    {
+      "start": 205.9,
+      "end": 207.87,
+      "en": "Before we start the speaking practice.",
+      "vi": "Trước khi bắt đầu phần luyện nói,",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 208.27,
+      "end": 211.47,
+      "en": "Let's look at some Key Words and Phrases from story.",
+      "vi": "hãy cùng xem vài từ và cụm từ chính trong câu chuyện.",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: cùng … nào, hãy cùng …"
+        },
+        {
+          "term": "look at",
+          "kind": "context",
+          "noteVi": "nhìn vào, xem"
+        }
+      ]
+    },
+    {
+      "start": 214.3,
+      "end": 218.3,
+      "en": "Wake up To stop sleeping.",
+      "vi": "Wake up (thức dậy): thôi ngủ, tỉnh giấc.",
+      "notes": [
+        {
+          "term": "To stop sleeping",
+          "kind": "context",
+          "noteVi": "Phần giải nghĩa: từ đứng trước, nghĩa tiếng Anh đứng sau. Nghĩa của động từ thường mở đầu bằng \"To …\""
+        }
+      ]
+    },
+    {
+      "start": 218.3,
+      "end": 224.63,
+      "en": "Example \"I wake up at 7 a.m. every day.\"",
+      "vi": "Ví dụ: “Mình thức dậy lúc 7 giờ sáng mỗi ngày.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 224.63,
+      "end": 228.87,
+      "en": "Stretch To extend your arms and legs.",
+      "vi": "Stretch (vươn vai): duỗi tay và chân ra."
+    },
+    {
+      "start": 228.87,
+      "end": 235.43,
+      "en": "Example \"I stretch in the morning to feel awake.\"",
+      "vi": "Ví dụ: “Mình vươn vai vào buổi sáng để thấy tỉnh táo.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 235.43,
+      "end": 239.8,
+      "en": "Deep breath To take a big breath of air.",
+      "vi": "Deep breath (hơi thở sâu): hít một hơi thật lớn."
+    },
+    {
+      "start": 239.8,
+      "end": 246,
+      "en": "Example \"Taking a deep breath helps me relax.\"",
+      "vi": "Ví dụ: “Hít thở sâu giúp mình thư giãn.”",
+      "notes": [
+        {
+          "term": "Taking a deep breath",
+          "kind": "context",
+          "noteVi": "V-ing đứng đầu câu làm chủ ngữ: \"việc hít thở sâu\""
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 246,
+      "end": 250.07,
+      "en": "Brush teeth To clean your teeth.",
+      "vi": "Brush teeth (đánh răng): làm sạch răng."
+    },
+    {
+      "start": 250.07,
+      "end": 256.17,
+      "en": "Example \"I brush my teeth after waking up.\"",
+      "vi": "Ví dụ: “Mình đánh răng sau khi thức dậy.”",
+      "notes": [
+        {
+          "term": "after waking up",
+          "kind": "context",
+          "noteVi": "after + V-ing = sau khi làm gì"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 256.17,
+      "end": 259.87,
+      "en": "Favorite The thing you like best.",
+      "vi": "Favorite (yêu thích nhất): thứ bạn thích nhất.",
+      "notes": [
+        {
+          "term": "like best",
+          "kind": "context",
+          "noteVi": "thích nhất (best ở đây = nhất)"
+        }
+      ]
+    },
+    {
+      "start": 259.87,
+      "end": 265.73,
+      "en": "Example \"This nightgown is my favorite.\"",
+      "vi": "Ví dụ: “Chiếc váy ngủ này là món mình thích nhất.”",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 265.73,
+      "end": 270.23,
+      "en": "Simple meal A meal that is easy to make.",
+      "vi": "Simple meal (bữa ăn đơn giản): bữa ăn dễ làm.",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 270.23,
+      "end": 276.47,
+      "en": "Example \"I make a simple meal for breakfast.\"",
+      "vi": "Ví dụ: “Mình làm một bữa đơn giản cho bữa sáng.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 276.47,
+      "end": 280.87,
+      "en": "Important Something that matters a lot.",
+      "vi": "Important (quan trọng): điều có ý nghĩa rất lớn.",
+      "notes": [
+        {
+          "term": "matters",
+          "kind": "context",
+          "noteVi": "matter (động từ) = quan trọng, có ý nghĩa (không phải \"vấn đề\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 280.87,
+      "end": 287.17,
+      "en": "Example \"Breakfast is an important meal.\"",
+      "vi": "Ví dụ: “Bữa sáng là một bữa ăn quan trọng.”",
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 287.17,
+      "end": 291.7,
+      "en": "Work clothes The clothes you wear to work.",
+      "vi": "Work clothes (đồ đi làm): quần áo bạn mặc khi đi làm.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 291.7,
+      "end": 298.3,
+      "en": "Example \"I wear a blouse and trousers as work clothes.\"",
+      "vi": "Ví dụ: “Mình mặc áo sơ mi nữ và quần dài khi đi làm.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 298.3,
+      "end": 302.77,
+      "en": "Grab To quickly take something.",
+      "vi": "Grab (vớ lấy): cầm lấy thứ gì thật nhanh."
+    },
+    {
+      "start": 302.77,
+      "end": 308.6,
+      "en": "Example \"I grab my bag and leave.\"",
+      "vi": "Ví dụ: “Mình vớ lấy túi rồi đi.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 308.6,
+      "end": 314.17,
+      "en": "Project manager A job that plans and manages tasks.",
+      "vi": "Project manager (quản lý dự án): người làm công việc lên kế hoạch và quản lý các đầu việc.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 314.17,
+      "end": 320.03,
+      "en": "Example \"I work as a project manager.\"",
+      "vi": "Ví dụ: “Mình làm quản lý dự án.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 320.03,
+      "end": 324.03,
+      "en": "Respond To reply to someone.",
+      "vi": "Respond (phản hồi): trả lời ai đó."
+    },
+    {
+      "start": 324.03,
+      "end": 330.2,
+      "en": "Example \"I respond to emails at work.\"",
+      "vi": "Ví dụ: “Mình trả lời email ở chỗ làm.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 330.2,
+      "end": 334.43,
+      "en": "Coworkers The people you work with.",
+      "vi": "Coworkers (đồng nghiệp): những người làm việc cùng bạn.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 334.43,
+      "end": 340.6,
+      "en": "Example I have lunch with my coworkers.\"",
+      "vi": "Ví dụ: “Mình ăn trưa với đồng nghiệp.”",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 340.6,
+      "end": 344.53,
+      "en": "Short walk A quick walk.",
+      "vi": "Short walk (đi bộ một lát): một lần đi bộ ngắn."
+    },
+    {
+      "start": 344.53,
+      "end": 350.63,
+      "en": "Example \"I take a short walk to feel refreshed.\"",
+      "vi": "Ví dụ: “Mình đi bộ một lát để thấy sảng khoái.”",
+      "notes": [
+        {
+          "term": "feel refreshed",
+          "kind": "context",
+          "noteVi": "thấy khoẻ khoắn, tỉnh táo lại"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 350.63,
+      "end": 355.87,
+      "en": "Energized To feel awake and full of energy.",
+      "vi": "Energized (tràn đầy năng lượng): thấy tỉnh táo và đầy sức sống."
+    },
+    {
+      "start": 355.87,
+      "end": 361.93,
+      "en": "Example \"A walk makes me feel energized.\"",
+      "vi": "Ví dụ: “Đi bộ một chút làm mình thấy đầy năng lượng.”",
+      "notes": [
+        {
+          "term": "makes me feel",
+          "kind": "context",
+          "noteVi": "make + người + động từ = khiến ai …"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 361.93,
+      "end": 366.8,
+      "en": "Unwind To relax after a long day.",
+      "vi": "Unwind (xả hơi): thư giãn sau một ngày dài.",
+      "notes": [
+        {
+          "term": "Unwind",
+          "kind": "context",
+          "noteVi": "thả lỏng, xả hơi (nghĩa gốc: tháo cuộn dây ra)"
+        }
+      ]
+    },
+    {
+      "start": 366.8,
+      "end": 371,
+      "en": "Example \"I like to unwind by reading.\"",
+      "vi": "Ví dụ: “Mình thích xả hơi bằng cách đọc sách.”",
+      "notes": [
+        {
+          "term": "by reading",
+          "kind": "context",
+          "noteVi": "by + V-ing = bằng cách làm gì"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 373.73,
+      "end": 376.2,
+      "en": "Now is time for English speaking practice.",
+      "vi": "Giờ là lúc luyện nói tiếng Anh.",
+      "notes": [
+        {
+          "term": "Now is time",
+          "kind": "context",
+          "noteVi": "Câu chuẩn là \"Now it's time for …\" = Đến lúc … rồi"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 376.53,
+      "end": 378.2,
+      "en": "Let's repeat after Jessica.",
+      "vi": "Hãy cùng nói theo Jessica.",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: cùng … nào, hãy cùng …"
+        },
+        {
+          "term": "repeat after",
+          "kind": "idiom",
+          "noteVi": "repeat after someone = nghe ai nói rồi nhắc lại theo"
+        }
+      ]
+    },
+    {
+      "start": 381.13,
+      "end": 386.33,
+      "en": "Hi! I'm Jessica.",
+      "vi": "Chào bạn! Mình là Jessica.",
+      "notes": [
+        {
+          "term": "I'm",
+          "kind": "reduction",
+          "noteVi": "I'm = I am (mình là / mình đang)"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 388.33,
+      "end": 394.13,
+      "en": "My day starts at 7 a.m.",
+      "vi": "Ngày của mình bắt đầu lúc 7 giờ sáng.",
+      "notes": [
+        {
+          "term": "a.m.",
+          "kind": "context",
+          "noteVi": "giờ buổi sáng (từ nửa đêm đến trước 12 giờ trưa)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 396.13,
+      "end": 401.87,
+      "en": "I wake up and stretch.",
+      "vi": "Mình thức dậy và vươn vai.",
+      "notes": [
+        {
+          "term": "wake up",
+          "kind": "context",
+          "noteVi": "thức dậy, tỉnh giấc"
+        },
+        {
+          "term": "stretch",
+          "kind": "context",
+          "noteVi": "vươn vai, duỗi người"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 403.87,
+      "end": 411.27,
+      "en": "I take a deep breath to wake up my body.",
+      "vi": "Mình hít một hơi thật sâu để đánh thức cơ thể.",
+      "notes": [
+        {
+          "term": "take a deep breath",
+          "kind": "idiom",
+          "noteVi": "hít một hơi thật sâu (take ở đây không phải \"lấy\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 413.27,
+      "end": 420.93,
+      "en": "Then, I brush my teeth and wash my face.",
+      "vi": "Sau đó, mình đánh răng và rửa mặt.",
+      "notes": [
+        {
+          "term": "brush my teeth",
+          "kind": "context",
+          "noteVi": "đánh răng; tiếng Anh dùng my (răng của mình), không dùng the"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 422.93,
+      "end": 430.6,
+      "en": "After that, I put on my favorite nightgown.",
+      "vi": "Sau đó, mình mặc chiếc váy ngủ yêu thích.",
+      "notes": [
+        {
+          "term": "put on",
+          "kind": "idiom",
+          "noteVi": "mặc vào, đeo vào (quần áo, giày, kính…)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 432.6,
+      "end": 438.47,
+      "en": "It's light blue and soft.",
+      "vi": "Nó màu xanh nhạt và mềm mại.",
+      "notes": [
+        {
+          "term": "It's",
+          "kind": "reduction",
+          "noteVi": "It's = It is (nó là / thật là)"
+        },
+        {
+          "term": "light blue",
+          "kind": "context",
+          "noteVi": "xanh nhạt (light đi với màu = nhạt, không phải \"ánh sáng\")"
+        }
+      ],
+      "highlight": [
+        "to-be"
+      ]
+    },
+    {
+      "start": 440.4,
+      "end": 445.2,
+      "en": "I head to the kitchen.",
+      "vi": "Mình đi vào bếp.",
+      "notes": [
+        {
+          "term": "head to",
+          "kind": "idiom",
+          "noteVi": "đi tới, đi về phía (head ở đây là động từ, không phải \"cái đầu\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 447.2,
+      "end": 456.83,
+      "en": "For breakfast, I make toast, scrambled eggs, and coffee.",
+      "vi": "Bữa sáng, mình làm bánh mì nướng, trứng bác và pha cà phê.",
+      "notes": [
+        {
+          "term": "scrambled eggs",
+          "kind": "context",
+          "noteVi": "trứng bác: trứng đánh tan rồi đảo chín trên chảo"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 458.73,
+      "end": 470.27,
+      "en": "\"Breakfast is the most important meal of the day,\" I say to myself.",
+      "vi": "“Bữa sáng là bữa quan trọng nhất trong ngày”, mình tự nhủ.",
+      "notes": [
+        {
+          "term": "say to myself",
+          "kind": "idiom",
+          "noteVi": "tự nhủ, nói thầm với bản thân"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 472.27,
+      "end": 479.8,
+      "en": "After breakfast, I change into my work clothes.",
+      "vi": "Ăn sáng xong, mình thay đồ đi làm.",
+      "notes": [
+        {
+          "term": "change into",
+          "kind": "idiom",
+          "noteVi": "thay sang (bộ đồ khác)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 481.8,
+      "end": 487.67,
+      "en": "I wear a blouse and trousers.",
+      "vi": "Mình mặc áo sơ mi nữ và quần dài.",
+      "notes": [
+        {
+          "term": "trousers",
+          "kind": "context",
+          "noteVi": "quần dài (cách nói Anh; người Mỹ hay nói pants)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 489.67,
+      "end": 498.27,
+      "en": "I grab my bag and my keys, and I head out.",
+      "vi": "Mình vớ lấy túi và chìa khoá rồi ra khỏi nhà.",
+      "notes": [
+        {
+          "term": "grab",
+          "kind": "context",
+          "noteVi": "cầm vội, chộp lấy"
+        },
+        {
+          "term": "head out",
+          "kind": "idiom",
+          "noteVi": "ra ngoài, rời nhà / rời đi"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 500.27,
+      "end": 505.47,
+      "en": "I take the bus to work.",
+      "vi": "Mình đi xe buýt đi làm.",
+      "notes": [
+        {
+          "term": "take the bus",
+          "kind": "idiom",
+          "noteVi": "take + phương tiện = đi bằng phương tiện đó (đi xe buýt)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 507.6,
+      "end": 514.33,
+      "en": "On the bus, I listen to a podcast.",
+      "vi": "Trên xe buýt, mình nghe podcast.",
+      "notes": [
+        {
+          "term": "podcast",
+          "kind": "context",
+          "noteVi": "chương trình nói (như radio) nghe trên điện thoại"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 516.33,
+      "end": 523.53,
+      "en": "I enjoy learning something new each day.",
+      "vi": "Mình thích học một điều mới mỗi ngày.",
+      "notes": [
+        {
+          "term": "enjoy learning",
+          "kind": "context",
+          "noteVi": "enjoy + V-ing = thích làm gì"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 525.53,
+      "end": 533.2,
+      "en": "\"Every day is a chance to grow,\" I think.",
+      "vi": "“Mỗi ngày là một cơ hội để tiến bộ”, mình nghĩ.",
+      "notes": [
+        {
+          "term": "grow",
+          "kind": "context",
+          "noteVi": "ở đây là tiến bộ, trưởng thành hơn (không phải \"mọc\", \"trồng\")"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 535.2,
+      "end": 540.8,
+      "en": "I work as a project manager.",
+      "vi": "Mình làm quản lý dự án.",
+      "notes": [
+        {
+          "term": "work as",
+          "kind": "context",
+          "noteVi": "work as + nghề = làm nghề …, làm ở vị trí …"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 542.8,
+      "end": 550.4,
+      "en": "My day begins with checking emails.",
+      "vi": "Ngày làm việc của mình bắt đầu bằng việc kiểm tra email.",
+      "notes": [
+        {
+          "term": "begins with",
+          "kind": "context",
+          "noteVi": "begin with + việc = bắt đầu bằng việc gì"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 552.4,
+      "end": 558.53,
+      "en": "I plan my tasks for the day.",
+      "vi": "Mình lên kế hoạch các việc cần làm trong ngày.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 560.53,
+      "end": 568.8,
+      "en": "Around noon, I have lunch with my coworkers.",
+      "vi": "Khoảng giữa trưa, mình ăn trưa với đồng nghiệp.",
+      "notes": [
+        {
+          "term": "have lunch",
+          "kind": "context",
+          "noteVi": "ăn trưa (have ở đây = ăn, không phải \"có\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 570.8,
+      "end": 577.6,
+      "en": "We talk about the weekend or news.",
+      "vi": "Bọn mình nói chuyện về cuối tuần hoặc tin tức.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 579.6,
+      "end": 586.13,
+      "en": "\"It's nice to take a break,\" I think.",
+      "vi": "“Được nghỉ một lát thật dễ chịu”, mình nghĩ.",
+      "notes": [
+        {
+          "term": "It's",
+          "kind": "reduction",
+          "noteVi": "It's = It is (nó là / thật là)"
+        },
+        {
+          "term": "take a break",
+          "kind": "idiom",
+          "noteVi": "nghỉ giải lao, nghỉ một lát"
+        }
+      ],
+      "highlight": [
+        "to-be",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 588.13,
+      "end": 594.67,
+      "en": "After lunch, I go back to my desk.",
+      "vi": "Ăn trưa xong, mình quay lại bàn làm việc.",
+      "notes": [
+        {
+          "term": "go back to",
+          "kind": "context",
+          "noteVi": "quay lại (chỗ nào đó)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 596.67,
+      "end": 603.73,
+      "en": "Sometimes, I feel sleepy in the afternoon.",
+      "vi": "Đôi khi, mình thấy buồn ngủ vào buổi chiều.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 605.73,
+      "end": 612.4,
+      "en": "I take a short walk around the office.",
+      "vi": "Mình đi bộ một lát quanh văn phòng.",
+      "notes": [
+        {
+          "term": "take a short walk",
+          "kind": "idiom",
+          "noteVi": "đi bộ một lát, đi dạo một chút"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 614.4,
+      "end": 623.87,
+      "en": "\"A little movement keeps me energized,\" I remind myself.",
+      "vi": "“Vận động một chút giúp mình luôn tràn đầy năng lượng”, mình tự nhắc.",
+      "notes": [
+        {
+          "term": "keeps me energized",
+          "kind": "context",
+          "noteVi": "keep + người + tính từ = giữ cho ai luôn … (ở đây: luôn tỉnh táo, có năng lượng)"
+        },
+        {
+          "term": "remind myself",
+          "kind": "idiom",
+          "noteVi": "tự nhắc bản thân"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 625.87,
+      "end": 632.13,
+      "en": "I finish work at 5 p.m.",
+      "vi": "Mình tan làm lúc 5 giờ chiều.",
+      "notes": [
+        {
+          "term": "finish work",
+          "kind": "idiom",
+          "noteVi": "tan làm, xong việc trong ngày"
+        },
+        {
+          "term": "p.m.",
+          "kind": "context",
+          "noteVi": "giờ buổi chiều / tối (từ 12 giờ trưa đến trước nửa đêm)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 634.13,
+      "end": 641.13,
+      "en": "I head home and change into a warm sweater.",
+      "vi": "Mình về nhà và thay sang chiếc áo len ấm.",
+      "notes": [
+        {
+          "term": "head home",
+          "kind": "idiom",
+          "noteVi": "đi về nhà (trước home không có to)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 643.13,
+      "end": 648.6,
+      "en": "I make myself some tea.",
+      "vi": "Mình pha cho mình chút trà.",
+      "notes": [
+        {
+          "term": "make myself some tea",
+          "kind": "context",
+          "noteVi": "make tea = pha trà; make myself … = tự làm cho mình"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 650.6,
+      "end": 660.53,
+      "en": "For dinner, I have something light, like a salad or soup.",
+      "vi": "Bữa tối, mình ăn món gì đó nhẹ, như salad hoặc súp.",
+      "notes": [
+        {
+          "term": "something light",
+          "kind": "context",
+          "noteVi": "món ăn nhẹ, không no nặng bụng (light ở đây = nhẹ)"
+        },
+        {
+          "term": "like",
+          "kind": "context",
+          "noteVi": "ở đây là \"như là, chẳng hạn\", không phải \"thích\""
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 662.43,
+      "end": 668.53,
+      "en": "In the evening, I like to relax.",
+      "vi": "Buổi tối, mình thích thư giãn.",
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 670.53,
+      "end": 676.33,
+      "en": "I read a book or watch a show.",
+      "vi": "Mình đọc sách hoặc xem một chương trình.",
+      "notes": [
+        {
+          "term": "watch a show",
+          "kind": "context",
+          "noteVi": "xem một chương trình / phim bộ trên TV hoặc trên mạng"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 678.33,
+      "end": 685.67,
+      "en": "At 9 p.m., I start my night routine.",
+      "vi": "Lúc 9 giờ tối, mình bắt đầu các việc trước khi ngủ.",
+      "notes": [
+        {
+          "term": "night routine",
+          "kind": "context",
+          "noteVi": "những việc làm đều đặn mỗi tối trước khi đi ngủ"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 687.67,
+      "end": 694.6,
+      "en": "I wash up and change into my nightgown.",
+      "vi": "Mình rửa ráy rồi thay váy ngủ.",
+      "notes": [
+        {
+          "term": "wash up",
+          "kind": "idiom",
+          "noteVi": "rửa mặt, rửa tay chân (ở Anh còn có nghĩa là rửa bát)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 696.6,
+      "end": 701.4,
+      "en": "I write in my journal.",
+      "vi": "Mình viết nhật ký.",
+      "notes": [
+        {
+          "term": "journal",
+          "kind": "context",
+          "noteVi": "sổ nhật ký (ở đây không phải \"tạp chí\")"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 703.4,
+      "end": 710.13,
+      "en": "\"Today was a good day,\" I write.",
+      "vi": "“Hôm nay là một ngày tốt lành”, mình viết.",
+      "notes": [
+        {
+          "term": "was",
+          "kind": "context",
+          "noteVi": "was là quá khứ của is: một ngày đã sắp qua nên nhìn lại bằng was"
+        }
+      ],
+      "highlight": [
+        "past-simple",
+        "present-simple"
+      ]
+    },
+    {
+      "start": 712.13,
+      "end": 720.6,
+      "en": "I go to bed at 10 p.m., ready for a new day.",
+      "vi": "Mình đi ngủ lúc 10 giờ tối, sẵn sàng cho một ngày mới.",
+      "notes": [
+        {
+          "term": "go to bed",
+          "kind": "idiom",
+          "noteVi": "đi ngủ (trước bed không có the)"
+        }
+      ],
+      "highlight": [
+        "present-simple"
+      ]
+    },
+    {
+      "start": 723,
+      "end": 725.63,
+      "en": "Let's listen to the story, one more time.",
+      "vi": "Cùng nghe lại câu chuyện thêm một lần nữa nhé.",
+      "notes": [
+        {
+          "term": "Let's",
+          "kind": "reduction",
+          "noteVi": "Let's = Let us: cùng … nào, hãy cùng …"
+        },
+        {
+          "term": "one more time",
+          "kind": "idiom",
+          "noteVi": "thêm một lần nữa"
+        }
+      ]
+    },
+    {
+      "start": 885.63,
+      "end": 890.13,
+      "en": "Thank you so much for joining us today and following Jessica's daily routine!",
+      "vi": "Cảm ơn bạn rất nhiều vì hôm nay đã cùng chúng mình theo dõi một ngày của Jessica!",
+      "notes": [
+        {
+          "term": "Jessica's",
+          "kind": "context",
+          "noteVi": "'s ở đây chỉ sở hữu: của Jessica (không phải is)"
+        },
+        {
+          "term": "following",
+          "kind": "context",
+          "noteVi": "follow = theo dõi, đi theo (câu chuyện)"
+        }
+      ]
+    },
+    {
+      "start": 890.33,
+      "end": 894.83,
+      "en": "We hope you enjoyed the story and picked up some useful English phrases along the way.",
+      "vi": "Chúng mình mong bạn thích câu chuyện và học được vài cụm từ tiếng Anh hữu ích trong lúc xem.",
+      "notes": [
+        {
+          "term": "picked up",
+          "kind": "idiom",
+          "noteVi": "pick up = học được một cách tự nhiên, tiếp thu dần (không phải \"nhặt lên\")"
+        },
+        {
+          "term": "along the way",
+          "kind": "idiom",
+          "noteVi": "trong quá trình, dọc đường"
+        }
+      ],
+      "highlight": [
+        "present-simple",
+        "past-simple"
+      ]
+    },
+    {
+      "start": 895.2,
+      "end": 899.27,
+      "en": "Remember, even a little practice each day can make a big difference!",
+      "vi": "Hãy nhớ, chỉ cần luyện tập một chút mỗi ngày cũng có thể tạo nên khác biệt lớn!",
+      "notes": [
+        {
+          "term": "make a big difference",
+          "kind": "idiom",
+          "noteVi": "tạo ra thay đổi lớn, có tác dụng lớn"
+        }
+      ],
+      "highlight": [
+        "modals"
+      ]
+    },
+    {
+      "start": 899.8,
+      "end": 905.67,
+      "en": "\"If you liked this video please give it a thumbs up, share it with friends who might enjoy learning English",
+      "vi": "Nếu bạn thích video này, hãy bấm thích và chia sẻ cho những người bạn có thể cũng thích học tiếng Anh",
+      "notes": [
+        {
+          "term": "give it a thumbs up",
+          "kind": "idiom",
+          "noteVi": "bấm nút thích (hình ngón tay cái giơ lên)"
+        }
+      ],
+      "highlight": [
+        "past-simple"
+      ]
+    },
+    {
+      "start": 905.67,
+      "end": 909.8,
+      "en": "and don't forget to subscribe to English Moment for more stories and tips.",
+      "vi": "và đừng quên đăng ký kênh English Moment để xem thêm nhiều câu chuyện và mẹo hay.",
+      "notes": [
+        {
+          "term": "don't",
+          "kind": "reduction",
+          "noteVi": "don't = do not; don't forget to … = đừng quên …"
+        },
+        {
+          "term": "subscribe to",
+          "kind": "context",
+          "noteVi": "đăng ký theo dõi (kênh YouTube)"
+        }
+      ]
+    },
+    {
+      "start": 909.93,
+      "end": 914.63,
+      "en": "Your support means the world to us, and we can't wait to bring you more exciting stories.",
+      "vi": "Sự ủng hộ của bạn vô cùng quý giá với chúng mình, và chúng mình rất háo hức mang đến thêm nhiều câu chuyện thú vị.",
+      "notes": [
+        {
+          "term": "means the world to us",
+          "kind": "idiom",
+          "noteVi": "mean the world to someone = vô cùng quý giá, quan trọng với ai"
+        },
+        {
+          "term": "can't wait to",
+          "kind": "idiom",
+          "noteVi": "can't = cannot. can't wait to … = rất mong, nóng lòng được … (không phải \"không thể chờ\")"
+        }
+      ],
+      "highlight": [
+        "present-simple",
+        "modals"
+      ]
+    },
+    {
+      "start": 914.87,
+      "end": 919.67,
+      "en": "Until next time, keep learning, stay motivated, and see you in the next video!\"",
+      "vi": "Hẹn gặp lại lần sau nhé: hãy tiếp tục học, giữ vững động lực, và hẹn gặp bạn ở video tiếp theo!",
+      "notes": [
+        {
+          "term": "Until next time",
+          "kind": "idiom",
+          "noteVi": "hẹn đến lần sau (câu chào tạm biệt)"
+        },
+        {
+          "term": "keep learning",
+          "kind": "context",
+          "noteVi": "keep + V-ing = tiếp tục làm gì"
+        },
+        {
+          "term": "stay motivated",
+          "kind": "context",
+          "noteVi": "giữ vững động lực, luôn có hứng thú"
+        }
+      ]
+    }
+  ]
+}
