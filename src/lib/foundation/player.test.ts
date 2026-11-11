@@ -115,6 +115,42 @@ describe('Faded', () => {
   })
 })
 
+describe('câu gõ và màn faded dùng matchesTyped (story 35)', () => {
+  const typed: CheckItem = {
+    id: 't1',
+    kind: 'type',
+    prompt: 'She ___ (not / work) today.',
+    answer: "isn't working",
+    accept: ['is off work'],
+    hintVi: 'h',
+    explanationVi: 'e',
+  }
+
+  it('faded: "are not" = "aren\'t"; "Who" gõ "who?" đúng, "what" sai; accept', () => {
+    expect(isFadedCorrect("aren't", 'are not')).toBe(true)
+    expect(isFadedCorrect("aren't", 'arent')).toBe(true)
+    expect(isFadedCorrect('Who', 'who?')).toBe(true)
+    expect(isFadedCorrect('Who', 'what')).toBe(false)
+    expect(isFadedCorrect('are playing', 'Are  playing.')).toBe(true)
+    expect(isFadedCorrect('are playing', 'are play')).toBe(false)
+    expect(isFadedCorrect('is crying', 'cries', ['cries'])).toBe(true)
+  })
+
+  it('câu type: is not / isnt / accept đúng; doesn\'t sai; trả lời dạng choice hay ô trống thì sai', () => {
+    expect(isCorrect(typed, { kind: 'type', text: 'is not working' })).toBe(true)
+    expect(isCorrect(typed, { kind: 'type', text: 'isnt working' })).toBe(true)
+    expect(isCorrect(typed, { kind: 'type', text: 'Is off work.' })).toBe(true)
+    expect(isCorrect(typed, { kind: 'type', text: "doesn't working" })).toBe(false)
+    expect(isCorrect(typed, { kind: 'type', text: '  ' })).toBe(false)
+    expect(isCorrect(typed, { kind: 'choice', choice: 0 })).toBe(false)
+    expect(isCorrect(choice, { kind: 'type', text: 'b' })).toBe(false)
+  })
+
+  it('answerText của câu type là answer', () => {
+    expect(answerText(typed)).toBe("isn't working")
+  })
+})
+
 describe('needsReview (< 60%)', () => {
   it('Dưới 60%: 1/4, 2/4 mời; Đúng 60%: 3/5 không mời', () => {
     expect(needsReview(1, 4)).toBe(true)

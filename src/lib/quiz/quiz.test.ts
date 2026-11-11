@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
-import { getQuestion, getQuiz, QUESTION_BANK, type Question } from '@/data/questions'
+import { getQuestion, getQuiz, QUESTION_BANK, type ChoiceQuestion, type Question, type QuizDef, type TypedQuestion } from '@/data/questions'
 import type { Store } from '@/lib/storage'
 import { mergeMistakeItems, mergeWithRemote } from '@/lib/sync/merge'
+
+import { seededRandom, shuffle } from './random'
 
 import {
   dueMistakes,
   filterMistakes,
   gradeAttempt,
+  isAnswerCorrect,
   isExplanationStale,
   isMastered,
   isQuizAttempt,
@@ -22,6 +25,7 @@ import {
   recordAttempt,
   recordMistake,
   reviewMistake,
+  seenQuestionIds,
   setMistakeExplanation,
   shuffleOptions,
   type MistakeItem,
@@ -30,7 +34,7 @@ import {
 const T0 = new Date(2026, 10, 28, 9, 0, 0)
 const T1 = new Date(2026, 10, 29, 9, 0, 0)
 const empty = (): Store => ({ schemaVersion: 9, data: {} })
-const q = (id: string): Question => getQuestion(id)!
+const q = (id: string): ChoiceQuestion => getQuestion(id) as ChoiceQuestion
 
 function finish(store: Store, questions: readonly Question[], chosen: Record<string, string>, now: Date, id = 'a1'): Store {
   const graded = gradeAttempt(questions, chosen)
@@ -107,7 +111,7 @@ describe('shuffleOptions', () => {
 })
 
 describe('gradeAttempt / recordAttempt', () => {
-  const ten = pickMiniTest(QUESTION_BANK, 'grade', { canSpeak: true })
+  const ten = pickMiniTest(QUESTION_BANK, 'grade', { canSpeak: true }) as ChoiceQuestion[]
 
   it('8 đúng, 2 sai → 8/10; 2 câu sai vào sổ; lần làm được lưu', () => {
     const chosen: Record<string, string> = {}
@@ -314,5 +318,177 @@ describe('mục sổ là một từ cần đọc (O.W.L., story 14)', () => {
     const without = recordMistake(empty(), src, 'x', T1)
     const merged = mergeMistakeItems(readMistakes(without), readMistakes(withWord))[src.id] as MistakeItem
     expect(merged.word?.text).toBe("o'clock")
+  })
+})
+
+/** Bản `pickQuiz` trước story 35 (chép nguyên), để chứng minh `seen` rỗng cho đúng đề cũ. */
+function legacyPickQuiz(bank: readonly Question[], quiz: QuizDef, seed: string, opts: { canSpeak: boolean }): Question[] {
+  const random = seededRandom(`${seed}|pick`)
+  const pool = bank.filter((x) => quiz.lessonIds.includes(x.lessonId))
+  const groups = quiz.lessonIds.map((id) => shuffle(pool.filter((x) => x.lessonId === id), random))
+  const chosen = groups.flatMap((g) => g.slice(0, quiz.minPerLesson))
+  const rest = shuffle(
+    groups.flatMap((g) => g.slice(quiz.minPerLesson)),
+    random,
+  )
+  chosen.push(...rest.slice(0, Math.max(0, quiz.size - chosen.length)))
+  let picked = chosen.slice(0, quiz.size)
+  if (!opts.canSpeak) {
+    const used = new Set(picked.map((x) => x.id))
+    const spare = shuffle(
+      pool.filter((x) => !used.has(x.id) && x.kind !== 'listening'),
+      random,
+    )
+    picked = picked.flatMap((x) => {
+      if (x.kind !== 'listening') return [x]
+      if (spare.length === 0) return []
+      const same = spare.findIndex((y) => y.lessonId === x.lessonId)
+      return spare.splice(same >= 0 ? same : 0, 1)
+    })
+  }
+  return shuffle(picked, random)
+}
+
+describe('pickQuiz ưu tiên câu chưa gặp (story 35)', () => {
+  const lessonQuiz = getQuiz('lesson-s1-t2-w1')!
+  const miniT2 = getQuiz('mini-t2')!
+  const seeds = Array.from({ length: 24 }, (_, i) => `seen-${i}`)
+  const ids = (list: readonly Question[]) => list.map((x) => x.id)
+  const w1 = QUESTION_BANK.filter((x) => x.lessonId === 's1-t2-w1')
+
+  it('seen rỗng hoặc không truyền → đúng đề cũ (cùng seed, cùng thứ tự)', () => {
+    for (const quiz of [lessonQuiz, miniT2]) {
+      for (const seed of seeds) {
+        for (const canSpeak of [true, false]) {
+          const old = ids(legacyPickQuiz(QUESTION_BANK, quiz, seed, { canSpeak }))
+          expect(ids(pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak })), `${quiz.id} ${seed}`).toEqual(old)
+          expect(ids(pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak, seen: new Set() })), `${quiz.id} ${seed}`).toEqual(old)
+        }
+      }
+    }
+  })
+
+  it('bài 10 câu, đã gặp 5 câu → lần sau bốc đúng 5 câu còn lại', () => {
+    expect(w1).toHaveLength(10)
+    for (const seed of seeds) {
+      const first = pickQuiz(QUESTION_BANK, lessonQuiz, `${seed}-a`, { canSpeak: true })
+      expect(first).toHaveLength(5)
+      const seen = new Set(ids(first))
+      const second = pickQuiz(QUESTION_BANK, lessonQuiz, `${seed}-b`, { canSpeak: true, seen })
+      expect(new Set(ids(second)), seed).toEqual(new Set(w1.map((x) => x.id).filter((id) => !seen.has(id))))
+    }
+  })
+
+  it('đã gặp hết → vẫn đủ 5 câu, không trùng', () => {
+    const seen = new Set(w1.map((x) => x.id))
+    for (const seed of seeds) {
+      const picked = pickQuiz(QUESTION_BANK, lessonQuiz, seed, { canSpeak: true, seen })
+      expect(picked).toHaveLength(5)
+      expect(new Set(ids(picked)).size).toBe(5)
+    }
+  })
+
+  it('mini-t2 có seen: vẫn 10 câu, mỗi bài ≥ 2 câu, không trùng, câu chưa gặp được lấy trước', () => {
+    const seen = new Set(QUESTION_BANK.filter((x) => x.lessonId.startsWith('s1-t2-')).slice(0, 14).map((x) => x.id))
+    for (const seed of seeds) {
+      for (const canSpeak of [true, false]) {
+        const picked = pickQuiz(QUESTION_BANK, miniT2, seed, { canSpeak, seen })
+        expect(picked).toHaveLength(10)
+        expect(new Set(ids(picked)).size).toBe(10)
+        for (const l of miniT2.lessonIds) expect(picked.filter((x) => x.lessonId === l).length, `${seed} ${l}`).toBeGreaterThanOrEqual(2)
+      }
+      // Mỗi bài có ≥ 2 câu chưa gặp thì 2 câu tối thiểu của bài đều là câu chưa gặp.
+      const picked = pickQuiz(QUESTION_BANK, miniT2, seed, { canSpeak: true, seen })
+      for (const l of miniT2.lessonIds) {
+        const unseen = QUESTION_BANK.filter((x) => x.lessonId === l && !seen.has(x.id)).length
+        const got = picked.filter((x) => x.lessonId === l && !seen.has(x.id)).length
+        expect(got, `${seed} ${l}`).toBeGreaterThanOrEqual(Math.min(2, unseen))
+      }
+    }
+  })
+
+  it('không có TTS: câu thay câu nghe là câu chưa gặp cùng bài', () => {
+    const listening = w1.filter((x) => x.kind === 'listening')
+    expect(listening.map((x) => x.id)).toEqual(['q-s1-t2-w1-06'])
+    // Đã gặp 4 câu không nghe → còn đúng 5 câu chưa gặp không nghe + 1 câu nghe.
+    const seen = new Set(w1.filter((x) => x.kind !== 'listening').slice(0, 4).map((x) => x.id))
+    const unseenNonListening = w1.filter((x) => x.kind !== 'listening' && !seen.has(x.id)).map((x) => x.id)
+    expect(unseenNonListening).toHaveLength(5)
+    let replaced = 0
+    for (const seed of seeds) {
+      const withTts = pickQuiz(QUESTION_BANK, lessonQuiz, seed, { canSpeak: true, seen })
+      if (withTts.some((x) => x.kind === 'listening')) replaced++
+      const without = pickQuiz(QUESTION_BANK, lessonQuiz, seed, { canSpeak: false, seen })
+      expect(new Set(ids(without)), seed).toEqual(new Set(unseenNonListening))
+    }
+    expect(replaced).toBeGreaterThan(0)
+  })
+
+  it('seenQuestionIds: lấy câu của lần làm đã chấm, bỏ lần "Để sau", lần làm hỏng và loại lạ', () => {
+    const graded = finish(empty(), [q('q-s1-t1-w1-01'), q('q-s1-t1-w1-02')], { 'q-s1-t1-w1-01': 'is' }, T0)
+    const attempt = (over: Record<string, unknown>) => ({
+      quizId: 'mini-t1',
+      seed: 's',
+      startedAt: T0.toISOString(),
+      finishedAt: T0.toISOString(),
+      updatedAt: T0.toISOString(),
+      score: 0,
+      total: 1,
+      answers: [{ questionId: 'q-x', chosen: '', correct: false }],
+      ...over,
+    })
+    const quizzes = graded.data.quizzes as { attempts: Record<string, unknown> }
+    const store: Store = {
+      ...graded,
+      data: {
+        ...graded.data,
+        quizzes: {
+          attempts: {
+            ...quizzes.attempts,
+            skipped: attempt({ kind: 'comeback', skipped: true, total: 0, answers: [] }),
+            broken: attempt({ answers: [{ questionId: 'q-broken', chosen: '', correct: false }], total: 2 }),
+            future: attempt({ kind: 'newt', answers: [{ questionId: 'q-future', chosen: '', correct: false }] }),
+          },
+        },
+      },
+    }
+    expect([...seenQuestionIds(store)].sort()).toEqual(['q-s1-t1-w1-01', 'q-s1-t1-w1-02'])
+    expect(seenQuestionIds(empty()).size).toBe(0)
+  })
+})
+
+describe('chấm câu gõ (story 35)', () => {
+  const typed: TypedQuestion = {
+    ...(getQuestion('q-s1-t2-w1-08') as TypedQuestion),
+    id: 'q-test-typed',
+    answer: "isn't working",
+  }
+
+  it('gradeAttempt chấm câu gõ "is not working" là đúng, câu choice khác chữ hoa là sai', () => {
+    const choice = q('q-s1-t1-w1-01')
+    expect(choice.answer).toBe('is')
+    const graded = gradeAttempt([typed, choice], { [typed.id]: 'is not working', [choice.id]: 'Is' })
+    expect(graded.answers.map((a) => a.correct)).toEqual([true, false])
+    expect(graded.answers[0].chosen).toBe('is not working')
+    expect(graded.score).toBe(1)
+  })
+
+  it('isAnswerCorrect: câu gõ dùng matchesTyped (accept, ô trống sai); câu chọn so khớp đúng', () => {
+    expect(isAnswerCorrect(typed, 'ISNT WORKING!')).toBe(true)
+    expect(isAnswerCorrect(typed, "doesn't working")).toBe(false)
+    expect(isAnswerCorrect(typed, '')).toBe(false)
+    expect(isAnswerCorrect({ ...typed, accept: ['is off'] }, 'is off')).toBe(true)
+    expect(isAnswerCorrect(q('q-s1-t1-w1-01'), 'is')).toBe(true)
+    expect(isAnswerCorrect(q('q-s1-t1-w1-01'), 'is ')).toBe(false)
+  })
+
+  it('câu gõ sai vào Sổ lỗi với lastChosen là chữ đã gõ; shuffleOptions trả []', () => {
+    const real = getQuestion('q-s1-t2-w1-09')!
+    const store = finish(empty(), [real], { [real.id]: 'They are waiting for the bus?' }, T0)
+    expect(listAttempts(store)[0].answers[0]).toEqual({ questionId: real.id, chosen: 'They are waiting for the bus?', correct: false })
+    expect(item(store, real.id).lastChosen).toBe('They are waiting for the bus?')
+    expect(shuffleOptions(real, 's')).toEqual([])
+    const ok = finish(empty(), [real], { [real.id]: 'are they waiting for the bus' }, T0)
+    expect(readMistakes(ok)).toEqual({})
   })
 })

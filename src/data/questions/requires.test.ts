@@ -11,13 +11,14 @@ import {
   requiresViolations,
   T1_LESSON_CONCEPTS,
   T1_LESSON_IDS,
+  type ChoiceQuestion,
   type Question,
   type RequiredConcept,
 } from './index'
 
 const T1_QUESTIONS = QUESTION_BANK.filter((q) => (T1_LESSON_IDS as readonly string[]).includes(q.lessonId))
 const OTHER_QUESTIONS = QUESTION_BANK.filter((q) => !(T1_LESSON_IDS as readonly string[]).includes(q.lessonId))
-const q = (id: string): Question => getQuestion(id)!
+const q = (id: string): ChoiceQuestion => getQuestion(id) as ChoiceQuestion
 const withRequires = (base: Question, requires: readonly string[]): Question => ({
   ...base,
   requires: requires as readonly RequiredConcept[],
@@ -39,7 +40,11 @@ describe('requires: khai báo của ngân hàng câu', () => {
     const NOT_PAST = new Set(['need', 'red', 'bed', 'speed'])
     const bad: string[] = []
     for (const question of T1_QUESTIONS) {
-      const texts = [question.prompt, question.explanation, question.audioText ?? '', ...question.options]
+      const texts = [
+        question.prompt,
+        question.explanation,
+        ...('options' in question ? [question.audioText ?? '', ...question.options] : []),
+      ]
       for (const token of texts.join(' ').replace(/[’‘]/g, "'").toLowerCase().match(/[a-z']+/g) ?? []) {
         if (PAST.has(token) || (/^[a-z]{2,}ed$/.test(token) && !NOT_PAST.has(token))) bad.push(`${question.id}: ${token}`)
       }

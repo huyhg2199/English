@@ -6,16 +6,20 @@ import { useHotkeys } from '@/app/use-hotkeys'
 import { Kbd } from '@/components/Kbd'
 import { ListenButton } from '@/components/ListenButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { Question } from '@/data/questions'
+import { isTypedQuestion, type Question } from '@/data/questions'
 import { CHOICE_KEYS, choiceBindings } from '@/lib/hotkeys'
+import { isAnswerCorrect } from '@/lib/quiz'
 import { cn } from '@/lib/utils'
 
 import { questionSourceHref, sourceLabel } from './source-label'
+import { TypedAnswer } from './TypedAnswer'
 
 const KIND_HINTS: Record<Question['kind'], string> = {
   choice: 'Chọn đáp án đúng',
   pronunciation: 'Phát âm',
   listening: 'Nghe',
+  type: 'Gõ dạng đúng',
+  transform: 'Gõ cả câu',
 }
 
 /** Link về đúng đoạn bài nguồn của câu (câu Sân ga `fNN` → đúng viên gạch). */
@@ -38,7 +42,7 @@ export function TagBadge({ tag }: { tag: string }) {
   )
 }
 
-/** Đề của câu: câu nghe có nút nghe (TTS en-US), không hiện chữ. */
+/** Đề của câu: câu nghe có nút nghe (TTS en-US), không hiện chữ. Đề câu `choice` / `type` là tiếng Anh (`lang="en"`). */
 export function QuestionPrompt({ question }: { question: Question }) {
   if (question.kind === 'listening') {
     return (
@@ -49,7 +53,7 @@ export function QuestionPrompt({ question }: { question: Question }) {
     )
   }
   return (
-    <p className="text-lg break-words" lang={question.kind === 'choice' ? 'en' : undefined}>
+    <p className="text-lg break-words" lang={question.kind === 'choice' || question.kind === 'type' ? 'en' : undefined}>
       {question.prompt}
     </p>
   )
@@ -57,10 +61,11 @@ export function QuestionPrompt({ question }: { question: Question }) {
 
 type Props = {
   question: Question
-  /** Lựa chọn theo thứ tự đã xáo. */
+  /** Lựa chọn theo thứ tự đã xáo (câu gõ: `[]`). */
   options: readonly string[]
-  /** Đáp án đã chọn; null khi chưa chọn. */
+  /** Đáp án đã chọn, hoặc chữ đã gõ (câu gõ); null khi chưa trả lời. */
   chosen: string | null
+  /** Chọn một lựa chọn, hoặc nộp chữ đã gõ (câu gõ). */
   onChoose: (option: string) => void
   /** Ví dụ "Câu 3/10". */
   heading: string
@@ -80,14 +85,25 @@ type Props = {
 
 /**
  * Một câu hỏi: chọn một lần, chọn xong hiện đúng/sai ngay. Đúng có hiệu ứng Lumos; sai hiện đáp án đúng,
- * giải thích và link về đoạn bài nguồn.
+ * giải thích và link về đoạn bài nguồn. Câu gõ (`type` / `transform`, story 35): một ô gõ thay lưới lựa chọn, nộp bằng
+ * "Kiểm tra" hoặc Enter, chấm một lần bằng `isAnswerCorrect`; không nhận phím 1–4.
  */
 export function QuestionCard({ question, options, chosen, onChoose, heading, footer, tone = 'default', onNext }: Props) {
   const answered = chosen !== null
-  const correct = chosen === question.answer
+  const correct = answered && isAnswerCorrect(question, chosen)
   const gentle = tone === 'gentle'
-  // Phím tắt (story 31): chưa chọn thì 1–4 chọn lựa chọn thứ n; đã chọn thì Enter → `onNext`.
-  useHotkeys(choiceBindings({ choosing: !answered, count: options.length, choose: (at) => onChoose(options[at]), next: onNext }))
+  const typed = isTypedQuestion(question)
+  // Phím tắt (story 31): chưa chọn thì 1–4 chọn lựa chọn thứ n; đã chọn thì Enter → `onNext`. Câu gõ không có phím 1–4
+  // (Enter trong ô gõ là nộp form, phím tắt bỏ qua ô nhập).
+  useHotkeys(
+    choiceBindings({
+      choosing: !answered && !typed,
+      count: typed ? 0 : options.length,
+      choose: (at) => onChoose(options[at]),
+      // Câu gõ chưa nộp: Enter ngoài ô gõ không được sang câu (bỏ trống thành câu sai, vào Sổ lỗi).
+      next: answered ? onNext : undefined,
+    }),
+  )
   return (
     <Card className={cn('gap-4', answered && correct && 'lumos border-primary')}>
       <CardHeader className="gap-2">
@@ -101,42 +117,53 @@ export function QuestionCard({ question, options, chosen, onChoose, heading, foo
         <QuestionPrompt question={question} />
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <div className="grid gap-2" role="group" aria-label="Các lựa chọn">
-          {options.map((option, i) => {
-            const isAnswer = option === question.answer
-            const isChosen = option === chosen
-            const hotkey = i < CHOICE_KEYS.length ? CHOICE_KEYS[i] : undefined
-            return (
-              <button
-                key={option}
-                type="button"
-                disabled={answered}
-                onClick={() => onChoose(option)}
-                aria-keyshortcuts={hotkey}
-                lang="en"
-                className={cn(
-                  'flex min-h-11 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-base break-words transition-colors',
-                  !answered && 'hover:border-primary hover:bg-accent/40',
-                  answered && isAnswer && 'border-primary bg-accent/50 text-accent-foreground',
-                  answered &&
-                    isChosen &&
-                    !isAnswer &&
-                    (gentle
-                      ? 'border-dashed border-muted-foreground bg-muted/40'
-                      : 'border-destructive bg-destructive/10 text-destructive'),
-                  answered && !isAnswer && !isChosen && 'opacity-60',
-                )}
-              >
-                <span className="min-w-0">
-                  {hotkey && <Kbd>{hotkey}</Kbd>}
-                  {option}
-                </span>
-                {answered && isAnswer && <Check className="size-4 shrink-0" aria-label="Đáp án đúng" />}
-                {answered && isChosen && !isAnswer && <X className="size-4 shrink-0" aria-label="Bạn chọn" />}
-              </button>
-            )
-          })}
-        </div>
+        {typed ? (
+          <TypedAnswer
+            submitted={chosen}
+            onSubmit={onChoose}
+            label={question.kind === 'type' ? 'Dạng đúng điền vào chỗ trống' : 'Câu bạn gõ'}
+            focus
+            tone={!answered ? 'neutral' : correct ? 'correct' : 'wrong'}
+            answer={question.answer}
+          />
+        ) : (
+          <div className="grid gap-2" role="group" aria-label="Các lựa chọn">
+            {options.map((option, i) => {
+              const isAnswer = option === question.answer
+              const isChosen = option === chosen
+              const hotkey = i < CHOICE_KEYS.length ? CHOICE_KEYS[i] : undefined
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  disabled={answered}
+                  onClick={() => onChoose(option)}
+                  aria-keyshortcuts={hotkey}
+                  lang="en"
+                  className={cn(
+                    'flex min-h-11 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-base break-words transition-colors',
+                    !answered && 'hover:border-primary hover:bg-accent/40',
+                    answered && isAnswer && 'border-primary bg-accent/50 text-accent-foreground',
+                    answered &&
+                      isChosen &&
+                      !isAnswer &&
+                      (gentle
+                        ? 'border-dashed border-muted-foreground bg-muted/40'
+                        : 'border-destructive bg-destructive/10 text-destructive'),
+                    answered && !isAnswer && !isChosen && 'opacity-60',
+                  )}
+                >
+                  <span className="min-w-0">
+                    {hotkey && <Kbd>{hotkey}</Kbd>}
+                    {option}
+                  </span>
+                  {answered && isAnswer && <Check className="size-4 shrink-0" aria-label="Đáp án đúng" />}
+                  {answered && isChosen && !isAnswer && <X className="size-4 shrink-0" aria-label="Bạn chọn" />}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {answered && (
           <div role="status" className="flex flex-col gap-2 text-sm">

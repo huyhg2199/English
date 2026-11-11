@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Brick, Screen } from '@/data/foundation'
 import { advanceCheck, recordAnswer, skipEasier, startCheck, startEasier, type CheckFlow } from '@/lib/foundation'
 
-import { BrickScreen, CheckScreen } from './BrickScreen'
+import { BrickRecap, BrickScreen, CheckScreen } from './BrickScreen'
 import { BrickTheoryRail } from './BrickTheoryRail'
 import { SCREEN_TITLES } from './screen-titles'
 import { WallPassedButton } from './WallPassedCard'
@@ -122,7 +122,7 @@ export function BrickPlayer({
             <section aria-label={SCREEN_TITLES.check} className="flex flex-col gap-3" hidden={screen.kind !== 'check'}>
               <h2 className="text-lg font-semibold">{SCREEN_TITLES.check}</h2>
               <CheckScreen
-                brick={brick}
+                review={<BrickRecap brick={brick} contrast />}
                 screen={checkScreen}
                 flow={flow}
                 seed={seed}

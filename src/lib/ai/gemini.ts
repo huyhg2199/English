@@ -1,4 +1,4 @@
-import type { Question } from '@/data/questions'
+import type { ChoiceQuestion, Question, TypedQuestion } from '@/data/questions'
 
 import { DEFAULT_GEMINI_MODEL, isValidModelName } from './key'
 
@@ -37,11 +37,16 @@ export const GEMINI_ERROR_MESSAGES: Record<GeminiErrorCode, string> = {
 
 export type ExplainResult = { ok: true; text: string } | { ok: false; code: GeminiErrorCode; message: string }
 
+/** Phần câu hỏi gửi Gemini: câu chọn đáp án có `options`, câu gõ (story 35) thì không. */
+export type ExplainQuestion =
+  | Pick<ChoiceQuestion, 'kind' | 'prompt' | 'options' | 'answer'>
+  | Pick<TypedQuestion, 'kind' | 'prompt' | 'answer'>
+
 export type ExplainInput = {
   fetch: typeof globalThis.fetch
   key: string | null
   model?: string
-  question: Pick<Question, 'kind' | 'prompt' | 'options' | 'answer'>
+  question: ExplainQuestion
   /** Đáp án Huy chọn ('' khi bỏ trống). */
   chosen: string
   signal?: AbortSignal
@@ -55,20 +60,31 @@ const KIND_LABELS: Record<Question['kind'], string> = {
   choice: 'chọn đáp án đúng để điền vào chỗ trống',
   pronunciation: 'phát âm (chọn từ có âm / trọng âm khác)',
   listening: 'nghe một câu rồi chọn đúng câu đã nghe',
+  type: 'gõ dạng đúng của động từ vào chỗ trống',
+  transform: 'tự gõ lại cả câu theo yêu cầu (biến đổi hoặc dịch)',
 }
 
-/** Prompt gửi Gemini: chỉ có đề, lựa chọn, đáp án đúng và đáp án đã chọn. */
-export function buildExplainPrompt(question: ExplainInput['question'], chosen: string): string {
+/** Câu gõ: cách app chấm (`matchesTyped`), để Gemini không giải thích một khác biệt không bị tính là lỗi. */
+const TYPED_GRADING_NOTE =
+  "Cách chấm: không tính hoa thường, dấu câu, khoảng trắng thừa; dạng rút gọn n't, I'm, 're, 've, 'll bằng dạng đầy đủ. Chỉ giải thích chỗ sai về từ hoặc dạng động từ."
+
+/**
+ * Prompt gửi Gemini: chỉ có đề, lựa chọn, đáp án đúng và đáp án đã chọn. Câu gõ (story 35) không có dòng "Các lựa chọn",
+ * ghi "Người học đã gõ", thêm dòng cách chấm và hỏi "vì sao câu đã gõ sai"; prompt câu chọn đáp án giữ nguyên từng chữ.
+ */
+export function buildExplainPrompt(question: ExplainQuestion, chosen: string): string {
+  const typed = !('options' in question)
   return [
     'Bạn là giáo viên tiếng Anh cho người Việt mới học lại từ đầu (trình độ A1–A2).',
     `Dạng câu: ${KIND_LABELS[question.kind]}.`,
     `Đề: ${question.prompt}`,
-    `Các lựa chọn: ${question.options.map((o) => `"${o}"`).join(', ')}`,
+    ...('options' in question ? [`Các lựa chọn: ${question.options.map((o) => `"${o}"`).join(', ')}`] : []),
     `Đáp án đúng: "${question.answer}"`,
-    `Người học đã chọn: ${chosen ? `"${chosen}"` : '(bỏ trống)'}`,
+    `${typed ? 'Người học đã gõ' : 'Người học đã chọn'}: ${chosen ? `"${chosen}"` : '(bỏ trống)'}`,
+    ...(typed ? [TYPED_GRADING_NOTE] : []),
     '',
     'Trả lời hoàn toàn bằng tiếng Việt (câu ví dụ tiếng Anh kèm dịch), ngắn gọn, chữ thường không dùng markdown, đúng 3 phần:',
-    'Lỗi sai: vì sao đáp án đã chọn sai.',
+    typed ? 'Lỗi sai: vì sao câu đã gõ sai.' : 'Lỗi sai: vì sao đáp án đã chọn sai.',
     'Quy tắc: quy tắc cần nhớ, 1–2 câu.',
     'Ví dụ đúng: đúng 2 câu ví dụ tiếng Anh đúng quy tắc, mỗi câu một dòng, kèm nghĩa tiếng Việt.',
   ].join('\n')

@@ -45,6 +45,102 @@ export const PRESENT_CONTINUOUS: Tense = {
   ],
   dialogues: [yg('what are you doing'), yg("I'm working on")],
   spellId: 'accio',
+  // Phần luyện có bậc (story 35): chỉ dùng Sân ga F01–F18, hiện tại đơn và chính thì này; đề không trùng đề quiz s1-t2-w1.
+  practice: {
+    worked: {
+      en: 'She is cooking dinner now.',
+      vi: 'Bây giờ cô ấy đang nấu bữa tối.',
+      noteVi: 'Cần đủ hai phần: is (vì she) + cooking (V-ing). Tiếng Việt chỉ cần "đang", tiếng Anh bắt buộc cả hai.',
+      timeline: { kind: 'progress', label: 'Đang nấu ngay lúc nói' },
+    },
+    faded: {
+      en: 'They ___ (play) football now.',
+      answer: 'are playing',
+      vi: 'Bây giờ họ đang chơi bóng đá.',
+      hintVi: 'they đi với are; play thêm -ing.',
+    },
+    check: {
+      items: [
+        {
+          id: 'present-continuous-c1',
+          kind: 'type',
+          prompt: 'I ___ (read) a book now.',
+          answer: 'am reading',
+          hintVi: 'I đi với am; read thêm -ing.',
+          explanationVi: 'Việc đang làm lúc này: I + am + V-ing. Cần đủ cả am và reading, thiếu một phần là sai.',
+        },
+        {
+          id: 'present-continuous-c2',
+          kind: 'choice',
+          prompt: '___ he sleeping?',
+          options: ['Is', 'Does', 'Are'],
+          answer: 0,
+          hintVi: 'Câu hỏi tiếp diễn đảo am / is / are lên đầu. he đi với gì?',
+          explanationVi: 'he đi với is, nên hỏi Is he sleeping? Không dùng Does với V-ing (Does chỉ dùng cho hiện tại đơn).',
+        },
+        {
+          id: 'present-continuous-c3',
+          kind: 'type',
+          prompt: 'She ___ (not / work) today.',
+          answer: "isn't working",
+          hintVi: "Phủ định: is + not (isn't) + V-ing.",
+          explanationVi: "Phủ định của thì này là am / is / are + not + V-ing: She isn't (is not) working. Không dùng doesn't với V-ing.",
+        },
+        {
+          id: 'present-continuous-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: You are listening to music.',
+          answer: 'Are you listening to music?',
+          hintVi: 'Chỉ cần đưa are lên trước you, phần còn lại giữ nguyên.',
+          explanationVi: 'Câu hỏi tiếp diễn: Are + you + V-ing …? Không thêm Do, không đổi listening.',
+        },
+        {
+          id: 'present-continuous-c5',
+          kind: 'type',
+          prompt: 'We ___ (sit) in the garden.',
+          answer: 'are sitting',
+          hintVi: 'sit là từ một âm tiết, tận cùng 1 nguyên âm + 1 phụ âm.',
+          explanationVi: 'we đi với are. sit tận cùng i + t (1 nguyên âm + 1 phụ âm) nên gấp đôi t rồi thêm -ing: sitting.',
+        },
+        {
+          id: 'present-continuous-c6',
+          kind: 'type',
+          prompt: 'Are they working now? — No, they ___.',
+          answer: "aren't",
+          hintVi: 'Trả lời ngắn dùng lại are, không lặp lại working.',
+          explanationVi: "Hỏi bằng Are thì trả lời ngắn cũng dùng are: No, they aren't (are not). Không trả lời bằng don't.",
+        },
+      ],
+      easier: [
+        {
+          id: 'present-continuous-e1',
+          kind: 'choice',
+          prompt: 'I ___ watching TV.',
+          options: ['am', 'is', 'are'],
+          answer: 0,
+          hintVi: 'I luôn đi với am.',
+          explanationVi: 'I đi với am: I am watching TV. is dùng cho he / she / it, are cho you / we / they.',
+        },
+        {
+          id: 'present-continuous-e2',
+          kind: 'choice',
+          prompt: 'She is ___ now.',
+          options: ['cooking', 'cook', 'cooks'],
+          answer: 0,
+          hintVi: 'Sau is của thì tiếp diễn là V-ing.',
+          explanationVi: 'Đã có is thì động từ phải thêm -ing: She is cooking. "She is cook" thiếu -ing.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về việc bạn và người quanh bạn đang làm lúc này.',
+      sampleEn: 'I am learning English. My friend is working.',
+      speak: [
+        { id: 'present-continuous-say-1', text: 'I am learning English now.', vi: 'Bây giờ tôi đang học tiếng Anh.' },
+        { id: 'present-continuous-say-2', text: 'My friend is working today.', vi: 'Hôm nay bạn tôi đang làm việc.' },
+      ],
+    },
+  },
 }
 
 export const PAST_TO_BE: Tense = {

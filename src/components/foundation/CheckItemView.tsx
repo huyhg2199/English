@@ -4,6 +4,7 @@ import { Check, Eye, Lightbulb, RotateCcw } from 'lucide-react'
 import { useHotkeys } from '@/app/use-hotkeys'
 import { Kbd } from '@/components/Kbd'
 import { ListenButton } from '@/components/ListenButton'
+import { TypedAnswer } from '@/components/quiz/TypedAnswer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { CheckItem } from '@/data/foundation'
@@ -20,6 +21,7 @@ const KIND_HINTS: Record<CheckItem['kind'], string> = {
   tapSyllable: 'Chạm âm tiết được nhấn',
   order: 'Sắp thứ tự',
   sort: 'Xếp nhóm',
+  type: 'Gõ đáp án',
 }
 
 const CHIP =
@@ -87,7 +89,8 @@ function ChoiceBody({
  *
  * Phím tắt (story 31): câu `choice`/`listen` đang trả lời thì 1–4 chọn; câu đã xong thì Enter → `onContinue` (cùng handler với
  * nút trong `footer`, mọi loại câu). `active = false` (màn check đang ẩn) thì không nhận phím. Câu `order`/`sort`/`tapSyllable`
- * không có phím trả lời.
+ * không có phím trả lời. Câu `type` (story 35): ô gõ (`TypedAnswer`), Enter trong ô là nộp, không có phím 1–4; "Thử lại" xoá chữ
+ * đã gõ.
  */
 export function CheckItemView({
   item,
@@ -118,6 +121,9 @@ export function CheckItemView({
   const [picked, setPicked] = useState<number[]>([])
   /** `sort`: mục → vị trí nhóm. */
   const [groupOf, setGroupOf] = useState<Record<string, number>>({})
+  /** `type`: chữ đã nộp (null khi đang gõ) và số lần thử lại (đổi `key` của ô gõ để xoá chữ cũ). */
+  const [typed, setTyped] = useState<string | null>(null)
+  const [tries, setTries] = useState(0)
   const pieces = useMemo(() => shuffledTokens(item, seed), [item, seed])
   const speakable = canSpeak()
 
@@ -132,6 +138,8 @@ export function CheckItemView({
     setChosen(null)
     setPicked([])
     setGroupOf({})
+    setTyped(null)
+    setTries((n) => n + 1)
   }
 
   function reveal() {
@@ -243,6 +251,20 @@ export function CheckItemView({
           </Button>
         )}
       </div>
+    )
+  } else if (item.kind === 'type') {
+    body = (
+      <TypedAnswer
+        key={tries}
+        submitted={typed}
+        onSubmit={(text) => {
+          setTyped(text)
+          submit({ kind: 'type', text })
+        }}
+        focus={active}
+        tone={status === 'correct' ? 'correct' : status === 'wrong' ? 'wrong' : 'neutral'}
+        answer={item.answer}
+      />
     )
   } else {
     const current = pieces.find((x) => !Object.hasOwn(groupOf, x))

@@ -49,7 +49,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - Lý thuyết luôn đi trước luyện.
 - **Khi đang ở Sân ga:** Lý thuyết 12' (1 viên gạch, hiện ngay trong buổi; xong viên có nút "Học tiếp viên sau", không bắt buộc, chỉ hiện khi còn viên tiếp theo) → Ôn & từ mới 8' → Giải trí nhẹ 10' (VOA Let's Learn English L1–L3, có phụ đề Việt khi có).
-- **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài.
+- **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài. Thì có phần luyện có bậc (ví dụ mẫu → tự điền → 5–7 câu luyện có Gợi ý, dưới 60% mời xem lại + 2 câu dễ hơn → áp dụng) hiện ngay dưới TenseCard. Sai thì giải thích và làm lại, không ghi Sổ lỗi, không lưu tiến độ hay lần làm quiz; chỉ câu nói ở bước áp dụng ghi điểm nói như viên gạch (story 35).
 - Kế hoạch buổi chốt lúc bắt đầu buổi: xong viên cuối cùng giữa buổi thì buổi vẫn chạy hết 3 phần như đã chốt.
 - `prioritizeSections` (đẩy kỹ năng yếu, CAP-7) chỉ đổi thứ tự giữa các phần luyện, không bao giờ đẩy phần lý thuyết xuống dưới phần luyện.
 - **Ngày lười (10'):** ở Sân ga là ôn 1 viên gạch (viên xong gần nhất; chưa xong viên nào thì xem phần giải thích của viên tiếp theo) + 3 từ (không dùng tin); sau Sân ga là 1 tin + 3 từ (mục Nội dung bài). Vẫn giữ streak.
@@ -97,7 +97,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - **Nhãn loại lỗi:** thì, từ loại, giới từ, phát âm, từ vựng, nghe.
 - **Ghi Sổ lỗi:** câu sai ở quiz bài, mini test, test quay lại, O.W.L./N.E.W.T., và kiểm tra hàng của Sân ga khi đã học hết các viên của hàng đó.
-- **Không ghi Sổ lỗi:** câu luyện trong viên gạch, Soát vé, kiểm tra "Tôi biết rồi" khi chưa học hết các viên của hàng.
+- **Không ghi Sổ lỗi:** câu luyện trong viên gạch, phần luyện của thì, Soát vé, kiểm tra "Tôi biết rồi" khi chưa học hết các viên của hàng.
 - **Lời mời ôn viên gạch:** mỗi câu hỏi khai báo khái niệm nó dùng (`uses`), mỗi viên khai báo khái niệm nó dạy (`teaches`). Khi trong 14 ngày gần nhất có từ 2 câu sai trở lên (đã ghi Sổ lỗi) cùng dùng một khái niệm do viên X dạy, Hôm nay mời "Ôn viên gạch X n'?" (n = số phút của viên). Khái niệm không do viên nào dạy thì không mời. Ôn xong viên X hoặc bấm "Để sau" thì lời mời ẩn tới khi có câu sai mới về khái niệm đó. Chỉ là lời mời, không chặn gì.
 - Nút "Vì sao sai?" dùng Gemini qua BYOK.
 

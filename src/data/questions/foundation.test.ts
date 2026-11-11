@@ -13,6 +13,7 @@ import {
   QUESTION_BANK,
   QUIZZES,
   ROW_QUIZ_ID,
+  type ChoiceQuestion,
 } from './index'
 
 const SECTION_IDS = ['pronunciation', 'grammar', 'vocabulary', 'entertainment', 'main', 'checkpoint']
@@ -233,13 +234,13 @@ describe('ngân hàng câu Sân ga', () => {
   })
 
   it('Sổ lỗi cũ: q-f17-04, q-f14-02, q-f16-01 trả câu đã viết lại (không Does/Do, không at home, không having)', () => {
-    const q = getQuestion('q-f17-04')!
+    const q = getQuestion('q-f17-04') as ChoiceQuestion
     expect(q.lessonId).toBe('f17')
     expect(q.answer).toBe('go')
     expect(q.options).toEqual(['go', 'goes', 'going', 'gone'])
-    expect(getQuestion('q-f14-02')!.options).not.toContain("don't")
+    expect((getQuestion('q-f14-02') as ChoiceQuestion).options).not.toContain("don't")
     expect(getQuestion('q-f14-02')!.prompt).not.toMatch(/\bat\b/)
-    expect(getQuestion('q-f16-01')!.options).toEqual(['has', 'have', 'is', 'haves'])
+    expect((getQuestion('q-f16-01') as ChoiceQuestion).options).toEqual(['has', 'have', 'is', 'haves'])
   })
 
   it('hàng A: F06 đúng 4 câu q-f06-01 … -04 theo thứ tự; 03 / 04 khai báo days-months; 01 / 02 giữ nguyên (story 34)', () => {
@@ -253,11 +254,11 @@ describe('ngân hàng câu Sân ga', () => {
     }
     expect(getQuestion('q-f06-03')!.answer).toBe('Thursday')
     expect(getQuestion('q-f06-04')!.answer).toBe('August twelfth')
-    const q1 = getQuestion('q-f06-01')!
+    const q1 = getQuestion('q-f06-01') as ChoiceQuestion
     expect(q1.prompt).toBe('$50 đọc thế nào?')
     expect(q1.answer).toBe('fifty dollars')
     expect(q1.options).toEqual(['fifty dollars', 'fifteen dollars', 'five zero dollars', 'five dollars'])
-    const q2 = getQuestion('q-f06-02')!
+    const q2 = getQuestion('q-f06-02') as ChoiceQuestion
     expect(q2.prompt).toBe('Ngày mùng 2 trong tháng (2nd) đọc là gì?')
     expect(q2.answer).toBe('second')
     expect(q2.options).toEqual(['second', 'two', 'twoth', 'twice'])

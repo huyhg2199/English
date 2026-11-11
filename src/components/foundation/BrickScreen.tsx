@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { BookOpen, Eye, PartyPopper } from 'lucide-react'
 
 import { ListenButton } from '@/components/ListenButton'
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Brick, CheckItem, Screen } from '@/data/foundation'
 import { firstTryScore, isFadedCorrect, type CheckFlow } from '@/lib/foundation'
+import { hasVietnameseMarks, VIETNAMESE_IME_WARNING } from '@/lib/quiz/typed'
 import { cn } from '@/lib/utils'
 
 import { BrickTables } from './BrickTables'
@@ -16,8 +17,11 @@ import { CheckItemView } from './CheckItemView'
 
 type ScreenOf<K extends Screen['kind']> = Extract<Screen, { kind: K }>
 
-/** Một dòng tiếng Anh có nút nghe. `speech`: chuỗi TTS đọc thay `text` (vd "H-U-Y" đọc "aitch, you, why"). */
-function EnLine({ text, speech, size = 'base' }: { text: string; speech?: string; size?: 'base' | 'lg' }) {
+/**
+ * Một dòng tiếng Anh có nút nghe. `speech`: chuỗi TTS đọc thay `text` (vd "H-U-Y" đọc "aitch, you, why"). Phần luyện của
+ * thì (story 35) dùng lại, cùng `WorkedBody` / `FadedBody`.
+ */
+export function EnLine({ text, speech, size = 'base' }: { text: string; speech?: string; size?: 'base' | 'lg' }) {
   return (
     <div className="flex items-start gap-2">
       <ListenButton text={speech ?? text} label={`Nghe: ${text}`} rate={0.85} />
@@ -66,7 +70,7 @@ function ContrastBody({ screen }: { screen: ScreenOf<'contrast'> }) {
   )
 }
 
-function WorkedBody({ screen }: { screen: ScreenOf<'worked'> }) {
+export function WorkedBody({ screen }: { screen: Pick<ScreenOf<'worked'>, 'en' | 'audioText' | 'vi' | 'noteVi' | 'timeline'> }) {
   return (
     <div className="flex flex-col gap-3">
       <EnLine text={screen.en} speech={screen.audioText} size="lg" />
@@ -77,10 +81,14 @@ function WorkedBody({ screen }: { screen: ScreenOf<'worked'> }) {
   )
 }
 
-/** Ví dụ một chỗ trống: gõ đáp án (chấm bằng `checkFill`); sai hiện gợi ý, gõ lại hoặc "Xem đáp án". */
-function FadedBody({ screen }: { screen: ScreenOf<'faded'> }) {
+/**
+ * Ví dụ một chỗ trống: gõ đáp án (chấm bằng `isFadedCorrect` → `matchesTyped`, nhận `accept`); sai hiện gợi ý, gõ lại
+ * hoặc "Xem đáp án". Chữ có dấu tiếng Việt (bộ gõ còn bật) thì không chấm, chỉ nhắc tắt bộ gõ.
+ */
+export function FadedBody({ screen }: { screen: Pick<ScreenOf<'faded'>, 'en' | 'answer' | 'accept' | 'vi' | 'hintVi'> }) {
   const [typed, setTyped] = useState('')
   const [status, setStatus] = useState<'answering' | 'wrong' | 'correct' | 'revealed'>('answering')
+  const [imeWarning, setImeWarning] = useState(false)
   const [before, after] = screen.en.split('___')
   const done = status === 'correct' || status === 'revealed'
 
@@ -99,13 +107,19 @@ function FadedBody({ screen }: { screen: ScreenOf<'faded'> }) {
           className="flex flex-wrap gap-2"
           onSubmit={(e) => {
             e.preventDefault()
-            setStatus(isFadedCorrect(screen.answer, typed) ? 'correct' : 'wrong')
+            // Bộ gõ tiếng Việt còn bật (story 35): không chấm, nhắc tắt bộ gõ rồi gõ lại.
+            if (hasVietnameseMarks(typed)) {
+              setImeWarning(true)
+              return
+            }
+            setStatus(isFadedCorrect(screen.answer, typed, screen.accept) ? 'correct' : 'wrong')
           }}
         >
           <input
             value={typed}
             onChange={(e) => {
               setTyped(e.target.value)
+              setImeWarning(false)
             }}
             aria-label="Từ còn thiếu"
             autoCapitalize="none"
@@ -116,6 +130,11 @@ function FadedBody({ screen }: { screen: ScreenOf<'faded'> }) {
           />
           <Button type="submit">Kiểm tra</Button>
         </form>
+      )}
+      {!done && imeWarning && (
+        <p role="alert" className="text-sm text-muted-foreground">
+          {VIETNAMESE_IME_WARNING}
+        </p>
       )}
       {status === 'wrong' && (
         <div role="status" className="flex flex-col gap-2 rounded-lg bg-muted/50 p-3 text-sm">
@@ -194,17 +213,14 @@ export function BrickRecap({ brick, contrast }: { brick: Brick; contrast: boolea
   )
 }
 
-/** Mở lại giải thích + so sánh ngay tại chỗ (lời mời < 60%). */
-function ReviewExplain({ brick }: { brick: Brick }) {
-  return <BrickRecap brick={brick} contrast />
-}
-
 /**
  * Màn check: câu chính lần lượt (điểm theo lần trả lời đầu), lời mời "Xem lại giải thích" + 2 câu dễ hơn khi < 60%,
- * "Bỏ qua, sang Áp dụng". Trạng thái luồng do BrickPlayer giữ (`CheckFlow`) để quay lại màn trước không mất kết quả.
+ * "Bỏ qua, sang Áp dụng". Trạng thái luồng do nơi gọi giữ (`CheckFlow`) để quay lại màn trước không mất kết quả.
+ * `review`: phần mở ra khi bấm "Xem lại giải thích" (viên gạch: `BrickRecap` có so sánh; phần luyện của thì, story 35:
+ * tóm tắt công thức + quy tắc).
  */
 export function CheckScreen({
-  brick,
+  review,
   screen,
   flow,
   seed,
@@ -214,8 +230,8 @@ export function CheckScreen({
   onSkipEasier,
   active = true,
 }: {
-  brick: Brick
-  screen: ScreenOf<'check'>
+  review: ReactNode
+  screen: Pick<ScreenOf<'check'>, 'items' | 'easier'>
   flow: CheckFlow
   seed: string
   onAttempt: (item: CheckItem, correct: boolean) => void
@@ -275,7 +291,7 @@ export function CheckScreen({
             Bỏ qua, sang Áp dụng
           </Button>
         </div>
-        {reviewOpen && <ReviewExplain brick={brick} />}
+        {reviewOpen && review}
       </CardContent>
     </Card>
   )

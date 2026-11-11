@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import { FOUNDATION_QUESTIONS, QUESTION_BANK } from '@/data/questions'
 import { FUNCTION_WORD_GATES, hasDetails, loadWords, POS_LABELS, STARTER_WORD_IDS } from '@/data/vocab'
+import { allTenses } from '@/data/lessons'
+import { isFadedCorrect } from '@/lib/foundation/player'
 import { ruleCardId } from '@/lib/flashcard-session'
+import { checkFill } from '@/lib/subs/blanks'
 
 import { BRICKS, getBrickMeta } from './catalog'
 import { BRICK_CONTENT, getBrick, hasBrickContent } from './content'
@@ -742,7 +745,7 @@ describe('F06 số, thứ, tháng (story 34)', () => {
     }
     for (const q of [...FOUNDATION_QUESTIONS, ...QUESTION_BANK]) {
       if (!q.requires) continue
-      const texts = [q.prompt.replace('___', q.answer), ...q.options, q.answer, q.audioText ?? '']
+      const texts = [q.prompt.replace('___', q.answer), ...('options' in q ? q.options : []), q.answer, ('audioText' in q ? q.audioText : '') ?? '']
       const names = texts.flatMap(dayMonthNames)
       for (const n of names) seen.add(n)
       if (names.length > 0 && !(q.requires as readonly string[]).includes('days-months')) missing.push(`${q.id} (${names.join(', ')})`)
@@ -757,5 +760,25 @@ describe('F06 số, thứ, tháng (story 34)', () => {
     expect(dayMonthNames('I go on Mondays in May. May 3rd, July.')).toEqual(['Monday', 'July', 'May', 'May'])
     expect(dayMonthNames('May third · May twelfth · May, June')).toEqual(['June', 'May', 'May', 'May'])
     expect(dayMonthNames('May I help? May you be happy.')).toEqual([])
+  })
+})
+
+describe('màn faded đổi từ checkFill sang matchesTyped (story 35): chỉ nới thêm', () => {
+  // Intent story 35: không câu nào trước đây đúng mà nay thành sai. matchesTyped chỉ mở rộng I'm / 're / 've / 'll khi có
+  // nháy ("were" ≠ "we're"), nên một đáp án faded có dạng đó sẽ không còn nhận bản gõ thiếu nháy như checkFill: test này
+  // chặn dữ liệu như vậy (cần thì ghi vào `accept`).
+  const faded = [
+    ...bricks.map((b) => ({ where: b.id, screen: screenOf(b, 'faded') })),
+    ...allTenses().flatMap((t) => (t.practice ? [{ where: t.id, screen: t.practice.faded }] : [])),
+  ]
+
+  it('mọi cách gõ checkFill nhận thì isFadedCorrect cũng nhận', () => {
+    expect(faded.length).toBeGreaterThan(18)
+    for (const { where, screen } of faded) {
+      const a = screen.answer
+      for (const typed of [a, a.replace(/['’]/g, ''), a.toUpperCase(), `${a}.`, ` ${a.toLowerCase()} `]) {
+        if (checkFill(a, typed)) expect(isFadedCorrect(a, typed, screen.accept), `${where}: "${typed}"`).toBe(true)
+      }
+    }
   })
 })

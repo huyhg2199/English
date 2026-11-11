@@ -5,7 +5,7 @@ import { ListenButton } from '@/components/ListenButton'
 import { SourceSectionLink, TagBadge } from '@/components/quiz/QuestionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MISTAKES_HREF, type Question } from '@/data/questions'
+import { isTypedQuestion, MISTAKES_HREF, type Question } from '@/data/questions'
 import { lessonHref, STAGES } from '@/data/roadmap'
 import {
   OWL_PART_LABELS,
@@ -180,7 +180,7 @@ export function OwlResult({ selfGraded, scores, passed, plan, words, questions, 
                   <TagBadge tag={q.tag} />
                 </div>
                 <p className="break-words">
-                  <span className="text-muted-foreground">Bạn chọn: </span>
+                  <span className="text-muted-foreground">{isTypedQuestion(q) ? 'Bạn gõ: ' : 'Bạn chọn: '}</span>
                   <span className="text-destructive" lang="en">
                     {a.chosen || '(bỏ trống)'}
                   </span>

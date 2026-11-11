@@ -13,7 +13,15 @@ import { getQuiz, QUESTION_BANK, type Question, type QuizDef } from '@/data/ques
 import { getLesson, lessonHref, SECTION_TITLES, sectionHref, type SectionId } from '@/data/roadmap'
 import { COMEBACK_QUIZ_ID, pickComebackTest, weakestSectionFrom } from '@/lib/comeback'
 import { brickHref, isBrickTaught } from '@/lib/foundation'
-import { attemptId, gradeAttempt, planQuiz, shuffleOptions, type AttemptKind, type GradedAttempt } from '@/lib/quiz'
+import {
+  attemptId,
+  gradeAttempt,
+  planQuiz,
+  seenQuestionIds,
+  shuffleOptions,
+  type AttemptKind,
+  type GradedAttempt,
+} from '@/lib/quiz'
 import { currentLessonId } from '@/lib/schedule'
 import { canSpeak } from '@/lib/speech'
 
@@ -172,12 +180,19 @@ function QuizNotReady({
 
 /**
  * Bài test định nghĩa sẵn (`QUIZZES`): lập đề bằng `planQuiz` (bỏ câu cần viên gạch chưa học, story 27).
- * Đề chốt lúc bắt đầu lần làm: đồng bộ hay xong viên giữa chừng không đổi đề đang làm.
+ * Đề chốt lúc bắt đầu lần làm: đồng bộ hay xong viên giữa chừng không đổi đề đang làm. Câu chưa gặp ở lần làm đã chấm
+ * nào được lấy trước (`seenQuestionIds`, story 35), tính cùng lúc chốt đề.
  */
 function DefinedQuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRetry: () => void }) {
   const { store } = useLoadedStore()
   const [plan] = useState(() =>
-    planQuiz(QUESTION_BANK, quiz, run.seed, { canSpeak: canSpeak() }, (id) => isBrickTaught(store, id)),
+    planQuiz(
+      QUESTION_BANK,
+      quiz,
+      run.seed,
+      { canSpeak: canSpeak(), seen: seenQuestionIds(store) },
+      (id) => isBrickTaught(store, id),
+    ),
   )
   if (plan.status === 'not-ready') {
     return <QuizNotReady quiz={quiz} missingBrickIds={plan.missingBrickIds} startBrickId={plan.startBrickId} />

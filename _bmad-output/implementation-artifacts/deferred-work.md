@@ -132,3 +132,9 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
   summary: Bảng tra mới của màn giải thích (`BrickTables` trong `ExplainBody` và `TermChip`) không có test render hay test bề rộng 375px khi mở bảng.
   evidence: Vitest chạy `environment: 'node'`, không có `.test.tsx`; `scripts/layout/check-lib.mjs` `ROUTES` chỉ có `/foundation` và `/foundation/F01`, và bảng đóng sẵn nên `scrollWidth` không đo được dòng đã mở. Xoá `<BrickTables>` khỏi `ExplainBody` thì lint/test/build vẫn xanh. Cùng gốc với các mục "cần môi trường test component" của story 16 và 31.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/35-tense-practice-typed-questions.md`
+  summary: Chỗ nối ở trang của story 35 không có test: `DefinedQuizRun` (`src/pages/Quiz.tsx`) truyền `seen: seenQuestionIds(store)` cho `planQuiz`, và ôn Sổ lỗi (`src/pages/Mistakes.tsx`) chấm câu gõ bằng `isAnswerCorrect`.
+  evidence: Review story 35 (verification-gap). Bỏ `seen` hay đổi lại `option === question.answer` thì lint/test/build vẫn xanh, vì mọi test lib tự dựng `seen` và cách chấm ôn sổ nằm trong trang. Cùng gốc với các mục "cần môi trường test component" của story 16, 31, 34; cách sửa rẻ là chuyển quyết định chấm ôn sổ sang một hàm thuần trong `src/lib/quiz` rồi test ở đó.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/35-tense-practice-typed-questions.md`
+  summary: AC 1 (đi hết khối luyện bằng bàn phím ảo iPhone thật: không phóng to, `scrollWidth` 375) và phần buổi 30' của AC 2 chưa được chạy trên máy thật.
+  evidence: Implementation Notes ghi "Chưa kiểm". Đã đọc code: `TensePractice` chỉ bind Enter, không bind ←/→; ô gõ 16px và có `autoCapitalize="none"` / `autoCorrect="off"`. Cần Huy mở `s1-t2-w1` trên iPhone (và buổi 30' trên máy tính) để xác nhận.

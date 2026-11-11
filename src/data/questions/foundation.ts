@@ -1,7 +1,7 @@
 import { brickLessonId, bricksOfRow, ROW_IDS, ROW_TITLES, type RowId } from '@/data/foundation'
 
 import type { QuizDef } from './index'
-import type { Question } from './types'
+import type { ChoiceQuestion } from './types'
 
 /**
  * Ngân hàng câu Sân ga 9¾ (story 20): 42 câu cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng (`quiz-f-a` … `quiz-f-d`,
@@ -21,7 +21,7 @@ import type { Question } from './types'
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
 
-const ROW_A: readonly Question[] = [
+const ROW_A: readonly ChoiceQuestion[] = [
   {
     id: 'q-f01-01',
     lessonId: 'f01',
@@ -171,7 +171,7 @@ const ROW_A: readonly Question[] = [
   },
 ]
 
-const ROW_B: readonly Question[] = [
+const ROW_B: readonly ChoiceQuestion[] = [
   {
     id: 'q-f07-01',
     lessonId: 'f07',
@@ -296,7 +296,7 @@ const ROW_B: readonly Question[] = [
   },
 ]
 
-const ROW_C: readonly Question[] = [
+const ROW_C: readonly ChoiceQuestion[] = [
   {
     id: 'q-f13-01',
     lessonId: 'f13',
@@ -426,7 +426,7 @@ const ROW_C: readonly Question[] = [
   },
 ]
 
-const ROW_D: readonly Question[] = [
+const ROW_D: readonly ChoiceQuestion[] = [
   {
     id: 'q-f17-01',
     lessonId: 'f17',
@@ -553,7 +553,7 @@ const ROW_D: readonly Question[] = [
 ]
 
 /** 42 câu Sân ga (hàng A 12 câu, B–D 10 câu), theo thứ tự hàng A → D. */
-export const FOUNDATION_QUESTIONS: readonly Question[] = [...ROW_A, ...ROW_B, ...ROW_C, ...ROW_D]
+export const FOUNDATION_QUESTIONS: readonly ChoiceQuestion[] = [...ROW_A, ...ROW_B, ...ROW_C, ...ROW_D]
 
 /** Id bài kiểm tra của từng hàng. */
 export const ROW_QUIZ_ID: Readonly<Record<RowId, string>> = {

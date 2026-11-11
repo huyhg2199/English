@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { getLesson, getSection } from '@/data/roadmap'
 import { getBrick } from '@/data/foundation/content'
 import { BRICK_IDS } from '@/data/foundation'
+import { QUESTION_BANK } from '@/data/questions'
 import { hasDetails, loadWords, type StudyWord } from '@/data/vocab'
+import { normalizeTyped } from '@/lib/quiz/typed'
+import { hasPractice, practiceEnglishTexts, practiceItemIds, practiceProblems } from '@/lib/tense-practice'
 
 import { allTenses, getLessonContent, IRREGULAR_VERBS, LESSON_CONTENTS, lessonRuleCards, SPELLS } from './index'
 import type { PronunciationBlock, Sound } from './types'
@@ -538,5 +541,98 @@ describe('to be quá khứ và Wh + did (story 33)', () => {
     const summary = content('s1-t2-w4').grammar!.review!.summary
     expect(summary.some((l) => l.startsWith('Quá khứ của to be: was / were'))).toBe(true)
     expect(summary.find((l) => l.startsWith('Không trộn'))).toContain('Did you be')
+  })
+})
+
+describe('luyện có bậc (story 35)', () => {
+  const withPractice = allTenses().filter(hasPractice)
+  const pc = () => {
+    const t = allTenses().find((x) => x.id === 'present-continuous')
+    if (!t?.practice) throw new Error('present-continuous chưa có practice')
+    return t.practice
+  }
+  /** V2 / V3 bất quy tắc khác V1, và các dạng bị cấm ở Boundaries (quá khứ, will / can, some / any / many, because / so). */
+  const FORBIDDEN = new Set([
+    ...IRREGULAR_VERBS.flatMap((v) => [...v.v2.split(' / '), ...v.v3.split(' / ')].filter((f) => f !== v.v1)).map((f) =>
+      f.toLowerCase(),
+    ),
+    'was', 'were', 'did', "didn't", "wasn't", "weren't", 'will', "won't", "'ll", 'can', "can't", 'cannot', 'some', 'any',
+    'many', 'because', 'so',
+  ])
+  const NOT_PAST = new Set(['need'])
+  const badWords = (text: string) =>
+    (text.toLowerCase().replace(/[’‘]/g, "'").match(/[a-z']+/g) ?? []).filter(
+      (w) => FORBIDDEN.has(w) || FORBIDDEN.has(w.replace(/^[a-z]+(?=')/, '')) || (/^[a-z]{2,}ed$/.test(w) && !NOT_PAST.has(w)),
+    )
+
+  it('mọi Tense có practice thì practiceProblems rỗng', () => {
+    expect(withPractice.length).toBeGreaterThan(0)
+    for (const t of withPractice) expect(practiceProblems(t), t.id).toEqual([])
+  })
+
+  it('present-continuous có practice: 6 câu luyện, ≥ 3 câu type, có câu biến đổi cả câu, 2 câu dễ hơn', () => {
+    const p = pc()
+    expect(p.check.items).toHaveLength(6)
+    expect(p.check.easier).toHaveLength(2)
+    const typedItems = p.check.items.filter((i) => i.kind === 'type')
+    expect(typedItems.length).toBeGreaterThanOrEqual(3)
+    expect(typedItems.some((i) => i.kind === 'type' && !i.prompt.includes('___'))).toBe(true)
+    expect(p.faded.answer).toBe('are playing')
+    const c3 = p.check.items.find((i) => i.id === 'present-continuous-c3')
+    expect(c3).toMatchObject({ kind: 'type', answer: "isn't working" })
+    expect(p.apply.speak?.map((s) => s.id)).toEqual(['present-continuous-say-1', 'present-continuous-say-2'])
+  })
+
+  it('id câu luyện không trùng id câu luyện của mọi viên gạch', () => {
+    const brickIds = new Set<string>()
+    for (const id of BRICK_IDS) {
+      for (const s of getBrick(id)?.screens ?? []) {
+        if (s.kind === 'check') for (const i of [...s.items, ...s.easier]) brickIds.add(i.id)
+        if (s.kind === 'apply' && s.item) brickIds.add(s.item.id)
+      }
+    }
+    expect(brickIds.size).toBeGreaterThan(0)
+    for (const t of withPractice) for (const id of practiceItemIds(t.practice)) expect(brickIds.has(id), id).toBe(false)
+  })
+
+  it('chữ tiếng Anh của practice không có dạng bị cấm (quá khứ, will / can, some / any / many, because / so)', () => {
+    for (const t of withPractice) {
+      for (const text of practiceEnglishTexts(t.practice)) {
+        // Đề biến đổi có phần yêu cầu tiếng Việt trước dấu ":" (vd "Đổi sang câu hỏi: …"): chỉ xét phần tiếng Anh.
+        const english = text.replace(/^[^:]*[^ -~][^:]*:\s*/, '')
+        expect(badWords(english), `${t.id}: ${text}`).toEqual([])
+      }
+    }
+  })
+
+  it('đề practice không trùng đề quiz của chính bài chứa thì (so sau chuẩn hoá, cả gợi ý trong ngoặc)', () => {
+    const key = (text: string) => normalizeTyped(text.replace(/\([^)]*\)/g, ' '))
+    let checked = 0
+    for (const content of LESSON_CONTENTS) {
+      const quizPrompts = new Set(QUESTION_BANK.filter((q) => q.lessonId === content.lessonId).map((q) => key(q.prompt)))
+      for (const t of (content.grammar?.tenses ?? []).filter(hasPractice)) {
+        const p = t.practice
+        const prompts = [
+          p.worked.en,
+          p.faded.en,
+          ...[...p.check.items, ...p.check.easier].map((i) => ('prompt' in i ? (i.prompt ?? '') : '')),
+        ].filter((x) => key(x) !== '')
+        for (const prompt of prompts) expect(quizPrompts.has(key(prompt)), `${content.lessonId} ${t.id}: ${prompt}`).toBe(false)
+        checked += 1
+      }
+    }
+    expect(checked).toBe(withPractice.length)
+  })
+
+  it("câu luyện type có he / she / it is (hoặc 's) trong đáp án thì có accept cho dạng kia", () => {
+    for (const t of withPractice) {
+      for (const i of [...t.practice.check.items, ...t.practice.check.easier]) {
+        if (i.kind === 'type' && /\b(he|she|it)( is|['’]s)\b/i.test(i.answer)) expect(i.accept?.length ?? 0, i.id).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('mọi Tense khác chưa có practice (story 36–37 làm)', () => {
+    expect(withPractice.map((t) => t.id)).toEqual(['present-continuous'])
   })
 })

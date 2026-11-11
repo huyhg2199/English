@@ -1,3 +1,4 @@
+import { Fragment, useState } from 'react'
 import { Check, ClipboardCheck, CloudMoon } from 'lucide-react'
 import { Link } from 'react-router'
 
@@ -6,12 +7,14 @@ import { Button } from '@/components/ui/button'
 import type { GrammarContent, LessonContent, LessonPart, PronunciationContent, SoundGroup } from '@/data/lessons'
 import { quizHref } from '@/data/questions'
 import { nextLessonPartId } from '@/lib/roadmap-progress'
+import { hasPractice } from '@/lib/tense-practice'
 
 import { IrregularVerbTable } from './IrregularVerbTable'
 import { PronunciationBlockView } from './PronunciationBlocks'
 import { SoundTable } from './SoundTable'
 import { SpeakPractice } from './SpeakPractice'
 import { TenseCard } from './TenseCard'
+import { TensePractice } from './TensePractice'
 import { GlossaryText } from './TermChip'
 
 /** Tuần Tết: không có nội dung mới, chỉ nhắc chạy chế độ ngày lười 10'. */
@@ -209,15 +212,30 @@ function Review({ review }: { review: NonNullable<GrammarContent['review']> }) {
   )
 }
 
-/** Nội dung đoạn Ngữ pháp: từng thì (dòng thời gian, quy tắc, câu thoại, thần chú) hoặc phần ôn tập. */
+/**
+ * Nội dung đoạn Ngữ pháp: từng thì (dòng thời gian, quy tắc, câu thoại, thần chú) hoặc phần ôn tập. Thì có `practice`
+ * (story 35) có khối luyện ngay dưới TenseCard (cả trang bài lẫn bước Bài chính của buổi 30').
+ */
 export function GrammarSection({ content }: { content: LessonContent }) {
   const unlocked = useSpells()
+  // Khối luyện đang mở (story 35): mỗi lúc chỉ một khối, để phím tắt không chạy hai nơi.
+  const [openPracticeId, setOpenPracticeId] = useState<string | null>(null)
   if (!content.grammar) return null
   const ids = new Set(unlocked.map((s) => s.id))
   return (
     <div className="flex flex-col gap-6">
       {content.grammar.tenses.map((t) => (
-        <TenseCard key={t.id} tense={t} unlockedSpellIds={ids} />
+        <Fragment key={t.id}>
+          <TenseCard tense={t} unlockedSpellIds={ids} />
+          {hasPractice(t) && (
+            <TensePractice
+              tense={t}
+              open={openPracticeId === t.id}
+              onOpen={() => setOpenPracticeId(t.id)}
+              onClose={() => setOpenPracticeId((id) => (id === t.id ? null : id))}
+            />
+          )}
+        </Fragment>
       ))}
       {content.grammar.irregularVerbs && <IrregularVerbTable verbs={content.grammar.irregularVerbs} />}
       {content.grammar.review && <Review review={content.grammar.review} />}

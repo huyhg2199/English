@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { getLesson, getSection } from '@/data/roadmap'
 
 import { getLessonContent, IRREGULAR_VERBS, lessonRuleCards } from '@/data/lessons'
-import { pickQuiz } from '@/lib/quiz'
+import { matchesTyped, normalizeTyped, pickQuiz } from '@/lib/quiz'
 
 import { requiresViolations } from './concepts'
 
@@ -16,8 +16,16 @@ import {
   QUESTION_BANK,
   QUIZZES,
   quizHref,
+  isTypedQuestion,
+  type ChoiceQuestion,
   type Question,
+  type TypedQuestion,
 } from './index'
+
+/** Lựa chọn của câu (câu gõ không có → []). */
+const optionsOf = (q: Question): readonly string[] => ('options' in q ? q.options : [])
+const choiceQuestions = QUESTION_BANK.filter((q): q is ChoiceQuestion => !isTypedQuestion(q))
+const typedQuestions = QUESTION_BANK.filter(isTypedQuestion)
 
 const T1 = ['s1-t1-w1', 's1-t1-w2', 's1-t1-w3', 's1-t1-w4']
 const T2 = ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3', 's1-t2-w4']
@@ -42,8 +50,12 @@ describe('ngân hàng câu hỏi', () => {
     }
   })
 
-  it('4 lựa chọn khác nhau, đáp án nằm trong lựa chọn; có đề và giải thích', () => {
+  it('câu chọn đáp án: 4 lựa chọn khác nhau, đáp án nằm trong lựa chọn; mọi câu có đề và giải thích', () => {
     for (const q of QUESTION_BANK) {
+      expect(q.prompt.trim(), q.id).not.toBe('')
+      expect(q.explanation.trim(), q.id).not.toBe('')
+    }
+    for (const q of choiceQuestions) {
       expect(q.options, q.id).toHaveLength(4)
       expect(new Set(q.options).size, q.id).toBe(4)
       expect(q.options.filter((o) => o === q.answer), q.id).toHaveLength(1)
@@ -54,11 +66,12 @@ describe('ngân hàng câu hỏi', () => {
 
   it('câu nghe có audioText là đáp án; câu khác không có audioText', () => {
     for (const q of QUESTION_BANK) {
+      const audioText = 'audioText' in q ? q.audioText : undefined
       if (q.kind === 'listening') {
-        expect(q.audioText, q.id).toBe(q.answer)
+        expect(audioText, q.id).toBe(q.answer)
         expect(q.tag, q.id).toBe('nghe')
       } else {
-        expect(q.audioText, q.id).toBeUndefined()
+        expect(audioText, q.id).toBeUndefined()
       }
     }
   })
@@ -73,12 +86,12 @@ describe('ngân hàng câu hỏi', () => {
     }
   })
 
-  it('T2–T4: 72 câu, s1-t2-w2 có 12 câu, mỗi bài khác có nội dung đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
+  it('T2–T4: 76 câu, s1-t2-w1 có 10 câu, s1-t2-w2 có 12 câu, mỗi bài khác có nội dung đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
     const later = QUESTION_BANK.filter((q) => !T1.includes(q.lessonId))
-    expect(later).toHaveLength(72)
+    expect(later).toHaveLength(76)
     for (const id of T2_T4) {
       const of = later.filter((q) => q.lessonId === id)
-      expect(of, id).toHaveLength(id === 's1-t2-w2' ? 12 : 6)
+      expect(of, id).toHaveLength(id === 's1-t2-w1' ? 10 : id === 's1-t2-w2' ? 12 : 6)
       expect(of.filter((q) => q.kind !== 'listening').length, id).toBeGreaterThanOrEqual(2)
       expect(getLessonContent(id), id).toBeDefined()
     }
@@ -93,7 +106,7 @@ describe('ngân hàng câu hỏi', () => {
 
   it('câu ngữ pháp gắn đoạn Ngữ pháp nếu bài có đoạn đó; tuần O.W.L. gắn đoạn Phát âm (phần ôn tổng)', () => {
     for (const q of QUESTION_BANK.filter((x) => x.lessonId === 's1-t4-w4')) expect(q.sectionId, q.id).toBe('pronunciation')
-    for (const q of QUESTION_BANK.filter((x) => x.kind === 'choice' && x.lessonId !== 's1-t4-w4')) {
+    for (const q of QUESTION_BANK.filter((x) => (x.kind === 'choice' || isTypedQuestion(x)) && x.lessonId !== 's1-t4-w4')) {
       expect(q.sectionId, q.id).toBe('grammar')
     }
   })
@@ -171,7 +184,7 @@ describe('T3-W1 chưa dùng can (story 32)', () => {
   it('câu quiz s1-t3-w1 (đề, lựa chọn, giải thích) không có can', () => {
     const qs = QUESTION_BANK.filter((q) => q.lessonId === 's1-t3-w1')
     expect(qs.length).toBeGreaterThan(0)
-    for (const q of qs) for (const t of [q.prompt, ...q.options, q.explanation]) expect(t, q.id).not.toMatch(CAN)
+    for (const q of qs) for (const t of [q.prompt, ...optionsOf(q), q.explanation]) expect(t, q.id).not.toMatch(CAN)
   })
 
   it('q-s1-t3-w1-06 vẫn là câu nghe, viết lại bằng will', () => {
@@ -200,13 +213,13 @@ describe('câu was / were và Wh + did của s1-t2-w2 (story 33)', () => {
       expect(q.tag, q.id).toBe('thì')
       expect(q.kind, q.id).toBe('choice')
       expect(q.sectionId, q.id).toBe('grammar')
-      expect(q.answer, q.id).toBe(q.options[0])
+      expect(q.answer, q.id).toBe(optionsOf(q)[0])
     }
   })
 
   it('đề và lựa chọn không dùng V2 / V3 bất quy tắc khác was / were / did, không có some / any / many / because / so', () => {
     for (const q of fresh()) {
-      for (const text of [q.prompt, ...q.options]) {
+      for (const text of [q.prompt, ...optionsOf(q)]) {
         const ws = englishWords(text)
         expect(ws.filter((w) => FORBIDDEN.has(w)), `${q.id}: ${text}`).toEqual([])
         expect(ws.filter((w) => ['some', 'any', 'many', 'because', 'so'].includes(w)), `${q.id}: ${text}`).toEqual([])
@@ -217,10 +230,10 @@ describe('câu was / were và Wh + did của s1-t2-w2 (story 33)', () => {
   it('có câu đáp án Were, có câu có lựa chọn Did, có câu Wh + did', () => {
     const qs = fresh()
     expect(qs.some((q) => q.answer === 'Were')).toBe(true)
-    expect(qs.some((q) => q.options.includes('Did'))).toBe(true)
+    expect(qs.some((q) => optionsOf(q).includes('Did'))).toBe(true)
     expect(qs.some((q) => /^(What|Where|When|Who)\b/.test(q.prompt) && q.answer === 'did')).toBe(true)
     // Wh + were (không phải did) khi câu chỉ hỏi nơi chốn / trạng thái.
-    expect(qs.some((q) => /^(What|Where|When|Who)\b/.test(q.prompt) && q.answer === 'were' && q.options.includes('did'))).toBe(true)
+    expect(qs.some((q) => /^(What|Where|When|Who)\b/.test(q.prompt) && q.answer === 'were' && optionsOf(q).includes('did'))).toBe(true)
   })
 
   it('thẻ quy tắc của bài không chép nguyên câu quiz (quiz đo luật, không đo trí nhớ thẻ)', () => {
@@ -245,6 +258,106 @@ describe('câu was / were và Wh + did của s1-t2-w2 (story 33)', () => {
         expect(picked).toHaveLength(LESSON_QUIZ_SIZE)
         expect(new Set(picked.map((q) => q.id)).size).toBe(LESSON_QUIZ_SIZE)
         expect(picked.every((q) => q.lessonId === 's1-t2-w2')).toBe(true)
+        if (!canSpeak) expect(picked.some((q) => q.kind === 'listening')).toBe(false)
+      }
+    }
+  })
+})
+
+describe('câu gõ type / transform (story 35)', () => {
+  const NEW_IDS = [7, 8, 9, 10].map((n) => `q-s1-t2-w1-${String(n).padStart(2, '0')}`)
+  const fresh = () => NEW_IDS.map((id) => getQuestion(id) as TypedQuestion)
+  const FORBIDDEN = new Set(
+    IRREGULAR_VERBS.flatMap((v) => [...v.v2.split(' / '), ...v.v3.split(' / ')].filter((f) => f !== v.v1)).map((f) =>
+      f.toLowerCase(),
+    ),
+  )
+  const BANNED = [
+    'was', 'were', 'did', "didn't", "wasn't", "weren't", 'will', "won't", 'can', "can't", 'cannot', 'some', 'any', 'many',
+    'because', 'so',
+  ]
+  /** Quá khứ có quy tắc (-ed), trừ từ không phải quá khứ (như lessons.test.ts). */
+  const NOT_PAST = new Set(['need'])
+  const englishWords = (text: string) => text.toLowerCase().replace(/[’‘]/g, "'").match(/[a-z']+/g) ?? []
+  const bannedWords = (text: string) =>
+    englishWords(text).filter(
+      (w) => BANNED.includes(w) || /^[a-z]+'ll$/.test(w) || (/^[a-z]{2,}ed$/.test(w) && !NOT_PAST.has(w)),
+    )
+
+  it('câu gõ không có options / audioText; answer không rỗng; type có đúng một ___; accept khác answer sau chuẩn hoá', () => {
+    expect(typedQuestions.length).toBeGreaterThanOrEqual(4)
+    for (const q of typedQuestions) {
+      expect('options' in q, q.id).toBe(false)
+      expect('audioText' in q, q.id).toBe(false)
+      expect(normalizeTyped(q.answer), q.id).not.toBe('')
+      if (q.kind === 'type') expect(q.prompt.split('___').length - 1, q.id).toBe(1)
+      for (const a of q.accept ?? []) expect(normalizeTyped(a), `${q.id}: ${a}`).not.toBe(normalizeTyped(q.answer))
+    }
+  })
+
+  it('4 câu mới q-s1-t2-w1-07 … -10: 2 type, 2 transform, tag thì, đoạn Ngữ pháp, requires hợp lệ', () => {
+    const qs = fresh()
+    for (const q of qs) {
+      expect(q, NEW_IDS.join()).toBeDefined()
+      expect(q.lessonId).toBe('s1-t2-w1')
+      expect(q.tag, q.id).toBe('thì')
+      expect(q.sectionId, q.id).toBe('grammar')
+      expect(q.requires?.length, q.id).toBeGreaterThan(0)
+      expect(requiresViolations(q), q.id).toEqual([])
+    }
+    expect(qs.map((q) => q.kind)).toEqual(['type', 'type', 'transform', 'transform'])
+    expect(qs.map((q) => q.answer)).toEqual(['is crying', "isn't studying", 'Are they waiting for the bus?', 'I am not writing an email.'])
+    // transform: phần yêu cầu tiếng Việt + câu gốc tiếng Anh.
+    for (const q of qs.filter((x) => x.kind === 'transform')) expect(q.prompt, q.id).toMatch(/^Đổi sang câu [^:]+: [A-Z][A-Za-z ]+\.$/)
+  })
+
+  it('đáp án của câu mới qua matchesTyped với chính nó viết hoa / bỏ dấu câu; câu sai trật tự từ thì sai', () => {
+    for (const q of fresh()) {
+      expect(matchesTyped(q.answer, q.answer, q.accept), q.id).toBe(true)
+      expect(matchesTyped(q.answer, q.answer.toUpperCase(), q.accept), q.id).toBe(true)
+      expect(matchesTyped(q.answer, q.answer.replace(/[.?!,]/g, ''), q.accept), q.id).toBe(true)
+      expect(matchesTyped(q.answer, '', q.accept), q.id).toBe(false)
+    }
+    const q09 = getQuestion('q-s1-t2-w1-09') as TypedQuestion
+    expect(matchesTyped(q09.answer, 'They are waiting for the bus?')).toBe(false)
+    const q10 = getQuestion('q-s1-t2-w1-10') as TypedQuestion
+    expect(matchesTyped(q10.answer, "i'm not writing an email")).toBe(true)
+    expect(matchesTyped(q10.answer, 'I not writing an email.')).toBe(false)
+    const q08 = getQuestion('q-s1-t2-w1-08') as TypedQuestion
+    expect(matchesTyped(q08.answer, 'is not studying')).toBe(true)
+    expect(matchesTyped(q08.answer, "doesn't studying")).toBe(false)
+  })
+
+  it('chữ tiếng Anh của câu mới không có V2 / V3 bất quy tắc, was / were / did, will / can, some / any / many, because / so', () => {
+    for (const q of fresh()) {
+      const english = q.kind === 'transform' ? q.prompt.replace(/^[^:]+: /, '') : q.prompt
+      for (const text of [english, q.answer, ...(q.accept ?? [])]) {
+        const ws = englishWords(text)
+        expect(ws.filter((w) => FORBIDDEN.has(w)), `${q.id}: ${text}`).toEqual([])
+        expect(bannedWords(text), `${q.id}: ${text}`).toEqual([])
+      }
+    }
+  })
+
+  it("đáp án có he / she / it is (hoặc 's) thì có accept cho dạng kia ('s không được mở rộng)", () => {
+    for (const q of typedQuestions) {
+      if (/\b(he|she|it)( is|['’]s)\b/i.test(q.answer)) expect(q.accept?.length ?? 0, q.id).toBeGreaterThan(0)
+    }
+  })
+
+  it('đề type có gợi ý trong ngoặc thì ngoặc đứng ngay sau chỗ trống ("___ (cue)")', () => {
+    for (const q of typedQuestions) {
+      if (q.kind === 'type' && /\(/.test(q.prompt)) expect(q.prompt, q.id).toMatch(/___ \([^)]+\)/)
+    }
+  })
+
+  it('quiz lesson-s1-t2-w1 bốc 5 câu (có / không TTS), không trùng', () => {
+    const quiz = getQuiz('lesson-s1-t2-w1')!
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f']) {
+      for (const canSpeak of [true, false]) {
+        const picked = pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak })
+        expect(picked).toHaveLength(5)
+        expect(new Set(picked.map((q) => q.id)).size).toBe(5)
         if (!canSpeak) expect(picked.some((q) => q.kind === 'listening')).toBe(false)
       }
     }
