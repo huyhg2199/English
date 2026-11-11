@@ -5,8 +5,11 @@ import { getBrick } from '@/data/foundation/content'
 import { BRICK_IDS } from '@/data/foundation'
 import { QUESTION_BANK } from '@/data/questions'
 import { hasDetails, loadWords, type StudyWord } from '@/data/vocab'
-import { normalizeTyped } from '@/lib/quiz/typed'
-import { hasPractice, practiceEnglishTexts, practiceItemIds, practiceProblems } from '@/lib/tense-practice'
+import type { CheckItem } from '@/data/foundation/types'
+import { isCorrect, isFadedCorrect } from '@/lib/foundation/player'
+import { hasVietnameseMarks, normalizeTyped } from '@/lib/quiz/typed'
+import { hasPractice, practiceEnglishTexts, practiceItemIds, practiceProblems, type PracticeTense } from '@/lib/tense-practice'
+import { frontedTimeTail, isTenseScopeId, outOfScopeWords, promptEnglish, TENSE_SCOPE_IDS } from '@/lib/tense-scope'
 
 import { allTenses, getLessonContent, IRREGULAR_VERBS, LESSON_CONTENTS, lessonRuleCards, SPELLS } from './index'
 import type { PronunciationBlock, Sound } from './types'
@@ -551,28 +554,35 @@ describe('luyện có bậc (story 35)', () => {
     if (!t?.practice) throw new Error('present-continuous chưa có practice')
     return t.practice
   }
-  /** V2 / V3 bất quy tắc khác V1, và các dạng bị cấm ở Boundaries (quá khứ, will / can, some / any / many, because / so). */
-  const FORBIDDEN = new Set([
-    ...IRREGULAR_VERBS.flatMap((v) => [...v.v2.split(' / '), ...v.v3.split(' / ')].filter((f) => f !== v.v1)).map((f) =>
-      f.toLowerCase(),
-    ),
-    'was', 'were', 'did', "didn't", "wasn't", "weren't", 'will', "won't", "'ll", 'can', "can't", 'cannot', 'some', 'any',
-    'many', 'because', 'so',
-  ])
-  const NOT_PAST = new Set(['need'])
-  const badWords = (text: string) =>
-    (text.toLowerCase().replace(/[’‘]/g, "'").match(/[a-z']+/g) ?? []).filter(
-      (w) => FORBIDDEN.has(w) || FORBIDDEN.has(w.replace(/^[a-z]+(?=')/, '')) || (/^[a-z]{2,}ed$/.test(w) && !NOT_PAST.has(w)),
-    )
+  /**
+   * Chữ tiếng Anh của practice kèm cờ "lựa chọn sai" (story 36): lựa chọn sai của câu chọn đáp án được nới `did` cho
+   * `past-to-be` (so "Were you…?" với "Did you…?"). Đề biến đổi / dịch chỉ xét phần tiếng Anh (`promptEnglish`).
+   */
+  const scopedTexts = (p: PracticeTense['practice']) => {
+    const items: CheckItem[] = [...p.check.items, ...p.check.easier, ...(p.apply.item ? [p.apply.item] : [])]
+    const wrong = items.flatMap((i) => (i.kind === 'choice' || i.kind === 'listen' ? i.options.filter((_, k) => k !== i.answer) : []))
+    return practiceEnglishTexts(p).map((text) => {
+      const k = wrong.indexOf(text)
+      if (k >= 0) wrong.splice(k, 1)
+      return { text: promptEnglish(text), wrongOption: k >= 0 }
+    })
+  }
 
   it('mọi Tense có practice thì practiceProblems rỗng', () => {
     expect(withPractice.length).toBeGreaterThan(0)
     for (const t of withPractice) expect(practiceProblems(t), t.id).toEqual([])
   })
 
-  it('present-continuous có practice: 6 câu luyện, ≥ 3 câu type, có câu biến đổi cả câu, 2 câu dễ hơn', () => {
+  it('present-continuous có practice: 7 câu luyện (c7 là câu dịch, story 36), ≥ 3 câu type, có câu biến đổi cả câu, 2 câu dễ hơn', () => {
     const p = pc()
-    expect(p.check.items).toHaveLength(6)
+    expect(p.check.items).toHaveLength(7)
+    expect(p.check.items[6]).toMatchObject({
+      id: 'present-continuous-c7',
+      kind: 'type',
+      prompt: 'Dịch sang tiếng Anh: Bây giờ chúng tôi đang ăn tối. (have dinner)',
+      answer: 'We are having dinner now.',
+      accept: ['Now we are having dinner.'],
+    })
     expect(p.check.easier).toHaveLength(2)
     const typedItems = p.check.items.filter((i) => i.kind === 'type')
     expect(typedItems.length).toBeGreaterThanOrEqual(3)
@@ -595,12 +605,12 @@ describe('luyện có bậc (story 35)', () => {
     for (const t of withPractice) for (const id of practiceItemIds(t.practice)) expect(brickIds.has(id), id).toBe(false)
   })
 
-  it('chữ tiếng Anh của practice không có dạng bị cấm (quá khứ, will / can, some / any / many, because / so)', () => {
+  it('chữ tiếng Anh của practice nằm trong phạm vi chữ của thì (outOfScopeWords, story 36)', () => {
     for (const t of withPractice) {
-      for (const text of practiceEnglishTexts(t.practice)) {
-        // Đề biến đổi có phần yêu cầu tiếng Việt trước dấu ":" (vd "Đổi sang câu hỏi: …"): chỉ xét phần tiếng Anh.
-        const english = text.replace(/^[^:]*[^ -~][^:]*:\s*/, '')
-        expect(badWords(english), `${t.id}: ${text}`).toEqual([])
+      expect(isTenseScopeId(t.id), t.id).toBe(true)
+      if (!isTenseScopeId(t.id)) continue
+      for (const { text, wrongOption } of scopedTexts(t.practice)) {
+        expect(outOfScopeWords(t.id, text, { wrongOption }), `${t.id}: ${text}`).toEqual([])
       }
     }
   })
@@ -632,7 +642,234 @@ describe('luyện có bậc (story 35)', () => {
     }
   })
 
-  it('mọi Tense khác chưa có practice (story 36–37 làm)', () => {
-    expect(withPractice.map((t) => t.id)).toEqual(['present-continuous'])
+  it('đúng 6 thì T1–T2 có practice (story 36); chưa Tense T3–T4 nào có (story 37 làm)', () => {
+    expect(withPractice.map((t) => t.id)).toEqual([
+      'present-simple',
+      'present-simple-questions',
+      'present-continuous',
+      'past-to-be',
+      'past-simple',
+      'past-simple-irregular',
+    ])
+    expect([...TENSE_SCOPE_IDS].sort()).toEqual(withPractice.map((t) => t.id).sort())
+  })
+})
+
+describe('phần luyện T1–T2 (story 36)', () => {
+  const tense = (id: string): PracticeTense => {
+    const t = allTenses().find((x) => x.id === id)
+    if (!t || !hasPractice(t)) throw new Error(`${id} chưa có practice`)
+    return t
+  }
+  const NEW = ['present-simple', 'present-simple-questions', 'past-to-be', 'past-simple', 'past-simple-irregular']
+  const ALL = ['present-simple', 'present-simple-questions', 'present-continuous', 'past-to-be', 'past-simple', 'past-simple-irregular']
+  const CHANGE_RE = /^Đổi [^:]+: [^:]+[.?!]$/
+  const TRANSLATE_RE = /^Dịch sang tiếng Anh: .+ \([^)]+\)$/
+  const typedItems = (t: PracticeTense) =>
+    t.practice.check.items.filter((i): i is Extract<CheckItem, { kind: 'type' }> => i.kind === 'type')
+
+  /** Câu quiz nhãn thì của mỗi thì (bảng "Số câu và id" story 36). */
+  const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
+  const QUIZ: Record<string, { lessonId: string; ns: number[] }> = {
+    'present-simple': { lessonId: 's1-t1-w2', ns: [1, 2, 3, ...range(8, 16)] },
+    'present-simple-questions': { lessonId: 's1-t1-w3', ns: [1, 2, 3, ...range(8, 16)] },
+    'present-continuous': { lessonId: 's1-t2-w1', ns: [...range(1, 4), ...range(7, 14)] },
+    'past-to-be': { lessonId: 's1-t2-w2', ns: [...range(7, 11), ...range(13, 19)] },
+    'past-simple': { lessonId: 's1-t2-w2', ns: [...range(1, 4), 12, ...range(20, 26)] },
+    'past-simple-irregular': { lessonId: 's1-t2-w3', ns: [...range(1, 4), ...range(7, 14)] },
+  }
+  const quizOf = (id: string) => {
+    const { lessonId, ns } = QUIZ[id]
+    const ids = new Set(ns.map((n) => `q-${lessonId}-${String(n).padStart(2, '0')}`))
+    return QUESTION_BANK.filter((q) => ids.has(q.id))
+  }
+  const fill = (prompt: string, answer: string) => prompt.replace(/___( \([^)]*\))?/, answer)
+  /** Chuỗi đáp án (đề đã điền đáp án, câu biến đổi / dịch là đáp án) của quiz + phần luyện của thì. */
+  const answerTexts = (id: string): string[] => {
+    const p = tense(id).practice
+    const items: CheckItem[] = [...p.check.items, ...p.check.easier]
+    return [
+      ...quizOf(id).map((q) => ('options' in q ? q.prompt.replace('___', q.answer) : q.kind === 'type' ? fill(q.prompt, q.answer) : q.answer)),
+      p.worked.en,
+      fill(p.faded.en, p.faded.answer),
+      ...items.flatMap((i) =>
+        i.kind === 'choice' ? [i.prompt.replace('___', i.options[i.answer])] : i.kind === 'type' ? [i.prompt.includes('___') ? fill(i.prompt, i.answer) : i.answer] : [],
+      ),
+      ...(p.apply.sampleEn ? [p.apply.sampleEn] : []),
+      ...(p.apply.speak ?? []).map((s) => s.text),
+    ]
+  }
+  const has = (id: string, re: RegExp) => answerTexts(id).some((t) => re.test(t))
+  const prompts = (t: PracticeTense) => {
+    const p = t.practice
+    return [p.worked.en, p.faded.en, ...[...p.check.items, ...p.check.easier].map((i) => ('prompt' in i ? (i.prompt ?? '') : ''))]
+  }
+
+  it('mỗi thì: 6–7 câu luyện, ≥ 3 câu type, có câu "Đổi …:" và câu "Dịch sang tiếng Anh: … (…)", 2 câu dễ hơn là choice', () => {
+    for (const id of ALL) {
+      const t = tense(id)
+      const { items, easier } = t.practice.check
+      expect(items.length, id).toBeGreaterThanOrEqual(6)
+      expect(items.length, id).toBeLessThanOrEqual(7)
+      expect(typedItems(t).length, id).toBeGreaterThanOrEqual(3)
+      expect(typedItems(t).some((i) => CHANGE_RE.test(i.prompt)), id).toBe(true)
+      expect(typedItems(t).some((i) => TRANSLATE_RE.test(i.prompt)), id).toBe(true)
+      expect(easier.map((i) => i.kind), id).toEqual(['choice', 'choice'])
+      expect(practiceProblems(t), id).toEqual([])
+    }
+    for (const id of NEW) expect(tense(id).practice.check.items, id).toHaveLength(6)
+  })
+
+  it('worked có timeline cùng kind với thì; 2 câu nói đúng id; có promptVi và sampleEn', () => {
+    for (const id of ALL) {
+      const t = tense(id)
+      expect(t.practice.worked.timeline?.kind, id).toBe(t.timeline?.kind)
+      expect(t.practice.apply.speak?.map((s) => s.id), id).toEqual([`${id}-say-1`, `${id}-say-2`])
+      expect(t.practice.apply.promptVi.trim(), id).not.toBe('')
+      expect(t.practice.apply.sampleEn?.trim() ?? '', id).not.toBe('')
+    }
+  })
+
+  it('câu dịch có đáp án kết thúc bằng trạng ngữ thời gian thì accept có bản đặt trạng ngữ lên đầu', () => {
+    let checked = 0
+    for (const id of ALL) {
+      for (const i of typedItems(tense(id)).filter((x) => TRANSLATE_RE.test(x.prompt) && !x.answer.trim().endsWith('?'))) {
+        const fronted = frontedTimeTail(normalizeTyped(i.answer))
+        if (!fronted) continue
+        checked++
+        expect((i.accept ?? []).map(normalizeTyped), i.id).toContain(fronted)
+      }
+    }
+    expect(checked).toBeGreaterThanOrEqual(4)
+  })
+
+  it('đề phần luyện của hai thì cùng bài không trùng nhau', () => {
+    const key = (text: string) => normalizeTyped(text.replace(/\([^)]*\)/g, ' '))
+    let pairs = 0
+    for (const c of LESSON_CONTENTS) {
+      const ts = (c.grammar?.tenses ?? []).filter(hasPractice)
+      for (let a = 0; a < ts.length; a++) {
+        for (let b = a + 1; b < ts.length; b++) {
+          pairs++
+          const other = new Set(prompts(ts[b]).map(key).filter((x) => x !== ''))
+          for (const p of prompts(ts[a])) expect(other.has(key(p)), `${c.lessonId}: ${p}`).toBe(false)
+        }
+      }
+    }
+    expect(pairs).toBeGreaterThanOrEqual(1)
+  })
+
+  it('câu gõ của phần luyện (và màn điền): đáp án / accept không có dấu tiếng Việt và tự chấm đúng (như ô gõ thật)', () => {
+    // Ô gõ không chấm chữ có dấu (nhắc tắt bộ gõ), nên đáp án có dấu thì không ai làm đúng được.
+    const typed = (s: string) => s.toLowerCase().replace(/[.?!,]/g, '')
+    for (const id of ALL) {
+      const p = tense(id).practice
+      for (const a of [p.faded.answer, ...(p.faded.accept ?? [])]) {
+        expect(hasVietnameseMarks(a), `${id} faded: ${a}`).toBe(false)
+        expect(isFadedCorrect(p.faded.answer, typed(a), p.faded.accept), `${id} faded: ${a}`).toBe(true)
+      }
+      for (const i of [...p.check.items, ...p.check.easier]) {
+        if (i.kind !== 'type') continue
+        for (const a of [i.answer, ...(i.accept ?? [])]) {
+          expect(hasVietnameseMarks(a), `${i.id}: ${a}`).toBe(false)
+          expect(isCorrect(i, { kind: 'type', text: typed(a) }), `${i.id}: ${a}`).toBe(true)
+        }
+      }
+    }
+  })
+
+  it('golden faded present-simple: "watches" / "Watches." đúng, "watchs" sai', () => {
+    const f = tense('present-simple').practice.faded
+    expect(f.en).toBe('She ___ (watch) TV every evening.')
+    expect(isFadedCorrect(f.answer, 'Watches.', f.accept)).toBe(true)
+    expect(isFadedCorrect(f.answer, 'watches', f.accept)).toBe(true)
+    expect(isFadedCorrect(f.answer, 'watchs', f.accept)).toBe(false)
+  })
+
+  it('phần luyện mẫu đúng Design Notes (ví dụ mẫu và màn điền)', () => {
+    const golden: Record<string, [string, string, string]> = {
+      'present-simple': ['My father drinks coffee every morning.', 'She ___ (watch) TV every evening.', 'watches'],
+      'present-simple-questions': ['Does your brother play football? — Yes, he does.', 'I ___ (not / eat) meat.', "don't eat"],
+      'past-to-be': ['We were at home last night.', 'My phone ___ (be) on the table yesterday.', 'was'],
+      'past-simple': ['She cooked dinner yesterday.', 'We ___ (stay) at home last Sunday.', 'stayed'],
+      'past-simple-irregular': ['My father made a cake yesterday.', 'We ___ (see) a good movie last night.', 'saw'],
+    }
+    for (const [id, [worked, faded, answer]] of Object.entries(golden)) {
+      const p = tense(id).practice
+      expect([p.worked.en, p.faded.en, p.faded.answer], id).toEqual([worked, faded, answer])
+    }
+  })
+
+  it('phủ đủ bảng "Phải phủ" (quiz + phần luyện của thì, kiểm bằng chuỗi đáp án)', () => {
+    // Hiện tại đơn: -s, -es, -ies, has, chủ ngữ số nhiều / I không thêm -s, đổi chủ ngữ I → he / she.
+    for (const re of [/\bworks\b/, /\bwatches\b/, /\bgoes\b/, /\bstudies\b/, /\bhas\b/, /\b(I|They|We) (live|drink|study|play)\b/]) {
+      expect(has('present-simple', re), `present-simple ${re}`).toBe(true)
+    }
+    const psChange = [...quizOf('present-simple').map((q) => q.prompt), ...prompts(tense('present-simple'))]
+    expect(psChange.some((p) => /^Đổi chủ ngữ sang (He|She): I /.test(p))).toBe(true)
+
+    // Hiện tại đơn câu hỏi / phủ định.
+    for (const re of [
+      /\bdon't (eat|live|like|watch)\b/,
+      /\bdoesn't (like|drink|play|drive)\b/,
+      /^Do (you|they) [a-z]+/,
+      /^Does (she|he|your) [a-z]+/,
+      /Yes, (she|he) does\./,
+      /No, I don't\./,
+      /\b(What|Where|When) (do|does)\b/,
+      /^Is she /,
+      /^Does she /,
+    ]) {
+      expect(has('present-simple-questions', re), `present-simple-questions ${re}`).toBe(true)
+    }
+    const psq = tense('present-simple-questions').practice.check.items
+    const isShe = psq.findIndex((i) => i.kind === 'choice' && i.options[i.answer] === 'Is')
+    const doesShe = psq.findIndex((i) => i.kind === 'choice' && i.options[i.answer] === 'Does')
+    expect(isShe).toBeGreaterThanOrEqual(0)
+    expect(doesShe).toBeGreaterThanOrEqual(0)
+    expect(Math.abs(isShe - doesShe)).toBe(1)
+
+    // Hiện tại tiếp diễn: câu dịch có now, câu mới bỏ e câm hoặc gấp đôi phụ âm.
+    const pcTranslate = [
+      ...quizOf('present-continuous').filter((q) => TRANSLATE_RE.test(q.prompt)).map((q) => q.answer),
+      ...typedItems(tense('present-continuous')).filter((i) => TRANSLATE_RE.test(i.prompt)).map((i) => i.answer),
+    ]
+    expect(pcTranslate.some((a) => /\bnow\b/.test(a))).toBe(true)
+    const pcFresh = quizOf('present-continuous').filter((q) => Number(q.id.slice(-2)) >= 11)
+    expect(
+      pcFresh.some((q) =>
+        /\b(making|writing|driving|having|running|sitting|swimming|stopping)\b/.test(q.kind === 'type' ? fill(q.prompt, q.answer) : q.answer),
+      ),
+    ).toBe(true)
+
+    // was / were.
+    for (const re of [/\bwas\b/, /\bwere\b/, /\bwasn't\b/, /\bweren't\b/, /^Was /, /^Were /, /(Yes|No), (I|it|they|he|she|we) (was|wasn't|were|weren't)\./, /\bThere was\b/, /\bThere were\b/, /^Where were\b/]) {
+      expect(has('past-to-be', re), `past-to-be ${re}`).toBe(true)
+    }
+
+    // Quá khứ đơn có quy tắc.
+    for (const re of [/\b(played|worked|cooked|watched)\b/, /\blived\b/, /\bstudied\b/, /\b(stopped|planned)\b/, /\b(visited|listened)\b/, /\bdidn't (visit|open|call|watch)\b/, /^Did .+ — Yes, I did\./, /\b(What|Where|When) did\b/]) {
+      expect(has('past-simple', re), `past-simple ${re}`).toBe(true)
+    }
+    expect(quizOf('past-simple').some((q) => /^Đổi sang quá khứ/.test(q.prompt))).toBe(true)
+
+    // Bất quy tắc: ≥ 8 động từ khác nhau (V2 ≠ V1) ở đáp án, didn't + V1, Did you + V1, Wh + did + V1, ≥ 2 câu dịch V1 → V2.
+    const v2ToV1 = new Map(
+      IRREGULAR_VERBS.flatMap((v) => v.v2.split(' / ').filter((f) => f !== v.v1 && !['was', 'were', 'did'].includes(f)).map((f) => [f, v.v1] as const)),
+    )
+    const verbs = new Set(answerTexts('past-simple-irregular').flatMap((t) => (t.toLowerCase().match(/[a-z]+/g) ?? []).flatMap((w) => v2ToV1.get(w) ?? [])))
+    expect(verbs.size, [...verbs].join()).toBeGreaterThanOrEqual(8)
+    for (const re of [/\bdidn't (come|drive|eat|go)\b/, /^Did you [a-z]+\b/, /\b(What|Where|When) did (you|she|he|they) (eat|find|go)\b/]) {
+      expect(has('past-simple-irregular', re), `past-simple-irregular ${re}`).toBe(true)
+    }
+    const translations = [
+      ...quizOf('past-simple-irregular').filter((q) => TRANSLATE_RE.test(q.prompt)).map((q) => [q.prompt, q.answer] as const),
+      ...typedItems(tense('past-simple-irregular')).filter((i) => TRANSLATE_RE.test(i.prompt)).map((i) => [i.prompt, i.answer] as const),
+    ]
+    const v1ToV2 = translations.filter(([prompt, answer]) => {
+      const cues: string[] = promptEnglish(prompt).toLowerCase().match(/[a-z]+/g) ?? []
+      return (answer.toLowerCase().match(/[a-z]+/g) ?? []).some((w) => cues.includes(v2ToV1.get(w) ?? '#'))
+    })
+    expect(v1ToV2.length).toBeGreaterThanOrEqual(2)
   })
 })

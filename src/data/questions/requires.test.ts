@@ -25,8 +25,8 @@ const withRequires = (base: Question, requires: readonly string[]): Question => 
 })
 
 describe('requires: khai báo của ngân hàng câu', () => {
-  it('24 câu T1 và 42 câu Sân ga đều khai báo requires hợp lệ', () => {
-    expect(T1_QUESTIONS).toHaveLength(24)
+  it('42 câu T1 (24 câu cũ + 18 câu gõ story 36) và 42 câu Sân ga đều khai báo requires hợp lệ', () => {
+    expect(T1_QUESTIONS).toHaveLength(42)
     expect(FOUNDATION_QUESTIONS).toHaveLength(42)
     for (const question of [...T1_QUESTIONS, ...FOUNDATION_QUESTIONS]) {
       expect(question.requires, question.id).toBeDefined()
@@ -34,7 +34,7 @@ describe('requires: khai báo của ngân hàng câu', () => {
     }
   })
 
-  it('câu T1 không dùng thì quá khứ hay đuôi -ed (học ở T2 tuần 3), kể cả ở lựa chọn sai', () => {
+  it('câu T1 không dùng thì quá khứ hay đuôi -ed (học ở T2 tuần 3), kể cả ở lựa chọn sai và đáp án / accept của câu gõ', () => {
     // Dạng quá khứ hay gặp; từ kết thúc bằng "ed" mà không phải quá khứ thì thêm vào NOT_PAST khi cần.
     const PAST = new Set(['was', 'were', 'did', "didn't", 'didnt', 'went', 'had', 'gone', 'been'])
     const NOT_PAST = new Set(['need', 'red', 'bed', 'speed'])
@@ -43,7 +43,7 @@ describe('requires: khai báo của ngân hàng câu', () => {
       const texts = [
         question.prompt,
         question.explanation,
-        ...('options' in question ? [question.audioText ?? '', ...question.options] : []),
+        ...('options' in question ? [question.audioText ?? '', ...question.options] : [question.answer, ...(question.accept ?? [])]),
       ]
       for (const token of texts.join(' ').replace(/[’‘]/g, "'").toLowerCase().match(/[a-z']+/g) ?? []) {
         if (PAST.has(token) || (/^[a-z]{2,}ed$/.test(token) && !NOT_PAST.has(token))) bad.push(`${question.id}: ${token}`)
@@ -66,6 +66,12 @@ describe('requires: khai báo của ngân hàng câu', () => {
     }
     for (const b of BRICKS) for (const c of b.teaches) expect(conceptSource(c), c).toEqual({ brick: b.id })
     expect(conceptSource('khong-co')).toBeUndefined()
+  })
+
+  it('Sổ lỗi cũ (story 36): câu cũ giữ đúng đề; không câu nào mang id đã bỏ', () => {
+    expect(q('q-s1-t1-w2-01')).toMatchObject({ prompt: 'She ___ in an office.', answer: 'works', kind: 'choice' })
+    expect(q('q-s1-t2-w2-07')).toMatchObject({ prompt: 'Where ___ they last night? — At home.', answer: 'were', kind: 'choice' })
+    for (const id of ['q-s1-t1-w2-06', 'q-s1-t1-w3-05', 'q-s1-t1-w4-03', 'q-s1-t1-w4-06']) expect(getQuestion(id), id).toBeUndefined()
   })
 
   it('câu đã viết lại giữ id: Sổ lỗi cũ tra ra câu mới', () => {

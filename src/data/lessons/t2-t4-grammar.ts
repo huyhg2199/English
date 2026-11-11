@@ -110,6 +110,17 @@ export const PRESENT_CONTINUOUS: Tense = {
           hintVi: 'Trả lời ngắn dùng lại are, không lặp lại working.',
           explanationVi: "Hỏi bằng Are thì trả lời ngắn cũng dùng are: No, they aren't (are not). Không trả lời bằng don't.",
         },
+        // Câu dịch Việt → Anh (story 36).
+        {
+          id: 'present-continuous-c7',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Bây giờ chúng tôi đang ăn tối. (have dinner)',
+          answer: 'We are having dinner now.',
+          accept: ['Now we are having dinner.'],
+          hintVi: 'chúng tôi = we → are; "đang" = are + V-ing; have bỏ e câm rồi thêm -ing.',
+          explanationVi:
+            'Tiếng Việt chỉ cần "đang", tiếng Anh phải có đủ are (vì we) + having. have tận cùng e câm nên bỏ e: having. now đặt cuối hoặc đầu câu đều được. have dinner (= ăn tối) là hành động nên dùng được -ing; have = có (have a car) thì không.',
+        },
       ],
       easier: [
         {
@@ -193,6 +204,107 @@ export const PAST_TO_BE: Tense = {
       vi: 'Hỏi với was / were: đảo was / were lên trước chủ ngữ, không mượn did (không nói Did they be…?).',
     },
   ],
+  // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn và was / were; không -ed, không V2 khác, did chỉ là lựa
+  // chọn sai để so "Were you…?" với "Did you…?" (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w2.
+  practice: {
+    worked: {
+      en: 'We were at home last night.',
+      vi: 'Tối qua chúng tôi ở nhà.',
+      noteVi:
+        'we đi với were; at home là nơi chốn nên chỉ cần to be, không cần động từ khác. Tiếng Việt nói "ở nhà" không có động từ "là", tiếng Anh bắt buộc có were.',
+      timeline: { kind: 'past-point', label: 'Ở nhà vào tối qua' },
+    },
+    faded: {
+      en: 'My phone ___ (be) on the table yesterday.',
+      answer: 'was',
+      vi: 'Hôm qua điện thoại của tôi ở trên bàn.',
+      hintVi: 'my phone là một vật (số ít) nên dùng was.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-to-be-c1',
+          kind: 'type',
+          prompt: 'Lan and Minh ___ (be) at the park last Sunday.',
+          answer: 'were',
+          hintVi: 'Lan and Minh là hai người (= they).',
+          explanationVi: 'Lan and Minh = they (số nhiều) nên dùng were. last Sunday là quá khứ nên không dùng are.',
+        },
+        {
+          id: 'past-to-be-c2',
+          kind: 'choice',
+          prompt: '___ you at school yesterday?',
+          options: ['Were', 'Did', 'Was'],
+          answer: 0,
+          hintVi: 'Câu không có động từ thường, chỉ có nơi chốn (at school).',
+          explanationVi:
+            'Câu chỉ có nơi chốn (at school), không có động từ thường, nên dùng to be: Were you at school? Không mượn Did (không nói Did you be…?). you luôn đi với were.',
+        },
+        {
+          id: 'past-to-be-c3',
+          kind: 'type',
+          prompt: 'He ___ (not / be) at work last Monday.',
+          answer: "wasn't",
+          hintVi: 'he đi với was; phủ định thêm not ngay sau was.',
+          explanationVi: "last Monday là quá khứ. he đi với was, phủ định là was not (wasn't). Không dùng didn't với to be.",
+        },
+        {
+          id: 'past-to-be-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: She was happy.',
+          answer: 'Was she happy?',
+          hintVi: 'Chỉ cần đưa was lên trước she.',
+          explanationVi: 'Câu hỏi với was / were: đảo was lên trước chủ ngữ, phần còn lại giữ nguyên: Was she happy?',
+        },
+        {
+          id: 'past-to-be-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Hôm qua có một con mèo trong bếp. (a cat, the kitchen, yesterday)',
+          answer: 'There was a cat in the kitchen yesterday.',
+          accept: ['Yesterday there was a cat in the kitchen.'],
+          hintVi: '"có" (ở đâu đó) = There is / are; quá khứ thì đổi sang There was / were.',
+          explanationVi:
+            'a cat là số ít nên dùng There was (quá khứ của There is). Trong bếp = in the kitchen. yesterday đặt cuối hoặc đầu câu đều được.',
+        },
+        {
+          id: 'past-to-be-c6',
+          kind: 'type',
+          prompt: 'Was the movie good? — Yes, it ___.',
+          answer: 'was',
+          hintVi: 'Hỏi bằng Was thì trả lời ngắn cũng dùng was.',
+          explanationVi: 'Trả lời ngắn dùng lại was: Yes, it was. it đi với was, không đi với were.',
+        },
+      ],
+      easier: [
+        {
+          id: 'past-to-be-e1',
+          kind: 'choice',
+          prompt: 'I ___ tired yesterday.',
+          options: ['was', 'were', 'am'],
+          answer: 0,
+          hintVi: 'I đi với was.',
+          explanationVi: 'I đi với was (quá khứ của am). yesterday là quá khứ nên không dùng am.',
+        },
+        {
+          id: 'past-to-be-e2',
+          kind: 'choice',
+          prompt: 'They ___ at home last night.',
+          options: ['were', 'was', 'are'],
+          answer: 0,
+          hintVi: 'they là số nhiều.',
+          explanationVi: 'they đi với were (quá khứ của are). last night là quá khứ nên không dùng are.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về hôm qua: bạn ở đâu, thấy thế nào, có ai ở cùng.',
+      sampleEn: 'I was at the office yesterday. I was tired. My friends were at the cafe.',
+      speak: [
+        { id: 'past-to-be-say-1', text: 'I was at work yesterday.', vi: 'Hôm qua tôi ở chỗ làm.' },
+        { id: 'past-to-be-say-2', text: 'My friends were at the park.', vi: 'Các bạn tôi đã ở công viên.' },
+      ],
+    },
+  },
 }
 
 export const PAST_SIMPLE: Tense = {
@@ -234,6 +346,107 @@ export const PAST_SIMPLE: Tense = {
       vi: 'Hỏi Wh- về việc đã làm: Wh + did + S + động từ nguyên mẫu (không phải What you watched?).',
     },
   ],
+  // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, was / were, -ed và did; không V2 bất quy tắc (xem
+  // `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w2 hay đề luyện của was / were.
+  practice: {
+    worked: {
+      en: 'She cooked dinner yesterday.',
+      vi: 'Hôm qua cô ấy nấu bữa tối.',
+      noteVi:
+        'cook thêm -ed cho mọi chủ ngữ (không thêm -s cho she). Tiếng Việt chỉ cần "hôm qua", nhưng tiếng Anh có yesterday rồi vẫn phải đổi động từ: cooked.',
+      timeline: { kind: 'past-point', label: 'Đã nấu xong hôm qua' },
+    },
+    faded: {
+      en: 'We ___ (stay) at home last Sunday.',
+      answer: 'stayed',
+      vi: 'Chủ nhật vừa rồi chúng tôi ở nhà.',
+      hintVi: 'stay tận cùng nguyên âm + y nên giữ y, chỉ thêm -ed.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-simple-c1',
+          kind: 'type',
+          prompt: 'He ___ (plan) a trip last month.',
+          answer: 'planned',
+          hintVi: 'plan là từ một âm tiết, tận cùng 1 nguyên âm + 1 phụ âm.',
+          explanationVi: 'plan là từ một âm tiết tận cùng a + n (1 nguyên âm + 1 phụ âm) nên gấp đôi n rồi thêm -ed: planned. -ed dùng cho mọi chủ ngữ.',
+        },
+        {
+          id: 'past-simple-c2',
+          kind: 'type',
+          prompt: 'I ___ (listen) to music last night.',
+          answer: 'listened',
+          hintVi: 'listen có hai âm tiết, nhấn âm đầu (LIS-ten).',
+          explanationVi: 'listen nhấn âm đầu nên không gấp đôi n, chỉ thêm -ed: listened (không phải listenned).',
+        },
+        {
+          id: 'past-simple-c3',
+          kind: 'choice',
+          prompt: '___ she clean her room yesterday?',
+          options: ['Did', 'Was', 'Does'],
+          answer: 0,
+          hintVi: 'clean là động từ thường, việc ở quá khứ.',
+          explanationVi:
+            'Có động từ thường (clean) ở quá khứ thì mượn Did, clean về nguyên mẫu: Did she clean…? Was chỉ dùng khi không có động từ thường; yesterday là quá khứ nên không dùng Does.',
+        },
+        {
+          id: 'past-simple-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu phủ định: He opened the window.',
+          answer: "He didn't open the window.",
+          hintVi: "Phủ định quá khứ: didn't + động từ nguyên mẫu.",
+          explanationVi: "Thêm didn't trước động từ và đưa opened về nguyên mẫu open: He didn't open the window (không phải didn't opened).",
+        },
+        {
+          id: 'past-simple-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Tuần trước chúng tôi đến thăm bà. (visit, our grandmother, last week)',
+          answer: 'We visited our grandmother last week.',
+          accept: ['Last week we visited our grandmother.'],
+          hintVi: 'Tuần trước = last week, nên visit đổi sang quá khứ.',
+          explanationVi:
+            'last week là quá khứ nên visit thêm -ed: visited. visit nhấn âm đầu (VIS-it) nên không gấp đôi t. last week đặt cuối hoặc đầu câu đều được.',
+        },
+        {
+          id: 'past-simple-c6',
+          kind: 'type',
+          prompt: 'Where ___ you work last year?',
+          answer: 'did',
+          hintVi: 'Câu hỏi Wh- ở quá khứ với động từ thường (work).',
+          explanationVi: 'Hỏi Wh- về việc đã làm: Where + did + you + work (nguyên mẫu)? last year là quá khứ nên không dùng do.',
+        },
+      ],
+      easier: [
+        {
+          id: 'past-simple-e1',
+          kind: 'choice',
+          prompt: 'She ___ TV last night.',
+          options: ['watched', 'watches', 'watch'],
+          answer: 0,
+          hintVi: 'last night là quá khứ.',
+          explanationVi: 'last night là quá khứ nên watch thêm -ed: watched. Quá khứ không thêm -s cho she.',
+        },
+        {
+          id: 'past-simple-e2',
+          kind: 'choice',
+          prompt: "I didn't ___ my sister yesterday.",
+          options: ['call', 'called', 'calls'],
+          answer: 0,
+          hintVi: "Sau didn't là động từ nguyên mẫu.",
+          explanationVi: "did đã mang quá khứ nên sau didn't dùng nguyên mẫu: I didn't call my sister (không phải didn't called).",
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về việc bạn đã làm hôm qua (chỉ dùng động từ có quy tắc: work, cook, watch, play, study…).',
+      sampleEn: 'Yesterday I worked late. I cooked dinner and watched TV.',
+      speak: [
+        { id: 'past-simple-say-1', text: 'I worked at home yesterday.', vi: 'Hôm qua tôi làm việc ở nhà.' },
+        { id: 'past-simple-say-2', text: 'We played games last weekend.', vi: 'Cuối tuần trước chúng tôi chơi game.' },
+      ],
+    },
+  },
 }
 
 export const PAST_SIMPLE_IRREGULAR: Tense = {
@@ -266,6 +479,108 @@ export const PAST_SIMPLE_IRREGULAR: Tense = {
   ],
   dialogues: [yg('I went to'), yg('I bought a new')],
   spellId: 'reparo',
+  // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, quá khứ đơn (was / were, -ed, did) và V2 bất quy tắc;
+  // không V3 (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w3.
+  practice: {
+    worked: {
+      en: 'My father made a cake yesterday.',
+      vi: 'Hôm qua bố tôi làm một cái bánh.',
+      noteVi: 'make là bất quy tắc: make → made (V2), không thêm -ed (không nói maked). V2 giống nhau cho mọi chủ ngữ.',
+      timeline: { kind: 'past-point', label: 'Đã làm xong hôm qua' },
+    },
+    faded: {
+      en: 'We ___ (see) a good movie last night.',
+      answer: 'saw',
+      vi: 'Tối qua chúng tôi xem một bộ phim hay.',
+      hintVi: 'see là bất quy tắc: see – saw.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-simple-irregular-c1',
+          kind: 'type',
+          prompt: 'I ___ (get) up at six this morning.',
+          answer: 'got',
+          hintVi: 'get là bất quy tắc: get – got.',
+          explanationVi: 'Sáng nay đã qua nên dùng quá khứ. get là bất quy tắc, V2 là got (không phải getted).',
+        },
+        {
+          id: 'past-simple-irregular-c2',
+          kind: 'type',
+          prompt: 'She ___ (write) a long email to her boss last night.',
+          answer: 'wrote',
+          hintVi: 'write là bất quy tắc: write – wrote.',
+          explanationVi: 'last night là quá khứ. write đổi nguyên âm: write → wrote (V2). Không thêm -ed.',
+        },
+        {
+          id: 'past-simple-irregular-c3',
+          kind: 'choice',
+          prompt: 'Did they ___ the bus?',
+          options: ['catch', 'caught', 'catched'],
+          answer: 0,
+          hintVi: 'Sau Did là động từ nguyên mẫu.',
+          explanationVi: 'Did đã mang quá khứ nên động từ về V1: Did they catch the bus? caught là V2, "catched" không có.',
+        },
+        {
+          id: 'past-simple-irregular-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu phủ định: He drove to work.',
+          answer: "He didn't drive to work.",
+          hintVi: "didn't + V1: drove là V2 của drive.",
+          explanationVi: "Phủ định quá khứ: didn't + V1. drove (V2) về drive: He didn't drive to work (không phải didn't drove).",
+        },
+        {
+          id: 'past-simple-irregular-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Hôm qua tôi gửi cho anh ấy một tin nhắn. (send, a message, yesterday)',
+          answer: 'I sent him a message yesterday.',
+          accept: [
+            'Yesterday I sent him a message.',
+            'I sent a message to him yesterday.',
+            'Yesterday I sent a message to him.',
+          ],
+          hintVi: 'send là bất quy tắc: send – sent. "cho anh ấy" = him.',
+          explanationVi: 'yesterday là quá khứ: send → sent (V2, -d đổi thành -t). anh ấy làm tân ngữ nên dùng him.',
+        },
+        {
+          id: 'past-simple-irregular-c6',
+          kind: 'type',
+          prompt: 'Where ___ she find her keys yesterday?',
+          answer: 'did',
+          hintVi: 'find ở dạng V1, câu hỏi Wh- ở quá khứ.',
+          explanationVi: 'Câu hỏi Wh- ở quá khứ: Where + did + S + V1? find giữ V1 vì đã có did (không nói Where did she found…?).',
+        },
+      ],
+      easier: [
+        {
+          id: 'past-simple-irregular-e1',
+          kind: 'choice',
+          prompt: 'I ___ to school yesterday.',
+          options: ['went', 'go', 'goed'],
+          answer: 0,
+          hintVi: 'go là bất quy tắc.',
+          explanationVi: 'yesterday là quá khứ; go là bất quy tắc nên V2 là went (không có "goed").',
+        },
+        {
+          id: 'past-simple-irregular-e2',
+          kind: 'choice',
+          prompt: "She didn't ___ the cake.",
+          options: ['eat', 'ate', 'eats'],
+          answer: 0,
+          hintVi: "Sau didn't là V1.",
+          explanationVi: "didn't đã mang quá khứ nên dùng V1: She didn't eat the cake (không phải didn't ate).",
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về cuối tuần trước của bạn: đi đâu, ăn gì, gặp ai.',
+      sampleEn: 'Last weekend I went to Vung Tau. I ate seafood and met my friends.',
+      speak: [
+        { id: 'past-simple-irregular-say-1', text: 'I went to the beach last weekend.', vi: 'Cuối tuần trước tôi đi biển.' },
+        { id: 'past-simple-irregular-say-2', text: 'We ate dinner with our family.', vi: 'Chúng tôi ăn tối cùng gia đình.' },
+      ],
+    },
+  },
 }
 
 // ---------------------------------------------------------------- T3

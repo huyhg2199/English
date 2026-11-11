@@ -3,9 +3,12 @@ import type { ChoiceQuestion, ChoiceQuestionKind, MistakeTag, Question, TypedQue
 import type { SectionId } from '@/data/roadmap/types'
 
 /**
- * 76 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`; `s1-t2-w1` có 10 câu: thêm 4 câu gõ `type` /
- * `transform` của story 35; `s1-t2-w2` có 12 câu: thêm 6 câu was / were và Wh + did của story 33; các câu thêm đều có
- * `requires`), bám nội dung story 10. Tự soạn theo khuôn ETS, không chép đề.
+ * 102 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10. Tự soạn theo khuôn ETS,
+ * không chép đề. Các bài có thêm câu (đều có `requires`):
+ * - `s1-t2-w1` có 14 câu: 4 câu gõ `type` / `transform` của story 35 và 4 câu gõ của story 36;
+ * - `s1-t2-w2` có 26 câu: 6 câu was / were và Wh + did (story 33), 14 câu gõ của story 36 (7 câu was / were, 7 câu -ed);
+ * - `s1-t2-w3` có 14 câu: 8 câu gõ bất quy tắc của story 36.
+ * Story 36 nâng mỗi thì T1–T2 lên 12 câu nhãn `thì` (gõ dạng đúng, biến đổi "Đổi …:", dịch "Dịch sang tiếng Anh: … (gợi ý)").
  * Tuần O.W.L. 1 (`s1-t4-w4`) không có đoạn Ngữ pháp nên mọi câu gắn đoạn Phát âm (nơi có phần ôn tổng).
  */
 
@@ -146,6 +149,22 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     "Phủ định: thêm not ngay sau am: I am not (I'm not) writing an email. Không bỏ am, không dùng don't.",
     ['subject-pronouns', 'articles', 'be-negative']),
 
+  // Câu gõ thêm (story 36): đủ 12 câu nhãn thì, có câu dịch Việt → Anh.
+  t2w1.type(11, 'Look! The man ___ (run) to the bus.', 'is running',
+    'Look! báo việc đang diễn ra nên dùng hiện tại tiếp diễn. The man là một người nên dùng is. run là từ một âm tiết tận cùng u + n (1 nguyên âm + 1 phụ âm) nên gấp đôi n: running.',
+    ['imperatives', 'articles', 'be-affirmative']),
+  t2w1.type(12, 'We ___ (make) a cake in the kitchen now.', 'are making',
+    'now báo việc đang diễn ra nên dùng hiện tại tiếp diễn; we đi với are. make tận cùng e câm nên bỏ e rồi thêm -ing: making (không phải makeing).',
+    ['subject-pronouns', 'articles', 'be-affirmative', 'prepositions-of-place']),
+  t2w1.transform(13, 'Dịch sang tiếng Anh: Bây giờ mẹ tôi đang nấu ăn. (mother, cook, now)', 'My mother is cooking now.',
+    'Tiếng Việt chỉ cần "đang", tiếng Anh bắt buộc đủ hai phần: is (vì my mother = she) + cooking. now đặt cuối hoặc đầu câu đều được.',
+    ['possessive-adjectives', 'be-affirmative'],
+    ['Now my mother is cooking.', "My mother's cooking now.", "Now my mother's cooking."]),
+  t2w1.transform(14, 'Dịch sang tiếng Anh: Hôm nay anh ấy đang lái xe đi làm. (drive, to work, today)', 'He is driving to work today.',
+    'Có "đang" nên dùng hiện tại tiếp diễn: is (vì he) + V-ing, không dùng drives. drive tận cùng e câm nên bỏ e: driving. today đặt cuối hoặc đầu câu đều được.',
+    ['subject-pronouns', 'be-affirmative'],
+    ["He's driving to work today.", 'Today he is driving to work.', "Today he's driving to work."]),
+
   // ── T2 tuần 2: quá khứ đơn có quy tắc · trọng âm theo hậu tố ──
   t2w2.grammar(1, 'I ___ my parents last Sunday.', ['visited', 'visit', 'visits', 'am visiting'],
     'Có mốc đã xong (last Sunday) → quá khứ đơn: visit → visited.'),
@@ -183,6 +202,52 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'Hỏi Wh- về việc đã làm (watch là động từ thường): What + did + S + nguyên mẫu. last night là quá khứ nên không dùng do.',
     'thì', ['wh-questions', 'present-simple-questions', 'articles', 'tenses-overview']),
 
+  // Câu gõ was / were (story 36): gõ dạng đúng, biến đổi, dịch Việt → Anh; không -ed, không V2 khác.
+  t2w2.transform(13, 'Đổi sang câu hỏi: You were at work yesterday.', 'Were you at work yesterday?',
+    'Câu hỏi với was / were: đảo were lên trước chủ ngữ, không mượn did (không nói Did you be at work?).',
+    ['be-questions', 'subject-pronouns', 'prepositions-of-place']),
+  t2w2.type(14, 'The children ___ (be) at school yesterday.', 'were',
+    'children là số nhiều của child nên đi với were. yesterday là quá khứ nên không dùng are.',
+    ['be-affirmative', 'irregular-plurals', 'articles', 'prepositions-of-place']),
+  t2w2.type(15, 'I ___ (not / be) tired last night.', "wasn't",
+    "I đi với was; phủ định thêm not ngay sau was: was not (wasn't). Không dùng didn't với to be.",
+    ['be-negative', 'subject-pronouns']),
+  t2w2.type(16, 'Were they at home? — No, they ___.', "weren't",
+    "Hỏi bằng Were thì trả lời ngắn cũng dùng were: No, they weren't (were not). Không trả lời bằng didn't.",
+    ['be-questions', 'be-negative', 'subject-pronouns', 'prepositions-of-place']),
+  t2w2.transform(17, 'Đổi sang câu phủ định: We were at the park on Sunday.', "We weren't at the park on Sunday.",
+    "Phủ định của were là were not (weren't), đặt ngay sau were, không mượn didn't.",
+    ['be-negative', 'subject-pronouns', 'articles', 'prepositions-of-place', 'prepositions-of-time', 'days-months'],
+    ["On Sunday we weren't at the park."]),
+  t2w2.transform(18, 'Dịch sang tiếng Anh: Tối qua các bạn ở đâu? (where, last night)', 'Where were you last night?',
+    'Câu chỉ hỏi ở đâu, không có động từ thường, nên dùng to be: Where + were + you? you (các bạn) đi với were. Không dùng did.',
+    ['wh-questions', 'be-questions', 'subject-pronouns']),
+  t2w2.transform(19, 'Dịch sang tiếng Anh: Hôm qua trời không lạnh. (it, cold, yesterday)', "It wasn't cold yesterday.",
+    "Nói về thời tiết dùng it làm chủ ngữ. Quá khứ của is là was, phủ định wasn't. Tiếng Việt không có \"là\", tiếng Anh bắt buộc có was.",
+    ['be-negative', 'subject-pronouns'], ["Yesterday it wasn't cold."]),
+  // Câu gõ quá khứ đơn có quy tắc (story 36): -ed, did / didn't, Wh + did; không V2 bất quy tắc.
+  t2w2.transform(20, 'Đổi sang quá khứ (last Sunday): I play football.', 'I played football last Sunday.',
+    'last Sunday là quá khứ nên play thêm -ed: played (a + y giữ y). Tiếng Việt chỉ cần thêm "Chủ nhật trước", tiếng Anh phải đổi động từ.',
+    ['present-simple', 'subject-pronouns', 'days-months'], ['Last Sunday I played football.']),
+  t2w2.type(21, 'The bus ___ (stop) at the school yesterday.', 'stopped',
+    'stop là từ một âm tiết tận cùng o + p (1 nguyên âm + 1 phụ âm) nên gấp đôi p rồi thêm -ed: stopped.',
+    ['articles', 'prepositions-of-place']),
+  t2w2.type(22, 'She ___ (live) in Hue in 2020.', 'lived',
+    '2020 đã qua nên dùng quá khứ. live tận cùng e nên chỉ thêm -d: lived.',
+    ['subject-pronouns', 'prepositions-of-place', 'prepositions-of-time', 'numbers']),
+  t2w2.transform(23, 'Đổi sang câu phủ định: They visited the museum.', "They didn't visit the museum.",
+    "Phủ định quá khứ: didn't + động từ nguyên mẫu, nên visited về visit: They didn't visit the museum (không phải didn't visited).",
+    ['subject-pronouns', 'articles', 'present-simple-negative']),
+  t2w2.type(24, 'Did you watch the game? — Yes, I ___.', 'did',
+    'Hỏi bằng Did thì trả lời ngắn cũng dùng did: Yes, I did. Không lặp lại watch.',
+    ['subject-pronouns', 'articles', 'present-simple-questions', 'tenses-overview']),
+  t2w2.transform(25, 'Dịch sang tiếng Anh: Tối qua tôi học tiếng Anh. (study, English, last night)', 'I studied English last night.',
+    'last night là quá khứ. study tận cùng phụ âm d + y nên đổi y thành -ied: studied. last night đặt cuối hoặc đầu câu đều được.',
+    ['subject-pronouns', 'tenses-overview'], ['Last night I studied English.']),
+  t2w2.transform(26, 'Dịch sang tiếng Anh: Hôm qua bạn đã nấu món gì? (what, cook, yesterday)', 'What did you cook yesterday?',
+    'Hỏi Wh- về việc đã làm (cook là động từ thường): What + did + you + cook (nguyên mẫu)? Không nói What you cooked?',
+    ['wh-questions', 'present-simple-questions', 'subject-pronouns', 'tenses-overview']),
+
   // ── T2 tuần 3: động từ bất quy tắc · phát âm -ed ──
   t2w3.grammar(1, 'I ___ to Da Lat last month.', ['went', 'goed', 'gone', 'go'],
     'go là bất quy tắc: go – went – gone. Quá khứ đơn dùng cột 2: went.'),
@@ -200,6 +265,32 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'He went home and cooks dinner.',
     'He went home and looked for dinner.',
   ], 'Nghe went (quá khứ của go) và đuôi /t/ rất nhẹ ở cooked.'),
+
+  // Câu gõ bất quy tắc (story 36): V2 khác V1, didn't / Did + V1, Wh + did; không V3.
+  t2w3.type(7, 'I ___ (have) a big lunch yesterday.', 'had',
+    'yesterday là quá khứ. have là bất quy tắc: have – had – had. Không nói haved.',
+    ['subject-pronouns', 'articles', 'adjective-before-noun', 'verb-forms']),
+  t2w3.type(8, 'She ___ (take) a taxi to the airport yesterday.', 'took',
+    'yesterday là quá khứ. take là bất quy tắc: take – took – taken. Quá khứ đơn dùng cột 2: took (không phải taked).',
+    ['subject-pronouns', 'articles', 'verb-forms']),
+  t2w3.type(9, 'We ___ (meet) our teacher at the market yesterday.', 'met',
+    'meet là bất quy tắc: meet – met – met (nguyên âm dài thành ngắn). Không nói meeted.',
+    ['subject-pronouns', 'possessive-adjectives', 'articles', 'prepositions-of-place', 'verb-forms']),
+  t2w3.type(10, 'He ___ (not / come) to the party last night.', "didn't come",
+    "Phủ định quá khứ: didn't + V1. did đã mang quá khứ nên come giữ nguyên (không phải didn't came).",
+    ['subject-pronouns', 'articles', 'verb-forms', 'present-simple-negative']),
+  t2w3.transform(11, 'Đổi sang câu hỏi: They went to the beach.', 'Did they go to the beach?',
+    'Câu hỏi quá khứ với động từ thường: Did + S + V1. went (V2) về go: Did they go…? (không phải Did they went?).',
+    ['subject-pronouns', 'articles', 'verb-forms', 'present-simple-questions']),
+  t2w3.transform(12, 'Đổi sang quá khứ (last night): Tom sleeps well.', 'Tom slept well last night.',
+    'last night là quá khứ. sleep là bất quy tắc: sleep – slept, và quá khứ không thêm -s cho Tom. last night đặt cuối hoặc đầu câu đều được.',
+    ['present-simple', 'verb-forms'], ['Last night Tom slept well.']),
+  t2w3.transform(13, 'Dịch sang tiếng Anh: Tuần trước anh ấy mua một chiếc xe đạp mới. (buy, a new bike)', 'He bought a new bike last week.',
+    'Tuần trước = last week (quá khứ). buy là bất quy tắc: buy – bought. Tính từ new đứng trước danh từ bike: a new bike.',
+    ['subject-pronouns', 'articles', 'adjective-before-noun', 'verb-forms'], ['Last week he bought a new bike.']),
+  t2w3.transform(14, 'Dịch sang tiếng Anh: Hôm qua bạn đã ăn gì? (what, eat, yesterday)', 'What did you eat yesterday?',
+    'Câu hỏi Wh- ở quá khứ: What + did + you + V1? Đã có did nên eat giữ V1 (không phải What did you ate?).',
+    ['wh-questions', 'present-simple-questions', 'subject-pronouns', 'verb-forms']),
 
   // ── T2 tuần 4: ôn lại ──
   t2w4.grammar(1, 'Right now, my brother ___ a shower.', ['is taking', 'takes', 'took', 'take'],

@@ -100,6 +100,103 @@ export const PRESENT_SIMPLE: Tense = {
     { kind: 'voa', speaker: 'Marsha', text: 'She makes spoons?', vi: 'Bà ấy làm thìa à?', ...VOA_L12 },
   ],
   spellId: 'alohomora',
+  // Phần luyện có bậc (story 36): chỉ Sân ga F01–F18 và hiện tại đơn khẳng định (không quá khứ, không be + V-ing, không
+  // don't / Do…?, xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t1-w2.
+  practice: {
+    worked: {
+      en: 'My father drinks coffee every morning.',
+      vi: 'Bố tôi uống cà phê mỗi sáng.',
+      noteVi: 'my father = he nên drink thêm -s: drinks. Tiếng Việt "uống" không đổi theo người nói, tiếng Anh bắt buộc thêm -s.',
+      timeline: { kind: 'habit', label: 'Sáng nào cũng uống' },
+    },
+    faded: {
+      en: 'She ___ (watch) TV every evening.',
+      answer: 'watches',
+      vi: 'Cô ấy xem TV mỗi tối.',
+      hintVi: 'watch tận cùng -ch nên thêm -es.',
+    },
+    check: {
+      items: [
+        {
+          id: 'present-simple-c1',
+          kind: 'type',
+          prompt: 'My friend ___ (work) in a bank.',
+          answer: 'works',
+          hintVi: 'my friend là một người (= he / she).',
+          explanationVi: 'my friend = he / she (ngôi thứ ba số ít) nên work thêm -s: works.',
+        },
+        {
+          id: 'present-simple-c2',
+          kind: 'choice',
+          prompt: 'I ___ coffee every day.',
+          options: ['drink', 'drinks', 'am drink'],
+          answer: 0,
+          hintVi: 'Chủ ngữ là I.',
+          explanationVi: 'I, you, we, they giữ nguyên động từ: I drink. Chỉ he / she / it mới thêm -s. Không đặt am trước động từ thường.',
+        },
+        {
+          id: 'present-simple-c3',
+          kind: 'type',
+          prompt: 'Tom ___ (go) to school every day.',
+          answer: 'goes',
+          hintVi: 'go tận cùng -o.',
+          explanationVi: 'Tom = he nên thêm -s; go tận cùng -o nên thêm -es: goes (như do → does).',
+        },
+        {
+          id: 'present-simple-c4',
+          kind: 'type',
+          prompt: 'Đổi chủ ngữ sang She: I play tennis on Sundays.',
+          answer: 'She plays tennis on Sundays.',
+          hintVi: 'she là ngôi thứ ba số ít; play tận cùng nguyên âm + y.',
+          explanationVi: 'Đổi I thành she thì động từ thêm -s. play có a + y (nguyên âm + y) nên giữ y, chỉ thêm -s: plays.',
+        },
+        {
+          id: 'present-simple-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Họ sống ở Hà Nội. (live, Hanoi)',
+          answer: 'They live in Hanoi.',
+          hintVi: 'Họ = they; ở + thành phố dùng in.',
+          explanationVi: 'they là số nhiều nên live giữ nguyên, không thêm -s. Ở một thành phố dùng in: They live in Hanoi.',
+        },
+        {
+          id: 'present-simple-c6',
+          kind: 'type',
+          prompt: 'My brother ___ (have) two cats.',
+          answer: 'has',
+          hintVi: 'have là động từ bất quy tắc với he / she / it.',
+          explanationVi: 'my brother = he. have với he / she / it đổi thành has (không phải haves).',
+        },
+      ],
+      easier: [
+        {
+          id: 'present-simple-e1',
+          kind: 'choice',
+          prompt: 'He ___ in Hanoi.',
+          options: ['lives', 'live', 'is live'],
+          answer: 0,
+          hintVi: 'he cần động từ thêm -s.',
+          explanationVi: 'he là ngôi thứ ba số ít nên live thêm -s: He lives in Hanoi. Không đặt is trước động từ thường.',
+        },
+        {
+          id: 'present-simple-e2',
+          kind: 'choice',
+          prompt: 'We ___ English every day.',
+          options: ['study', 'studies', 'studys'],
+          answer: 0,
+          hintVi: 'Chủ ngữ là we (số nhiều).',
+          explanationVi: 'we giữ nguyên động từ: We study. studies chỉ dùng cho he / she / it; "studys" sai chính tả.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về thói quen hằng ngày của bạn và của một người trong nhà (nhớ thêm -s cho he / she).',
+      sampleEn: 'I get up at six. I walk to work. My mother cooks breakfast.',
+      speak: [
+        { id: 'present-simple-say-1', text: 'I drink tea every morning.', vi: 'Sáng nào tôi cũng uống trà.' },
+        { id: 'present-simple-say-2', text: 'My mother cooks dinner every evening.', vi: 'Tối nào mẹ tôi cũng nấu bữa tối.' },
+      ],
+    },
+  },
 }
 
 export const PRESENT_SIMPLE_QUESTIONS: Tense = {
@@ -141,6 +238,105 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
     { kind: 'voa', speaker: 'Ashley', text: 'Does she wear glasses?', vi: 'Cô ấy có đeo kính không?', ...VOA_L15 },
   ],
   spellId: 'revelio',
+  // Phần luyện có bậc (story 36): chỉ Sân ga F01–F18 và hiện tại đơn (khẳng định, phủ định, câu hỏi); không quá khứ, không
+  // be + V-ing (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t1-w3.
+  practice: {
+    worked: {
+      en: 'Does your brother play football? — Yes, he does.',
+      vi: 'Em trai bạn có chơi bóng đá không? — Có.',
+      noteVi:
+        'your brother = he nên mượn Does; play giữ nguyên (không thêm -s) vì does đã mang -s. Trả lời ngắn dùng lại does: Yes, he does.',
+      timeline: { kind: 'habit-question', label: 'Hỏi về một thói quen' },
+    },
+    faded: {
+      en: 'I ___ (not / eat) meat.',
+      answer: "don't eat",
+      vi: 'Tôi không ăn thịt.',
+      hintVi: "I đi với do; phủ định là do not (don't) + động từ nguyên mẫu.",
+    },
+    check: {
+      items: [
+        {
+          id: 'present-simple-questions-c1',
+          kind: 'type',
+          prompt: 'Tom ___ (not / drive) a car.',
+          answer: "doesn't drive",
+          hintVi: "Tom = he: phủ định dùng does not (doesn't).",
+          explanationVi: "Tom = he nên dùng doesn't, rồi drive về nguyên mẫu (không thêm -s): Tom doesn't drive a car.",
+        },
+        {
+          id: 'present-simple-questions-c2',
+          kind: 'choice',
+          prompt: '___ she busy today?',
+          options: ['Is', 'Does', 'Do'],
+          answer: 0,
+          hintVi: 'busy là tính từ, câu không có động từ thường.',
+          explanationVi: 'Câu chỉ có tính từ (busy) thì dùng to be: Is she busy? Không mượn does với to be (không nói Does she be busy?).',
+        },
+        {
+          id: 'present-simple-questions-c3',
+          kind: 'choice',
+          prompt: '___ she work on Mondays?',
+          options: ['Does', 'Is', 'Do'],
+          answer: 0,
+          hintVi: 'work là động từ thường; she đi với gì?',
+          explanationVi: 'Có động từ thường (work) thì mượn do / does; she đi với does: Does she work on Mondays? So với câu trên: Is she busy?',
+        },
+        {
+          id: 'present-simple-questions-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: They speak English.',
+          answer: 'Do they speak English?',
+          hintVi: 'they đi với do; đặt Do lên đầu câu.',
+          explanationVi: 'Câu hỏi với động từ thường: Do / Does + chủ ngữ + động từ nguyên mẫu. they đi với do: Do they speak English?',
+        },
+        {
+          id: 'present-simple-questions-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Bạn làm việc ở đâu? (where, work)',
+          answer: 'Where do you work?',
+          hintVi: 'Ở đâu = Where; Where + do / does + chủ ngữ + động từ.',
+          explanationVi: 'Câu hỏi Wh-: Where + do + you + work? Tiếng Việt đặt "ở đâu" cuối câu, tiếng Anh đặt Where lên đầu.',
+        },
+        {
+          id: 'present-simple-questions-c6',
+          kind: 'type',
+          prompt: 'Does Lan cook every day? — No, she ___.',
+          answer: "doesn't",
+          hintVi: 'Hỏi bằng Does thì trả lời ngắn cũng dùng does.',
+          explanationVi: "Trả lời ngắn lặp lại trợ động từ của câu hỏi: No, she doesn't (does not). Không lặp lại cook.",
+        },
+      ],
+      easier: [
+        {
+          id: 'present-simple-questions-e1',
+          kind: 'choice',
+          prompt: 'I ___ like milk.',
+          options: ["don't", "doesn't", 'not'],
+          answer: 0,
+          hintVi: 'I đi với do.',
+          explanationVi: "I đi với do nên phủ định là don't: I don't like milk. Không nói I not like.",
+        },
+        {
+          id: 'present-simple-questions-e2',
+          kind: 'choice',
+          prompt: '___ you play tennis?',
+          options: ['Do', 'Does', 'Are'],
+          answer: 0,
+          hintVi: 'you đi với do.',
+          explanationVi: 'play là động từ thường, you đi với do: Do you play tennis?',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Viết 2 câu hỏi về thói quen của một người bạn, rồi nói một việc bạn không làm.',
+      sampleEn: "Do you play games? Where does your sister work? I don't watch TV.",
+      speak: [
+        { id: 'present-simple-questions-say-1', text: 'Where do you live?', vi: 'Bạn sống ở đâu?' },
+        { id: 'present-simple-questions-say-2', text: "My brother doesn't watch TV.", vi: 'Anh trai tôi không xem TV.' },
+      ],
+    },
+  },
 }
 
 export const GRAMMAR_W1: GrammarContent = { tenses: [TO_BE] }

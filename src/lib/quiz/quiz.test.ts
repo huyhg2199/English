@@ -368,12 +368,14 @@ describe('pickQuiz ưu tiên câu chưa gặp (story 35)', () => {
     }
   })
 
-  it('bài 10 câu, đã gặp 5 câu → lần sau bốc đúng 5 câu còn lại', () => {
-    expect(w1).toHaveLength(10)
+  it('bài 14 câu (story 36), đã gặp 9 câu → lần sau bốc đúng 5 câu còn lại', () => {
+    expect(w1).toHaveLength(14)
     for (const seed of seeds) {
       const first = pickQuiz(QUESTION_BANK, lessonQuiz, `${seed}-a`, { canSpeak: true })
       expect(first).toHaveLength(5)
-      const seen = new Set(ids(first))
+      // 5 câu vừa làm cộng 4 câu chưa làm khác (theo thứ tự ngân hàng) → còn đúng 5 câu chưa gặp.
+      const others = w1.map((x) => x.id).filter((id) => !ids(first).includes(id)).slice(0, 4)
+      const seen = new Set([...ids(first), ...others])
       const second = pickQuiz(QUESTION_BANK, lessonQuiz, `${seed}-b`, { canSpeak: true, seen })
       expect(new Set(ids(second)), seed).toEqual(new Set(w1.map((x) => x.id).filter((id) => !seen.has(id))))
     }
@@ -410,8 +412,8 @@ describe('pickQuiz ưu tiên câu chưa gặp (story 35)', () => {
   it('không có TTS: câu thay câu nghe là câu chưa gặp cùng bài', () => {
     const listening = w1.filter((x) => x.kind === 'listening')
     expect(listening.map((x) => x.id)).toEqual(['q-s1-t2-w1-06'])
-    // Đã gặp 4 câu không nghe → còn đúng 5 câu chưa gặp không nghe + 1 câu nghe.
-    const seen = new Set(w1.filter((x) => x.kind !== 'listening').slice(0, 4).map((x) => x.id))
+    // Đã gặp 8 câu không nghe (bài có 13 câu không nghe sau story 36) → còn đúng 5 câu chưa gặp không nghe + 1 câu nghe.
+    const seen = new Set(w1.filter((x) => x.kind !== 'listening').slice(0, 8).map((x) => x.id))
     const unseenNonListening = w1.filter((x) => x.kind !== 'listening' && !seen.has(x.id)).map((x) => x.id)
     expect(unseenNonListening).toHaveLength(5)
     let replaced = 0
