@@ -111,3 +111,12 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/16-bilingual-subtitles.md`
   summary: Phần ghi nguồn CC BY trên UI (`SubAttribution` trong `SubtitledVideo.tsx`: link kênh, link giấy phép, video gốc, ghi chú bản dịch; nhãn "CC BY" trong `VideoEmbed.tsx`) không có test tự động.
   evidence: Vitest chạy `environment: 'node'`, không có file `.test.tsx`; dữ liệu nguồn đã được ghim bởi `src/data/subs/subs.test.ts` (`source` khớp `transcriptSource`), nhưng xoá nhánh link giấy phép thì lint/test/build vẫn xanh. Cùng gốc với mục "máy trạng thái điền từ" (#16 story 16): cần môi trường test component (jsdom/happy-dom) — quyết định cấp dự án.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
+  summary: goalVi của F17 trong `catalog.ts:158` vẫn ghi "Nhận ra go/goes/going/went/gone trên trục thời gian", trong khi nội dung mới tách gone khỏi ba vùng thời gian.
+  evidence: Story 32 cấm sửa `catalog.ts`; nên sửa ở story 47 (dọn thứ tự bài), ví dụ "Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has".
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
+  summary: Khi một câu quiz được viết lại mà giữ id, mục sổ lỗi cũ vẫn hiện `lastChosen` (và lời giải thích Gemini) của lựa chọn không còn tồn tại, ví dụ `q-s1-t3-w1-06`.
+  evidence: `MistakeCard.tsx:155` in `entry.lastChosen` nguyên văn, không so với `question.options`. Chỉ xảy ra nếu đã có lỗi câu đó (Huy chưa học tới T3). Cách sửa gợi ý: ẩn dòng "bạn chọn" và coi lời giải thích là cũ khi `lastChosen` không có trong `options`; không cần bump store. Liên quan story 35–42 sẽ viết lại nhiều câu.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
+  summary: Bài xếp f17-a1 xếp cứng `go` đứng một mình vào nhóm "Thói quen", trong khi dạng gốc go cũng là nguyên mẫu (I will go, Did you go); nhãn nhóm thứ 4 gần như cho sẵn chỗ của gone.
+  evidence: `src/data/foundation/bricks/f17.ts` f17-a1 groups. Có từ trước story 32 (phần go). Có thể xem lại khi làm "Bản đồ thì" (story 39–42).

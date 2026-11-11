@@ -27,7 +27,7 @@ export const PRESENT_CONTINUOUS: Tense = {
   ],
   rules: [
     'Luôn cần đủ hai phần: am / is / are + V-ing. Thiếu to be ("I working") hoặc thiếu -ing ("I am work") đều sai.',
-    'Thêm -ing: bỏ e câm (make → making), gấp đôi phụ âm cuối sau một nguyên âm ngắn (run → running, sit → sitting), ie → ying (lie → lying).',
+    'Thêm -ing: bỏ e câm (make → making); ie → ying (lie → lying). Gấp đôi phụ âm cuối khi từ một âm tiết tận cùng 1 chữ nguyên âm (a, e, i, o, u) + 1 chữ phụ âm (run → running, sit → sitting), hai chữ nguyên âm thì không (eat → eating, rain → raining). Từ hai âm tiết có đuôi như vậy: nhấn âm đầu thì không (visit → visiting, listen → listening), nhấn âm cuối thì có (begin → beginning). Không gấp đôi w, x, y (snow → snowing, fix → fixing, play → playing).',
     'Động từ chỉ trạng thái (know, like, want, need, understand) thường không dùng tiếp diễn: I know (không nói I am knowing).',
   ],
   examples: [
@@ -60,15 +60,15 @@ export const PAST_SIMPLE: Tense = {
   ],
   rules: [
     'Quá khứ không đổi theo chủ ngữ: I worked, she worked, they worked (không thêm -s).',
-    'Chính tả -ed: tận cùng e thì chỉ thêm -d (live → lived); phụ âm + y thì đổi -ied (study → studied); một nguyên âm ngắn + phụ âm thì gấp đôi (stop → stopped).',
-    "Hỏi và phủ định mượn did, động từ chính về nguyên mẫu: Did you watch …? / I didn't watch (không phải didn't watched).",
+    'Chính tả -ed: tận cùng e thì thêm -d (live → lived); phụ âm + y thì đổi -ied (study → studied). Gấp đôi phụ âm cuối khi từ một âm tiết tận cùng 1 chữ nguyên âm (a, e, i, o, u) + 1 chữ phụ âm (stop → stopped, plan → planned), hai chữ nguyên âm thì không (rain → rained, need → needed). Từ hai âm tiết có đuôi như vậy: nhấn âm đầu thì không (visit → visited, listen → listened, open → opened), nhấn âm cuối thì có (prefer → preferred). Không gấp đôi w, x, y (play → played, fix → fixed).',
+    "Hỏi và phủ định mượn did, động từ chính về nguyên mẫu: Did you watch …? / I didn't watch (không phải didn't watched). Với to be (was / were) thì không mượn did: Were you tired? / I wasn't tired. (không phải Did you be tired? / I didn't be tired.)",
   ],
   examples: [
     { en: 'I watched a movie last night.', vi: 'Tối qua tôi xem một bộ phim.' },
     { en: 'She worked late yesterday.', vi: 'Hôm qua cô ấy làm việc muộn.' },
     { en: 'We stayed at home on Sunday.', vi: 'Chủ nhật chúng tôi ở nhà.' },
     { en: "He didn't call me.", vi: 'Anh ấy đã không gọi cho tôi.' },
-    { en: 'Did you finish your work? — Yes, I did.', vi: 'Bạn làm xong việc chưa? — Rồi.' },
+    { en: 'Did you finish your work yesterday? — Yes, I did.', vi: 'Hôm qua bạn có làm xong việc không? — Có.' },
     { en: 'I was tired, but they were happy.', vi: 'Tôi mệt, nhưng họ thì vui.' },
   ],
   mistakes: [
@@ -208,6 +208,11 @@ export const PRESENT_PERFECT: Tense = {
     { wrong: 'I have saw that movie.', right: 'I have seen that movie.', why: 'Sau have / has dùng V3 (seen), không dùng V2 (saw).' },
     { wrong: 'She have finished.', right: 'She has finished.', why: 'he / she / it đi với has.' },
     { wrong: 'I have visited Hue last year.', right: 'I visited Hue last year.', why: 'Có mốc đã xong (last year) thì dùng quá khứ đơn.' },
+    {
+      wrong: 'She has gone to Japan twice.',
+      right: 'She has been to Japan twice.',
+      why: 'been to = đã từng tới rồi về; gone to = đã đi và giờ đang ở đó, chưa về. Nói đã từng tới mấy lần (twice) thì dùng been to.',
+    },
   ],
   dialogues: [yg('have you ever been'), yg("I've never seen")],
   spellId: 'expecto-patronum',
@@ -240,6 +245,11 @@ export const PERFECT_VS_PAST: Tense = {
     { wrong: 'I live here since 2020.', right: 'I have lived here since 2020.', why: 'Việc kéo dài từ một mốc tới giờ dùng hiện tại hoàn thành, không dùng hiện tại đơn.' },
     { wrong: 'When have you arrived?', right: 'When did you arrive?', why: 'Câu hỏi When … luôn hỏi về một lúc đã xong → quá khứ đơn.' },
     { wrong: 'I have worked here since three years.', right: 'I have worked here for three years.', why: 'Khoảng thời gian dùng for; since chỉ đi với mốc bắt đầu.' },
+    {
+      wrong: 'Have you called him yesterday?',
+      right: 'Did you call him yesterday?',
+      why: 'Tiếng Việt hỏi cả hai kiểu bằng "…chưa?". Chữ "chưa" không quyết định thì: có mốc đã xong (yesterday) thì dùng Did you …?; không có mốc, hỏi tính tới bây giờ ("Bạn gọi anh ấy chưa?") thì dùng Have you called him (yet)?',
+    },
   ],
   dialogues: [yg('how long have you lived'), yg('when did you start')],
 }

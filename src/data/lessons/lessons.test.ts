@@ -371,3 +371,69 @@ describe('thần chú', () => {
     }
   })
 })
+
+describe('sửa lỗi nội dung thì (story 32)', () => {
+  const tense = (id: string) => {
+    const t = allTenses().find((x) => x.id === id)
+    if (!t) throw new Error(`thiếu Tense ${id}`)
+    return t
+  }
+  const CAN = /\bcan(not|'t)?\b/i
+
+  it('quy tắc gấp đôi phụ âm của tiếp diễn và quá khứ đơn đủ điều kiện, không còn câu cũ', () => {
+    for (const id of ['present-continuous', 'past-simple']) {
+      const rules = tense(id).rules.join(' ')
+      expect(rules, id).toContain('visit →')
+      expect(rules, id).toContain('w, x, y')
+      expect(rules, id).toContain('chữ nguyên âm (a, e, i, o, u)')
+      expect(rules, id).toContain('hai chữ nguyên âm thì không')
+      expect(rules, id).toContain('rain →')
+      expect(rules, id).toContain('Từ hai âm tiết có đuôi như vậy')
+      expect(rules, id).not.toContain('sau một nguyên âm ngắn')
+      expect(rules, id).not.toContain('một nguyên âm ngắn + phụ âm thì gấp đôi')
+    }
+  })
+
+  it('quá khứ đơn ghi ngoại lệ to be không mượn did', () => {
+    expect(tense('past-simple').rules.join(' ')).toContain('không phải Did you be')
+  })
+
+  it('câu ví dụ và câu luyện nói bắt đầu bằng Did không dịch thành "…chưa?"', () => {
+    const pairs = [
+      ...allTenses().flatMap((t) => t.examples.map((e) => ({ en: e.en, vi: e.vi }))),
+      ...LESSON_CONTENTS.flatMap((c) => [
+        ...(c.pronunciation?.sentences ?? []),
+        ...(c.parts ?? []).flatMap((p) => p.sentences),
+        ...(c.pronunciation?.blocks ?? []).flatMap((b) =>
+          b.kind === 'shadowing' ? b.lines : b.kind === 'dictation' ? b.items : [],
+        ),
+      ]).map((s) => ({ en: s.text, vi: s.vi })),
+    ]
+    const did = pairs.filter((p) => /^Did\b/.test(p.en))
+    expect(did.length).toBeGreaterThan(0)
+    for (const p of did) expect(p.vi, p.en).not.toContain('chưa')
+  })
+
+  it('PERFECT_VS_PAST có lỗi "…chưa?", PRESENT_PERFECT có lỗi been to / gone to', () => {
+    expect(
+      tense('present-perfect-vs-past').mistakes.some((m) => m.right.startsWith('Did you') && m.why.includes('chưa')),
+    ).toBe(true)
+    expect(
+      tense('present-perfect').mistakes.some((m) => [m.wrong, m.right, m.why].some((s) => s.includes('been to'))),
+    ).toBe(true)
+  })
+
+  it('T3-W1 chưa dùng can: câu luyện nói và Tense will', () => {
+    const c = content('s1-t3-w1')
+    const sentences = [...(c.pronunciation?.sentences ?? []), ...(c.parts ?? []).flatMap((p) => p.sentences)]
+    for (const s of sentences) expect(s.text, s.id).not.toMatch(CAN)
+    const will = tense('will')
+    const texts = [
+      ...will.formulas.map((f) => f.text),
+      ...will.rules,
+      ...will.examples.flatMap((e) => [e.en, e.vi]),
+      ...will.mistakes.flatMap((m) => [m.wrong, m.right, m.why]),
+    ]
+    for (const t of texts) expect(t).not.toMatch(CAN)
+  })
+})

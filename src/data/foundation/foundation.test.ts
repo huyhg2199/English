@@ -285,6 +285,19 @@ describe('nội dung viên gạch', () => {
     ).toBe(true)
   })
 
+  it('F17: gone không nằm trong nhóm Quá khứ, có nhóm "have / has" chứa gone, "She has gone." không gọi là Quá khứ (story 32)', () => {
+    const f17 = getBrick('F17')!
+    const sorts = allItems(f17).filter((i) => i.kind === 'sort')
+    const groups = sorts.flatMap((i) => (i.kind === 'sort' ? i.groups : []))
+    for (const g of groups.filter((x) => x.label.startsWith('Quá khứ'))) {
+      expect(g.items.flatMap(tokensOf), g.items.join(' | ')).not.toContain('gone')
+    }
+    expect(groups.some((g) => g.label.includes('have / has') && g.items.flatMap(tokensOf).includes('gone'))).toBe(true)
+    const hasGone = (screenOf(f17, 'contrast').examples ?? []).filter((ex) => ex.en === 'She has gone.')
+    expect(hasGone.length).toBeGreaterThanOrEqual(1)
+    for (const ex of hasGone) expect(ex.vi).not.toContain('Quá khứ')
+  })
+
   it('ngữ pháp hàng C–D: không do/does/did, khuyết thiếu, rút gọn lạ; was/were/been/being chỉ F13, had chỉ F16, going/gone từ F17', () => {
     const bad: string[] = []
     for (const id of ROW_CD_IDS) {

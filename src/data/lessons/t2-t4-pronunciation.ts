@@ -308,7 +308,7 @@ export const PRONUNCIATION_T2_W2: PronunciationContent = {
     { id: 's1-t2-w2-say-1', text: 'I watched the news yesterday.', vi: 'Hôm qua tôi xem thời sự.' },
     { id: 's1-t2-w2-say-2', text: 'We talked about the economic situation.', vi: 'Chúng tôi nói về tình hình kinh tế.' },
     { id: 's1-t2-w2-say-3', text: 'She studied at the university.', vi: 'Cô ấy học ở trường đại học.' },
-    { id: 's1-t2-w2-say-4', text: 'Did you finish the activity?', vi: 'Bạn làm xong hoạt động chưa?' },
+    { id: 's1-t2-w2-say-4', text: 'Did you finish the activity yesterday?', vi: 'Hôm qua bạn có làm xong hoạt động đó không?' },
   ],
 }
 
@@ -341,7 +341,7 @@ export const PRONUNCIATION_T3_W1: PronunciationContent = {
   sentences: [
     { id: 's1-t3-w1-say-1', text: "I'll call you at ten.", vi: 'Tôi sẽ gọi bạn lúc mười giờ.' },
     { id: 's1-t3-w1-say-2', text: 'It will be a cup of tea and a cake.', vi: 'Sẽ là một tách trà và một cái bánh.' },
-    { id: 's1-t3-w1-say-3', text: 'I can help you tomorrow.', vi: 'Ngày mai tôi giúp bạn được.' },
+    { id: 's1-t3-w1-say-3', text: 'I will help you tomorrow.', vi: 'Ngày mai tôi sẽ giúp bạn.' },
     { id: 's1-t3-w1-say-4', text: "She won't go to the party.", vi: 'Cô ấy sẽ không đi dự tiệc.' },
   ],
 }

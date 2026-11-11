@@ -162,3 +162,19 @@ describe('câu nhãn thì chặng 1 (O.W.L. 1, story 14)', () => {
     expect(pool.length).toBeGreaterThanOrEqual(30)
   })
 })
+
+describe('T3-W1 chưa dùng can (story 32)', () => {
+  const CAN = /\bcan(not|'t)?\b/i
+
+  it('câu quiz s1-t3-w1 (đề, lựa chọn, giải thích) không có can', () => {
+    const qs = QUESTION_BANK.filter((q) => q.lessonId === 's1-t3-w1')
+    expect(qs.length).toBeGreaterThan(0)
+    for (const q of qs) for (const t of [q.prompt, ...q.options, q.explanation]) expect(t, q.id).not.toMatch(CAN)
+  })
+
+  it('q-s1-t3-w1-06 vẫn là câu nghe, viết lại bằng will', () => {
+    const q = getQuestion('q-s1-t3-w1-06')!
+    expect(q.kind).toBe('listening')
+    expect(q.answer).toBe("I'll help you tomorrow.")
+  })
+})

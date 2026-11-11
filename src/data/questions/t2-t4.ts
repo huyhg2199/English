@@ -141,8 +141,8 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'Nhờ ai làm gì ngay: Will you + nguyên mẫu…?'),
   t3w1.sound(5, 'Trong câu nói tự nhiên "I want to go", từ "to" thường đọc là:', ['/tə/', '/tuː/', '/toʊ/', '/tɑː/'],
     'to là từ chức năng nên đọc dạng yếu /tə/ (gần "tờ"); chỉ đọc /tuː/ khi đứng một mình hoặc cuối câu.'),
-  t3w1.listen(6, ['I can help you tomorrow.', "I can't help you tomorrow.", 'I can help you today.', 'I will help you tomorrow.'],
-    'can trong câu khẳng định đọc nhẹ /kən/; can\'t đọc rõ /kænt/ và được nhấn.'),
+  t3w1.listen(6, ["I'll help you tomorrow.", "I won't help you tomorrow.", "I'll help you today.", 'I want to help you tomorrow.'],
+    "I'll đọc liền một tiếng /aɪl/. won't /woʊnt/ đọc rõ và được nhấn; want /wɑːnt/ khác won't ở nguyên âm, và to sau want đọc yếu /tə/. Nghe kỹ cả từ cuối: tomorrow hay today."),
 
   // ── T3 tuần 2: be going to · nối âm ──
   t3w2.grammar(1, 'Look at those clouds! It ___ rain.', ['is going to', 'going to', 'will to', 'goes to'],
