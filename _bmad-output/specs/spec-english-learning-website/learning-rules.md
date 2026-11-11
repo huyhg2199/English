@@ -17,7 +17,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 | F03 IPA là gì | A | 8 | Hiểu /…/ trong từ điển, đọc 10 ký hiệu gần tiếng Việt, dấu ː; từ đây thẻ từ hiện IPA |
 | F04 Nguyên âm, phụ âm, âm tiết, trọng âm | A | 8 | Đếm âm tiết, nhận âm nhấn ˈ và schwa, không chèn nguyên âm vào cụm phụ âm; từ đây thẻ từ tô trọng âm |
 | F05 Âm cuối | A | 8 | Nghe và nói âm cuối người Việt hay nuốt (rice/rise/right, bag/back), cặp /iː/–/ɪ/ |
-| F06 Số, giá, giờ, ngày, tháng | A | 10 | Số 0–100, thirTEEN/THIRty, giá tiền, giờ, thứ, tháng, số thứ tự |
+| F06 Số, giá, giờ, ngày, tháng | A | 12 | Số 0–100 (ghép twenty-one), thirTEEN/THIRty, giá tiền, giờ, 7 thứ, 12 tháng, ngày kiểu Mỹ (May 3rd), số thứ tự |
 | F07 Từ loại | B · Viên gạch của câu | 8 | Danh, động, tính, trạng từ và nhóm "từ nhỏ", đuôi -tion/-ful/-ly; từ đây thẻ từ hiện nhãn từ loại |
 | F08 S + V (+ O) | B | 8 | Câu phải có chủ ngữ, tính từ đứng trước danh từ; câu mệnh lệnh, Let's, Please |
 | F09 Đại từ I/me/my | B | 8 | Bảng chủ ngữ, tân ngữ, tính từ sở hữu; tránh "I love she", "me name" |
@@ -64,7 +64,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 ## Từ vựng (CAP-9, CAP-10)
 
 - **Số từ mới mỗi ngày:** 5 khi đang ở Sân ga; 8 cho phần còn lại của T1; 10 từ T2. Hôm nào còn hơn 40 thẻ đến hạn ôn thì chỉ 3 từ mới, kèm lời nhắn nhẹ "Hôm nay ôn kỹ, mai học từ mới tiếp".
-- **Thứ tự từ mới:** từ chủ đề của viên gạch/bài và danh sách từ khởi đầu (thời gian, gia đình, nghề, đồ vật lớp học; số và tên thứ/tháng không có trong NGSL nên do viên F06 dạy) trước, rồi mới tới NGSL theo hạng → TSL.
+- **Thứ tự từ mới:** từ chủ đề của viên gạch/bài và danh sách từ khởi đầu (thời gian, gia đình, nghề, đồ vật lớp học; số và tên thứ/tháng không có trong NGSL nên viên F06 dạy bằng bảng tra và thẻ quy tắc) trước, rồi mới tới NGSL theo hạng → TSL.
 - **Hư từ** (the, a/an, of, be, have, can, will, đại từ, giới từ…) được dạy như ngữ pháp: chỉ mở khi viên gạch dạy nó đã dạy (mục Sân ga) hoặc bài T1 dạy nó đã xong. Hư từ không có viên gạch nào dạy (vd can, will, do/does, and/but/or) gắn với bài đầu tiên của Chặng 1 dạy nó; không bài nào dạy thì mở khi qua hoặc bỏ qua Sân ga. Trước đó để dành, không mất, và giữ thứ tự NGSL khi mở. Hư từ chỉ ôn bằng thẻ điền chỗ trống trong câu, không có thẻ kiểu "the = ?".
 - **Thẻ "Làm quen":** lần đầu gặp một từ thì thẻ hiện nghĩa, có audio và nút "Đã xem", chưa chấm Quên/Khó/Nhớ/Dễ. Những lần sau thẻ đi theo lịch SRS như cũ.
 - **Hiển thị trên thẻ:** IPA chỉ hiện sau F03, tô trọng âm và âm tiết sau F04, nhãn từ loại sau F07 (viên tính là đã dạy theo mục Sân ga: xong viên, hàng qua bằng kiểm tra, hoặc đã bỏ qua Sân ga). Chữ "NGSL #n" đổi thành "Từ phổ biến #n".

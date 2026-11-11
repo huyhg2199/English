@@ -24,9 +24,9 @@ const withRequires = (base: Question, requires: readonly string[]): Question => 
 })
 
 describe('requires: khai báo của ngân hàng câu', () => {
-  it('24 câu T1 và 40 câu Sân ga đều khai báo requires hợp lệ', () => {
+  it('24 câu T1 và 42 câu Sân ga đều khai báo requires hợp lệ', () => {
     expect(T1_QUESTIONS).toHaveLength(24)
-    expect(FOUNDATION_QUESTIONS).toHaveLength(40)
+    expect(FOUNDATION_QUESTIONS).toHaveLength(42)
     for (const question of [...T1_QUESTIONS, ...FOUNDATION_QUESTIONS]) {
       expect(question.requires, question.id).toBeDefined()
       expect(requiresViolations(question), question.id).toEqual([])

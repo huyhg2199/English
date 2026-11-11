@@ -722,3 +722,58 @@ function readFoundationCompletedAt(store: Store): string | null {
   const f = store.data.foundation as { completedAt?: string | null } | undefined
   return f?.completedAt ?? null
 }
+
+describe('thẻ quy tắc F06: số, thứ, tháng (story 34)', () => {
+  const F01_F06: BrickId[] = ['F01', 'F02', 'F03', 'F04', 'F05', 'F06']
+  const F06_RULES = Array.from({ length: 8 }, (_, i) => `rule:f06-${i + 1}`)
+  const learnedRowA = (at: Date = day(9)) => F01_F06.reduce((s, id) => completeBrick(s, id, at), empty())
+
+  it('xong F01–F06 → ruleStudyWords có đủ rule:f06-1 … -8 theo thứ tự; newPerDayFor không đổi', () => {
+    const store = learnedRowA()
+    const rules = ruleStudyWords(store, ruleCardsOf).map((r) => r.id)
+    expect(rules.filter((id) => id.startsWith('rule:f06-'))).toEqual(F06_RULES)
+    expect(rules.slice(-8)).toEqual(F06_RULES)
+    expect(newPerDayFor(store, NOW, ruleCardsOf)).toEqual(newPerDayFor(empty(), NOW, ruleCardsOf))
+    expect(newPerDayFor(store, NOW, ruleCardsOf)).toEqual({ count: NEW_WORDS_FOUNDATION, heavyReview: false })
+    // F06 xong hôm nay: 8 thẻ mới đứng sau từ mới, không chiếm quota.
+    const today = learnedRowA(day(10, 8))
+    const queue = fullSession(today).queue
+    const f06 = queue.filter((i) => i.word.id.startsWith('rule:f06-'))
+    expect(f06.map((i) => [i.word.id, i.kind])).toEqual(F06_RULES.map((id) => [id, 'new']))
+    const firstRule = queue.findIndex((i) => i.word.id.startsWith('rule:'))
+    expect(queue.slice(firstRule).every((i) => i.word.id.startsWith('rule:'))).toBe(true)
+    expect(queue.filter((i) => !i.word.id.startsWith('rule:') && i.kind === 'new')).toHaveLength(NEW_WORDS_FOUNDATION)
+  })
+
+  it('đã có rule:f06-1, -2 (trước story 34) → thêm 6 thẻ mới 3–8, thẻ 1–2 giữ lịch cũ', () => {
+    const rowA = learnedRowA(day(1))
+    const others = ruleStudyWords(rowA, ruleCardsOf).map((r) => r.id).filter((id) => !id.startsWith('rule:f06-'))
+    const store = withFutureCards(rowA, [...others, 'rule:f06-1', 'rule:f06-2', ...getBrick('F01')!.themeWordIds])
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const f06 = queue.filter((i) => i.word.id.startsWith('rule:f06-'))
+    expect(f06.map((i) => [i.word.id, i.kind])).toEqual(F06_RULES.slice(2).map((id) => [id, 'new']))
+    // Chấm hết phiên: thẻ 1–2 (chưa tới hạn) không bị đụng, giữ nguyên lịch cũ.
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of ['rule:f06-1', 'rule:f06-2']) expect(cards[id], id).toEqual(before[id])
+    for (const id of F06_RULES.slice(2)) expect(cards[id], id).toBeDefined()
+  })
+
+  it('thẻ mồ côi rule:f06-9 (F06 đã học) không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const due = day(9).toISOString()
+    const c = { due, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: due, known: false, updatedAt: due }
+    const base = learnedRowA()
+    const store: Store = { ...base, data: { ...base.data, srs: { cards: { 'rule:f06-9': c } } } }
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:f06-9')).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(Object.keys(readSrs(store).cards)).toEqual(['rule:f06-9'])
+    // 41 thẻ mồ côi vẫn không làm "tồn ôn nhiều".
+    const many: Record<string, SrsCard> = {}
+    for (let i = 9; i < 50; i++) many[`rule:f06-${i}`] = c
+    const heavy: Store = { ...base, data: { ...base.data, srs: { cards: many } } }
+    expect(newPerDayFor(heavy, NOW, ruleCardsOf)).toEqual({ count: NEW_WORDS_FOUNDATION, heavyReview: false })
+  })
+})

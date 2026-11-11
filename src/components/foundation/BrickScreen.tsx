@@ -11,6 +11,7 @@ import type { Brick, CheckItem, Screen } from '@/data/foundation'
 import { firstTryScore, isFadedCorrect, type CheckFlow } from '@/lib/foundation'
 import { cn } from '@/lib/utils'
 
+import { BrickTables } from './BrickTables'
 import { CheckItemView } from './CheckItemView'
 
 type ScreenOf<K extends Screen['kind']> = Extract<Screen, { kind: K }>
@@ -27,8 +28,16 @@ function EnLine({ text, speech, size = 'base' }: { text: string; speech?: string
   )
 }
 
+/** Đoạn giải thích; viên có bảng tra (story 34, F06) thì thêm `BrickTables` bên dưới. Viên khác giữ nguyên một `<p>`. */
 function ExplainBody({ screen }: { screen: ScreenOf<'explain'> }) {
-  return <p className="text-base leading-relaxed break-words">{screen.textVi}</p>
+  const text = <p className="text-base leading-relaxed break-words">{screen.textVi}</p>
+  if (!screen.tables?.length) return text
+  return (
+    <div className="flex flex-col gap-4">
+      {text}
+      <BrickTables tables={screen.tables} />
+    </div>
+  )
 }
 
 function ContrastBody({ screen }: { screen: ScreenOf<'contrast'> }) {

@@ -123,3 +123,12 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/33-past-to-be-wh-did.md`
   summary: Đoạn Phát âm / Nghe của s1-t2-w2 chưa dạy dạng yếu của was / were (/wəz/, /wɚ/) và chưa có câu nghe phân biệt was / wasn't, were / weren't (điểm nghe hay gặp ở TOEIC Part 1–2).
   evidence: Review story 33 (blind #7). 6 câu quiz mới đều là trắc nghiệm ngữ pháp. Mục phát âm và câu nghe của `t2-t4-pronunciation.ts` / `t2-t4.ts` khối t2w2 không có was / were. Intent story 33 không bao phần phát âm, nên nên làm ở story luyện có bậc (35–36) hoặc một story phát âm riêng.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
+  summary: F06 chưa có câu nghe thứ, tháng hay ngày (câu listen vẫn chỉ là `f06-c1` thirteen và `f06-c2` fifty dollars), dù Tuesday/Thursday được nhắc "dễ nhầm" ở ba chỗ và lý do của story là TOEIC Part 1–3.
+  evidence: Review story 34 (blind #4). Mỗi dòng bảng thứ/tháng có nút nghe nhưng không có câu kiểm. Thêm câu nghe sẽ đổi bộ câu check mà intent story 34 đã chốt; nên làm ở story luyện nghe hoặc khi xem lại F06 (vd đổi `f06-e1` thành câu listen "Thursday").
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
+  summary: Sân ga chưa dạy năm (twenty twenty-six, "May 3rd, 2026"), số trên 100 ($150), a.m./p.m., noon, chữ viết tắt trên lịch TOEIC (Mon, Tue, Jan, Sept) và cách nói ngày kiểu Anh ("the twenty-first of June").
+  evidence: Review story 34 (blind #6). F06 trước và sau story 34 đều chỉ dạy 0–100 và ngày kiểu Mỹ, đúng intent đã chốt. TOEIC Part 3–4, 7 hay có giờ a.m./p.m. và năm; cần Huy chọn đưa vào F06 hay vào bài T1–T4.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
+  summary: Bảng tra mới của màn giải thích (`BrickTables` trong `ExplainBody` và `TermChip`) không có test render hay test bề rộng 375px khi mở bảng.
+  evidence: Vitest chạy `environment: 'node'`, không có `.test.tsx`; `scripts/layout/check-lib.mjs` `ROUTES` chỉ có `/foundation` và `/foundation/F01`, và bảng đóng sẵn nên `scrollWidth` không đo được dòng đã mở. Xoá `<BrickTables>` khỏi `ExplainBody` thì lint/test/build vẫn xanh. Cùng gốc với các mục "cần môi trường test component" của story 16 và 31.

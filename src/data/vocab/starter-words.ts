@@ -4,7 +4,8 @@
  * dữ liệu AI trong `words.json`; không thêm từ hay dữ liệu từ mới.
  *
  * 60 id theo 4 nhóm: thời gian (15), gia đình (12), nghề (12), lớp học (21).
- * Vắng số 2–100, tên các thứ trong tuần và tên tháng (January…): NGSL 1.2 không có các từ này (viên F06 dạy chúng).
+ * Vắng số 2–100, tên các thứ trong tuần và tên tháng (January…): NGSL 1.2 không có các từ này
+ * (viên F06 dạy chúng bằng bảng tra và thẻ quy tắc, story 34).
  * Một số từ trùng từ chủ đề viên gạch (vd week, month, hour của F06): học viên đó trước thì từ lên theo viên, không lặp.
  */
 const TIME = [

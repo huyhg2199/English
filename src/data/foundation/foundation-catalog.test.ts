@@ -4,7 +4,7 @@ import { BRICK_IDS, BRICKS, bricksOfRow, CONCEPT_IDS, getBrickMeta, isBrickId, R
 
 /** Số phút theo bảng trong `learning-rules.md`. */
 const MINUTES: Record<string, number> = {
-  F01: 6, F02: 8, F03: 8, F04: 8, F05: 8, F06: 10,
+  F01: 6, F02: 8, F03: 8, F04: 8, F05: 8, F06: 12,
   F07: 8, F08: 8, F09: 8, F10: 8, F11: 10, F12: 6,
   F13: 10, F14: 10, F15: 10, F16: 6,
   F17: 8, F18: 8,
@@ -26,9 +26,9 @@ describe('danh mục Sân ga 9¾', () => {
     expect(bricksOfRow('D').map((b) => b.id)).toEqual(['F17', 'F18'])
   })
 
-  it('số phút từng viên và tổng khớp bảng (148 phút)', () => {
+  it('số phút từng viên và tổng khớp bảng (150 phút)', () => {
     for (const b of BRICKS) expect(b.minutes, b.id).toBe(MINUTES[b.id])
-    expect(BRICKS.reduce((sum, b) => sum + b.minutes, 0)).toBe(148)
+    expect(BRICKS.reduce((sum, b) => sum + b.minutes, 0)).toBe(150)
   })
 
   it('mỗi ConceptId được đúng một viên teaches', () => {

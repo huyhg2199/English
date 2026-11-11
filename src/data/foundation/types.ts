@@ -109,6 +109,8 @@ export type Screen =
       kind: 'explain'
       /** Giải thích tiếng Việt, 40–80 chữ. */
       textVi: string
+      /** Bảng tra (story 34, tuỳ chọn): hiện dưới đoạn giải thích, mỗi bảng đóng sẵn. Hiện chỉ F06 có. */
+      tables?: readonly BrickTable[]
     }
   | {
       kind: 'contrast'
@@ -161,6 +163,15 @@ export type Screen =
       /** Câu nói theo mẫu (dùng `SpeakPractice`, id dạng `f01-say-1`). */
       speak?: readonly PracticeSentence[]
     }
+
+/**
+ * Một dòng bảng tra của viên (story 34). `en`: chữ tiếng Anh, TTS đọc thẳng (chỉ chữ, dấu cách, gạch nối, dấu nháy);
+ * `ipa`: IPA kiểu Mỹ không có dấu `/` (UI tự thêm); `vi`: nghĩa hoặc con số.
+ */
+export type BrickTableRow = { en: string; ipa?: string; vi: string }
+
+/** Bảng tra trong màn giải thích (story 34): id dạng `fNN-…`, tiêu đề, ghi chú cuối bảng (tuỳ chọn), các dòng. */
+export type BrickTable = { id: string; title: string; noteVi?: string; rows: readonly BrickTableRow[] }
 
 /** Dòng thời gian minh hoạ một màn (như `TenseCard`). */
 export type BrickTimeline = { kind: TimelineKind; label: string }
