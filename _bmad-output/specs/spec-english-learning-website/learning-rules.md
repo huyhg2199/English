@@ -17,7 +17,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 | F03 IPA là gì | A | 8 | Hiểu /…/ trong từ điển, đọc 10 ký hiệu gần tiếng Việt, dấu ː; từ đây thẻ từ hiện IPA |
 | F04 Nguyên âm, phụ âm, âm tiết, trọng âm | A | 8 | Đếm âm tiết, nhận âm nhấn ˈ và schwa, không chèn nguyên âm vào cụm phụ âm; từ đây thẻ từ tô trọng âm |
 | F05 Âm cuối | A | 8 | Nghe và nói âm cuối người Việt hay nuốt (rice/rise/right, bag/back), cặp /iː/–/ɪ/ |
-| F06 Số, giá, giờ, ngày, tháng | A | 10 | Số 0–100, thirTEEN/THIRty, giá tiền, giờ, thứ, tháng, số thứ tự |
+| F06 Số, giá, giờ, ngày, tháng | A | 12 | Số 0–100 (ghép twenty-one), thirTEEN/THIRty, giá tiền, giờ, 7 thứ, 12 tháng, ngày kiểu Mỹ (May 3rd), số thứ tự |
 | F07 Từ loại | B · Viên gạch của câu | 8 | Danh, động, tính, trạng từ và nhóm "từ nhỏ", đuôi -tion/-ful/-ly; từ đây thẻ từ hiện nhãn từ loại |
 | F08 S + V (+ O) | B | 8 | Câu phải có chủ ngữ, tính từ đứng trước danh từ; câu mệnh lệnh, Let's, Please |
 | F09 Đại từ I/me/my | B | 8 | Bảng chủ ngữ, tân ngữ, tính từ sở hữu; tránh "I love she", "me name" |
@@ -49,7 +49,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - Lý thuyết luôn đi trước luyện.
 - **Khi đang ở Sân ga:** Lý thuyết 12' (1 viên gạch, hiện ngay trong buổi; xong viên có nút "Học tiếp viên sau", không bắt buộc, chỉ hiện khi còn viên tiếp theo) → Ôn & từ mới 8' → Giải trí nhẹ 10' (VOA Let's Learn English L1–L3, có phụ đề Việt khi có).
-- **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài.
+- **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài. Thì có phần luyện có bậc (ví dụ mẫu → tự điền → 5–7 câu luyện có Gợi ý, dưới 60% mời xem lại + 2 câu dễ hơn → áp dụng) hiện ngay dưới TenseCard. Sai thì giải thích và làm lại, không ghi Sổ lỗi, không lưu tiến độ hay lần làm quiz; chỉ câu nói ở bước áp dụng ghi điểm nói như viên gạch (story 35).
 - Kế hoạch buổi chốt lúc bắt đầu buổi: xong viên cuối cùng giữa buổi thì buổi vẫn chạy hết 3 phần như đã chốt.
 - `prioritizeSections` (đẩy kỹ năng yếu, CAP-7) chỉ đổi thứ tự giữa các phần luyện, không bao giờ đẩy phần lý thuyết xuống dưới phần luyện.
 - **Ngày lười (10'):** ở Sân ga là ôn 1 viên gạch (viên xong gần nhất; chưa xong viên nào thì xem phần giải thích của viên tiếp theo) + 3 từ (không dùng tin); sau Sân ga là 1 tin + 3 từ (mục Nội dung bài). Vẫn giữ streak.
@@ -64,12 +64,12 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 ## Từ vựng (CAP-9, CAP-10)
 
 - **Số từ mới mỗi ngày:** 5 khi đang ở Sân ga; 8 cho phần còn lại của T1; 10 từ T2. Hôm nào còn hơn 40 thẻ đến hạn ôn thì chỉ 3 từ mới, kèm lời nhắn nhẹ "Hôm nay ôn kỹ, mai học từ mới tiếp".
-- **Thứ tự từ mới:** từ chủ đề của viên gạch/bài và danh sách từ khởi đầu (thời gian, gia đình, nghề, đồ vật lớp học; số và tên thứ/tháng không có trong NGSL nên do viên F06 dạy) trước, rồi mới tới NGSL theo hạng → TSL.
+- **Thứ tự từ mới:** từ chủ đề của viên gạch/bài và danh sách từ khởi đầu (thời gian, gia đình, nghề, đồ vật lớp học; số và tên thứ/tháng không có trong NGSL nên viên F06 dạy bằng bảng tra và thẻ quy tắc) trước, rồi mới tới NGSL theo hạng → TSL.
 - **Hư từ** (the, a/an, of, be, have, can, will, đại từ, giới từ…) được dạy như ngữ pháp: chỉ mở khi viên gạch dạy nó đã dạy (mục Sân ga) hoặc bài T1 dạy nó đã xong. Hư từ không có viên gạch nào dạy (vd can, will, do/does, and/but/or) gắn với bài đầu tiên của Chặng 1 dạy nó; không bài nào dạy thì mở khi qua hoặc bỏ qua Sân ga. Trước đó để dành, không mất, và giữ thứ tự NGSL khi mở. Hư từ chỉ ôn bằng thẻ điền chỗ trống trong câu, không có thẻ kiểu "the = ?".
 - **Thẻ "Làm quen":** lần đầu gặp một từ thì thẻ hiện nghĩa, có audio và nút "Đã xem", chưa chấm Quên/Khó/Nhớ/Dễ. Những lần sau thẻ đi theo lịch SRS như cũ.
 - **Hiển thị trên thẻ:** IPA chỉ hiện sau F03, tô trọng âm và âm tiết sau F04, nhãn từ loại sau F07 (viên tính là đã dạy theo mục Sân ga: xong viên, hàng qua bằng kiểm tra, hoặc đã bỏ qua Sân ga). Chữ "NGSL #n" đổi thành "Từ phổ biến #n".
 - **Ví dụ:** câu ví dụ AI nào dùng ngữ pháp chưa học thì thay bằng câu tự viết. Tập rà: NGSL hạng 1–500, danh sách từ khởi đầu và từ chủ đề của mọi viên gạch có nội dung. Câu ví dụ chỉ dùng ngữ pháp Sân ga (F01–F18) và hiện tại đơn (khẳng định, phủ định, câu hỏi); ngoại lệ là câu của chính hư từ được mở sau bài dạy nó (will, can…).
-- **Thẻ quy tắc** của viên gạch là thẻ điền chỗ trống. Chỉ viên đã học xong mới góp thẻ (hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không). Thẻ quy tắc vào phiên ôn ngay hôm học xong viên, đứng sau từ mới và không tính vào số từ mới mỗi ngày.
+- **Thẻ quy tắc** của viên gạch là thẻ điền chỗ trống. Chỉ viên đã học xong mới góp thẻ (hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không). Thẻ quy tắc vào phiên ôn ngay hôm học xong viên, đứng sau từ mới và không tính vào số từ mới mỗi ngày. Thì trong bài Chặng 1 cũng có thể góp thẻ quy tắc: chỉ bài đã đánh dấu xong mới góp (bài bỏ qua khi xếp lớp thì không), thẻ đứng sau thẻ viên gạch (story 33).
 - Thuật toán SRS và lịch của thẻ cũ giữ nguyên. Không xoá hay reset thẻ.
 
 ## Mũ Phân Loại (CAP-3)
@@ -97,7 +97,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - **Nhãn loại lỗi:** thì, từ loại, giới từ, phát âm, từ vựng, nghe.
 - **Ghi Sổ lỗi:** câu sai ở quiz bài, mini test, test quay lại, O.W.L./N.E.W.T., và kiểm tra hàng của Sân ga khi đã học hết các viên của hàng đó.
-- **Không ghi Sổ lỗi:** câu luyện trong viên gạch, Soát vé, kiểm tra "Tôi biết rồi" khi chưa học hết các viên của hàng.
+- **Không ghi Sổ lỗi:** câu luyện trong viên gạch, phần luyện của thì, Soát vé, kiểm tra "Tôi biết rồi" khi chưa học hết các viên của hàng.
 - **Lời mời ôn viên gạch:** mỗi câu hỏi khai báo khái niệm nó dùng (`uses`), mỗi viên khai báo khái niệm nó dạy (`teaches`). Khi trong 14 ngày gần nhất có từ 2 câu sai trở lên (đã ghi Sổ lỗi) cùng dùng một khái niệm do viên X dạy, Hôm nay mời "Ôn viên gạch X n'?" (n = số phút của viên). Khái niệm không do viên nào dạy thì không mời. Ôn xong viên X hoặc bấm "Để sau" thì lời mời ẩn tới khi có câu sai mới về khái niệm đó. Chỉ là lời mời, không chặn gì.
 - Nút "Vì sao sai?" dùng Gemini qua BYOK.
 

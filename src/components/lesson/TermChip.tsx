@@ -4,17 +4,21 @@ import { Link } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { getBrickMeta } from '@/data/foundation'
+import { BrickTables } from '@/components/foundation/BrickTables'
+import { getBrickMeta, type BrickTable } from '@/data/foundation'
 import { getBrick } from '@/data/foundation/content'
 import { splitGlossaryText, type GlossaryTerm } from '@/data/foundation/glossary'
 import { brickHref } from '@/lib/foundation'
 
-/** Đoạn giải thích (`explain`) của viên dạy thuật ngữ; viên chưa có nội dung thì "học để làm gì". */
-function brickExplain(term: GlossaryTerm): string {
+/**
+ * Đoạn giải thích (`explain`) của viên dạy thuật ngữ, kèm bảng tra nếu có (F06, story 34: đoạn chữ nhắc "bảng tra bên
+ * dưới"); viên chưa có nội dung thì "học để làm gì".
+ */
+function brickExplain(term: GlossaryTerm): { text: string; tables: readonly BrickTable[] } {
   const brick = getBrick(term.brickId)
   const explain = brick?.screens.find((s) => s.kind === 'explain')
-  if (explain?.kind === 'explain') return explain.textVi
-  return getBrickMeta(term.brickId)?.goalVi ?? ''
+  if (explain?.kind === 'explain') return { text: explain.textVi, tables: explain.tables ?? [] }
+  return { text: getBrickMeta(term.brickId)?.goalVi ?? '', tables: [] }
 }
 
 /**
@@ -24,6 +28,7 @@ function brickExplain(term: GlossaryTerm): string {
  */
 export function TermChip({ term, children }: { term: GlossaryTerm; children: string }) {
   const meta = getBrickMeta(term.brickId)
+  const explain = brickExplain(term)
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -47,7 +52,8 @@ export function TermChip({ term, children }: { term: GlossaryTerm; children: str
             <BookOpen className="size-4 shrink-0 text-primary" aria-hidden="true" />
             Viên gạch {term.brickId} · {meta?.title}
           </p>
-          <p className="text-sm leading-relaxed break-words text-muted-foreground">{brickExplain(term)}</p>
+          <p className="text-sm leading-relaxed break-words text-muted-foreground">{explain.text}</p>
+          {explain.tables.length > 0 && <BrickTables tables={explain.tables} />}
         </div>
         <Button asChild>
           <Link to={brickHref(term.brickId)}>Mở viên {term.brickId}</Link>

@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { FOUNDATION_QUESTIONS } from '@/data/questions'
+import { FOUNDATION_QUESTIONS, QUESTION_BANK } from '@/data/questions'
 import { FUNCTION_WORD_GATES, hasDetails, loadWords, POS_LABELS, STARTER_WORD_IDS } from '@/data/vocab'
+import { allTenses } from '@/data/lessons'
+import { isFadedCorrect } from '@/lib/foundation/player'
 import { ruleCardId } from '@/lib/flashcard-session'
+import { checkFill } from '@/lib/subs/blanks'
 
 import { BRICKS, getBrickMeta } from './catalog'
 import { BRICK_CONTENT, getBrick, hasBrickContent } from './content'
@@ -105,6 +108,13 @@ function englishTexts(brick: Brick): { where: string; text: string }[] {
     ...brick.ruleCards.flatMap((c) => [
       { where: c.id, text: c.cloze.replace('___', c.answer) },
       { where: `${c.id}.vi`, text: c.vi },
+    ]),
+    ...(explain.tables ?? []).flatMap((t) => [
+      ...(t.noteVi ? [{ where: `${t.id}.noteVi`, text: t.noteVi }] : []),
+      ...t.rows.flatMap((r) => [
+        { where: `${t.id}: ${r.en}`, text: r.en },
+        { where: `${t.id}: ${r.en}.vi`, text: r.vi },
+      ]),
     ]),
   ]
   for (const item of allItems(brick)) {
@@ -257,6 +267,24 @@ describe('nội dung viên gạch', () => {
     expect(bad).toEqual([])
   })
 
+  it('ngữ pháp hàng A: câu tiếng Anh F01–F06 không có to be, have, do, khuyết thiếu, at / on / in', () => {
+    const ROW_A_IDS = ['F01', 'F02', 'F03', 'F04', 'F05', 'F06']
+    const AT_ON_IN = new Set(['at', 'on', 'in'])
+    const bad: string[] = []
+    for (const id of ROW_A_IDS) {
+      const texts = englishTexts(getBrick(id)!)
+      expect(texts.length, id).toBeGreaterThan(10)
+      for (const { where, text } of texts) {
+        // Tên tháng May không phải khuyết thiếu may.
+        // F02 đọc @ là "at" (huy at gmail dot com), không phải giới từ thời gian.
+        const prep = (t: string) => AT_ON_IN.has(t) && !(id === 'F02' && t === 'at')
+        const hit = tokensOf(text.replace(/\bMay\b(?! I\b)/g, '')).filter((t) => isForbidden(t) || prep(t))
+        if (hit.length > 0) bad.push(`${id} ${where}: "${text}" (${hit.join(', ')})`)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+
   it('loại câu bắt buộc hàng C–D: F14 nghe câu hỏi, F15 chọn giới từ nơi chốn, F17 xếp vùng thời gian, F18 xếp trạng từ tần suất', () => {
     expect(
       allItems(getBrick('F14')!).some((i) => i.kind === 'listen' && i.audioText.trim().endsWith('?')),
@@ -283,6 +311,19 @@ describe('nội dung viên gạch', () => {
       allItems(getBrick('F18')!).some((i) => i.kind === 'order' && i.tokens.some((t) => FREQ.has(t.toLowerCase()))),
       'F18 order trạng từ tần suất',
     ).toBe(true)
+  })
+
+  it('F17: gone không nằm trong nhóm Quá khứ, có nhóm "have / has" chứa gone, "She has gone." không gọi là Quá khứ (story 32)', () => {
+    const f17 = getBrick('F17')!
+    const sorts = allItems(f17).filter((i) => i.kind === 'sort')
+    const groups = sorts.flatMap((i) => (i.kind === 'sort' ? i.groups : []))
+    for (const g of groups.filter((x) => x.label.startsWith('Quá khứ'))) {
+      expect(g.items.flatMap(tokensOf), g.items.join(' | ')).not.toContain('gone')
+    }
+    expect(groups.some((g) => g.label.includes('have / has') && g.items.flatMap(tokensOf).includes('gone'))).toBe(true)
+    const hasGone = (screenOf(f17, 'contrast').examples ?? []).filter((ex) => ex.en === 'She has gone.')
+    expect(hasGone.length).toBeGreaterThanOrEqual(1)
+    for (const ex of hasGone) expect(ex.vi).not.toContain('Quá khứ')
   })
 
   it('ngữ pháp hàng C–D: không do/does/did, khuyết thiếu, rút gọn lạ; was/were/been/being chỉ F13, had chỉ F16, going/gone từ F17', () => {
@@ -465,8 +506,13 @@ describe('nội dung viên gạch', () => {
 
     it('faded và thẻ quy tắc có đúng một ___; thẻ quy tắc thuộc viên này', () => {
       expect(blanks(screenOf(brick, 'faded').en)).toBe(1)
-      expect(brick.ruleCards.length).toBeGreaterThanOrEqual(1)
-      expect(brick.ruleCards.length).toBeLessThanOrEqual(2)
+      // Riêng F06 có 8 thẻ (số, thứ, tháng, ngày tháng — story 34); viên khác 1–2.
+      if (id === 'F06') {
+        expect(brick.ruleCards).toHaveLength(8)
+      } else {
+        expect(brick.ruleCards.length).toBeGreaterThanOrEqual(1)
+        expect(brick.ruleCards.length).toBeLessThanOrEqual(2)
+      }
       for (const card of brick.ruleCards) {
         expect(blanks(card.cloze)).toBe(1)
         expect(card.brickId).toBe(id)
@@ -557,5 +603,182 @@ describe('nội dung viên gạch', () => {
         expect(CONTENT_POS.has(w!.pos ?? ''), `${wid} là ${w!.pos}`).toBe(true)
       }
     })
+  })
+})
+
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+const DAY_RE = new RegExp(`\\b(${DAY_NAMES.join('|')})s?\\b`, 'g')
+/** Tên tháng (viết hoa). "May" chỉ tính khi đứng sau in / on hoặc trước một số ("May I go?" là khuyết thiếu). */
+const MONTH_RE = new RegExp(`\\b(${MONTH_NAMES.filter((m) => m !== 'May').join('|')})\\b`, 'g')
+const MAY_RE =
+  /\b(?:in|on) (May)\b|\b(May)(?= (?:\d|first\b|second\b|third\b|[a-z]+(?:th|st|nd|rd)\b)|, (?:January|February|March|April|June|July|August|September|October|November|December)\b)/g
+
+/** Tên thứ / tháng có trong chuỗi (bỏ đuôi -s của thứ: "Mondays" → Monday). */
+function dayMonthNames(text: string): string[] {
+  return [
+    ...[...text.matchAll(DAY_RE)].map((m) => m[1]),
+    ...[...text.matchAll(MONTH_RE)].map((m) => m[1]),
+    ...[...text.matchAll(MAY_RE)].map((m) => m[1] ?? m[2]),
+  ]
+}
+
+/** Chuỗi tiếng Anh của câu luyện viên: đề (đã điền đáp án), lựa chọn, audioText, mảnh xếp, mục xếp nhóm. */
+function itemTexts(item: CheckItem): string[] {
+  const texts: string[] = []
+  if ('prompt' in item && item.prompt) {
+    const filled = item.kind === 'choice' || item.kind === 'listen' ? item.options[item.answer] : undefined
+    texts.push(filled ? item.prompt.replace('___', filled) : item.prompt)
+  }
+  if (item.kind === 'choice' || item.kind === 'listen') texts.push(...item.options)
+  if (item.kind === 'listen') texts.push(item.audioText)
+  if (item.kind === 'order') texts.push(item.tokens.join(' '))
+  if (item.kind === 'sort') texts.push(...item.groups.flatMap((g) => g.items))
+  if (item.kind === 'tapSyllable') texts.push(item.word)
+  return texts
+}
+
+describe('F06 số, thứ, tháng (story 34)', () => {
+  const f06 = getBrick('F06')!
+  const tables = screenOf(f06, 'explain').tables ?? []
+  const table = (id: string) => {
+    const t = tables.find((x) => x.id === id)
+    if (!t) throw new Error(`F06 thiếu bảng ${id}`)
+    return t
+  }
+  const ens = (id: string) => table(id).rows.map((r) => r.en)
+
+  it('chỉ F06 có bảng; id bảng đúng thứ tự', () => {
+    for (const b of bricks) {
+      if (b.id === 'F06') continue
+      expect(screenOf(b, 'explain').tables, b.id).toBeUndefined()
+    }
+    expect(tables.map((t) => t.id)).toEqual(['f06-numbers', 'f06-tens', 'f06-days', 'f06-months', 'f06-ordinals', 'f06-time-price'])
+  })
+
+  it('bảng số 0–19 và bảng số chục', () => {
+    const numbers = table('f06-numbers')
+    expect(numbers.rows.map((r) => r.vi)).toEqual(Array.from({ length: 20 }, (_, i) => String(i)))
+    expect(ens('f06-numbers')).toEqual([
+      'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+      'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen',
+    ])
+    expect(ens('f06-tens')).toEqual(['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety', 'one hundred'])
+    expect(table('f06-tens').rows.map((r) => r.vi)).toEqual(['20', '30', '40', '50', '60', '70', '80', '90', '100'])
+  })
+
+  it('bảng thứ Monday → Sunday, bảng tháng January → December', () => {
+    expect(ens('f06-days')).toEqual(DAY_NAMES)
+    expect(table('f06-days').rows.map((r) => r.vi)).toEqual(['thứ Hai', 'thứ Ba', 'thứ Tư', 'thứ Năm', 'thứ Sáu', 'thứ Bảy', 'Chủ nhật'])
+    expect(ens('f06-months')).toEqual(MONTH_NAMES)
+    expect(table('f06-months').rows.map((r) => r.vi)).toEqual(Array.from({ length: 12 }, (_, i) => `tháng ${i + 1}`))
+  })
+
+  it('bảng số thứ tự có các dạng hay sai', () => {
+    const ordinals = ens('f06-ordinals')
+    for (const w of ['first', 'second', 'third', 'fifth', 'twelfth', 'twentieth', 'twenty-first']) {
+      expect(ordinals, w).toContain(w)
+    }
+    // Ngoại lệ 11–13 (review story 34): không theo đuôi 1, 2, 3 → first, second, third.
+    for (const w of ['eleventh', 'thirteenth', 'twenty-third', 'thirtieth']) expect(ordinals, w).toContain(w)
+    expect(table('f06-ordinals').noteVi).toContain('trừ 11th eleventh, 12th twelfth, 13th thirteenth')
+  })
+
+  it('mọi dòng: en chỉ chữ / dấu cách / gạch nối / dấu nháy, vi không rỗng, en không trùng trong bảng', () => {
+    for (const t of tables) {
+      expect(t.rows.length, t.id).toBeGreaterThan(0)
+      expect(new Set(t.rows.map((r) => r.en)).size, t.id).toBe(t.rows.length)
+      for (const r of t.rows) {
+        expect(r.en, `${t.id}: ${r.en}`).toMatch(/^[A-Za-z' -]+$/)
+        expect(r.vi.trim(), `${t.id}: ${r.en}`).not.toBe('')
+      }
+    }
+  })
+
+  it('IPA: bảng số, chục, thứ, tháng, số thứ tự có ipa không dấu /; trọng âm đúng chỗ', () => {
+    for (const id of ['f06-numbers', 'f06-tens', 'f06-days', 'f06-months', 'f06-ordinals']) {
+      for (const r of table(id).rows) {
+        expect(r.ipa, `${id}: ${r.en}`).toBeDefined()
+        expect(r.ipa!.trim(), `${id}: ${r.en}`).not.toBe('')
+        expect(r.ipa, `${id}: ${r.en}`).not.toContain('/')
+      }
+    }
+    for (const r of table('f06-numbers').rows.slice(13)) expect(r.ipa, r.en).toContain('ˈtiːn')
+    for (const r of table('f06-tens').rows.slice(0, 8)) expect(r.ipa!.startsWith('ˈ'), r.en).toBe(true)
+    for (const r of table('f06-days').rows) expect(r.ipa!.startsWith('ˈ'), r.en).toBe(true)
+    for (const r of table('f06-months').rows) {
+      expect(r.ipa!.includes('ˈ'), r.en).toBe(!['March', 'May', 'June'].includes(r.en))
+    }
+    expect(table('f06-months').rows.find((r) => r.en === 'July')?.ipa).toBe('dʒʊˈlaɪ')
+  })
+
+  it('thẻ quy tắc: 1–2 giữ nguyên, 3–8 đúng đáp án', () => {
+    const cards = f06.ruleCards
+    expect(cards.map((c) => c.id)).toEqual(Array.from({ length: 8 }, (_, i) => `f06-rule-${i + 1}`))
+    expect(cards.map(ruleCardId)).toEqual(Array.from({ length: 8 }, (_, i) => `rule:f06-${i + 1}`))
+    expect([cards[0].cloze, cards[0].answer]).toEqual(['thir___ = 13', 'teen'])
+    expect([cards[1].cloze, cards[1].answer]).toEqual(['1st first, 2nd ___, 3rd third', 'second'])
+    expect(cards.slice(2).map((c) => c.answer)).toEqual(['forty', 'Wednesday', 'Thursday', 'July', 'December', 'third'])
+    expect(cards.find((c) => c.id === 'f06-rule-4')?.cloze).toBe('Monday, Tuesday, ___')
+  })
+
+  it('câu nói có f06-say-3; câu check / easier / apply mới đúng id', () => {
+    const speak = screenOf(f06, 'apply').speak ?? []
+    expect(speak.map((s) => s.id)).toEqual(['f06-say-1', 'f06-say-2', 'f06-say-3'])
+    expect(speak[2].text).toBe('June twenty-first')
+    expect(allItems(f06).map((i) => i.id)).toEqual(['f06-c1', 'f06-c2', 'f06-c3', 'f06-c4', 'f06-c5', 'f06-e1', 'f06-e2', 'f06-a1'])
+  })
+
+  it('câu có tên thứ / tháng thì khai báo days-months (câu luyện của viên có uses, câu quiz có requires)', () => {
+    const missing: string[] = []
+    const seen = new Set<string>()
+    for (const b of bricks) {
+      for (const item of allItems(b)) {
+        if (!item.uses) continue
+        const names = itemTexts(item).flatMap(dayMonthNames)
+        for (const n of names) seen.add(n)
+        if (names.length > 0 && !item.uses.includes('days-months')) missing.push(`${item.id} (${names.join(', ')})`)
+      }
+    }
+    for (const q of [...FOUNDATION_QUESTIONS, ...QUESTION_BANK]) {
+      if (!q.requires) continue
+      const texts = [q.prompt.replace('___', q.answer), ...('options' in q ? q.options : []), q.answer, ('audioText' in q ? q.audioText : '') ?? '']
+      const names = texts.flatMap(dayMonthNames)
+      for (const n of names) seen.add(n)
+      if (names.length > 0 && !(q.requires as readonly string[]).includes('days-months')) missing.push(`${q.id} (${names.join(', ')})`)
+    }
+    expect(missing).toEqual([])
+    // Mọi tên thứ / tháng gặp trong các câu trên đều có trong bảng F06.
+    const inTables = new Set([...ens('f06-days'), ...ens('f06-months')])
+    expect([...seen].filter((n) => !inTables.has(n))).toEqual([])
+    expect(seen.size).toBeGreaterThan(0)
+    // Tự kiểm: "May I go?" không phải tên tháng; "in May", "May 3rd", "Mondays" thì có.
+    expect(dayMonthNames('May I go?')).toEqual([])
+    expect(dayMonthNames('I go on Mondays in May. May 3rd, July.')).toEqual(['Monday', 'July', 'May', 'May'])
+    expect(dayMonthNames('May third · May twelfth · May, June')).toEqual(['June', 'May', 'May', 'May'])
+    expect(dayMonthNames('May I help? May you be happy.')).toEqual([])
+  })
+})
+
+describe('màn faded đổi từ checkFill sang matchesTyped (story 35): chỉ nới thêm', () => {
+  // Intent story 35: không câu nào trước đây đúng mà nay thành sai. matchesTyped chỉ mở rộng I'm / 're / 've / 'll khi có
+  // nháy ("were" ≠ "we're"), nên một đáp án faded có dạng đó sẽ không còn nhận bản gõ thiếu nháy như checkFill: test này
+  // chặn dữ liệu như vậy (cần thì ghi vào `accept`).
+  const faded = [
+    ...bricks.map((b) => ({ where: b.id, screen: screenOf(b, 'faded') })),
+    ...allTenses().flatMap((t) => (t.practice ? [{ where: t.id, screen: t.practice.faded }] : [])),
+  ]
+
+  it('mọi cách gõ checkFill nhận thì isFadedCorrect cũng nhận', () => {
+    expect(faded.length).toBeGreaterThan(18)
+    for (const { where, screen } of faded) {
+      const a = screen.answer
+      for (const typed of [a, a.replace(/['’]/g, ''), a.toUpperCase(), `${a}.`, ` ${a.toLowerCase()} `]) {
+        if (checkFill(a, typed)) expect(isFadedCorrect(a, typed, screen.accept), `${where}: "${typed}"`).toBe(true)
+      }
+    }
   })
 })

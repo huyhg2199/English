@@ -109,6 +109,8 @@ export type Screen =
       kind: 'explain'
       /** Giải thích tiếng Việt, 40–80 chữ. */
       textVi: string
+      /** Bảng tra (story 34, tuỳ chọn): hiện dưới đoạn giải thích, mỗi bảng đóng sẵn. Hiện chỉ F06 có. */
+      tables?: readonly BrickTable[]
     }
   | {
       kind: 'contrast'
@@ -138,6 +140,8 @@ export type Screen =
       /** Ví dụ có đúng một chỗ trống `___`. */
       en: string
       answer: string
+      /** Cách viết khác cũng đúng (story 35, tuỳ chọn); chấm bằng `matchesTyped`. */
+      accept?: readonly string[]
       vi: string
       hintVi?: string
     }
@@ -161,6 +165,21 @@ export type Screen =
       /** Câu nói theo mẫu (dùng `SpeakPractice`, id dạng `f01-say-1`). */
       speak?: readonly PracticeSentence[]
     }
+
+/** Từng loại màn (story 35 dùng lại `worked` / `faded` / `check` / `apply` cho phần luyện của thì). */
+export type WorkedScreen = Extract<Screen, { kind: 'worked' }>
+export type FadedScreen = Extract<Screen, { kind: 'faded' }>
+export type CheckScreenData = Extract<Screen, { kind: 'check' }>
+export type ApplyScreen = Extract<Screen, { kind: 'apply' }>
+
+/**
+ * Một dòng bảng tra của viên (story 34). `en`: chữ tiếng Anh, TTS đọc thẳng (chỉ chữ, dấu cách, gạch nối, dấu nháy);
+ * `ipa`: IPA kiểu Mỹ không có dấu `/` (UI tự thêm); `vi`: nghĩa hoặc con số.
+ */
+export type BrickTableRow = { en: string; ipa?: string; vi: string }
+
+/** Bảng tra trong màn giải thích (story 34): id dạng `fNN-…`, tiêu đề, ghi chú cuối bảng (tuỳ chọn), các dòng. */
+export type BrickTable = { id: string; title: string; noteVi?: string; rows: readonly BrickTableRow[] }
 
 /** Dòng thời gian minh hoạ một màn (như `TenseCard`). */
 export type BrickTimeline = { kind: TimelineKind; label: string }
@@ -214,6 +233,17 @@ export type CheckItem =
       prompt?: string
       /** Các nhóm, mỗi nhóm có nhãn và các mục thuộc nhóm đó (app trộn khi hiện). */
       groups: readonly { label: string; items: readonly string[] }[]
+    })
+  /**
+   * Câu gõ (story 35): gõ một chỗ trống (`prompt` có `___`, vd "She ___ (not / work) today.") hoặc gõ cả câu theo yêu cầu
+   * trong `prompt` (vd "Đổi sang câu hỏi: …"). Chấm bằng `matchesTyped` với `answer` và `accept`.
+   */
+  | (CheckBase & {
+      kind: 'type'
+      prompt: string
+      answer: string
+      /** Cách viết khác cũng đúng; mỗi mục khác `answer`. */
+      accept?: readonly string[]
     })
 
 /** Thẻ quy tắc của viên (thẻ điền chỗ trống, vào SRS). */

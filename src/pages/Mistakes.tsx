@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getQuestion, MISTAKE_TAGS, type MistakeTag } from '@/data/questions'
 import { readGeminiKey } from '@/lib/ai'
 import { OWL_SELF_NO, OWL_SELF_OK } from '@/lib/owl'
-import { filterMistakes, isMistakeItem, listMistakes, reviewableDue, shuffleOptions } from '@/lib/quiz'
+import { filterMistakes, isAnswerCorrect, isMistakeItem, listMistakes, reviewableDue, shuffleOptions } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
 import { cn } from '@/lib/utils'
 
@@ -83,7 +83,7 @@ function ReviewSession({ ids, onDone }: { ids: readonly string[]; onDone: () => 
       chosen={chosen}
       onChoose={(option) => {
         setChosen(option)
-        review(id, option === question.answer, option)
+        review(id, isAnswerCorrect(question, option), option)
       }}
       heading={`Ôn sổ · câu ${index + 1}/${ids.length}`}
       footer={

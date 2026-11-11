@@ -33,7 +33,7 @@ import {
   PRONUNCIATION_T4_W3,
   PRONUNCIATION_T4_W4,
 } from './t2-t4-pronunciation'
-import type { LessonContent, Tense } from './types'
+import type { LessonContent, Tense, TenseRuleCard } from './types'
 
 export * from './types'
 export { getSpell, SPELLS } from './spells'
@@ -162,4 +162,18 @@ export function lessonPartIds(lessonId: string): readonly string[] {
 /** Mọi thì đã soạn, theo thứ tự bài. */
 export function allTenses(): Tense[] {
   return LESSON_CONTENTS.flatMap((c) => c.grammar?.tenses ?? [])
+}
+
+const NO_RULE_CARDS: readonly TenseRuleCard[] = []
+const ruleCardsByLesson = new Map(
+  LESSON_CONTENTS.map((c) => [c.lessonId, (c.grammar?.tenses ?? []).flatMap((t) => t.ruleCards ?? [])] as const),
+)
+
+/**
+ * Thẻ quy tắc của mọi thì trong bài (story 33), theo thứ tự thì rồi thứ tự thẻ; bài không có thẻ (hoặc id lạ) → `[]`.
+ * Bài đánh dấu xong thì thẻ vào phiên ôn (`ruleStudyWords`), id SRS `rule:<tenseId>-n`.
+ */
+export function lessonRuleCards(lessonId: string): readonly TenseRuleCard[] {
+  const cards = ruleCardsByLesson.get(lessonId)
+  return cards && cards.length > 0 ? cards : NO_RULE_CARDS
 }

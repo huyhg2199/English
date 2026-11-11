@@ -1,4 +1,5 @@
 import type { RequiredConcept } from '@/data/questions/concepts'
+import type { ApplyScreen, CheckScreenData, FadedScreen, WorkedScreen } from '@/data/foundation/types'
 
 /**
  * Nội dung học thật của bài (story 6): bảng âm + câu luyện nói cho đoạn Phát âm,
@@ -172,7 +173,33 @@ export type Tense = {
   dialogues: readonly DialogueLine[]
   /** Thần chú của thì; chủ điểm ôn/so sánh (hiện tại hoàn thành (2)) không có thần chú riêng. */
   spellId?: string
+  /**
+   * Thẻ quy tắc của thì (story 33). Bài chứa thì được đánh dấu xong thì thẻ vào phiên ôn SRS (đứng sau thẻ viên gạch),
+   * id SRS `rule:<tenseId>-n` (từ id nội dung `<tenseId>-rule-n`). Bài bị bỏ qua khi xếp lớp thì không góp thẻ.
+   */
+  ruleCards?: readonly TenseRuleCard[]
+  /**
+   * Phần luyện có bậc của thì (story 35, không bắt buộc), hiện ngay dưới TenseCard: ví dụ mẫu → tự điền một chỗ → 5–7 câu
+   * luyện có "Gợi ý" (dưới 60% mời xem lại + 2 câu dễ hơn) → áp dụng. Sai thì giải thích và làm lại; không ghi Sổ lỗi, lần
+   * làm quiz, tiến độ, không cộng điểm (chỉ câu nói ở bước áp dụng ghi điểm nói như viên gạch).
+   */
+  practice?: TensePractice
 }
+
+/**
+ * Bốn bước luyện của thì (story 35), dùng lại kiểu màn của Sân ga (bỏ `kind`). Luật dữ liệu ở `practiceProblems`
+ * (`src/lib/tense-practice.ts`): `faded.en` đúng một `___`; `check.items` 5–7 câu, `check.easier` đúng 2 câu; id câu
+ * `${tense.id}-c<n>` / `${tense.id}-e<n>`; id câu nói `${tense.id}-say-<n>`.
+ */
+export type TensePractice = {
+  worked: Omit<WorkedScreen, 'kind'>
+  faded: Omit<FadedScreen, 'kind'>
+  check: Omit<CheckScreenData, 'kind'>
+  apply: Omit<ApplyScreen, 'kind'>
+}
+
+/** Thẻ quy tắc của thì: câu có đúng một chỗ trống `___`, đáp án và câu quy tắc tiếng Việt. Id `<tenseId>-rule-n`. */
+export type TenseRuleCard = { id: string; cloze: string; answer: string; vi: string }
 
 /** Một động từ bất quy tắc: V1 (NGSL), V2, V3 và nghĩa tiếng Việt. */
 export type IrregularVerb = { v1: string; v2: string; v3: string; vi: string }

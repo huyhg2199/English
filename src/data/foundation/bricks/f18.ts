@@ -9,8 +9,8 @@ export const F18_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
     {
       kind: 'explain',
       textVi:
-        'Nói giờ dùng at (at six), thứ dùng on (on Monday), tháng dùng in (in May). Trạng từ tần suất cho biết bao ' +
-        'lâu một lần, từ nhiều tới ít: always (luôn luôn), usually (thường, gần như luôn), often (hay), sometimes (thỉnh ' +
+        'Nói giờ dùng at (at six), thứ và ngày cụ thể dùng on (on Monday, on May 3rd), tháng dùng in (in May). Trạng ' +
+        'từ tần suất cho biết bao lâu một lần, từ nhiều tới ít: always (luôn luôn), usually (thường, gần như luôn), often (hay), sometimes (thỉnh ' +
         'thoảng), never (không bao giờ). ' +
         'Chúng đứng trước động từ thường nhưng đứng sau am / is / are. every day (mỗi ngày) thì đặt ở cuối câu.',
     },
@@ -25,6 +25,7 @@ export const F18_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
         { vi: 'lúc bảy giờ', en: 'at seven' },
         { vi: 'vào thứ Hai', en: 'on Monday' },
         { vi: 'vào tháng Sáu', en: 'in June' },
+        { vi: 'vào ngày 3 tháng 5 (ngày cụ thể cũng dùng on)', en: 'on May 3rd', audioText: 'on May third' },
         { vi: 'Tôi luôn uống trà vào buổi sáng.', en: 'I always drink tea in the morning.' },
         { vi: 'Cô ấy không bao giờ đi trễ.', en: 'She is never late.' },
         { vi: 'Họ hay chơi bóng đá vào thứ Bảy.', en: 'They often play football on Saturday.' },
@@ -151,7 +152,7 @@ export const F18_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
       brickId: 'F18',
       cloze: 'I get up ___ six. (lúc)',
       answer: 'at',
-      vi: 'Giờ dùng at, thứ dùng on, tháng dùng in: at six, on Monday, in May. Cụm cố định: at night, in the morning.',
+      vi: 'Giờ dùng at, thứ và ngày cụ thể dùng on, tháng dùng in: at six, on Monday, on May 3rd, in May. Cụm cố định: at night, in the morning.',
     },
     {
       id: 'f18-rule-2',

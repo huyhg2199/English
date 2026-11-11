@@ -1,28 +1,35 @@
-import type { MistakeTag, Question, QuestionKind } from './types'
+import type { RequiredConcept } from './concepts'
+import type { ChoiceQuestion, ChoiceQuestionKind, MistakeTag, Question, TypedQuestion, TypedQuestionKind } from './types'
 import type { SectionId } from '@/data/roadmap/types'
 
 /**
- * 66 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10.
- * Tự soạn theo khuôn ETS, không chép đề. Tuần O.W.L. 1 (`s1-t4-w4`) không có đoạn Ngữ pháp nên mọi câu
- * gắn đoạn Phát âm (nơi có phần ôn tổng).
+ * 76 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`; `s1-t2-w1` có 10 câu: thêm 4 câu gõ `type` /
+ * `transform` của story 35; `s1-t2-w2` có 12 câu: thêm 6 câu was / were và Wh + did của story 33; các câu thêm đều có
+ * `requires`), bám nội dung story 10. Tự soạn theo khuôn ETS, không chép đề.
+ * Tuần O.W.L. 1 (`s1-t4-w4`) không có đoạn Ngữ pháp nên mọi câu gắn đoạn Phát âm (nơi có phần ôn tổng).
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
 
 type Opts = readonly [string, string, string, string]
 
+function questionId(lessonId: string, n: number): string {
+  return `q-${lessonId}-${String(n).padStart(2, '0')}`
+}
+
 function make(
   lessonId: string,
   n: number,
   sectionId: SectionId,
   tag: MistakeTag,
-  kind: QuestionKind,
+  kind: ChoiceQuestionKind,
   prompt: string,
   options: Opts,
   explanation: string,
-): Question {
-  const q: Question = {
-    id: `q-${lessonId}-${String(n).padStart(2, '0')}`,
+  requires?: readonly RequiredConcept[],
+): ChoiceQuestion {
+  const q: ChoiceQuestion = {
+    id: questionId(lessonId, n),
     lessonId,
     sectionId,
     tag,
@@ -31,19 +38,69 @@ function make(
     options,
     answer: options[0],
     explanation,
+    ...(requires ? { requires } : {}),
   }
   return kind === 'listening' ? { ...q, audioText: options[0] } : q
 }
 
-/** Bộ dựng câu cho một bài: lựa chọn đầu tiên luôn là đáp án (khi làm bài, lựa chọn được xáo). */
-function lesson(lessonId: string, grammarSection: SectionId = 'grammar') {
+/** Câu gõ (story 35): tag `thì`, không có lựa chọn; `accept` (nếu có) là cách viết khác cũng đúng. */
+function makeTyped(
+  lessonId: string,
+  n: number,
+  sectionId: SectionId,
+  kind: TypedQuestionKind,
+  prompt: string,
+  answer: string,
+  explanation: string,
+  requires: readonly RequiredConcept[],
+  accept?: readonly string[],
+): TypedQuestion {
   return {
-    grammar: (n: number, prompt: string, options: Opts, explanation: string, tag: MistakeTag = 'thì') =>
-      make(lessonId, n, grammarSection, tag, 'choice', prompt, options, explanation),
+    id: questionId(lessonId, n),
+    lessonId,
+    sectionId,
+    tag: 'thì',
+    kind,
+    prompt,
+    answer,
+    explanation,
+    requires,
+    ...(accept && accept.length > 0 ? { accept } : {}),
+  }
+}
+
+/**
+ * Bộ dựng câu cho một bài: lựa chọn đầu tiên luôn là đáp án (khi làm bài, lựa chọn được xáo). `requires` (không bắt
+ * buộc, story 33) gắn khái niệm câu cần; quiz bỏ câu khi viên gạch dạy khái niệm đó chưa dạy. `type` / `transform`
+ * (story 35) dựng câu gõ gắn đoạn Ngữ pháp, bắt buộc có `requires`.
+ */
+function lesson(lessonId: string, grammarSection: SectionId = 'grammar') {
+  const typed =
+    (kind: TypedQuestionKind) =>
+    (
+      n: number,
+      prompt: string,
+      answer: string,
+      explanation: string,
+      requires: readonly RequiredConcept[],
+      accept?: readonly string[],
+    ) =>
+      makeTyped(lessonId, n, grammarSection, kind, prompt, answer, explanation, requires, accept)
+  return {
+    grammar: (
+      n: number,
+      prompt: string,
+      options: Opts,
+      explanation: string,
+      tag: MistakeTag = 'thì',
+      requires?: readonly RequiredConcept[],
+    ) => make(lessonId, n, grammarSection, tag, 'choice', prompt, options, explanation, requires),
     sound: (n: number, prompt: string, options: Opts, explanation: string) =>
       make(lessonId, n, 'pronunciation', 'phát âm', 'pronunciation', prompt, options, explanation),
     listen: (n: number, options: Opts, explanation: string) =>
       make(lessonId, n, 'pronunciation', 'nghe', 'listening', LISTEN_PROMPT, options, explanation),
+    type: typed('type'),
+    transform: typed('transform'),
   }
 }
 
@@ -75,6 +132,19 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'decide là động từ, nhấn âm 2 (de-CIDE). student, problem, money là danh từ, nhấn âm 1.'),
   t2w1.listen(6, ['She is preparing dinner.', 'She prepares dinner.', 'He is preparing dinner.', 'She is preparing lunch.'],
     'Nghe "is" và đuôi -ing (preparing); động từ prepare nhấn âm 2: pre-PARE.'),
+  // Câu gõ (story 35): Huy tự gõ dạng đúng / cả câu, chấm bằng `matchesTyped` (n't = not, hoa thường và dấu câu không tính).
+  t2w1.type(7, 'Listen! The baby ___ (cry).', 'is crying',
+    'Listen! báo việc đang diễn ra ngay lúc này nên dùng hiện tại tiếp diễn. The baby là một người nên dùng is, rồi cry thêm -ing: is crying.',
+    ['imperatives', 'articles', 'be-affirmative']),
+  t2w1.type(8, 'My brother ___ (not / study) now. He is sleeping.', "isn't studying",
+    "Phủ định hiện tại tiếp diễn: is / am / are + not + V-ing. My brother là he nên dùng is not (isn't), rồi study thêm -ing: isn't studying. Không dùng doesn't với V-ing.",
+    ['possessive-adjectives', 'subject-pronouns', 'be-affirmative', 'be-negative']),
+  t2w1.transform(9, 'Đổi sang câu hỏi: They are waiting for the bus.', 'Are they waiting for the bus?',
+    'Câu hỏi hiện tại tiếp diễn chỉ cần đảo are lên trước chủ ngữ: Are they waiting…? Không thêm do, giữ nguyên waiting.',
+    ['subject-pronouns', 'articles', 'be-questions']),
+  t2w1.transform(10, 'Đổi sang câu phủ định: I am writing an email.', 'I am not writing an email.',
+    "Phủ định: thêm not ngay sau am: I am not (I'm not) writing an email. Không bỏ am, không dùng don't.",
+    ['subject-pronouns', 'articles', 'be-negative']),
 
   // ── T2 tuần 2: quá khứ đơn có quy tắc · trọng âm theo hậu tố ──
   t2w2.grammar(1, 'I ___ my parents last Sunday.', ['visited', 'visit', 'visits', 'am visiting'],
@@ -93,6 +163,25 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'We talked about the economic solution.',
     'They talked about the economic situation.',
   ], 'Nghe đuôi -ed của talked (/t/) và trọng âm ec-o-NOM-ic, sit-u-A-tion.'),
+  // was / were và Wh + did (story 33): có `requires` nên quiz bỏ câu khi viên F13–F15 chưa dạy.
+  t2w2.grammar(7, 'Where ___ they last night? — At home.', ['were', 'did', 'was', 'are'],
+    'Câu chỉ hỏi ở đâu, không có động từ thường, nên dùng to be: Where + were + S? did chỉ dùng khi có động từ thường (Where did they stay?). They đi với were; last night là quá khứ nên không dùng are.',
+    'thì', ['wh-questions', 'be-questions', 'subject-pronouns', 'prepositions-of-place']),
+  t2w2.grammar(8, 'Tom ___ at school yesterday. He was at home.', ["wasn't", "weren't", "didn't", "isn't"],
+    "Phủ định của was là wasn't (was + not), không mượn didn't. Tom là một người nên dùng wasn't; yesterday là quá khứ nên không dùng isn't.",
+    'thì', ['be-affirmative', 'be-negative', 'subject-pronouns', 'prepositions-of-place']),
+  t2w2.grammar(9, '___ you tired last night? — Yes, I was.', ['Were', 'Did', 'Was', 'Are'],
+    'Hỏi với to be ở quá khứ thì đảo Were lên đầu; không mượn Did (không nói Did you be tired?). you đi với were.',
+    'thì', ['be-questions', 'subject-pronouns']),
+  t2w2.grammar(10, 'Was the hotel nice? — No, it ___.', ["wasn't", "didn't", "isn't", "weren't"],
+    "Câu hỏi bằng Was thì trả lời ngắn cũng dùng was: No, it wasn't. Không trả lời bằng didn't; it đi với was, không đi với were.",
+    'thì', ['be-questions', 'be-negative', 'articles']),
+  t2w2.grammar(11, 'There ___ two cats in the garden yesterday.', ['were', 'was', 'are', 'did'],
+    'yesterday là quá khứ: There was + số ít, There were + số nhiều. two cats là số nhiều nên dùng were.',
+    'thì', ['there-is-are', 'plurals', 'articles', 'prepositions-of-place']),
+  t2w2.grammar(12, 'What ___ you watch last night? — A movie.', ['did', 'were', 'do', 'was'],
+    'Hỏi Wh- về việc đã làm (watch là động từ thường): What + did + S + nguyên mẫu. last night là quá khứ nên không dùng do.',
+    'thì', ['wh-questions', 'present-simple-questions', 'articles', 'tenses-overview']),
 
   // ── T2 tuần 3: động từ bất quy tắc · phát âm -ed ──
   t2w3.grammar(1, 'I ___ to Da Lat last month.', ['went', 'goed', 'gone', 'go'],
@@ -141,8 +230,8 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'Nhờ ai làm gì ngay: Will you + nguyên mẫu…?'),
   t3w1.sound(5, 'Trong câu nói tự nhiên "I want to go", từ "to" thường đọc là:', ['/tə/', '/tuː/', '/toʊ/', '/tɑː/'],
     'to là từ chức năng nên đọc dạng yếu /tə/ (gần "tờ"); chỉ đọc /tuː/ khi đứng một mình hoặc cuối câu.'),
-  t3w1.listen(6, ['I can help you tomorrow.', "I can't help you tomorrow.", 'I can help you today.', 'I will help you tomorrow.'],
-    'can trong câu khẳng định đọc nhẹ /kən/; can\'t đọc rõ /kænt/ và được nhấn.'),
+  t3w1.listen(6, ["I'll help you tomorrow.", "I won't help you tomorrow.", "I'll help you today.", 'I want to help you tomorrow.'],
+    "I'll đọc liền một tiếng /aɪl/. won't /woʊnt/ đọc rõ và được nhấn; want /wɑːnt/ khác won't ở nguyên âm, và to sau want đọc yếu /tə/. Nghe kỹ cả từ cuối: tomorrow hay today."),
 
   // ── T3 tuần 2: be going to · nối âm ──
   t3w2.grammar(1, 'Look at those clouds! It ___ rain.', ['is going to', 'going to', 'will to', 'goes to'],

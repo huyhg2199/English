@@ -8,7 +8,7 @@ import {
   type RowId,
 } from '@/data/foundation'
 import { seededRandom, shuffle } from '@/lib/quiz/random'
-import { checkFill } from '@/lib/subs/blanks'
+import { matchesTyped } from '@/lib/quiz/typed'
 import type { Store } from '@/lib/storage'
 
 import { foundationState, type FoundationState } from './foundation'
@@ -18,9 +18,10 @@ import { foundationState, type FoundationState } from './foundation'
  * viên tiếp theo, ô trên bức tường và route `/foundation/:brickId`. Không import nội dung viên: nơi gọi truyền `hasContent`.
  */
 
-/** Câu trả lời cho một câu luyện. `sort`: mục → vị trí nhóm trong `groups`. */
+/** Câu trả lời cho một câu luyện. `sort`: mục → vị trí nhóm trong `groups`. `type`: chữ đã gõ (story 35). */
 export type CheckResponse =
   | { kind: 'choice' | 'listen'; choice: number }
+  | { kind: 'type'; text: string }
   | { kind: 'tapSyllable'; index: number }
   | { kind: 'order'; tokens: readonly string[] }
   | { kind: 'sort'; groupOf: Readonly<Record<string, number>> }
@@ -47,6 +48,8 @@ export function isCorrect(item: CheckItem, response: CheckResponse): boolean {
         g.items.every((x) => Object.hasOwn(response.groupOf, x) && response.groupOf[x] === gi),
       )
     }
+    case 'type':
+      return response.kind === 'type' && matchesTyped(item.answer, response.text, item.accept)
   }
 }
 
@@ -62,12 +65,17 @@ export function answerText(item: CheckItem): string {
       return item.tokens.join(' ')
     case 'sort':
       return item.groups.map((g) => `${g.label}: ${g.items.join(', ')}`).join(' · ')
+    case 'type':
+      return item.answer
   }
 }
 
-/** Chấm màn `faded`: không phân biệt hoa thường, dấu câu, khoảng trắng thừa (`checkFill`); ô trống là sai. */
-export function isFadedCorrect(answer: string, typed: string): boolean {
-  return checkFill(answer, typed)
+/**
+ * Chấm màn `faded` bằng `matchesTyped` (story 35): không phân biệt hoa thường, dấu câu, khoảng trắng thừa; n't = not
+ * (aren't = are not); nhận thêm `accept`. Ô trống là sai.
+ */
+export function isFadedCorrect(answer: string, typed: string, accept?: readonly string[]): boolean {
+  return matchesTyped(answer, typed, accept)
 }
 
 /** Mời "Xem lại giải thích" + 2 câu dễ hơn: đúng lần đầu dưới 60%, so số nguyên (3/5 không mời). */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getQuestion, QUESTION_BANK, type Question } from '@/data/questions'
+import { getQuestion, QUESTION_BANK, type ChoiceQuestion, type Question } from '@/data/questions'
 import type { Word } from '@/data/vocab'
 import {
   isMastered,
@@ -92,7 +92,7 @@ const pronWords = (n: number) =>
 const tenseIds = (n: number) => owlTensePool(QUESTION_BANK).slice(0, n).map((q) => q.id)
 
 function tenseAnswers(n: number, correctCount: number): AttemptAnswer[] {
-  const pool = owlTensePool(QUESTION_BANK).slice(0, n)
+  const pool = owlTensePool(QUESTION_BANK).slice(0, n) as ChoiceQuestion[]
   return pool.map((q, i) => ({
     questionId: q.id,
     chosen: i < correctCount ? q.answer : q.options.find((o) => o !== q.answer)!,

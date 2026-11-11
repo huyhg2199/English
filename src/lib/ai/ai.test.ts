@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { getQuestion } from '@/data/questions'
+import { getQuestion, type ChoiceQuestion } from '@/data/questions'
 import { createBackup, serializeBackup } from '@/lib/backup'
 import { pickSynced } from '@/lib/sync/merge'
 
@@ -27,7 +27,7 @@ function memoryStorage() {
   }
 }
 
-const question = getQuestion('q-s1-t1-w2-01')!
+const question = getQuestion('q-s1-t1-w2-01') as ChoiceQuestion
 
 function jsonResponse(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
@@ -124,6 +124,41 @@ describe('explainMistake', () => {
     expect(p).toContain('2 câu ví dụ')
     expect(p).not.toContain(question.explanation)
     expect(p).not.toContain(question.lessonId)
+  })
+
+  it('prompt câu chọn đáp án giữ nguyên từng chữ (story 35 không đổi)', () => {
+    expect(buildExplainPrompt(question, 'work').split('\n').slice(0, 6)).toEqual([
+      'Bạn là giáo viên tiếng Anh cho người Việt mới học lại từ đầu (trình độ A1–A2).',
+      'Dạng câu: chọn đáp án đúng để điền vào chỗ trống.',
+      `Đề: ${question.prompt}`,
+      `Các lựa chọn: ${question.options.map((o) => `"${o}"`).join(', ')}`,
+      `Đáp án đúng: "${question.answer}"`,
+      'Người học đã chọn: "work"',
+    ])
+  })
+
+  it('prompt câu gõ (story 35): không có dòng "Các lựa chọn", ghi dạng tự gõ và "Người học đã gõ"', () => {
+    const typed = getQuestion('q-s1-t2-w1-09')!
+    const p = buildExplainPrompt(typed, 'They are waiting for the bus?')
+    expect(p).not.toContain('Các lựa chọn')
+    expect(p).toContain('Dạng câu: tự gõ lại cả câu theo yêu cầu (biến đổi hoặc dịch).')
+    expect(p).toContain(`Đề: ${typed.prompt}`)
+    expect(p).toContain('Đáp án đúng: "Are they waiting for the bus?"')
+    expect(p).toContain('Người học đã gõ: "They are waiting for the bus?"')
+    expect(p).not.toContain('Người học đã chọn')
+    const blank = buildExplainPrompt(getQuestion('q-s1-t2-w1-07')!, '')
+    expect(blank).toContain('Dạng câu: gõ dạng đúng của động từ vào chỗ trống.')
+    expect(blank).toContain('Người học đã gõ: (bỏ trống)')
+  })
+
+  it('prompt câu gõ nói cách chấm và hỏi "vì sao câu đã gõ sai"; câu chọn đáp án không có dòng này', () => {
+    const p = buildExplainPrompt(getQuestion('q-s1-t2-w1-09')!, 'They are waiting for the bus?')
+    expect(p).toContain('Cách chấm: không tính hoa thường, dấu câu, khoảng trắng thừa')
+    expect(p).toContain('Lỗi sai: vì sao câu đã gõ sai.')
+    expect(p).not.toContain('đáp án đã chọn sai')
+    const choice = buildExplainPrompt(question, 'work')
+    expect(choice).not.toContain('Cách chấm')
+    expect(choice).toContain('Lỗi sai: vì sao đáp án đã chọn sai.')
   })
 
   it.each([

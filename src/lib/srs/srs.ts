@@ -47,20 +47,27 @@ export type CustomStudyWord = {
   source: { title: string; url: string }
 }
 
-/** Tiền tố id thẻ SRS của thẻ quy tắc viên gạch (story 24): `rule:fNN-n`. */
+/**
+ * Tiền tố id thẻ SRS của thẻ quy tắc: thẻ viên gạch `rule:fNN-n` (story 24) và thẻ của thì trong bài Chặng 1
+ * `rule:<tenseId>-n` (story 33).
+ */
 export const RULE_CARD_PREFIX = 'rule:'
 
 /**
- * Thẻ quy tắc của viên gạch (story 24): thẻ điền chỗ trống, id `rule:fNN-n` (từ id nội dung `fNN-rule-n`). Cùng shape
- * `SrsCard` và thuật toán như thẻ từ; không tính quota từ mới, không phải thẻ Làm quen, không có "Đã biết".
+ * Thẻ quy tắc (thẻ điền chỗ trống): của viên gạch (story 24, id `rule:fNN-n` từ id nội dung `fNN-rule-n`, có `brickId`)
+ * hoặc của thì trong bài (story 33, id `rule:<tenseId>-n` từ `<tenseId>-rule-n`, có `lessonId`); mỗi thẻ có đúng một
+ * trong hai trường. Cùng shape `SrsCard` và thuật toán như thẻ từ; không tính quota từ mới, không phải thẻ Làm quen,
+ * không có "Đã biết".
  */
 export type RuleStudyWord = {
   id: string
   rule: true
   /** = `answer` (để các chỗ dùng chung `word.word` vẫn có chữ). */
   word: string
-  /** Viên gạch chứa thẻ (`F01`…). */
-  brickId: string
+  /** Viên gạch chứa thẻ (`F01`…); chỉ thẻ viên gạch có. */
+  brickId?: string
+  /** Bài chứa thì của thẻ (`s1-t2-w2`…); chỉ thẻ của thì có. */
+  lessonId?: string
   /** Câu có đúng một chỗ trống `___`. */
   cloze: string
   answer: string
@@ -68,7 +75,7 @@ export type RuleStudyWord = {
   vi: string
 }
 
-/** Từ trong phiên ôn: từ NGSL/TSL có dữ liệu AI, thẻ quy tắc viên gạch hoặc thẻ riêng từ Sổ tay. */
+/** Từ trong phiên ôn: từ NGSL/TSL có dữ liệu AI, thẻ quy tắc (viên gạch / thì) hoặc thẻ riêng từ Sổ tay. */
 export type SessionWord = StudyWord | CustomStudyWord | RuleStudyWord
 
 export function isCustomWord(word: SessionWord): word is CustomStudyWord {

@@ -111,3 +111,30 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/16-bilingual-subtitles.md`
   summary: Phần ghi nguồn CC BY trên UI (`SubAttribution` trong `SubtitledVideo.tsx`: link kênh, link giấy phép, video gốc, ghi chú bản dịch; nhãn "CC BY" trong `VideoEmbed.tsx`) không có test tự động.
   evidence: Vitest chạy `environment: 'node'`, không có file `.test.tsx`; dữ liệu nguồn đã được ghim bởi `src/data/subs/subs.test.ts` (`source` khớp `transcriptSource`), nhưng xoá nhánh link giấy phép thì lint/test/build vẫn xanh. Cùng gốc với mục "máy trạng thái điền từ" (#16 story 16): cần môi trường test component (jsdom/happy-dom) — quyết định cấp dự án.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
+  summary: goalVi của F17 trong `catalog.ts:158` vẫn ghi "Nhận ra go/goes/going/went/gone trên trục thời gian", trong khi nội dung mới tách gone khỏi ba vùng thời gian.
+  evidence: Story 32 cấm sửa `catalog.ts`; nên sửa ở story 47 (dọn thứ tự bài), ví dụ "Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has".
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
+  summary: Khi một câu quiz được viết lại mà giữ id, mục sổ lỗi cũ vẫn hiện `lastChosen` (và lời giải thích Gemini) của lựa chọn không còn tồn tại, ví dụ `q-s1-t3-w1-06`.
+  evidence: `MistakeCard.tsx:155` in `entry.lastChosen` nguyên văn, không so với `question.options`. Chỉ xảy ra nếu đã có lỗi câu đó (Huy chưa học tới T3). Cách sửa gợi ý: ẩn dòng "bạn chọn" và coi lời giải thích là cũ khi `lastChosen` không có trong `options`; không cần bump store. Liên quan story 35–42 sẽ viết lại nhiều câu.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
+  summary: Bài xếp f17-a1 xếp cứng `go` đứng một mình vào nhóm "Thói quen", trong khi dạng gốc go cũng là nguyên mẫu (I will go, Did you go); nhãn nhóm thứ 4 gần như cho sẵn chỗ của gone.
+  evidence: `src/data/foundation/bricks/f17.ts` f17-a1 groups. Có từ trước story 32 (phần go). Có thể xem lại khi làm "Bản đồ thì" (story 39–42).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/33-past-to-be-wh-did.md`
+  summary: Đoạn Phát âm / Nghe của s1-t2-w2 chưa dạy dạng yếu của was / were (/wəz/, /wɚ/) và chưa có câu nghe phân biệt was / wasn't, were / weren't (điểm nghe hay gặp ở TOEIC Part 1–2).
+  evidence: Review story 33 (blind #7). 6 câu quiz mới đều là trắc nghiệm ngữ pháp. Mục phát âm và câu nghe của `t2-t4-pronunciation.ts` / `t2-t4.ts` khối t2w2 không có was / were. Intent story 33 không bao phần phát âm, nên nên làm ở story luyện có bậc (35–36) hoặc một story phát âm riêng.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
+  summary: F06 chưa có câu nghe thứ, tháng hay ngày (câu listen vẫn chỉ là `f06-c1` thirteen và `f06-c2` fifty dollars), dù Tuesday/Thursday được nhắc "dễ nhầm" ở ba chỗ và lý do của story là TOEIC Part 1–3.
+  evidence: Review story 34 (blind #4). Mỗi dòng bảng thứ/tháng có nút nghe nhưng không có câu kiểm. Thêm câu nghe sẽ đổi bộ câu check mà intent story 34 đã chốt; nên làm ở story luyện nghe hoặc khi xem lại F06 (vd đổi `f06-e1` thành câu listen "Thursday").
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
+  summary: Sân ga chưa dạy năm (twenty twenty-six, "May 3rd, 2026"), số trên 100 ($150), a.m./p.m., noon, chữ viết tắt trên lịch TOEIC (Mon, Tue, Jan, Sept) và cách nói ngày kiểu Anh ("the twenty-first of June").
+  evidence: Review story 34 (blind #6). F06 trước và sau story 34 đều chỉ dạy 0–100 và ngày kiểu Mỹ, đúng intent đã chốt. TOEIC Part 3–4, 7 hay có giờ a.m./p.m. và năm; cần Huy chọn đưa vào F06 hay vào bài T1–T4.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/34-f06-numbers-days-months.md`
+  summary: Bảng tra mới của màn giải thích (`BrickTables` trong `ExplainBody` và `TermChip`) không có test render hay test bề rộng 375px khi mở bảng.
+  evidence: Vitest chạy `environment: 'node'`, không có `.test.tsx`; `scripts/layout/check-lib.mjs` `ROUTES` chỉ có `/foundation` và `/foundation/F01`, và bảng đóng sẵn nên `scrollWidth` không đo được dòng đã mở. Xoá `<BrickTables>` khỏi `ExplainBody` thì lint/test/build vẫn xanh. Cùng gốc với các mục "cần môi trường test component" của story 16 và 31.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/35-tense-practice-typed-questions.md`
+  summary: Chỗ nối ở trang của story 35 không có test: `DefinedQuizRun` (`src/pages/Quiz.tsx`) truyền `seen: seenQuestionIds(store)` cho `planQuiz`, và ôn Sổ lỗi (`src/pages/Mistakes.tsx`) chấm câu gõ bằng `isAnswerCorrect`.
+  evidence: Review story 35 (verification-gap). Bỏ `seen` hay đổi lại `option === question.answer` thì lint/test/build vẫn xanh, vì mọi test lib tự dựng `seen` và cách chấm ôn sổ nằm trong trang. Cùng gốc với các mục "cần môi trường test component" của story 16, 31, 34; cách sửa rẻ là chuyển quyết định chấm ôn sổ sang một hàm thuần trong `src/lib/quiz` rồi test ở đó.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/35-tense-practice-typed-questions.md`
+  summary: AC 1 (đi hết khối luyện bằng bàn phím ảo iPhone thật: không phóng to, `scrollWidth` 375) và phần buổi 30' của AC 2 chưa được chạy trên máy thật.
+  evidence: Implementation Notes ghi "Chưa kiểm". Đã đọc code: `TensePractice` chỉ bind Enter, không bind ←/→; ô gõ 16px và có `autoCapitalize="none"` / `autoCorrect="off"`. Cần Huy mở `s1-t2-w1` trên iPhone (và buổi 30' trên máy tính) để xác nhận.

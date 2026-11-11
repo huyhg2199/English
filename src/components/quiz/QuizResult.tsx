@@ -5,7 +5,7 @@ import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { lessonHref } from '@/data/roadmap'
-import { MISTAKES_HREF, type Question } from '@/data/questions'
+import { isTypedQuestion, MISTAKES_HREF, type Question } from '@/data/questions'
 import type { GradedAttempt } from '@/lib/quiz'
 import { cn } from '@/lib/utils'
 
@@ -81,7 +81,7 @@ export function QuizResult({ homeLessonId, questions, graded, onRetry, next }: P
                     <TagBadge tag={q.tag} />
                   </div>
                   <p className="break-words">
-                    <span className="text-muted-foreground">Bạn chọn: </span>
+                    <span className="text-muted-foreground">{isTypedQuestion(q) ? 'Bạn gõ: ' : 'Bạn chọn: '}</span>
                     <span className="text-destructive" lang="en">
                       {a.chosen || '(bỏ trống)'}
                     </span>

@@ -1,4 +1,4 @@
-import type { Question } from './types'
+import type { ChoiceQuestion } from './types'
 
 /**
  * 24 câu tháng T1 (6 câu mỗi bài `s1-t1-w1…w4`), bám nội dung story 6: to be, hiện tại đơn (khẳng định,
@@ -9,7 +9,7 @@ import type { Question } from './types'
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
 
-export const T1_QUESTIONS: readonly Question[] = [
+export const T1_QUESTIONS: readonly ChoiceQuestion[] = [
   // ── Tuần 1: động từ to be · 12 nguyên âm đơn ──
   {
     id: 'q-s1-t1-w1-01',

@@ -13,6 +13,7 @@ import {
   QUESTION_BANK,
   QUIZZES,
   ROW_QUIZ_ID,
+  type ChoiceQuestion,
 } from './index'
 
 const SECTION_IDS = ['pronunciation', 'grammar', 'vocabulary', 'entertainment', 'main', 'checkpoint']
@@ -74,8 +75,8 @@ function rowOf(lessonId: string): RowId | undefined {
 }
 
 describe('ngân hàng câu Sân ga', () => {
-  it('40 câu, id duy nhất (cả với QUESTION_BANK), dạng q-fNN-NN khớp lessonId', () => {
-    expect(FOUNDATION_QUESTIONS).toHaveLength(40)
+  it('42 câu, id duy nhất (cả với QUESTION_BANK), dạng q-fNN-NN khớp lessonId', () => {
+    expect(FOUNDATION_QUESTIONS).toHaveLength(42)
     const ids = [...QUESTION_BANK, ...FOUNDATION_QUESTIONS].map((q) => q.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const q of FOUNDATION_QUESTIONS) {
@@ -129,8 +130,8 @@ describe('ngân hàng câu Sân ga', () => {
       expect(quiz.size).toBe(8)
     })
 
-    it('10 câu, ≤ 2 câu nghe, mỗi viên ≥ minPerLesson câu không phải câu nghe', () => {
-      expect(of).toHaveLength(10)
+    it('hàng A 12 câu (story 34), B–D 10 câu; ≤ 2 câu nghe, mỗi viên ≥ minPerLesson câu không phải câu nghe', () => {
+      expect(of).toHaveLength(row === 'A' ? 12 : 10)
       expect(of.filter((q) => q.kind === 'listening').length).toBeLessThanOrEqual(2)
       for (const id of quiz.lessonIds) {
         const n = of.filter((q) => q.lessonId === id && q.kind !== 'listening').length
@@ -233,13 +234,34 @@ describe('ngân hàng câu Sân ga', () => {
   })
 
   it('Sổ lỗi cũ: q-f17-04, q-f14-02, q-f16-01 trả câu đã viết lại (không Does/Do, không at home, không having)', () => {
-    const q = getQuestion('q-f17-04')!
+    const q = getQuestion('q-f17-04') as ChoiceQuestion
     expect(q.lessonId).toBe('f17')
     expect(q.answer).toBe('go')
     expect(q.options).toEqual(['go', 'goes', 'going', 'gone'])
-    expect(getQuestion('q-f14-02')!.options).not.toContain("don't")
+    expect((getQuestion('q-f14-02') as ChoiceQuestion).options).not.toContain("don't")
     expect(getQuestion('q-f14-02')!.prompt).not.toMatch(/\bat\b/)
-    expect(getQuestion('q-f16-01')!.options).toEqual(['has', 'have', 'is', 'haves'])
+    expect((getQuestion('q-f16-01') as ChoiceQuestion).options).toEqual(['has', 'have', 'is', 'haves'])
+  })
+
+  it('hàng A: F06 đúng 4 câu q-f06-01 … -04 theo thứ tự; 03 / 04 khai báo days-months; 01 / 02 giữ nguyên (story 34)', () => {
+    const f06 = FOUNDATION_QUESTIONS.filter((q) => q.lessonId === 'f06')
+    expect(f06.map((q) => q.id)).toEqual(['q-f06-01', 'q-f06-02', 'q-f06-03', 'q-f06-04'])
+    for (const id of ['q-f06-03', 'q-f06-04']) {
+      const q = getQuestion(id)!
+      expect(q.requires, id).toContain('days-months')
+      expect(q.tag, id).toBe('từ vựng')
+      expect(q.sectionId, id).toBe('vocabulary')
+    }
+    expect(getQuestion('q-f06-03')!.answer).toBe('Thursday')
+    expect(getQuestion('q-f06-04')!.answer).toBe('August twelfth')
+    const q1 = getQuestion('q-f06-01') as ChoiceQuestion
+    expect(q1.prompt).toBe('$50 đọc thế nào?')
+    expect(q1.answer).toBe('fifty dollars')
+    expect(q1.options).toEqual(['fifty dollars', 'fifteen dollars', 'five zero dollars', 'five dollars'])
+    const q2 = getQuestion('q-f06-02') as ChoiceQuestion
+    expect(q2.prompt).toBe('Ngày mùng 2 trong tháng (2nd) đọc là gì?')
+    expect(q2.answer).toBe('second')
+    expect(q2.options).toEqual(['second', 'two', 'twoth', 'twice'])
   })
 
   it('getQuestion tra được câu Sân ga và câu cũ', () => {

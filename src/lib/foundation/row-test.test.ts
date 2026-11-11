@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { hasBrickContent } from '@/data/foundation/content'
-import { FOUNDATION_QUESTIONS, foundationQuiz, type Question } from '@/data/questions'
+import { FOUNDATION_QUESTIONS, foundationQuiz, type ChoiceQuestion } from '@/data/questions'
 import { statusFor } from '@/lib/gist'
 import { listAttempts, listMistakes, pickQuiz, readMistakes, type AttemptAnswer } from '@/lib/quiz'
 import { setReminderTimes, showReminderBanner } from '@/lib/reminders'
@@ -40,7 +40,7 @@ const empty = (): Store => ({ schemaVersion: CURRENT_VERSION, data: {} })
 
 /** 8 câu thật của hàng, `correct` câu đầu đúng, còn lại chọn một lựa chọn sai. */
 function answersFor(row: RowId, correct: number, seed = 'seed'): AttemptAnswer[] {
-  const questions: Question[] = pickQuiz(FOUNDATION_QUESTIONS, foundationQuiz(row), seed, { canSpeak: true })
+  const questions = pickQuiz(FOUNDATION_QUESTIONS, foundationQuiz(row), seed, { canSpeak: true }) as ChoiceQuestion[]
   return questions.map((q, i) => {
     const ok = i < correct
     return { questionId: q.id, chosen: ok ? q.answer : q.options.find((o) => o !== q.answer)!, correct: ok }

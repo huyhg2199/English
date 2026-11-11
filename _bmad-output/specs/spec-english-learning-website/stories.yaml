@@ -269,3 +269,84 @@
     - Hôm nay lưới 2 cột; Lộ trình xếp tháng thành 2 cột.
     - Script kiểm tra có thêm bước gõ 'chào' vào ô tìm kiếm của Sổ tay để chắc không phím tắt nào chạy.
   spec_checkpoint: true
+# Đợt 1c — Nắm chắc nền & các thì (kiểm tra 2026-11-11; Huy: "hoàn thiện giúp tôi đi"). Thứ tự chạy: 32, 33, 34, 35, 36, 38, 39, 37, 40, 41, 43, 44, 45, 46, 42, 47.
+- id: "32"
+  title: Sửa lỗi nội dung thì
+  description: >-
+    F17 bỏ/xếp lại "has gone" (không phải quá khứ đơn); quy tắc gấp đôi phụ âm đúng điều kiện (1 âm tiết 1 nguyên âm + 1 phụ âm; 2 âm tiết nhấn âm đầu thì không; không gấp đôi w/x/y) ở hiện tại tiếp diễn và quá khứ đơn; ngoại lệ to be trong quy tắc "mượn did"; ghi chú "…chưa?" (Did vs Have) ở PERFECT_VS_PAST; câu can ở T3-W1 đổi sang will.
+  spec_checkpoint: true
+- id: "33"
+  title: to be quá khứ (was/were) và câu hỏi Wh với did
+  description: >-
+    Tense mới ở s1-t2-w2 đặt trước động từ thường: khẳng định, phủ định, câu hỏi, trả lời ngắn, there was/were, "Were you…?" vs "Did you…?", lỗi "I was go / Did you be / I didn't was"; công thức Wh + did + S + V; 6+ câu quiz có requires, 2+ thẻ quy tắc.
+  spec_checkpoint: true
+- id: "34"
+  title: F06 đầy đủ — số, thứ, tháng
+  description: >-
+    Viên F06 dạy thật bảng số 1–20, số chục, ghép twenty-one, hundred; 7 thứ, 12 tháng có IPA và trọng âm; ngày tháng ("on May 3rd"), giờ, giá; câu luyện theo thang của viên; thẻ SRS tự soạn; khớp starter-words và tag days-months.
+  spec_checkpoint: true
+- id: "35"
+  title: Bộ máy luyện có bậc cho Tense và dạng câu gõ / biến đổi
+  description: >-
+    Thêm `practice` vào kiểu Tense (ví dụ mẫu → điền một chỗ gõ → 5–7 câu kiểm tra có Gợi ý và câu dễ hơn → áp dụng), hiện dưới TenseCard trong bước Bài chính bằng player/CheckFlow của Sân ga; quiz engine thêm dạng `type` (gõ dạng đúng của động từ) và `transform` (khẳng định → phủ định → câu hỏi → trả lời ngắn), chấm bằng chuẩn hoá chuỗi; pickQuiz ưu tiên câu chưa gặp. Kèm dữ liệu mẫu cho một thì để chạy thật.
+  spec_checkpoint: true
+- id: "36"
+  title: Soạn bài luyện thì T1–T2
+  description: >-
+    Dữ liệu practice + 12–20 câu mỗi thì (gõ, biến đổi, dịch Việt → Anh ngắn) cho hiện tại đơn (khẳng định, phủ định/câu hỏi), hiện tại tiếp diễn, quá khứ đơn có quy tắc, to be quá khứ, bất quy tắc; mọi câu có requires.
+  spec_checkpoint: true
+- id: "38"
+  title: Ôn thì bằng SRS và thẻ động từ bất quy tắc
+  description: >-
+    Mỗi thì góp 4–6 thẻ quy tắc điền chỗ trống (khẳng định, phủ định, câu hỏi, cặp dễ nhầm) vào SRS khi bài xong, chung lịch với thẻ viên gạch; 50 động từ bất quy tắc thành thẻ V1 → V2/V3 mở theo nhóm âm từ T2-W3, ôn cột V3 trước T3-W3; bảng động từ có chế độ che cột.
+  spec_checkpoint: true
+- id: "39"
+  title: Khối "Chọn thì", từ tín hiệu, bảng trợ động từ
+  description: >-
+    Khối "Đơn hay tiếp diễn?" (T2) và "will hay going to?" (T3-W2) có timeline cạnh nhau, cặp câu tối thiểu, 6–8 câu trộn; trường signalWords hiện thành chip; khối "Đừng dịch từng chữ" (đã/sẽ/chưa) ở T3-W4 + 6 câu dịch; bảng "mỗi thì một dòng" + luật chung trợ động từ ở s1-t4-w4; glossary thêm trợ động từ, V-ing, V2, V3; chuyển video begKNGxcjdk sang s1-t3-w2.
+  spec_checkpoint: true
+- id: "37"
+  title: Soạn bài luyện thì T3–T4
+  description: >-
+    Dữ liệu practice + 12–20 câu mỗi chủ điểm cho will, be going to, hiện tại hoàn thành, hoàn thành vs quá khứ đơn, modal can/should/must, so sánh hơn/nhất, bị động hiện tại; mọi câu có requires.
+  spec_checkpoint: true
+- id: "40"
+  title: mini-t3, ôn trộn trước O.W.L. và kho câu O.W.L. riêng
+  description: >-
+    mini-t3 gắn s1-t3-w4 (20–30% câu T1–T2); bài "ôn trộn mọi thì" ~20 câu trước O.W.L.; tuần Tết có mục ôn nhẹ trong 10 phút; O.W.L. 1 có kho câu riêng ~40 câu chưa dùng ở đâu (có câu gõ), bốc theo từng thì (≥ 4 câu chọn giữa thì dễ nhầm), kết quả báo % từng thì, thì < 70% vào kế hoạch ôn 14 ngày kể cả khi tổng đã qua.
+  spec_checkpoint: true
+- id: "41"
+  title: Kiểm tra cuối Bài chính và Sổ lỗi trong buổi 30'
+  description: >-
+    Cuối bước Bài chính chạy kiểm tra 5 câu; đạt ≥ 70% mời đánh dấu xong, chưa đạt gợi ý buổi ôn (bỏ qua được, không khoá); 3–5 câu Sổ lỗi đến hạn vào bước Ôn; câu sai tag 'thì' gom theo lessonId, sai ≥ 2 câu trong 14 ngày thì mời "Ôn lại <bài>"; nhãn "chưa kiểm tra / đạt x%" trên Lộ trình.
+  spec_checkpoint: true
+- id: "43"
+  title: Lượng từ và There is phủ định / câu hỏi
+  description: >-
+    Viên nối sau F11/F15: some (khẳng định) / any (phủ định, câu hỏi), much/many, a lot of, How many/How much, Is there…?/Are there any…?, There isn't/aren't, trả lời ngắn; câu check + thẻ quy tắc; chuyển some/any/many khỏi WALL_WORDS sang cổng của viên.
+  spec_checkpoint: true
+- id: "44"
+  title: Liên từ, why/how often/how many, câu hỏi chủ ngữ
+  description: >-
+    Viên ngắn nối 2 câu bằng and/but/or/because/so, chặn lỗi "Because…, so…"; why + because, how often (nối F18), how many vào s1-t1-w3; một màn câu hỏi chủ ngữ (Who called? / What happened?) ở s1-t2-w2; cổng hư từ cập nhật.
+  spec_checkpoint: true
+- id: "45"
+  title: Mở rộng modal (have to, could, would like) hoặc dời cổng
+  description: >-
+    MODALS thêm have to/has to/don't have to, could (khả năng quá khứ, xin phép lịch sự), would like; may/might/would chưa dạy thì dời cổng sang bài dạy chúng; thẻ SRS không hiện modal chưa dạy.
+  spec_checkpoint: true
+- id: "46"
+  title: Quá khứ tiếp diễn ở Chặng 1
+  description: >-
+    Quyết định 2026-11-11: đưa vào Chặng 1 ở s1-t2-w4, sau to be quá khứ. Tense nhỏ: was/were + V-ing, when + quá khứ đơn, while + tiếp diễn, timeline, practice, quiz có requires, thẻ quy tắc; cập nhật lộ trình và tài liệu.
+  spec_checkpoint: true
+- id: "42"
+  title: Bản đồ thì
+  description: >-
+    Trang/khối "Bản đồ thì": mỗi thì hiện % kiểm tra tốt nhất, độ nhớ thẻ quy tắc, số lỗi chưa thuộc, trạng thái chưa học / đang học / chắc; link tới bài và buổi ôn; 375px và desktop.
+  spec_checkpoint: true
+- id: "47"
+  title: Dọn trình tự và nội dung lệch
+  description: >-
+    Khai báo requires cho mọi câu T2–T4 và test chặn; test quay lại khi đang ở Sân ga dùng câu viên đã xong + Sổ lỗi; sắp lại video lệch tuần; chia đoạn Ngữ pháp theo ngày cho thì học một tuần (N1 khẳng định, N2 phủ định, N3 câu hỏi, N4 so với thì trước, N5 ôn trộn); sửa các mục "Thấp" trong báo cáo kiểm tra (Don't + V, /t/ bật hơi, đuôi /z/ sau l/m/r…).
+  spec_checkpoint: true

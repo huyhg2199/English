@@ -5,7 +5,7 @@ import { useMistakes } from '@/app/store-context'
 import { ListenButton } from '@/components/ListenButton'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { getQuestion } from '@/data/questions'
+import { getQuestion, isTypedQuestion } from '@/data/questions'
 import { explainMistake, GEMINI_ERROR_MESSAGES, readGeminiKey, readGeminiModel } from '@/lib/ai'
 import { isExplanationStale, isMastered, type MistakeEntry } from '@/lib/quiz'
 import { formatDelay } from '@/lib/srs'
@@ -150,7 +150,7 @@ export function MistakeCard({ entry, now }: { entry: MistakeEntry; now: Date }) 
               <span className="font-semibold text-primary" lang="en">
                 {question.answer}
               </span>
-              <span className="text-muted-foreground"> · bạn chọn </span>
+              <span className="text-muted-foreground">{isTypedQuestion(question) ? ' · bạn gõ ' : ' · bạn chọn '}</span>
               <span className="text-destructive" lang="en">
                 {entry.lastChosen || '(bỏ trống)'}
               </span>

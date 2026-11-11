@@ -275,7 +275,7 @@ const STAGE_1_OVERVIEW_TENSES: PronunciationBlock = {
     { text: 'Hiện tại đơn: he / she / it thêm -s.', lessonId: 's1-t1-w2', sectionId: 'grammar' },
     { text: "Hỏi / phủ định hiện tại đơn: do / does, don't / doesn't.", lessonId: 's1-t1-w3', sectionId: 'grammar' },
     { text: 'Hiện tại tiếp diễn: am / is / are + V-ing.', lessonId: 's1-t2-w1', sectionId: 'grammar' },
-    { text: "Quá khứ đơn có quy tắc: V-ed, did / didn't.", lessonId: 's1-t2-w2', sectionId: 'grammar' },
+    { text: "Quá khứ đơn: was / were; động từ có quy tắc V-ed, did / didn't, Wh + did.", lessonId: 's1-t2-w2', sectionId: 'grammar' },
     { text: 'Động từ bất quy tắc: went, saw, bought (bảng 50 động từ).', lessonId: 's1-t2-w3', sectionId: 'grammar' },
     { text: "Tương lai will: will / won't + nguyên mẫu.", lessonId: 's1-t3-w1', sectionId: 'grammar' },
     { text: 'be going to (gonna) cho kế hoạch.', lessonId: 's1-t3-w2', sectionId: 'grammar' },
@@ -308,7 +308,7 @@ export const PRONUNCIATION_T2_W2: PronunciationContent = {
     { id: 's1-t2-w2-say-1', text: 'I watched the news yesterday.', vi: 'Hôm qua tôi xem thời sự.' },
     { id: 's1-t2-w2-say-2', text: 'We talked about the economic situation.', vi: 'Chúng tôi nói về tình hình kinh tế.' },
     { id: 's1-t2-w2-say-3', text: 'She studied at the university.', vi: 'Cô ấy học ở trường đại học.' },
-    { id: 's1-t2-w2-say-4', text: 'Did you finish the activity?', vi: 'Bạn làm xong hoạt động chưa?' },
+    { id: 's1-t2-w2-say-4', text: 'Did you finish the activity yesterday?', vi: 'Hôm qua bạn có làm xong hoạt động đó không?' },
   ],
 }
 
@@ -341,7 +341,7 @@ export const PRONUNCIATION_T3_W1: PronunciationContent = {
   sentences: [
     { id: 's1-t3-w1-say-1', text: "I'll call you at ten.", vi: 'Tôi sẽ gọi bạn lúc mười giờ.' },
     { id: 's1-t3-w1-say-2', text: 'It will be a cup of tea and a cake.', vi: 'Sẽ là một tách trà và một cái bánh.' },
-    { id: 's1-t3-w1-say-3', text: 'I can help you tomorrow.', vi: 'Ngày mai tôi giúp bạn được.' },
+    { id: 's1-t3-w1-say-3', text: 'I will help you tomorrow.', vi: 'Ngày mai tôi sẽ giúp bạn.' },
     { id: 's1-t3-w1-say-4', text: "She won't go to the party.", vi: 'Cô ấy sẽ không đi dự tiệc.' },
   ],
 }

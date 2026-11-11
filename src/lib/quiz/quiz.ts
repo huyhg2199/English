@@ -1,15 +1,17 @@
-import { getQuestion, getQuiz, type Question, type QuizDef } from '@/data/questions'
+import { getQuestion, getQuiz, isTypedQuestion, type Question, type QuizDef } from '@/data/questions'
 import { isPlainObject, type Store } from '@/lib/storage'
 import { isTimeString } from '@/lib/updated-at'
 
 import { recordMistake } from './mistakes'
 import { seededRandom, shuffle } from './random'
+import { matchesTyped } from './typed'
 
 /**
  * Engine test bám bài (story 9). Hàm thuần: seed và thời gian luôn qua tham số.
  * Lần làm chỉ được ghi khi làm xong (`recordAttempt`); bỏ dở thì không ghi gì.
  */
 
+/** `chosen`: lựa chọn đã chọn, hoặc chữ đã gõ (câu gõ, story 35; giữ nguyên, chưa chuẩn hoá). */
 export type AttemptAnswer = { questionId: string; chosen: string; correct: boolean }
 
 /** Một lần làm, lưu ở `store.data.quizzes.attempts[id]`. Story 12 (Hermione 100%), 14 (O.W.L.) đọc lại. */
@@ -43,7 +45,14 @@ export type AttemptKind = (typeof KNOWN_ATTEMPT_KINDS)[number]
 
 export type QuizAttemptEntry = QuizAttempt & { id: string }
 
-export type PickOptions = { canSpeak: boolean }
+export type PickOptions = {
+  canSpeak: boolean
+  /**
+   * Câu đã gặp (story 35, `seenQuestionIds`): trong mỗi bài, câu chưa gặp được lấy trước. Rỗng / không truyền → đúng kết
+   * quả cũ với cùng seed. Chỉ quiz bài và mini test truyền.
+   */
+  seen?: ReadonlySet<string>
+}
 
 function isAnswer(value: unknown): value is AttemptAnswer {
   return (
@@ -80,27 +89,50 @@ export function isQuizAttempt(value: unknown): value is QuizAttempt {
   )
 }
 
+/** Phân hoạch ổn định: câu chưa gặp lên trước, giữ nguyên thứ tự trong từng phần. `seen` rỗng → giữ nguyên. */
+function unseenFirst(questions: Question[], seen: ReadonlySet<string> | undefined): Question[] {
+  if (!seen || seen.size === 0) return questions
+  return [...questions.filter((q) => !seen.has(q.id)), ...questions.filter((q) => seen.has(q.id))]
+}
+
 /**
  * Chọn câu cho một bài test: mỗi bài ít nhất `minPerLesson` câu, đủ `size` câu, không trùng, thứ tự xáo theo seed.
  * Không có TTS (`canSpeak` false): chọn như khi có TTS rồi thay từng câu nghe bằng một câu chưa chọn **cùng bài**
  * (không còn câu cùng bài thì lấy câu bài khác), nên số câu mỗi bài giữ nguyên.
+ * Câu đã gặp (`opts.seen`, story 35): sau mỗi lần xáo (từng bài, phần còn lại, câu thay) câu chưa gặp được xếp lên trước
+ * bằng phân hoạch ổn định; số lần gọi `shuffle` không đổi, nên `seen` rỗng cho đúng kết quả cũ.
  */
 export function pickQuiz(bank: readonly Question[], quiz: QuizDef, seed: string, opts: PickOptions): Question[] {
   const random = seededRandom(`${seed}|pick`)
+  const seen = opts.seen
   const pool = bank.filter((q) => quiz.lessonIds.includes(q.lessonId))
-  const groups = quiz.lessonIds.map((id) => shuffle(pool.filter((q) => q.lessonId === id), random))
+  const groups = quiz.lessonIds.map((id) =>
+    unseenFirst(
+      shuffle(
+        pool.filter((q) => q.lessonId === id),
+        random,
+      ),
+      seen,
+    ),
+  )
   const chosen = groups.flatMap((g) => g.slice(0, quiz.minPerLesson))
-  const rest = shuffle(
-    groups.flatMap((g) => g.slice(quiz.minPerLesson)),
-    random,
+  const rest = unseenFirst(
+    shuffle(
+      groups.flatMap((g) => g.slice(quiz.minPerLesson)),
+      random,
+    ),
+    seen,
   )
   chosen.push(...rest.slice(0, Math.max(0, quiz.size - chosen.length)))
   let picked = chosen.slice(0, quiz.size)
   if (!opts.canSpeak) {
     const used = new Set(picked.map((q) => q.id))
-    const spare = shuffle(
-      pool.filter((q) => !used.has(q.id) && q.kind !== 'listening'),
-      random,
+    const spare = unseenFirst(
+      shuffle(
+        pool.filter((q) => !used.has(q.id) && q.kind !== 'listening'),
+        random,
+      ),
+      seen,
     )
     picked = picked.flatMap((q) => {
       if (q.kind !== 'listening') return [q]
@@ -117,18 +149,28 @@ export function pickMiniTest(bank: readonly Question[], seed: string, opts: Pick
   return pickQuiz(bank, getQuiz('mini-t1')!, seed, opts)
 }
 
-/** Thứ tự lựa chọn của một câu trong một lần làm (xác định theo seed + id câu). */
+/** Thứ tự lựa chọn của một câu trong một lần làm (xác định theo seed + id câu). Câu gõ không có lựa chọn → `[]`. */
 export function shuffleOptions(question: Question, seed: string): string[] {
+  if (isTypedQuestion(question)) return []
   return shuffle(question.options, seededRandom(`${seed}|${question.id}`))
+}
+
+/**
+ * Chấm một câu: câu gõ (`type` / `transform`) dùng `matchesTyped(answer, chosen, accept)` (story 35); câu chọn đáp án so
+ * khớp đúng như cũ. Chưa trả lời (chuỗi rỗng) luôn sai.
+ */
+export function isAnswerCorrect(question: Question, chosen: string): boolean {
+  if (isTypedQuestion(question)) return matchesTyped(question.answer, chosen, question.accept)
+  return chosen === question.answer
 }
 
 export type GradedAttempt = { score: number; total: number; answers: AttemptAnswer[] }
 
-/** Chấm: câu chưa trả lời tính là sai (chosen = ''). */
+/** Chấm (`isAnswerCorrect`): câu chưa trả lời tính là sai (chosen = ''). */
 export function gradeAttempt(questions: readonly Question[], chosen: Readonly<Record<string, string>>): GradedAttempt {
   const answers = questions.map((q) => {
     const c = chosen[q.id] ?? ''
-    return { questionId: q.id, chosen: c, correct: c === q.answer }
+    return { questionId: q.id, chosen: c, correct: isAnswerCorrect(q, c) }
   })
   return { score: answers.filter((a) => a.correct).length, total: answers.length, answers }
 }
@@ -160,6 +202,16 @@ export function listGradedAttempts(store: Store, quizId?: string): QuizAttemptEn
   return listAttempts(store, quizId).filter(
     (a) => !a.skipped && (a.kind === undefined || (KNOWN_ATTEMPT_KINDS as readonly string[]).includes(a.kind)),
   )
+}
+
+/**
+ * Câu đã gặp (story 35): mọi câu từng xuất hiện trong một lần làm đã chấm (`listGradedAttempts`, mọi bài test; bỏ lần
+ * "Để sau" và lần làm hỏng / loại lạ). `pickQuiz` lấy câu chưa gặp trước.
+ */
+export function seenQuestionIds(store: Store): Set<string> {
+  const out = new Set<string>()
+  for (const a of listGradedAttempts(store)) for (const ans of a.answers) out.add(ans.questionId)
+  return out
 }
 
 export type AttemptInput = {

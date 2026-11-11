@@ -1,11 +1,11 @@
 import { brickLessonId, bricksOfRow, ROW_IDS, ROW_TITLES, type RowId } from '@/data/foundation'
 
 import type { QuizDef } from './index'
-import type { Question } from './types'
+import type { ChoiceQuestion } from './types'
 
 /**
- * Ngân hàng câu Sân ga 9¾ (story 20): 10 câu mỗi hàng A–D cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng
- * (`quiz-f-a` … `quiz-f-d`, 8 câu mỗi lần). Tự soạn, không chép đề.
+ * Ngân hàng câu Sân ga 9¾ (story 20): 42 câu cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng (`quiz-f-a` … `quiz-f-d`,
+ * 8 câu mỗi lần). Hàng A 12 câu (F06 có 4: số, thứ tự, thứ, ngày tháng, story 34), hàng B–D 10 câu. Tự soạn, không chép đề.
  *
  * Cố ý **không** nằm trong `QUESTION_BANK` / `QUIZZES`: app không sinh `lesson-fNN`, câu Sân ga không vào mini test,
  * O.W.L., test quay lại và không chạy ở `/practice/quiz/…`. `getQuestion` vẫn tra được (để Sổ lỗi hiện câu).
@@ -21,7 +21,7 @@ import type { Question } from './types'
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
 
-const ROW_A: readonly Question[] = [
+const ROW_A: readonly ChoiceQuestion[] = [
   {
     id: 'q-f01-01',
     lessonId: 'f01',
@@ -144,9 +144,34 @@ const ROW_A: readonly Question[] = [
     explanation: 'Ngày trong tháng dùng số thứ tự: 1st first, 2nd second, 3rd third.',
     requires: ['ordinals'],
   },
+  {
+    id: 'q-f06-03',
+    lessonId: 'f06',
+    sectionId: 'vocabulary',
+    tag: 'từ vựng',
+    kind: 'choice',
+    prompt: 'Thứ Năm tiếng Anh là gì?',
+    options: ['Thursday', 'Tuesday', 'Wednesday', 'Saturday'],
+    answer: 'Thursday',
+    explanation: 'Thursday = thứ Năm. Tuesday (thứ Ba) dễ nhầm với Thursday; Wednesday là thứ Tư, Saturday là thứ Bảy.',
+    requires: ['days-months'],
+  },
+  {
+    id: 'q-f06-04',
+    lessonId: 'f06',
+    sectionId: 'vocabulary',
+    tag: 'từ vựng',
+    kind: 'choice',
+    prompt: 'Ngày 12 tháng 8, kiểu Mỹ nói (viết bằng chữ) thế nào?',
+    options: ['August twelfth', 'August twelve', 'twelve August', 'August twelveth'],
+    answer: 'August twelfth',
+    explanation:
+      'Tháng trước, ngày sau, ngày dùng số thứ tự: 12th = twelfth (không viết twelveth). Văn bản có khi chỉ viết August 12, nhưng vẫn đọc August twelfth.',
+    requires: ['days-months', 'ordinals'],
+  },
 ]
 
-const ROW_B: readonly Question[] = [
+const ROW_B: readonly ChoiceQuestion[] = [
   {
     id: 'q-f07-01',
     lessonId: 'f07',
@@ -271,7 +296,7 @@ const ROW_B: readonly Question[] = [
   },
 ]
 
-const ROW_C: readonly Question[] = [
+const ROW_C: readonly ChoiceQuestion[] = [
   {
     id: 'q-f13-01',
     lessonId: 'f13',
@@ -401,7 +426,7 @@ const ROW_C: readonly Question[] = [
   },
 ]
 
-const ROW_D: readonly Question[] = [
+const ROW_D: readonly ChoiceQuestion[] = [
   {
     id: 'q-f17-01',
     lessonId: 'f17',
@@ -527,8 +552,8 @@ const ROW_D: readonly Question[] = [
   },
 ]
 
-/** 40 câu Sân ga (10 câu mỗi hàng), theo thứ tự hàng A → D. */
-export const FOUNDATION_QUESTIONS: readonly Question[] = [...ROW_A, ...ROW_B, ...ROW_C, ...ROW_D]
+/** 42 câu Sân ga (hàng A 12 câu, B–D 10 câu), theo thứ tự hàng A → D. */
+export const FOUNDATION_QUESTIONS: readonly ChoiceQuestion[] = [...ROW_A, ...ROW_B, ...ROW_C, ...ROW_D]
 
 /** Id bài kiểm tra của từng hàng. */
 export const ROW_QUIZ_ID: Readonly<Record<RowId, string>> = {

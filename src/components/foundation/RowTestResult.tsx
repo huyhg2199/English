@@ -6,7 +6,7 @@ import { SourceSectionLink, TagBadge } from '@/components/quiz/QuestionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { BrickId, RowId } from '@/data/foundation'
-import { MISTAKES_HREF } from '@/data/questions'
+import { isTypedQuestion, MISTAKES_HREF } from '@/data/questions'
 import { isRowPass } from '@/lib/foundation'
 import { rowTestVerdict } from '@/lib/foundation/row-test'
 import { cn } from '@/lib/utils'
@@ -83,7 +83,7 @@ export function RowTestResult({ row, mode, startBrick, rowDone, graded, question
                     <TagBadge tag={q.tag} />
                   </div>
                   <p className="break-words text-muted-foreground">
-                    Bạn chọn: <span lang="en">{a.chosen || '(bỏ trống)'}</span>
+                    {isTypedQuestion(q) ? 'Bạn gõ: ' : 'Bạn chọn: '}<span lang="en">{a.chosen || '(bỏ trống)'}</span>
                   </p>
                   <p className="break-words">
                     <span className="text-muted-foreground">Đáp án: </span>

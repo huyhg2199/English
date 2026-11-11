@@ -41,10 +41,10 @@ export const SPELLS: readonly Spell[] = [
   {
     id: 'obliviate',
     name: 'Obliviate',
-    description: 'Đưa việc về quá khứ đã xong: động từ thêm -ed, hỏi và phủ định với did.',
+    description: 'Đưa việc về quá khứ đã xong: động từ thêm -ed, hỏi và phủ định với did; was / were tự hỏi và phủ định, không mượn did.',
     tenseId: 'past-simple',
     lessonId: 's1-t2-w2',
-    grammarEn: 'the past simple with regular verbs (-ed, did, didn\'t)',
+    grammarEn: 'the past of to be (was / were) and the past simple with regular verbs (-ed, did, didn\'t)',
   },
   {
     id: 'reparo',

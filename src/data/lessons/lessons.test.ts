@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
 import { getLesson, getSection } from '@/data/roadmap'
+import { getBrick } from '@/data/foundation/content'
+import { BRICK_IDS } from '@/data/foundation'
+import { QUESTION_BANK } from '@/data/questions'
 import { hasDetails, loadWords, type StudyWord } from '@/data/vocab'
+import { normalizeTyped } from '@/lib/quiz/typed'
+import { hasPractice, practiceEnglishTexts, practiceItemIds, practiceProblems } from '@/lib/tense-practice'
 
-import { allTenses, getLessonContent, IRREGULAR_VERBS, LESSON_CONTENTS, SPELLS } from './index'
+import { allTenses, getLessonContent, IRREGULAR_VERBS, LESSON_CONTENTS, lessonRuleCards, SPELLS } from './index'
 import type { PronunciationBlock, Sound } from './types'
 
 const words = await loadWords()
@@ -173,6 +178,7 @@ describe('nội dung bài T1', () => {
       'present-simple',
       'present-simple-questions',
       'present-continuous',
+      'past-to-be',
       'past-simple',
       'past-simple-irregular',
       'will',
@@ -364,10 +370,269 @@ describe('thần chú', () => {
       const tenses = getLessonContent(spell.lessonId)?.grammar?.tenses ?? []
       expect(tenses.find((t) => t.id === spell.tenseId)?.spellId, spell.id).toBe(spell.id)
     }
-    // Thì nào cũng có thần chú, trừ chủ điểm so sánh hoàn thành / quá khứ đơn (spec không gán thần chú).
+    // Thì nào cũng có thần chú, trừ chủ điểm so sánh hoàn thành / quá khứ đơn (spec không gán thần chú) và was / were
+    // (Obliviate của bài đã bao luôn, story 33).
     for (const t of allTenses()) {
-      if (t.id === 'present-perfect-vs-past') expect(t.spellId).toBeUndefined()
+      if (t.id === 'present-perfect-vs-past' || t.id === 'past-to-be') expect(t.spellId, t.id).toBeUndefined()
       else expect(SPELLS.some((s) => s.id === t.spellId), t.id).toBe(true)
     }
+  })
+})
+
+describe('sửa lỗi nội dung thì (story 32)', () => {
+  const tense = (id: string) => {
+    const t = allTenses().find((x) => x.id === id)
+    if (!t) throw new Error(`thiếu Tense ${id}`)
+    return t
+  }
+  const CAN = /\bcan(not|'t)?\b/i
+
+  it('quy tắc gấp đôi phụ âm của tiếp diễn và quá khứ đơn đủ điều kiện, không còn câu cũ', () => {
+    for (const id of ['present-continuous', 'past-simple']) {
+      const rules = tense(id).rules.join(' ')
+      expect(rules, id).toContain('visit →')
+      expect(rules, id).toContain('w, x, y')
+      expect(rules, id).toContain('chữ nguyên âm (a, e, i, o, u)')
+      expect(rules, id).toContain('hai chữ nguyên âm thì không')
+      expect(rules, id).toContain('rain →')
+      expect(rules, id).toContain('Từ hai âm tiết có đuôi như vậy')
+      expect(rules, id).not.toContain('sau một nguyên âm ngắn')
+      expect(rules, id).not.toContain('một nguyên âm ngắn + phụ âm thì gấp đôi')
+    }
+  })
+
+  it('quá khứ đơn ghi ngoại lệ to be không mượn did', () => {
+    expect(tense('past-simple').rules.join(' ')).toContain('không phải Did you be')
+  })
+
+  it('câu ví dụ và câu luyện nói bắt đầu bằng Did không dịch thành "…chưa?"', () => {
+    const pairs = [
+      ...allTenses().flatMap((t) => t.examples.map((e) => ({ en: e.en, vi: e.vi }))),
+      ...LESSON_CONTENTS.flatMap((c) => [
+        ...(c.pronunciation?.sentences ?? []),
+        ...(c.parts ?? []).flatMap((p) => p.sentences),
+        ...(c.pronunciation?.blocks ?? []).flatMap((b) =>
+          b.kind === 'shadowing' ? b.lines : b.kind === 'dictation' ? b.items : [],
+        ),
+      ]).map((s) => ({ en: s.text, vi: s.vi })),
+    ]
+    const did = pairs.filter((p) => /^Did\b/.test(p.en))
+    expect(did.length).toBeGreaterThan(0)
+    for (const p of did) expect(p.vi, p.en).not.toContain('chưa')
+  })
+
+  it('PERFECT_VS_PAST có lỗi "…chưa?", PRESENT_PERFECT có lỗi been to / gone to', () => {
+    expect(
+      tense('present-perfect-vs-past').mistakes.some((m) => m.right.startsWith('Did you') && m.why.includes('chưa')),
+    ).toBe(true)
+    expect(
+      tense('present-perfect').mistakes.some((m) => [m.wrong, m.right, m.why].some((s) => s.includes('been to'))),
+    ).toBe(true)
+  })
+
+  it('T3-W1 chưa dùng can: câu luyện nói và Tense will', () => {
+    const c = content('s1-t3-w1')
+    const sentences = [...(c.pronunciation?.sentences ?? []), ...(c.parts ?? []).flatMap((p) => p.sentences)]
+    for (const s of sentences) expect(s.text, s.id).not.toMatch(CAN)
+    const will = tense('will')
+    const texts = [
+      ...will.formulas.map((f) => f.text),
+      ...will.rules,
+      ...will.examples.flatMap((e) => [e.en, e.vi]),
+      ...will.mistakes.flatMap((m) => [m.wrong, m.right, m.why]),
+    ]
+    for (const t of texts) expect(t).not.toMatch(CAN)
+  })
+})
+
+describe('to be quá khứ và Wh + did (story 33)', () => {
+  const tense = (id: string) => {
+    const t = allTenses().find((x) => x.id === id)
+    if (!t) throw new Error(`thiếu Tense ${id}`)
+    return t
+  }
+  const fill = (cloze: string, answer: string) => cloze.replace('___', answer)
+  /** Dạng V2 / V3 bất quy tắc chưa dạy ở s1-t2-w2 (trừ was / were / did và dạng trùng V1). */
+  const FORBIDDEN = new Set(
+    IRREGULAR_VERBS.flatMap((v) => [...v.v2.split(' / '), ...v.v3.split(' / ')].filter((f) => f !== v.v1))
+      .map((f) => f.toLowerCase())
+      .filter((f) => !['was', 'were', 'did'].includes(f)),
+  )
+  const irregularIn = (text: string) =>
+    (text.toLowerCase().match(/[a-z']+/g) ?? []).map((w) => w.replace(/'.*$/, '')).filter((w) => FORBIDDEN.has(w))
+
+  it('đoạn Ngữ pháp s1-t2-w2: was / were đứng trước động từ có quy tắc', () => {
+    expect(content('s1-t2-w2').grammar!.tenses.map((t) => t.id)).toEqual(['past-to-be', 'past-simple'])
+    expect(tense('past-to-be').name).toBe('Quá khứ đơn: to be (was / were)')
+  })
+
+  it('past-to-be có khẳng định, phủ định, câu hỏi, there was / were và chữ cần có', () => {
+    const t = tense('past-to-be')
+    expect(t.formulas.map((f) => f.label)).toEqual(['Khẳng định', 'Phủ định', 'Câu hỏi', 'There was / were'])
+    const all = [
+      ...t.formulas.map((f) => f.text),
+      ...t.rules,
+      ...t.examples.map((e) => e.en),
+      ...t.mistakes.flatMap((m) => [m.wrong, m.right]),
+    ].join(' ')
+    for (const s of ["wasn't", "weren't", 'Yes, I was', 'There were', 'Where were you']) expect(all, s).toContain(s)
+    expect(t.mistakes.map((m) => m.wrong)).toEqual(
+      expect.arrayContaining(['Did you be at home?', "I didn't was tired.", 'I was work late.']),
+    )
+  })
+
+  it('PAST_SIMPLE: có dòng "Câu hỏi Wh-" với did và ví dụ Wh + did, không còn dòng "To be"', () => {
+    const t = tense('past-simple')
+    const wh = t.formulas.find((f) => f.label === 'Câu hỏi Wh-')
+    expect(wh?.text).toMatch(/\bdid\b/)
+    expect(t.formulas.some((f) => f.label === 'To be')).toBe(false)
+    expect(t.examples.some((e) => /^(What|Where|When|Who)\b.*\bdid\b/.test(e.en))).toBe(true)
+  })
+
+  it('câu tiếng Anh của past-to-be và past-simple không dùng V2 / V3 bất quy tắc khác was / were / did, không có some / any / many / because / so', () => {
+    const texts = ['past-to-be', 'past-simple'].flatMap((id) => {
+      const t = tense(id)
+      return [
+        ...t.examples.map((e) => e.en),
+        ...t.mistakes.map((m) => m.right),
+        ...(t.ruleCards ?? []).map((r) => fill(r.cloze, r.answer)),
+      ]
+    })
+    expect(texts).toContain('Where did you stay in Da Nang? — At a small hotel.')
+    for (const text of texts) {
+      expect(irregularIn(text), text).toEqual([])
+      const ws = text.toLowerCase().match(/[a-z']+/g) ?? []
+      expect(ws.filter((w) => ['some', 'any', 'many', 'because', 'so'].includes(w)), text).toEqual([])
+    }
+  })
+
+  it('past-to-be có lỗi thiếu was / were ("I tired yesterday.") và lỗi "I was work" không cấm was / were + V-ing', () => {
+    const t = tense('past-to-be')
+    expect(t.mistakes.find((m) => m.wrong === 'I tired yesterday.')?.right).toBe('I was tired yesterday.')
+    expect(t.mistakes.find((m) => m.wrong === 'I was work late.')?.why).toContain('nguyên mẫu')
+  })
+
+  it('thẻ quy tắc của thì: đúng một ___, answer không rỗng, id <tenseId>-rule-n, không trùng nhau và không trùng thẻ viên gạch', () => {
+    const brickCardIds = new Set(BRICK_IDS.flatMap((id) => (getBrick(id)?.ruleCards ?? []).map((r) => r.id)))
+    const seen = new Set<string>()
+    let count = 0
+    for (const t of allTenses()) {
+      for (const r of t.ruleCards ?? []) {
+        count++
+        expect(r.cloze.split('___'), r.id).toHaveLength(2)
+        expect(r.answer.trim(), r.id).not.toBe('')
+        expect(r.vi.trim(), r.id).not.toBe('')
+        expect(r.id).toMatch(new RegExp(`^${t.id}-rule-\\d+$`))
+        expect(seen.has(r.id), r.id).toBe(false)
+        expect(brickCardIds.has(r.id), r.id).toBe(false)
+        seen.add(r.id)
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(3)
+  })
+
+  it('lessonRuleCards: thẻ của mọi thì trong bài theo thứ tự; bài không có thẻ → []', () => {
+    expect(lessonRuleCards('s1-t2-w2').map((r) => r.id)).toEqual(['past-to-be-rule-1', 'past-to-be-rule-2', 'past-simple-rule-1'])
+    expect(lessonRuleCards('s1-t2-w1')).toEqual([])
+    expect(lessonRuleCards('nope')).toEqual([])
+  })
+
+  it('ôn T2-W4 có dòng was / were và "Did you be" trong dòng Không trộn', () => {
+    const summary = content('s1-t2-w4').grammar!.review!.summary
+    expect(summary.some((l) => l.startsWith('Quá khứ của to be: was / were'))).toBe(true)
+    expect(summary.find((l) => l.startsWith('Không trộn'))).toContain('Did you be')
+  })
+})
+
+describe('luyện có bậc (story 35)', () => {
+  const withPractice = allTenses().filter(hasPractice)
+  const pc = () => {
+    const t = allTenses().find((x) => x.id === 'present-continuous')
+    if (!t?.practice) throw new Error('present-continuous chưa có practice')
+    return t.practice
+  }
+  /** V2 / V3 bất quy tắc khác V1, và các dạng bị cấm ở Boundaries (quá khứ, will / can, some / any / many, because / so). */
+  const FORBIDDEN = new Set([
+    ...IRREGULAR_VERBS.flatMap((v) => [...v.v2.split(' / '), ...v.v3.split(' / ')].filter((f) => f !== v.v1)).map((f) =>
+      f.toLowerCase(),
+    ),
+    'was', 'were', 'did', "didn't", "wasn't", "weren't", 'will', "won't", "'ll", 'can', "can't", 'cannot', 'some', 'any',
+    'many', 'because', 'so',
+  ])
+  const NOT_PAST = new Set(['need'])
+  const badWords = (text: string) =>
+    (text.toLowerCase().replace(/[’‘]/g, "'").match(/[a-z']+/g) ?? []).filter(
+      (w) => FORBIDDEN.has(w) || FORBIDDEN.has(w.replace(/^[a-z]+(?=')/, '')) || (/^[a-z]{2,}ed$/.test(w) && !NOT_PAST.has(w)),
+    )
+
+  it('mọi Tense có practice thì practiceProblems rỗng', () => {
+    expect(withPractice.length).toBeGreaterThan(0)
+    for (const t of withPractice) expect(practiceProblems(t), t.id).toEqual([])
+  })
+
+  it('present-continuous có practice: 6 câu luyện, ≥ 3 câu type, có câu biến đổi cả câu, 2 câu dễ hơn', () => {
+    const p = pc()
+    expect(p.check.items).toHaveLength(6)
+    expect(p.check.easier).toHaveLength(2)
+    const typedItems = p.check.items.filter((i) => i.kind === 'type')
+    expect(typedItems.length).toBeGreaterThanOrEqual(3)
+    expect(typedItems.some((i) => i.kind === 'type' && !i.prompt.includes('___'))).toBe(true)
+    expect(p.faded.answer).toBe('are playing')
+    const c3 = p.check.items.find((i) => i.id === 'present-continuous-c3')
+    expect(c3).toMatchObject({ kind: 'type', answer: "isn't working" })
+    expect(p.apply.speak?.map((s) => s.id)).toEqual(['present-continuous-say-1', 'present-continuous-say-2'])
+  })
+
+  it('id câu luyện không trùng id câu luyện của mọi viên gạch', () => {
+    const brickIds = new Set<string>()
+    for (const id of BRICK_IDS) {
+      for (const s of getBrick(id)?.screens ?? []) {
+        if (s.kind === 'check') for (const i of [...s.items, ...s.easier]) brickIds.add(i.id)
+        if (s.kind === 'apply' && s.item) brickIds.add(s.item.id)
+      }
+    }
+    expect(brickIds.size).toBeGreaterThan(0)
+    for (const t of withPractice) for (const id of practiceItemIds(t.practice)) expect(brickIds.has(id), id).toBe(false)
+  })
+
+  it('chữ tiếng Anh của practice không có dạng bị cấm (quá khứ, will / can, some / any / many, because / so)', () => {
+    for (const t of withPractice) {
+      for (const text of practiceEnglishTexts(t.practice)) {
+        // Đề biến đổi có phần yêu cầu tiếng Việt trước dấu ":" (vd "Đổi sang câu hỏi: …"): chỉ xét phần tiếng Anh.
+        const english = text.replace(/^[^:]*[^ -~][^:]*:\s*/, '')
+        expect(badWords(english), `${t.id}: ${text}`).toEqual([])
+      }
+    }
+  })
+
+  it('đề practice không trùng đề quiz của chính bài chứa thì (so sau chuẩn hoá, cả gợi ý trong ngoặc)', () => {
+    const key = (text: string) => normalizeTyped(text.replace(/\([^)]*\)/g, ' '))
+    let checked = 0
+    for (const content of LESSON_CONTENTS) {
+      const quizPrompts = new Set(QUESTION_BANK.filter((q) => q.lessonId === content.lessonId).map((q) => key(q.prompt)))
+      for (const t of (content.grammar?.tenses ?? []).filter(hasPractice)) {
+        const p = t.practice
+        const prompts = [
+          p.worked.en,
+          p.faded.en,
+          ...[...p.check.items, ...p.check.easier].map((i) => ('prompt' in i ? (i.prompt ?? '') : '')),
+        ].filter((x) => key(x) !== '')
+        for (const prompt of prompts) expect(quizPrompts.has(key(prompt)), `${content.lessonId} ${t.id}: ${prompt}`).toBe(false)
+        checked += 1
+      }
+    }
+    expect(checked).toBe(withPractice.length)
+  })
+
+  it("câu luyện type có he / she / it is (hoặc 's) trong đáp án thì có accept cho dạng kia", () => {
+    for (const t of withPractice) {
+      for (const i of [...t.practice.check.items, ...t.practice.check.easier]) {
+        if (i.kind === 'type' && /\b(he|she|it)( is|['’]s)\b/i.test(i.answer)) expect(i.accept?.length ?? 0, i.id).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('mọi Tense khác chưa có practice (story 36–37 làm)', () => {
+    expect(withPractice.map((t) => t.id)).toEqual(['present-continuous'])
   })
 })
