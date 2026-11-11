@@ -8,13 +8,13 @@ import { useNow } from '@/app/use-now'
 import { useWords } from '@/app/use-words'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { isBrickId } from '@/data/foundation'
 import { Kbd } from '@/components/Kbd'
 import { cambridgeUrl, POS_LABELS, VOCAB_ATTRIBUTION, type StudyWord, type WordList } from '@/data/vocab'
 import { ListenButton } from '@/components/ListenButton'
 import { ReadableText } from '@/components/ReadableText'
+import { ruleSource } from '@/components/flashcards/rule-source'
 import { buildStudySession, functionWordCloze, rankLabel, type FlashcardGates } from '@/lib/flashcard-session'
-import { brickHref, FOUNDATION_GATES } from '@/lib/foundation'
+import { FOUNDATION_GATES } from '@/lib/foundation'
 import { flashcardBindings, flashcardKeyState, GRADE_KEYS, type FlashcardCard } from '@/lib/hotkeys'
 import { originsByWord, safeSourceHref, type Origin } from '@/lib/saved-words'
 import { canSpeak, speak } from '@/lib/speech'
@@ -284,9 +284,9 @@ function ruleParts(word: RuleStudyWord): ClozeParts {
 }
 
 /**
- * Thẻ quy tắc viên gạch (story 24): mặt trước nhãn "Thẻ quy tắc · Fnn" + câu có chỗ trống; lật thẻ thấy câu đã điền (đáp
- * án in đậm), dòng quy tắc tiếng Việt, link xem lại viên và 4 nút chấm. Không có "Đã biết", không đọc TTS (câu có thể
- * chứa IPA).
+ * Thẻ quy tắc (story 24 viên gạch, story 33 thì của bài): mặt trước nhãn "Thẻ quy tắc · Fnn" / "Thẻ quy tắc · T2 tuần 2"
+ * + câu có chỗ trống; lật thẻ thấy câu đã điền (đáp án in đậm), dòng quy tắc tiếng Việt, link xem lại viên / bài và 4 nút
+ * chấm. Không có "Đã biết", không đọc TTS (câu có thể chứa IPA).
  */
 function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardProps, 'previous' | 'now' | 'onGrade'> & {
   word: RuleStudyWord
@@ -298,12 +298,13 @@ function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardPro
     { flip: () => setFlipped(true), grade: onGrade, known: () => {} },
   )
   const parts = ruleParts(word)
+  const source = ruleSource(word)
   return (
     <Card className="gap-4">
       <CardHeader className="gap-3">
         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{RULE_KIND_LABELS[kind]}</span>
-          <span>Thẻ quy tắc · {word.brickId}</span>
+          <span>Thẻ quy tắc · {source.label}</span>
         </div>
         <ClozeSentence parts={parts} revealed={flipped} className="min-w-0" />
       </CardHeader>
@@ -313,12 +314,12 @@ function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardPro
         ) : (
           <>
             <p className="text-base">{word.vi}</p>
-            {isBrickId(word.brickId) && (
+            {source.link && (
               <Link
-                to={brickHref(word.brickId)}
+                to={source.link.to}
                 className="self-start py-1 text-sm text-primary underline-offset-4 hover:underline"
               >
-                Xem lại viên {word.brickId}
+                {source.link.text}
               </Link>
             )}
             <GradeButtons previous={previous} now={now} onGrade={onGrade} />

@@ -120,3 +120,6 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
   summary: Bài xếp f17-a1 xếp cứng `go` đứng một mình vào nhóm "Thói quen", trong khi dạng gốc go cũng là nguyên mẫu (I will go, Did you go); nhãn nhóm thứ 4 gần như cho sẵn chỗ của gone.
   evidence: `src/data/foundation/bricks/f17.ts` f17-a1 groups. Có từ trước story 32 (phần go). Có thể xem lại khi làm "Bản đồ thì" (story 39–42).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/33-past-to-be-wh-did.md`
+  summary: Đoạn Phát âm / Nghe của s1-t2-w2 chưa dạy dạng yếu của was / were (/wəz/, /wɚ/) và chưa có câu nghe phân biệt was / wasn't, were / weren't (điểm nghe hay gặp ở TOEIC Part 1–2).
+  evidence: Review story 33 (blind #7). 6 câu quiz mới đều là trắc nghiệm ngữ pháp. Mục phát âm và câu nghe của `t2-t4-pronunciation.ts` / `t2-t4.ts` khối t2w2 không có was / were. Intent story 33 không bao phần phát âm, nên nên làm ở story luyện có bậc (35–36) hoặc một story phát âm riêng.

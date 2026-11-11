@@ -69,7 +69,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 - **Thẻ "Làm quen":** lần đầu gặp một từ thì thẻ hiện nghĩa, có audio và nút "Đã xem", chưa chấm Quên/Khó/Nhớ/Dễ. Những lần sau thẻ đi theo lịch SRS như cũ.
 - **Hiển thị trên thẻ:** IPA chỉ hiện sau F03, tô trọng âm và âm tiết sau F04, nhãn từ loại sau F07 (viên tính là đã dạy theo mục Sân ga: xong viên, hàng qua bằng kiểm tra, hoặc đã bỏ qua Sân ga). Chữ "NGSL #n" đổi thành "Từ phổ biến #n".
 - **Ví dụ:** câu ví dụ AI nào dùng ngữ pháp chưa học thì thay bằng câu tự viết. Tập rà: NGSL hạng 1–500, danh sách từ khởi đầu và từ chủ đề của mọi viên gạch có nội dung. Câu ví dụ chỉ dùng ngữ pháp Sân ga (F01–F18) và hiện tại đơn (khẳng định, phủ định, câu hỏi); ngoại lệ là câu của chính hư từ được mở sau bài dạy nó (will, can…).
-- **Thẻ quy tắc** của viên gạch là thẻ điền chỗ trống. Chỉ viên đã học xong mới góp thẻ (hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không). Thẻ quy tắc vào phiên ôn ngay hôm học xong viên, đứng sau từ mới và không tính vào số từ mới mỗi ngày.
+- **Thẻ quy tắc** của viên gạch là thẻ điền chỗ trống. Chỉ viên đã học xong mới góp thẻ (hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không). Thẻ quy tắc vào phiên ôn ngay hôm học xong viên, đứng sau từ mới và không tính vào số từ mới mỗi ngày. Thì trong bài Chặng 1 cũng có thể góp thẻ quy tắc: chỉ bài đã đánh dấu xong mới góp (bài bỏ qua khi xếp lớp thì không), thẻ đứng sau thẻ viên gạch (story 33).
 - Thuật toán SRS và lịch của thẻ cũ giữ nguyên. Không xoá hay reset thẻ.
 
 ## Mũ Phân Loại (CAP-3)

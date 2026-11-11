@@ -275,7 +275,7 @@ const STAGE_1_OVERVIEW_TENSES: PronunciationBlock = {
     { text: 'Hiện tại đơn: he / she / it thêm -s.', lessonId: 's1-t1-w2', sectionId: 'grammar' },
     { text: "Hỏi / phủ định hiện tại đơn: do / does, don't / doesn't.", lessonId: 's1-t1-w3', sectionId: 'grammar' },
     { text: 'Hiện tại tiếp diễn: am / is / are + V-ing.', lessonId: 's1-t2-w1', sectionId: 'grammar' },
-    { text: "Quá khứ đơn có quy tắc: V-ed, did / didn't.", lessonId: 's1-t2-w2', sectionId: 'grammar' },
+    { text: "Quá khứ đơn: was / were; động từ có quy tắc V-ed, did / didn't, Wh + did.", lessonId: 's1-t2-w2', sectionId: 'grammar' },
     { text: 'Động từ bất quy tắc: went, saw, bought (bảng 50 động từ).', lessonId: 's1-t2-w3', sectionId: 'grammar' },
     { text: "Tương lai will: will / won't + nguyên mẫu.", lessonId: 's1-t3-w1', sectionId: 'grammar' },
     { text: 'be going to (gonna) cho kế hoạch.', lessonId: 's1-t3-w2', sectionId: 'grammar' },

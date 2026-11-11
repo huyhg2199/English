@@ -1,4 +1,5 @@
 import { BRICK_IDS, type BrickId, type RuleCard } from '@/data/foundation'
+import { lessonRuleCards } from '@/data/lessons'
 import { allLessons } from '@/data/roadmap'
 import { FUNCTION_WORD_GATES, functionWordGate, STARTER_WORD_IDS, type FunctionWordGate, type Word, type WordList } from '@/data/vocab'
 import {
@@ -161,18 +162,22 @@ export function lockedNewWordIds(store: Store): Set<string> {
   })
 }
 
-/** Id SRS của thẻ quy tắc từ id nội dung: `f01-rule-2` → `rule:f01-2`. */
+/** Id SRS của thẻ quy tắc từ id nội dung: `f01-rule-2` → `rule:f01-2`; `past-to-be-rule-1` → `rule:past-to-be-1`. */
 export function ruleCardId(rule: Pick<RuleCard, 'id'>): string {
   return RULE_CARD_PREFIX + rule.id.replace('-rule-', '-')
 }
 
 /**
- * Thẻ quy tắc vào phiên ôn: thẻ của các viên đã học xong (`firstDoneAt` có), theo F01 → F18 rồi theo thứ tự trong viên.
- * Hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không góp thẻ. Nội dung viên truyền vào qua `ruleCardsOf`.
+ * Thẻ quy tắc vào phiên ôn:
+ * - trước hết thẻ của các viên đã học xong (`firstDoneAt` có), theo F01 → F18 rồi theo thứ tự trong viên. Hàng qua bằng
+ *   kiểm tra hay bỏ qua Sân ga thì không góp thẻ. Nội dung viên truyền vào qua `ruleCardsOf`;
+ * - sau đó thẻ của thì trong các bài đã đánh dấu xong (`readCompletedLessonIds`, story 33), theo thứ tự lộ trình rồi thứ
+ *   tự trong bài (`lessonRuleCards`). Bài bị bỏ qua khi xếp lớp thì không góp; bỏ đánh dấu thì thẻ không vào phiên (mục
+ *   trong `srs.cards` giữ nguyên, đánh dấu lại thì lịch cũ chạy tiếp).
  */
 export function ruleStudyWords(store: Store, ruleCardsOf: (brickId: BrickId) => readonly RuleCard[]): RuleStudyWord[] {
   const done = new Set(foundationState(store).doneBrickIds)
-  return BRICK_IDS.filter((id) => done.has(id)).flatMap((id) =>
+  const bricks = BRICK_IDS.filter((id) => done.has(id)).flatMap((id) =>
     ruleCardsOf(id).map((r) => ({
       id: ruleCardId(r),
       rule: true as const,
@@ -183,6 +188,21 @@ export function ruleStudyWords(store: Store, ruleCardsOf: (brickId: BrickId) => 
       vi: r.vi,
     })),
   )
+  const completed = new Set(readCompletedLessonIds(store))
+  const lessons = allLessons()
+    .filter((l) => completed.has(l.id))
+    .flatMap(({ id: lessonId }) =>
+      lessonRuleCards(lessonId).map((r) => ({
+        id: ruleCardId(r),
+        rule: true as const,
+        word: r.answer,
+        lessonId,
+        cloze: r.cloze,
+        answer: r.answer,
+        vi: r.vi,
+      })),
+    )
+  return [...bricks, ...lessons]
 }
 
 /**

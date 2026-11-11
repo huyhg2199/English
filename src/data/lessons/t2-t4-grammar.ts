@@ -47,6 +47,58 @@ export const PRESENT_CONTINUOUS: Tense = {
   spellId: 'accio',
 }
 
+export const PAST_TO_BE: Tense = {
+  id: 'past-to-be',
+  name: 'Quá khứ đơn: to be (was / were)',
+  use: 'Nói ai / cái gì đã là gì, ở đâu, thế nào ở một lúc trong quá khứ (yesterday, last night, in 2020).',
+  timeline: { kind: 'past-point', label: 'Trạng thái đúng ở một lúc trong quá khứ' },
+  formulas: [
+    { label: 'Khẳng định', text: 'I / he / she / it was · you / we / they were + danh từ / tính từ / nơi chốn: I was tired. They were at home.' },
+    { label: 'Phủ định', text: "S + was / were + not (wasn't, weren't): She wasn't at work." },
+    { label: 'Câu hỏi', text: "Was / Were + S + …?  → Yes, I was. / No, they weren't.  Where were you?" },
+    { label: 'There was / were', text: 'There was + danh từ số ít hoặc không đếm được · There were + danh từ số nhiều: There was a cat. There were two cars.' },
+  ],
+  rules: [
+    'Giống am / is / are, chỉ đổi sang quá khứ: am, is → was; are → were. I, he, she, it, danh từ số ít và danh từ không đếm được đi với was; you, we, they và danh từ số nhiều đi với were.',
+    "Phủ định và câu hỏi dùng chính was / were, không mượn did: I wasn't tired (không phải I didn't be tired); Were you at home? (không phải Did you be at home?). Trả lời ngắn: Yes, I was. / No, I wasn't.",
+    'was / were đi với danh từ, tính từ, nơi chốn (at home = ở nhà, at work = ở chỗ làm, at school = ở trường). Việc đã làm (động từ thường) thì dùng V-ed / did, không dùng was / were + nguyên mẫu: I was at home. I watched TV. Hỏi Wh-: Where were you? nhưng What did you do?',
+  ],
+  examples: [
+    { en: 'I was at home last night.', vi: 'Tối qua tôi ở nhà.' },
+    { en: 'The room was cold yesterday.', vi: 'Hôm qua căn phòng lạnh.' },
+    { en: "They weren't at school on Monday.", vi: 'Thứ Hai vừa rồi họ không có mặt ở trường.' },
+    { en: 'Were you tired? — Yes, I was.', vi: 'Lúc đó bạn có mệt không? — Có.' },
+    { en: 'There were two people in the room.', vi: 'Lúc đó trong phòng có hai người.' },
+    { en: 'Where were you yesterday?', vi: 'Hôm qua bạn ở đâu?' },
+  ],
+  mistakes: [
+    { wrong: 'Did you be at home?', right: 'Were you at home?', why: 'Với was / were thì đảo was / were lên trước chủ ngữ, không mượn did.' },
+    { wrong: "I didn't was tired.", right: "I wasn't tired.", why: "Phủ định thêm not ngay sau was / were: wasn't, weren't." },
+    { wrong: 'I was work late.', right: 'I worked late.', why: 'Không đặt was / were ngay trước động từ nguyên mẫu (work). Việc đã làm dùng V-ed (worked).' },
+    { wrong: 'They was happy.', right: 'They were happy.', why: 'you / we / they và danh từ số nhiều luôn đi với were.' },
+    {
+      wrong: 'I tired yesterday.',
+      right: 'I was tired yesterday.',
+      why: 'Tiếng Việt nói "tôi mệt" không cần động từ; tiếng Anh phải có was / were trước tính từ, nơi chốn.',
+    },
+  ],
+  dialogues: [yg('where were you'), yg('there was a')],
+  ruleCards: [
+    {
+      id: 'past-to-be-rule-1',
+      cloze: 'Yesterday they ___ at home.',
+      answer: 'were',
+      vi: 'you / we / they và danh từ số nhiều + were; I / he / she / it và danh từ số ít + was.',
+    },
+    {
+      id: 'past-to-be-rule-2',
+      cloze: "___ they at work yesterday? — No, they weren't.",
+      answer: 'Were',
+      vi: 'Hỏi với was / were: đảo was / were lên trước chủ ngữ, không mượn did (không nói Did they be…?).',
+    },
+  ],
+}
+
 export const PAST_SIMPLE: Tense = {
   id: 'past-simple',
   name: 'Quá khứ đơn: động từ có quy tắc',
@@ -56,7 +108,7 @@ export const PAST_SIMPLE: Tense = {
     { label: 'Khẳng định', text: 'S + V-ed (mọi chủ ngữ): I worked. She played.' },
     { label: 'Phủ định', text: "S + did not (didn't) + động từ nguyên mẫu: He didn't call." },
     { label: 'Câu hỏi', text: "Did + S + động từ nguyên mẫu …?  → Yes, I did. / No, I didn't." },
-    { label: 'To be', text: 'I / he / she / it was · you / we / they were' },
+    { label: 'Câu hỏi Wh-', text: 'What / Where / When … + did + S + động từ nguyên mẫu?  Where did you stay?' },
   ],
   rules: [
     'Quá khứ không đổi theo chủ ngữ: I worked, she worked, they worked (không thêm -s).',
@@ -69,7 +121,7 @@ export const PAST_SIMPLE: Tense = {
     { en: 'We stayed at home on Sunday.', vi: 'Chủ nhật chúng tôi ở nhà.' },
     { en: "He didn't call me.", vi: 'Anh ấy đã không gọi cho tôi.' },
     { en: 'Did you finish your work yesterday? — Yes, I did.', vi: 'Hôm qua bạn có làm xong việc không? — Có.' },
-    { en: 'I was tired, but they were happy.', vi: 'Tôi mệt, nhưng họ thì vui.' },
+    { en: 'Where did you stay in Da Nang? — At a small hotel.', vi: 'Hồi ở Đà Nẵng bạn nghỉ ở đâu? — Ở một khách sạn nhỏ.' },
   ],
   mistakes: [
     { wrong: 'Yesterday I work late.', right: 'Yesterday I worked late.', why: 'Tiếng Việt dùng "hôm qua" là đủ; tiếng Anh phải đổi động từ sang quá khứ.' },
@@ -78,6 +130,14 @@ export const PAST_SIMPLE: Tense = {
   ],
   dialogues: [yg('did you watch'), yg('yesterday I watched')],
   spellId: 'obliviate',
+  ruleCards: [
+    {
+      id: 'past-simple-rule-1',
+      cloze: 'What ___ she cook last Sunday?',
+      answer: 'did',
+      vi: 'Hỏi Wh- về việc đã làm: Wh + did + S + động từ nguyên mẫu (không phải What you watched?).',
+    },
+  ],
 }
 
 export const PAST_SIMPLE_IRREGULAR: Tense = {
@@ -351,16 +411,17 @@ export const PASSIVE_PRESENT: Tense = {
 // ---------------------------------------------------------------- Nội dung đoạn Ngữ pháp từng tuần
 
 export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS] }
-export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_SIMPLE] }
+export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE] }
 export const GRAMMAR_T2_W3: GrammarContent = { tenses: [PAST_SIMPLE_IRREGULAR], irregularVerbs: IRREGULAR_VERBS }
 export const GRAMMAR_T2_W4: GrammarContent = {
   tenses: [],
   review: {
     summary: [
       'Hiện tại tiếp diễn: am / is / are + V-ing cho việc đang diễn ra (I am working now).',
+      "Quá khứ của to be: was / were; hỏi và phủ định không mượn did (Were you…? I wasn't…).",
       "Quá khứ đơn có quy tắc: V-ed cho mọi chủ ngữ; hỏi / phủ định dùng did / didn't + nguyên mẫu.",
       'Quá khứ đơn bất quy tắc: học thuộc V2 (went, saw, bought); sau did vẫn là V1.',
-      'Không trộn: không nói "I am work", "I didn\'t went", "Did you watched".',
+      'Không trộn: không nói "I am work", "I didn\'t went", "Did you watched", "Did you be".',
     ],
     note: 'Mini test 10 câu ôn cả 4 tuần T2. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
     quizId: 'mini-t2',

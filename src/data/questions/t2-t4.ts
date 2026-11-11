@@ -1,10 +1,11 @@
+import type { RequiredConcept } from './concepts'
 import type { MistakeTag, Question, QuestionKind } from './types'
 import type { SectionId } from '@/data/roadmap/types'
 
 /**
- * 66 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10.
- * Tự soạn theo khuôn ETS, không chép đề. Tuần O.W.L. 1 (`s1-t4-w4`) không có đoạn Ngữ pháp nên mọi câu
- * gắn đoạn Phát âm (nơi có phần ôn tổng).
+ * 72 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`; `s1-t2-w2` có 12 câu: thêm 6 câu
+ * was / were và Wh + did của story 33, có `requires`), bám nội dung story 10. Tự soạn theo khuôn ETS, không chép đề.
+ * Tuần O.W.L. 1 (`s1-t4-w4`) không có đoạn Ngữ pháp nên mọi câu gắn đoạn Phát âm (nơi có phần ôn tổng).
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
@@ -20,6 +21,7 @@ function make(
   prompt: string,
   options: Opts,
   explanation: string,
+  requires?: readonly RequiredConcept[],
 ): Question {
   const q: Question = {
     id: `q-${lessonId}-${String(n).padStart(2, '0')}`,
@@ -31,15 +33,25 @@ function make(
     options,
     answer: options[0],
     explanation,
+    ...(requires ? { requires } : {}),
   }
   return kind === 'listening' ? { ...q, audioText: options[0] } : q
 }
 
-/** Bộ dựng câu cho một bài: lựa chọn đầu tiên luôn là đáp án (khi làm bài, lựa chọn được xáo). */
+/**
+ * Bộ dựng câu cho một bài: lựa chọn đầu tiên luôn là đáp án (khi làm bài, lựa chọn được xáo). `requires` (không bắt
+ * buộc, story 33) gắn khái niệm câu cần; quiz bỏ câu khi viên gạch dạy khái niệm đó chưa dạy.
+ */
 function lesson(lessonId: string, grammarSection: SectionId = 'grammar') {
   return {
-    grammar: (n: number, prompt: string, options: Opts, explanation: string, tag: MistakeTag = 'thì') =>
-      make(lessonId, n, grammarSection, tag, 'choice', prompt, options, explanation),
+    grammar: (
+      n: number,
+      prompt: string,
+      options: Opts,
+      explanation: string,
+      tag: MistakeTag = 'thì',
+      requires?: readonly RequiredConcept[],
+    ) => make(lessonId, n, grammarSection, tag, 'choice', prompt, options, explanation, requires),
     sound: (n: number, prompt: string, options: Opts, explanation: string) =>
       make(lessonId, n, 'pronunciation', 'phát âm', 'pronunciation', prompt, options, explanation),
     listen: (n: number, options: Opts, explanation: string) =>
@@ -93,6 +105,25 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'We talked about the economic solution.',
     'They talked about the economic situation.',
   ], 'Nghe đuôi -ed của talked (/t/) và trọng âm ec-o-NOM-ic, sit-u-A-tion.'),
+  // was / were và Wh + did (story 33): có `requires` nên quiz bỏ câu khi viên F13–F15 chưa dạy.
+  t2w2.grammar(7, 'Where ___ they last night? — At home.', ['were', 'did', 'was', 'are'],
+    'Câu chỉ hỏi ở đâu, không có động từ thường, nên dùng to be: Where + were + S? did chỉ dùng khi có động từ thường (Where did they stay?). They đi với were; last night là quá khứ nên không dùng are.',
+    'thì', ['wh-questions', 'be-questions', 'subject-pronouns', 'prepositions-of-place']),
+  t2w2.grammar(8, 'Tom ___ at school yesterday. He was at home.', ["wasn't", "weren't", "didn't", "isn't"],
+    "Phủ định của was là wasn't (was + not), không mượn didn't. Tom là một người nên dùng wasn't; yesterday là quá khứ nên không dùng isn't.",
+    'thì', ['be-affirmative', 'be-negative', 'subject-pronouns', 'prepositions-of-place']),
+  t2w2.grammar(9, '___ you tired last night? — Yes, I was.', ['Were', 'Did', 'Was', 'Are'],
+    'Hỏi với to be ở quá khứ thì đảo Were lên đầu; không mượn Did (không nói Did you be tired?). you đi với were.',
+    'thì', ['be-questions', 'subject-pronouns']),
+  t2w2.grammar(10, 'Was the hotel nice? — No, it ___.', ["wasn't", "didn't", "isn't", "weren't"],
+    "Câu hỏi bằng Was thì trả lời ngắn cũng dùng was: No, it wasn't. Không trả lời bằng didn't; it đi với was, không đi với were.",
+    'thì', ['be-questions', 'be-negative', 'articles']),
+  t2w2.grammar(11, 'There ___ two cats in the garden yesterday.', ['were', 'was', 'are', 'did'],
+    'yesterday là quá khứ: There was + số ít, There were + số nhiều. two cats là số nhiều nên dùng were.',
+    'thì', ['there-is-are', 'plurals', 'articles', 'prepositions-of-place']),
+  t2w2.grammar(12, 'What ___ you watch last night? — A movie.', ['did', 'were', 'do', 'was'],
+    'Hỏi Wh- về việc đã làm (watch là động từ thường): What + did + S + nguyên mẫu. last night là quá khứ nên không dùng do.',
+    'thì', ['wh-questions', 'present-simple-questions', 'articles', 'tenses-overview']),
 
   // ── T2 tuần 3: động từ bất quy tắc · phát âm -ed ──
   t2w3.grammar(1, 'I ___ to Da Lat last month.', ['went', 'goed', 'gone', 'go'],

@@ -172,7 +172,15 @@ export type Tense = {
   dialogues: readonly DialogueLine[]
   /** Thần chú của thì; chủ điểm ôn/so sánh (hiện tại hoàn thành (2)) không có thần chú riêng. */
   spellId?: string
+  /**
+   * Thẻ quy tắc của thì (story 33). Bài chứa thì được đánh dấu xong thì thẻ vào phiên ôn SRS (đứng sau thẻ viên gạch),
+   * id SRS `rule:<tenseId>-n` (từ id nội dung `<tenseId>-rule-n`). Bài bị bỏ qua khi xếp lớp thì không góp thẻ.
+   */
+  ruleCards?: readonly TenseRuleCard[]
 }
+
+/** Thẻ quy tắc của thì: câu có đúng một chỗ trống `___`, đáp án và câu quy tắc tiếng Việt. Id `<tenseId>-rule-n`. */
+export type TenseRuleCard = { id: string; cloze: string; answer: string; vi: string }
 
 /** Một động từ bất quy tắc: V1 (NGSL), V2, V3 và nghĩa tiếng Việt. */
 export type IrregularVerb = { v1: string; v2: string; v3: string; vi: string }
