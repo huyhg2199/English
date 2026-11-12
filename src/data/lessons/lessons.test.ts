@@ -249,6 +249,23 @@ describe('nội dung bài T1', () => {
     expect(g.review!.note).toMatch(/Mini test 10 câu/)
   })
 
+  it('T3 tuần 4 (story 40): tóm tắt 4 dòng T3 và link mini-t3, giữ nguyên thì và khối "Chọn thì"', () => {
+    const g = content('s1-t3-w4').grammar!
+    expect(g.tenses.map((t) => t.id)).toEqual(['present-perfect-vs-past'])
+    expect(g.choices?.map((c) => c.id)).toEqual(['dont-translate'])
+    expect(g.review!.quizId).toBe('mini-t3')
+    expect(g.review!.note).toMatch(/Mini test 10 câu/)
+    expect(g.review!.note).toBe(
+      'Mini test 10 câu: 8 câu ôn 4 tuần T3 và 2 câu ôn thì T1–T2. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
+    )
+    expect(g.review!.summary).toHaveLength(4)
+    const [will, goingTo, perfect, vsPast] = g.review!.summary
+    expect(will).toMatch(/^Tương lai will/)
+    expect(goingTo).toMatch(/^be going to/)
+    expect(perfect).toMatch(/^Hiện tại hoàn thành/)
+    expect(vsPast).toMatch(/^Hoàn thành hay quá khứ đơn/)
+  })
+
   it('mỗi bài T2–T4 (trừ tuần Tết, O.W.L.) có cả phát âm và ngữ pháp', () => {
     for (const id of T2_T4.filter((x) => x !== 's1-t4-w2' && x !== 's1-t4-w4')) {
       const c = content(id)

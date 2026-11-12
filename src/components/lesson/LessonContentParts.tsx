@@ -1,11 +1,11 @@
 import { Fragment, useState } from 'react'
-import { Check, ClipboardCheck, CloudMoon } from 'lucide-react'
+import { BookX, Check, ClipboardCheck, CloudMoon } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useLessonParts, useSpells } from '@/app/store-context'
 import { Button } from '@/components/ui/button'
 import type { GrammarContent, LessonContent, LessonPart, PronunciationContent, SoundGroup } from '@/data/lessons'
-import { quizHref } from '@/data/questions'
+import { MISTAKES_HREF, quizHref } from '@/data/questions'
 import { nextLessonPartId } from '@/lib/roadmap-progress'
 import { hasPractice } from '@/lib/tense-practice'
 
@@ -18,7 +18,10 @@ import { TenseChoiceCard } from './TenseChoiceCard'
 import { TensePractice } from './TensePractice'
 import { GlossaryText } from './TermChip'
 
-/** Tuần Tết: không có nội dung mới, chỉ nhắc chạy chế độ ngày lười 10'. */
+/**
+ * Tuần Tết: không có nội dung mới, chỉ nhắc chạy chế độ ngày lười 10'. Story 40: dưới đó có mục tuỳ chọn "Ôn nhẹ thì"
+ * (5 câu ôn trộn `mix-tet` + ôn Sổ lỗi đến hạn); chế độ ngày lười giữ nguyên.
+ */
 function LazyWeekNotice() {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-dashed p-3 text-sm">
@@ -35,6 +38,29 @@ function LazyWeekNotice() {
           Sang ngày lười
         </Link>
       </Button>
+      <section className="flex flex-col gap-2 border-t pt-3" aria-labelledby="tet-tense-review">
+        <h3 id="tet-tense-review" className="font-semibold">
+          Ôn nhẹ thì (tối đa 10')
+        </h3>
+        <p className="text-muted-foreground">
+          Nếu còn hứng: 5 câu trộn các thì đã học (khoảng 5') rồi ôn các câu Sổ lỗi đến hạn (khoảng 5').
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button asChild variant="outline">
+            <Link to={quizHref('mix-tet')}>
+              <ClipboardCheck aria-hidden="true" />
+              5 câu ôn trộn
+            </Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link to={MISTAKES_HREF}>
+              <BookX aria-hidden="true" />
+              Ôn Sổ lỗi đến hạn
+            </Link>
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">Không làm cũng không sao, chuỗi ngày vẫn giữ.</p>
+      </section>
     </div>
   )
 }

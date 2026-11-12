@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { MISTAKES_HREF } from '@/data/questions'
 import { sectionHref } from '@/data/roadmap'
-import { OWL_HREF, OWL_PART_LABELS, type ActivePlan, type ReviewPlan, type ReviewPlanDay } from '@/lib/owl'
+import { OWL_HREF, OWL_PART_LABELS, owlTopicNames, type ActivePlan, type ReviewPlan, type ReviewPlanDay } from '@/lib/owl'
 import { cn } from '@/lib/utils'
 
 function shortDate(key: string): string {
@@ -52,10 +52,17 @@ export function ReviewPlanList({ plan, todayIndex }: { plan: ReviewPlan; todayIn
   )
 }
 
-/** Thẻ kế hoạch ôn O.W.L. 1 trên trang Hôm nay (tới khi qua lần sau hoặc hết 14 ngày). */
+/**
+ * Thẻ kế hoạch ôn O.W.L. 1 trên trang Hôm nay (tới khi thi lần sau không còn kế hoạch hoặc hết 14 ngày). Story 40: lần thi
+ * đã qua mà còn thì dưới 70% cũng có thẻ, lời mô tả nói rõ bỏ qua cũng được; kế hoạch có `weakTopics` thì kể tên các thì đó.
+ */
 export function OwlPlanCard({ active, className }: { active: ActivePlan; className?: string }) {
   const { plan, dayIndex, today } = active
   const parts = plan.parts.map((p) => OWL_PART_LABELS[p].toLowerCase()).join(' và ')
+  const weak = plan.weakTopics && plan.weakTopics.length > 0 ? ` Thì cần chắc thêm: ${owlTopicNames(plan.weakTopics)}.` : ''
+  const description = active.attempt.passed
+    ? 'Bạn đã qua O.W.L. 1. Kế hoạch này chỉ để chắc thêm các thì dưới 70%, bỏ qua cũng được.'
+    : `Kế hoạch 2 tuần cho phần ${parts}. Tiến độ chặng vẫn giữ nguyên.`
   return (
     <Card className={cn('gap-3 border-primary/50', className)}>
       <CardHeader className="grid-cols-[auto_1fr] items-center gap-x-3">
@@ -63,7 +70,10 @@ export function OwlPlanCard({ active, className }: { active: ActivePlan; classNa
         <CardTitle className="text-lg">
           <h2>Ôn O.W.L. 1 · ngày {dayIndex + 1}/{plan.days.length}</h2>
         </CardTitle>
-        <CardDescription>Kế hoạch 2 tuần cho phần {parts}. Tiến độ chặng vẫn giữ nguyên.</CardDescription>
+        <CardDescription>
+          {description}
+          {weak}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">

@@ -105,6 +105,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - **O.W.L. 1:** ngưỡng ≥70% tính **riêng cho từng phần**: phần thì và phần phát âm.
 - **Chấm đọc IPA:** dùng nhận giọng nói nếu trình duyệt hỗ trợ. Nếu không, Huy nghe audio mẫu rồi tự chấm.
+- O.W.L. 1 phần Thì (story 40): kho câu riêng 42 câu, đề 20 câu, mỗi thì 2 câu, có 4 câu chọn giữa hai thì dễ nhầm, có câu gõ. Kết quả báo % từng thì; thì dưới 70% vào kế hoạch ôn 14 ngày kể cả khi đã qua (chỉ là lời mời).
 - Các ngưỡng khác lấy theo `lo-trinh-toeic-12-thang.md`.
 
 ## Nội dung bài (CAP-2, CAP-9, CAP-11, CAP-18)
@@ -116,6 +117,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 - **Ngày lười sau Sân ga:** tin lấy từ nguồn gọi trực tiếp được trong app (Hacker News, Google AI Blog). Bôi đen để lưu 3 từ mới. Khi đang ở Sân ga, ngày lười là ôn 1 viên gạch + 3 từ (mục Buổi học).
 - **Bôi đen lưu sổ tay (Đợt 1):** làm được trong bài đọc và tin trong app.
 - **Từ tín hiệu và chọn thì (story 39):** mỗi thì có mốc thời gian hiện hàng chip từ tín hiệu. Khối "Đơn hay tiếp diễn?" (s1-t2-w1), "will hay going to?" (s1-t3-w2), "Đừng dịch từng chữ: đã · sẽ · chưa" (s1-t3-w4) có dòng thời gian cạnh nhau / bảng chữ Việt, cặp câu dễ nhầm và phần luyện như phần luyện của thì (không ghi Sổ lỗi). Ôn tổng s1-t4-w4 có bảng mỗi thì một dòng và luật chung trợ động từ.
+- Mini test và ôn trộn (story 40): mini-t3 (s1-t3-w4) có 2/10 câu ôn thì T1–T2; 'Ôn trộn mọi thì' 20 câu trước O.W.L. 1; tuần Tết có ôn nhẹ 5 câu thì + Sổ lỗi, tuỳ chọn.
 
 ## Tab Luyện tập (Đợt 1)
 

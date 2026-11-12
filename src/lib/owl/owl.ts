@@ -1,4 +1,12 @@
-import { getQuestion, type MistakeTag, type Question } from '@/data/questions'
+import {
+  getQuestion,
+  OWL_CONTRASTS,
+  OWL_TOPICS,
+  type MistakeTag,
+  type OwlQuestion,
+  type OwlTopicId,
+  type Question,
+} from '@/data/questions'
 import { allLessons, getLesson, type Lesson, type SectionId } from '@/data/roadmap'
 import { hasDetails, type StudyWord, type Word } from '@/data/vocab'
 import { PART_LABELS, PART_LIMITS } from '@/lib/placement'
@@ -37,6 +45,10 @@ export const OWL_STAGE_ID = 's1'
 
 export const OWL_PRONUNCIATION_SIZE = 30
 export const OWL_TENSES_SIZE = 20
+/** Số câu mỗi chủ điểm thì trong đề (story 40): 10 chủ điểm × 2 = 20. */
+export const OWL_PER_TOPIC = 2
+/** Số câu cặp dễ nhầm trong đề: mỗi cặp đúng 1 câu. */
+export const OWL_CONTRAST_COUNT = OWL_CONTRASTS.length
 /** Ngưỡng qua cửa (%), tính riêng từng phần. */
 export const OWL_PASS_PERCENT = 70
 export const REVIEW_PLAN_DAYS = 14
@@ -128,14 +140,44 @@ function isStageOneLesson(lessonId: string): boolean {
   return getLesson(lessonId)?.stageId === OWL_STAGE_ID
 }
 
-/** Câu nhãn `thì` dạng trắc nghiệm của chặng 1 (nguồn của phần thì). */
-export function owlTensePool(bank: readonly Question[]): Question[] {
-  return bank.filter((q) => q.tag === 'thì' && q.kind === 'choice' && isStageOneLesson(q.lessonId))
+/**
+ * Đề phần thì (story 40) từ kho câu O.W.L. (`OWL_QUESTIONS`), theo seed (`${seed}|owl-tenses`):
+ * 1. mỗi cặp dễ nhầm (thứ tự `OWL_CONTRASTS`) bốc 1 câu;
+ * 2. mỗi chủ điểm (thứ tự `OWL_TOPICS`) bù câu riêng (không thuộc cặp) cho đủ `OWL_PER_TOPIC` câu; câu cặp tính cho chủ
+ *    điểm của đáp án;
+ * 3. xáo cả đề.
+ * Đủ kho thì đề có 20 câu, mỗi chủ điểm 2 câu, 4 câu cặp, ≥ 6 câu gõ. Kho thiếu câu thì trả ít hơn, không lỗi.
+ */
+export function pickOwlTenses(bank: readonly OwlQuestion[], seed: string): OwlQuestion[] {
+  const random = seededRandom(`${seed}|owl-tenses`)
+  const picked: OwlQuestion[] = []
+  for (const c of OWL_CONTRASTS) {
+    const first = shuffle(
+      bank.filter((q) => q.contrastId === c.id),
+      random,
+    )[0]
+    if (first) picked.push(first)
+  }
+  const count = new Map<string, number>()
+  for (const q of picked) count.set(q.topicId, (count.get(q.topicId) ?? 0) + 1)
+  for (const t of OWL_TOPICS) {
+    const own = bank.filter((q) => q.topicId === t.id && !q.contrastId)
+    picked.push(...shuffle(own, random).slice(0, Math.max(0, OWL_PER_TOPIC - (count.get(t.id) ?? 0))))
+  }
+  return shuffle(picked, random)
 }
 
-/** 20 câu thì ngẫu nhiên (theo seed) từ ngân hàng câu chặng 1. */
-export function pickOwlTenses(bank: readonly Question[], seed: string): Question[] {
-  return shuffle(owlTensePool(bank), seededRandom(`${seed}|owl-tenses`)).slice(0, OWL_TENSES_SIZE)
+const TOPIC_IDS: ReadonlySet<string> = new Set(OWL_TOPICS.map((t) => t.id))
+
+function isOwlTopicId(v: unknown): v is OwlTopicId {
+  return typeof v === 'string' && TOPIC_IDS.has(v)
+}
+
+/** Chủ điểm thì của một câu (câu kho O.W.L. có `topicId`; câu `QUESTION_BANK`, câu phát âm → undefined). */
+export function questionTopic(q: Question | undefined): OwlTopicId | undefined {
+  if (!q || !('topicId' in q)) return undefined
+  const t = (q as { topicId?: unknown }).topicId
+  return isOwlTopicId(t) ? t : undefined
 }
 
 /**
@@ -243,6 +285,48 @@ export function weakParts(scores: OwlScores): OwlPart[] {
   return OWL_PARTS.filter((p) => !partPassed(scores[p]))
 }
 
+/** Điểm từng chủ điểm thì (story 40): chỉ chủ điểm có câu trong lần thi. */
+export type OwlTopicScores = Partial<Record<OwlTopicId, OwlPartScore>>
+
+/**
+ * Chấm từng chủ điểm thì: chỉ tính câu có `topicId` (câu kho O.W.L.); câu `QUESTION_BANK` của lần thi cũ và câu phát âm
+ * `owl-ipa-*` không tính. Chủ điểm không có câu nào không có mặt.
+ */
+export function gradeOwlTopics(
+  answers: readonly AttemptAnswer[],
+  lookup: (id: string) => Question | undefined = getQuestion,
+): OwlTopicScores {
+  const out: OwlTopicScores = {}
+  for (const a of answers) {
+    if (isOwlWordQuestionId(a.questionId)) continue
+    const topic = questionTopic(lookup(a.questionId))
+    if (!topic) continue
+    const s = out[topic] ?? { score: 0, total: 0 }
+    out[topic] = { score: s.score + (a.correct ? 1 : 0), total: s.total + 1 }
+  }
+  return out
+}
+
+/** Tên các chủ điểm thì, nối bằng dấu phẩy ("Tương lai will, can / should / must"). */
+export function owlTopicNames(ids: readonly OwlTopicId[]): string {
+  return ids.map((id) => OWL_TOPICS.find((t) => t.id === id)?.name ?? id).join(', ')
+}
+
+/** Chủ điểm dưới 70% (`partPassed`): % thấp trước, hoà thì theo thứ tự `OWL_TOPICS`. */
+export function weakTopics(scores: OwlTopicScores): OwlTopicId[] {
+  const order = OWL_TOPICS.map((t) => t.id)
+  return order
+    .filter((id) => {
+      const s = scores[id]
+      return s !== undefined && s.total > 0 && !partPassed(s)
+    })
+    .sort((a, b) => {
+      const x = scores[a]!
+      const y = scores[b]!
+      return x.score * y.total - y.score * x.total || order.indexOf(a) - order.indexOf(b)
+    })
+}
+
 export type EtsValidation = { ok: true; ets: EtsScores } | { ok: false; errors: Partial<Record<EtsPart, string>> }
 
 /** Kiểm ô nhập phần ETS: bỏ trống = không ghi; có nhập thì phải là số nguyên trong [0, số câu của Part]. */
@@ -275,6 +359,8 @@ export type ReviewPlan = {
   startDate: string
   parts: OwlPart[]
   days: ReviewPlanDay[]
+  /** Chủ điểm thì dưới 70% của lần thi (story 40), % thấp trước; thiếu = không có (lần thi cũ). */
+  weakTopics?: OwlTopicId[]
 }
 
 export type OwlDetails = {
@@ -283,6 +369,8 @@ export type OwlDetails = {
   ets?: EtsScores
   /** Có câu phát âm tự chấm (không có nhận giọng nói / lỗi micro). */
   selfGraded?: boolean
+  /** Điểm từng chủ điểm thì (story 40); lần thi cũ (câu `QUESTION_BANK`) không có. */
+  topics?: OwlTopicScores
   plan?: ReviewPlan
 }
 
@@ -321,7 +409,29 @@ export function isReviewPlan(v: unknown): v is ReviewPlan {
   )
 }
 
-/** Chi tiết O.W.L. của một lần làm (sai dạng → null; kế hoạch sai dạng thì bỏ riêng kế hoạch). */
+/** Điểm từng chủ điểm đọc từ store: bỏ id lạ và điểm sai dạng (hoặc tổng 0); không còn gì → undefined. */
+function readTopicScores(v: unknown): OwlTopicScores | undefined {
+  if (!isPlainObject(v)) return undefined
+  const out: OwlTopicScores = {}
+  for (const t of OWL_TOPICS) {
+    const s = v[t.id]
+    if (isPartScore(s) && s.total > 0) out[t.id] = { score: s.score, total: s.total }
+  }
+  return Object.keys(out).length > 0 ? out : undefined
+}
+
+/** Kế hoạch đọc từ store: `weakTopics` sai dạng (không phải mảng chuỗi) thì coi như không có; id lạ bị bỏ. */
+function readPlan(plan: ReviewPlan): ReviewPlan {
+  const { weakTopics: raw, ...rest } = plan as ReviewPlan & { weakTopics?: unknown }
+  const weak =
+    Array.isArray(raw) && raw.every((x) => typeof x === 'string') ? [...new Set(raw.filter(isOwlTopicId))] : []
+  return weak.length > 0 ? { ...rest, weakTopics: weak } : rest
+}
+
+/**
+ * Chi tiết O.W.L. của một lần làm (sai dạng → null; kế hoạch sai dạng thì bỏ riêng kế hoạch). Điểm từng chủ điểm
+ * (story 40) sai dạng thì bỏ riêng phần hỏng.
+ */
 export function readOwlDetails(attempt: { owl?: unknown }): OwlDetails | null {
   const owl = attempt.owl
   if (!isPlainObject(owl) || !isPartScore(owl.pronunciation) || !isPartScore(owl.tenses)) return null
@@ -332,12 +442,14 @@ export function readOwlDetails(attempt: { owl?: unknown }): OwlDetails | null {
       if (Number.isInteger(v) && (v as number) >= 0 && (v as number) <= PART_LIMITS[k]) ets[k] = v as number
     }
   }
+  const topics = readTopicScores(owl.topics)
   return {
     pronunciation: owl.pronunciation,
     tenses: owl.tenses,
     ...(Object.keys(ets).length > 0 ? { ets } : {}),
     ...(owl.selfGraded === true ? { selfGraded: true } : {}),
-    ...(isReviewPlan(owl.plan) ? { plan: owl.plan } : {}),
+    ...(topics ? { topics } : {}),
+    ...(isReviewPlan(owl.plan) ? { plan: readPlan(owl.plan) } : {}),
   }
 }
 
@@ -431,6 +543,60 @@ function interleave<T>(lists: readonly (readonly T[])[]): T[] {
 }
 
 /**
+ * Đoạn Ngữ pháp của các chủ điểm yếu, theo thứ tự `weak`, mỗi chủ điểm theo `lessonIds` rồi bài thêm `extra` của chủ
+ * điểm đó (bài của câu cặp đã sai), bỏ trùng.
+ */
+function topicSections(
+  weak: readonly OwlTopicId[],
+  extra: ReadonlyMap<OwlTopicId, readonly string[]> = new Map(),
+): SectionKey[] {
+  const out: SectionKey[] = []
+  const used = new Set<string>()
+  for (const id of weak) {
+    for (const lessonId of [...(OWL_TOPICS.find((t) => t.id === id)?.lessonIds ?? []), ...(extra.get(id) ?? [])]) {
+      const s = { lessonId, sectionId: 'grammar' }
+      if (used.has(keyOf(s))) continue
+      used.add(keyOf(s))
+      out.push(s)
+    }
+  }
+  return out
+}
+
+/**
+ * Bài của các câu sai trong lần thi, theo chủ điểm (thứ tự câu trong đề, bỏ trùng). Câu cặp dễ nhầm gắn bài của cặp
+ * (vd. q-owl-37 chủ điểm will, bài s1-t3-w2), có thể nằm ngoài `lessonIds` của chủ điểm.
+ */
+function wrongTopicLessons(
+  answers: readonly AttemptAnswer[],
+  lookup: (id: string) => Question | undefined,
+): Map<OwlTopicId, string[]> {
+  const out = new Map<OwlTopicId, string[]>()
+  for (const a of answers) {
+    if (a.correct || isOwlWordQuestionId(a.questionId)) continue
+    const q = lookup(a.questionId)
+    const topic = questionTopic(q)
+    if (!q || !topic) continue
+    const list = out.get(topic) ?? []
+    if (!list.includes(q.lessonId)) list.push(q.lessonId)
+    out.set(topic, list)
+  }
+  return out
+}
+
+/**
+ * Bài để ôn một chủ điểm thì sau lần thi (link "Ôn" ở màn kết quả): bài của câu sai đầu tiên thuộc chủ điểm đó (câu cặp
+ * dễ nhầm về đúng bài dạy cặp), không có thì bài đầu của chủ điểm.
+ */
+export function topicReviewLessonId(
+  topicId: OwlTopicId,
+  answers: readonly AttemptAnswer[],
+  lookup: (id: string) => Question | undefined = getQuestion,
+): string {
+  return wrongTopicLessons(answers, lookup).get(topicId)?.[0] ?? OWL_TOPICS.find((t) => t.id === topicId)!.lessonIds[0]
+}
+
+/**
  * Kế hoạch ôn 2 tuần cho phần yếu (phần dưới 70%), 14 ngày từ ngày thi, mỗi ngày một đoạn bài (có link) + ôn Sổ lỗi.
  * - Mục sổ: mục cùng nhãn (`phát âm` / `thì`) thuộc chặng 1, chưa "đã thuộc"; câu sai trong lần thi này trước, rồi
  *   theo số lần sai. Mỗi ngày chỉ nhận mục của đúng phần của ngày đó, chia lần lượt vào các ngày của phần.
@@ -438,6 +604,12 @@ function interleave<T>(lists: readonly (readonly T[])[]): T[] {
  *   đoạn có câu sai trong lần thi. Chưa đủ 14 đoạn thì thêm các đoạn Phát âm / Ngữ pháp khác của chặng 1 (ôn rộng),
  *   vẫn thiếu thì lặp vòng.
  * - Hai phần cùng yếu thì xen kẽ ngày của hai phần. Đạt cả hai phần, hoặc không có đoạn nào để bám → null.
+ * - Chủ điểm thì dưới 70% (story 40, `gradeOwlTopics`): phần thì vào kế hoạch kể cả khi phần thì đã đạt.
+ *   - Phần thì đã đạt: chỉ ôn đoạn Ngữ pháp của chủ điểm yếu (% thấp trước; mỗi chủ điểm gồm bài của chủ điểm và bài
+ *     của câu cặp đã sai), xoay vòng cho đủ 14 ngày, và mục Sổ lỗi `thì` chặng 1 chưa thuộc thuộc các bài đó hoặc là câu
+ *     kho O.W.L. của chủ điểm yếu. Không thêm đoạn ôn rộng.
+ *   - Phần thì chưa đạt: đoạn của chủ điểm yếu đứng đầu, sau đó như cũ (bỏ trùng); mục Sổ lỗi như cũ.
+ *   Kế hoạch lưu `weakTopics`. Phần phát âm giữ nguyên.
  */
 export function reviewPlan(
   store: Store,
@@ -447,14 +619,21 @@ export function reviewPlan(
   lessons: readonly Lesson[] = allLessons(),
 ): ReviewPlan | null {
   const scores = gradeOwl(attempt.answers)
-  const parts = weakParts(scores)
+  const weak = weakTopics(gradeOwlTopics(attempt.answers, lookup))
+  const parts = OWL_PARTS.filter((p) => !partPassed(scores[p]) || (p === 'tenses' && weak.length > 0))
   if (parts.length === 0) return null
+  const weakSet: ReadonlySet<string> = new Set(weak)
+  const weakOwn = topicSections(weak, wrongTopicLessons(attempt.answers, lookup))
+  const weakLessons = new Set(weakOwn.map((s) => s.lessonId))
   const wrongNow = new Set(attempt.answers.filter((a) => !a.correct).map((a) => a.questionId))
   const mistakes = listMistakes(readMistakes(store))
   const perPart = parts.map((part) => {
     const tag = OWL_PART_TAGS[part]
+    // Phần thì đã đạt, chỉ còn chủ điểm yếu: chỉ đoạn và mục Sổ lỗi của chủ điểm yếu.
+    const weakOnly = part === 'tenses' && partPassed(scores.tenses)
     const items: PlanItem[] = mistakes
       .filter((m) => m.tag === tag && isStageOneLesson(m.lessonId) && !isMastered(m))
+      .filter((m) => !weakOnly || weakLessons.has(m.lessonId) || weakSet.has(questionTopic(lookup(m.id)) ?? ''))
       .map((m) => ({
         id: m.id,
         lessonId: m.lessonId,
@@ -464,6 +643,11 @@ export function reviewPlan(
         fresh: wrongNow.has(m.id),
       }))
       .sort(compareItems)
+    if (weakOnly) {
+      const own = weakOwn
+      const sections = Array.from({ length: Math.max(REVIEW_PLAN_DAYS, own.length) }, (_, i) => own[i % own.length])
+      return { part, sections: own.length > 0 ? sections : [], ids: items.map((i) => i.id) }
+    }
     let sources: PlanItem[] = items
     if (items.length === 0) {
       // Sổ trống: bám câu sai của phần này trong lần thi (không có mục sổ để ôn).
@@ -475,9 +659,15 @@ export function reviewPlan(
           return s ? [{ ...s, id: a.questionId, wrongCount: 1, lastWrongAt: 0, fresh: true }] : []
         })
     }
-    const sections: SectionKey[] = groupSections(sources).map(({ lessonId, sectionId }) => ({ lessonId, sectionId }))
+    const sections: SectionKey[] = part === 'tenses' ? topicSections(weak) : []
     const used = new Set(sections.map(keyOf))
-    for (const s of defaultSections(part, lessons)) if (!used.has(keyOf(s))) sections.push(s)
+    const add = (s: SectionKey) => {
+      if (used.has(keyOf(s))) return
+      used.add(keyOf(s))
+      sections.push(s)
+    }
+    for (const { lessonId, sectionId } of groupSections(sources)) add({ lessonId, sectionId })
+    for (const s of defaultSections(part, lessons)) add(s)
     return { part, sections, ids: items.map((i) => i.id) }
   })
 
@@ -497,6 +687,7 @@ export function reviewPlan(
   return {
     startDate: localDayKey(startDay),
     parts,
+    ...(weak.length > 0 ? { weakTopics: weak } : {}),
     days: days.map((d, i) => ({
       date: localDayKey(addDays(startDay, i)),
       lessonId: d.section.lessonId,
@@ -523,8 +714,9 @@ export type OwlAttemptInput = {
 /**
  * Ghi một lần thi làm xong vào `quizzes.attempts` (`kind: 'owl'`, `checkpointId: 'owl-1'`, điểm từng phần,
  * `passed`). Câu thì sai vào Sổ lỗi như thường; từ đọc chưa đúng vào Sổ lỗi nhãn `phát âm` (kèm chữ và IPA để ôn bằng
- * tự chấm). Trượt thì kế hoạch ôn 2 tuần (tính trên Sổ lỗi đã gồm câu sai của lần này) được ghi cùng lần làm, một lần.
- * Không đổi tiến độ bài.
+ * tự chấm). Điểm từng chủ điểm thì (story 40) lưu ở `owl.topics` khi đề có câu kho O.W.L. Trượt, hoặc có chủ điểm thì dưới
+ * 70% (kể cả khi đã qua), thì kế hoạch ôn 2 tuần (tính trên Sổ lỗi đã gồm câu sai của lần này) được ghi cùng lần làm,
+ * một lần. Không đổi tiến độ bài.
  */
 export function recordOwlAttempt(
   store: Store,
@@ -535,6 +727,8 @@ export function recordOwlAttempt(
   const answers = [...input.pronunciation, ...input.tenses].map((a) => ({ ...a }))
   const scores = gradeOwl(answers)
   const passed = owlPassed(scores)
+  const topics = gradeOwlTopics(answers, lookup)
+  const hasWeakTopic = weakTopics(topics).length > 0
   const words = new Map(input.words.map((w) => [w.id, w]))
 
   let next = store
@@ -559,6 +753,7 @@ export function recordOwlAttempt(
     tenses: scores.tenses,
     ...(input.ets && Object.keys(input.ets).length > 0 ? { ets: { ...input.ets } } : {}),
     ...(input.selfGraded ? { selfGraded: true } : {}),
+    ...(Object.keys(topics).length > 0 ? { topics } : {}),
   }
   const attempt = (details: OwlDetails) => ({
     id: input.id,
@@ -571,7 +766,7 @@ export function recordOwlAttempt(
     passed,
     owl: details,
   })
-  if (!passed) {
+  if (!passed || hasWeakTopic) {
     // Sổ lỗi tạm có cả câu thì sai của lần này để lập kế hoạch; rồi ghi lần làm đúng một lần, kèm kế hoạch.
     const withMistakes = recordAttempt(next, attempt(owl), now, lookup)
     const plan = reviewPlan(withMistakes, { answers, finishedAt: now.toISOString() }, now, lookup)
@@ -589,12 +784,12 @@ export type ActivePlan = {
 }
 
 /**
- * Kế hoạch ôn đang chạy: lần thi gần nhất trượt và hôm nay còn trong 14 ngày của kế hoạch. Lần gần nhất đã qua
- * (hoặc hết 14 ngày) → null.
+ * Kế hoạch ôn đang chạy: lần thi gần nhất có kế hoạch (trượt, hoặc qua mà còn chủ điểm thì dưới 70%, story 40) và hôm nay
+ * còn trong 14 ngày của kế hoạch. Lần gần nhất không có kế hoạch (qua sạch), hoặc hết 14 ngày → null.
  */
 export function activeReviewPlan(store: Store, now: Date): ActivePlan | null {
   const latest = listOwlAttempts(store)[0]
-  if (!latest || latest.passed !== false || !latest.details.plan) return null
+  if (!latest || !latest.details.plan) return null
   const plan = latest.details.plan
   const start = parseDayKey(plan.startDate)
   if (!start) return null

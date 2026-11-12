@@ -171,3 +171,6 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/37-t3-t4-tense-practice-data.md`
   summary: AC 1–3 của story 37 chưa kiểm tay trên trình duyệt: hai khối luyện ở s1-t4-w3 (375px, chỉ một khối mở, `scrollWidth` 375, store không đổi), ôn Sổ lỗi câu dịch s1-t3-w3 ("My father's never driven a car" được chấm đúng, "Vì sao sai?" gửi prompt câu gõ), thứ tự khối ở bước Bài chính s1-t3-w2.
   evidence: Review story 37 (blind). Implementation Notes ghi "Chưa kiểm tay"; component không đổi, khối tự hiện qua `GrammarSection` như story 35, 36, và test dữ liệu đã kiểm chấm câu golden bằng `matchesTyped`. Cần Huy mở các route trên Chrome 375px.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/40-owl-tense-bank-mini-t3-mix-review.md`
+  summary: Câu quiz và câu O.W.L. không bị chặn theo từ vựng đã học (chỉ `outOfScopeWords` kiểm ngữ pháp), nên câu thi có thể dùng từ hạng NGSL cao (lend #2305, brush #2463, uncle #2694, bread #2262, knock #1814; "interesting" không có trong words.json).
+  evidence: Review nội dung story 40 (q-owl-04, 11, 13, 30, 31, 32, 37, 40); thiếu một bộ kiểm từ vựng theo tiến độ thẻ từ cho mọi kho câu, có từ trước story 40. Điểm từng thì có thể thấp vì không biết từ chứ không vì thì.

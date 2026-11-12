@@ -80,10 +80,11 @@ function MistakesSummary() {
   return `${total} câu trong sổ · ${due} câu đến hạn ôn`
 }
 
-function MiniTestSummary({ quizId, month }: { quizId: string; month: string }) {
+/** Tóm tắt lần làm của một mini test / bài ôn trộn; chưa làm lần nào thì hiện `blurb`. */
+function MiniTestSummary({ quizId, blurb }: { quizId: string; blurb: string }) {
   const { attempts } = useQuizzes()
   const mine = attempts.filter((a) => a.quizId === quizId)
-  if (mine.length === 0) return `10 câu ôn cả 4 tuần ${month}. Chưa làm lần nào.`
+  if (mine.length === 0) return blurb
   const best = Math.max(...mine.map((a) => a.score))
   return `Đã làm ${mine.length} lần · cao nhất ${best}/${mine[0].total} · lần gần nhất ${mine[0].score}/${mine[0].total}`
 }
@@ -165,11 +166,22 @@ export function Practice() {
       </PracticeLink>
 
       <PracticeLink to={quizHref('mini-t1')} icon={ClipboardCheck} title="Mini test tháng T1">
-        <MiniTestSummary quizId="mini-t1" month="T1" />
+        <MiniTestSummary quizId="mini-t1" blurb="10 câu ôn cả 4 tuần T1. Chưa làm lần nào." />
       </PracticeLink>
 
       <PracticeLink to={quizHref('mini-t2')} icon={ClipboardCheck} title="Mini test tháng T2">
-        <MiniTestSummary quizId="mini-t2" month="T2" />
+        <MiniTestSummary quizId="mini-t2" blurb="10 câu ôn cả 4 tuần T2. Chưa làm lần nào." />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mini-t3')} icon={ClipboardCheck} title="Mini test tháng T3">
+        <MiniTestSummary quizId="mini-t3" blurb="10 câu: 8 câu ôn 4 tuần T3 và 2 câu ôn thì T1–T2. Chưa làm lần nào." />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mix-s1')} icon={ClipboardCheck} title="Ôn trộn mọi thì">
+        <MiniTestSummary
+          quizId="mix-s1"
+          blurb="20 câu Ngữ pháp trộn mọi thì của chặng 1, khởi động trước O.W.L. 1. Chưa làm lần nào."
+        />
       </PracticeLink>
 
       <PracticeLink to={OWL_HREF} icon={GraduationCap} title="O.W.L. 1">

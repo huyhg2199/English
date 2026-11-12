@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import { getLesson, getSection } from '@/data/roadmap'
 
 import { allTenseChoices, allTenses, getLessonContent, IRREGULAR_VERBS, lessonRuleCards } from '@/data/lessons'
-import { owlTensePool, pickOwlTenses } from '@/lib/owl'
-import { hasVietnameseMarks, matchesTyped, normalizeTyped, pickQuiz } from '@/lib/quiz'
+import { pickOwlTenses } from '@/lib/owl'
+import { hasVietnameseMarks, matchesTyped, mixPool, normalizeTyped, pickQuiz, quizPool } from '@/lib/quiz'
 import { hasPractice, practiceEnglishTexts } from '@/lib/tense-practice'
 import {
   frontedTimeTail,
@@ -23,6 +23,7 @@ import {
   LESSON_QUIZ_SIZE,
   lessonQuizId,
   MISTAKE_TAGS,
+  OWL_QUESTIONS,
   QUESTION_BANK,
   QUIZZES,
   quizHref,
@@ -181,22 +182,113 @@ describe('QUIZZES', () => {
     expect(new Set(QUIZZES.map((q) => q.id)).size).toBe(QUIZZES.length)
   })
 
-  it('mỗi bài test đủ câu cho số câu và số câu tối thiểu mỗi bài', () => {
+  it('mỗi bài test đủ câu cho số câu và số câu tối thiểu mỗi bài (phần chính quizPool, phần ôn mixPool)', () => {
     for (const quiz of QUIZZES) {
-      expect(getLesson(quiz.homeLessonId)).toBeDefined()
-      const pool = QUESTION_BANK.filter((q) => quiz.lessonIds.includes(q.lessonId) && q.kind !== 'listening')
-      expect(pool.length).toBeGreaterThanOrEqual(quiz.size)
-      expect(quiz.lessonIds.length * quiz.minPerLesson).toBeLessThanOrEqual(quiz.size)
+      expect(getLesson(quiz.homeLessonId), quiz.id).toBeDefined()
+      const mixSize = quiz.mix?.size ?? 0
+      const main = quizPool(QUESTION_BANK, quiz).filter((q) => q.kind !== 'listening')
+      expect(main.length, quiz.id).toBeGreaterThanOrEqual(quiz.size - mixSize)
+      for (const id of quiz.lessonIds) {
+        expect(main.filter((q) => q.lessonId === id).length, `${quiz.id} ${id}`).toBeGreaterThanOrEqual(quiz.minPerLesson)
+      }
+      expect(quiz.lessonIds.length * quiz.minPerLesson, quiz.id).toBeLessThanOrEqual(quiz.size - mixSize)
+      if (quiz.mix) {
+        expect(mixPool(QUESTION_BANK, quiz).filter((q) => q.kind !== 'listening').length, quiz.id).toBeGreaterThanOrEqual(mixSize)
+      }
+    }
+  })
+
+  /** 8 bài T1–T2 (phần ôn của mini-t3). */
+  const T1_T2 = [...T1, ...T2]
+  const isTenseGrammar = (q: Question) => q.sectionId === 'grammar' && q.tag === 'thì'
+
+  it('mini-t3: 10 câu = 8 câu 4 bài T3 (mỗi bài ≥ 2) + 2 câu Ngữ pháp nhãn thì của bài T1–T2; không TTS thì không câu nghe', () => {
+    const quiz = getQuiz('mini-t3')!
+    const T3 = ['s1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4']
+    expect(quiz).toMatchObject({ title: 'Mini test tháng T3', size: 10, minPerLesson: 2, homeLessonId: 's1-t3-w4' })
+    expect(quiz.lessonIds).toEqual(T3)
+    expect(quiz.mix).toEqual({ lessonIds: T1_T2, size: 2, only: { sectionId: 'grammar', tags: ['thì'] } })
+    expect(quiz.only).toBeUndefined()
+    expect(quizHref('mini-t3')).toBe('/practice/quiz/mini-t3')
+    // Đứng sau mini-t2, trước quiz từng bài.
+    const ids = QUIZZES.map((q) => q.id)
+    expect(ids.slice(0, 5)).toEqual(['mini-t1', 'mini-t2', 'mini-t3', 'mix-s1', 'mix-tet'])
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f']) {
+      for (const canSpeak of [true, false]) {
+        const picked = pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak })
+        expect(picked, seed).toHaveLength(10)
+        expect(new Set(picked.map((q) => q.id)).size, seed).toBe(10)
+        const main = picked.filter((q) => T3.includes(q.lessonId))
+        const review = picked.filter((q) => T1_T2.includes(q.lessonId))
+        expect(main, seed).toHaveLength(8)
+        expect(review, seed).toHaveLength(2)
+        for (const id of T3) expect(main.filter((q) => q.lessonId === id).length, `${seed} ${id}`).toBeGreaterThanOrEqual(2)
+        for (const q of review) expect(isTenseGrammar(q), q.id).toBe(true)
+        if (!canSpeak) expect(picked.some((q) => q.kind === 'listening'), seed).toBe(false)
+        expect(pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak }).map((q) => q.id)).toEqual(picked.map((q) => q.id))
+      }
+    }
+  })
+
+  it('mini-t3: phần ôn lấy câu chưa gặp trước; phần chính không đổi khi chỉ đổi luồng ôn', () => {
+    const quiz = getQuiz('mini-t3')!
+    const first = pickQuiz(QUESTION_BANK, quiz, 'a', { canSpeak: true })
+    const review = first.filter((q) => T1_T2.includes(q.lessonId))
+    const seen = new Set(review.map((q) => q.id))
+    const again = pickQuiz(QUESTION_BANK, quiz, 'a', { canSpeak: true, seen })
+    for (const q of again.filter((x) => T1_T2.includes(x.lessonId))) expect(seen.has(q.id), q.id).toBe(false)
+    // Phần chính dùng luồng `${seed}|pick` như cũ: cùng tập câu T3.
+    const t3 = (qs: readonly Question[]) => new Set(qs.filter((q) => !T1_T2.includes(q.lessonId)).map((q) => q.id))
+    expect(t3(again)).toEqual(t3(first))
+  })
+
+  it('mix-s1: 20 câu Ngữ pháp nhãn thì của 14 bài chặng 1, mỗi bài ≥ 1, có câu gõ; bài nhà s1-t4-w4', () => {
+    const quiz = getQuiz('mix-s1')!
+    const lessons = [...T1, ...T2, 's1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4', 's1-t4-w1', 's1-t4-w3']
+    expect(quiz).toMatchObject({ title: 'Ôn trộn mọi thì', size: 20, minPerLesson: 1, homeLessonId: 's1-t4-w4' })
+    expect(quiz.lessonIds).toEqual(lessons)
+    expect(quiz.only).toEqual({ sectionId: 'grammar', tags: ['thì'] })
+    expect(quiz.mix).toBeUndefined()
+    let typedSeen = 0
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f']) {
+      for (const canSpeak of [true, false]) {
+        const picked = pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak })
+        expect(picked, seed).toHaveLength(20)
+        expect(new Set(picked.map((q) => q.id)).size).toBe(20)
+        for (const q of picked) expect(isTenseGrammar(q), q.id).toBe(true)
+        for (const id of lessons) expect(picked.filter((q) => q.lessonId === id).length, `${seed} ${id}`).toBeGreaterThanOrEqual(1)
+        if (picked.some(isTypedQuestion)) typedSeen++
+      }
+    }
+    expect(typedSeen).toBe(12)
+  })
+
+  it('mix-tet: 5 câu Ngữ pháp nhãn thì từ s1-t1-w1 … s1-t4-w1 (13 bài), không câu nào của s1-t4-w3; bài nhà s1-t4-w2', () => {
+    const quiz = getQuiz('mix-tet')!
+    const lessons = [...T1, ...T2, 's1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4', 's1-t4-w1']
+    expect(quiz).toMatchObject({ title: 'Ôn nhẹ ngày Tết', size: 5, minPerLesson: 0, homeLessonId: 's1-t4-w2' })
+    expect(quiz.lessonIds).toEqual(lessons)
+    expect(quiz.only).toEqual({ sectionId: 'grammar', tags: ['thì'] })
+    for (let i = 0; i < 30; i++) {
+      const picked = pickQuiz(QUESTION_BANK, quiz, `t${i}`, { canSpeak: i % 2 === 0 })
+      expect(picked).toHaveLength(5)
+      for (const q of picked) {
+        expect(isTenseGrammar(q), q.id).toBe(true)
+        expect(lessons, q.id).toContain(q.lessonId)
+        expect(q.lessonId).not.toBe('s1-t4-w3')
+      }
     }
   })
 })
 
-describe('câu nhãn thì chặng 1 (O.W.L. 1, story 14)', () => {
-  it('có ít nhất 30 câu trắc nghiệm nhãn thì trong chặng 1 để chọn ngẫu nhiên 20 câu', () => {
-    const pool = QUESTION_BANK.filter(
-      (q) => q.tag === 'thì' && q.kind === 'choice' && getLesson(q.lessonId)?.stageId === 's1',
-    )
-    expect(pool.length).toBeGreaterThanOrEqual(30)
+describe('câu thì O.W.L. 1 (story 40: kho riêng)', () => {
+  it('kho O.W.L. không giao QUESTION_BANK; mọi đề pickOwlTenses chỉ có câu kho O.W.L.', () => {
+    const bank = new Set(QUESTION_BANK.map((q) => q.id))
+    for (const q of OWL_QUESTIONS) expect(bank.has(q.id), q.id).toBe(false)
+    const owl = new Set(OWL_QUESTIONS.map((q) => q.id))
+    for (const seed of ['a', 'b', 'story-37', 'story-40']) {
+      for (const q of pickOwlTenses(OWL_QUESTIONS, seed)) expect(owl.has(q.id), q.id).toBe(true)
+    }
   })
 })
 
@@ -598,11 +690,9 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
     }
   })
 
-  it('owlTensePool vẫn đúng 57 câu, không chứa câu mới', () => {
-    const pool = owlTensePool(QUESTION_BANK)
-    expect(pool).toHaveLength(57)
+  it('đề O.W.L. (story 40) không chứa câu nào của ngân hàng, kể cả câu mới', () => {
     const fresh = new Set(ALL_FRESH.map((q) => q.id))
-    for (const q of pool) expect(fresh.has(q.id), q.id).toBe(false)
+    for (const seed of ['a', 'b', 'c']) for (const q of pickOwlTenses(OWL_QUESTIONS, seed)) expect(fresh.has(q.id), q.id).toBe(false)
   })
 })
 
@@ -927,17 +1017,12 @@ describe('câu luyện chủ điểm T3–T4 (story 37)', () => {
     }
   })
 
-  it('O.W.L.: owlTensePool vẫn đúng 57 câu, không chứa câu mới; pickOwlTenses cùng seed ra cùng đề như baseline', () => {
-    const pool = owlTensePool(QUESTION_BANK)
-    expect(pool).toHaveLength(57)
+  it('O.W.L. (story 40): đề bốc từ kho riêng, không chứa câu mới của ngân hàng; cùng seed ra cùng đề', () => {
     const fresh = new Set(ALL_FRESH.map((x) => x.id))
-    for (const x of pool) expect(fresh.has(x.id), x.id).toBe(false)
-    // Đề của seed "story-37" ở baseline f681c3e (trước story này).
-    expect(pickOwlTenses(QUESTION_BANK, 'story-37').map((x) => x.id)).toEqual([
-      'q-s1-t2-w3-01', 'q-s1-t2-w3-04', 'q-s1-t3-w2-03', 'q-s1-t4-w1-01', 'q-s1-t1-w1-01', 'q-s1-t4-w3-03', 'q-s1-t2-w2-12',
-      'q-s1-t1-w3-03', 'q-s1-t2-w4-03', 'q-s1-t2-w4-01', 'q-s1-t3-w4-02', 'q-s1-t4-w4-01', 'q-s1-t2-w3-03', 'q-s1-t2-w1-02',
-      'q-s1-t3-w3-03', 'q-s1-t2-w2-08', 'q-s1-t2-w1-03', 'q-s1-t2-w2-11', 'q-s1-t3-w1-01', 'q-s1-t1-w2-02',
-    ])
+    const exam = pickOwlTenses(OWL_QUESTIONS, 'story-37')
+    expect(exam).toHaveLength(20)
+    for (const x of exam) expect(fresh.has(x.id), x.id).toBe(false)
+    expect(pickOwlTenses(OWL_QUESTIONS, 'story-37').map((x) => x.id)).toEqual(exam.map((x) => x.id))
   })
 
   it('Sổ lỗi cũ: q-s1-t3-w1-03 và q-s1-t4-w3-02 giữ đúng đề, đáp án, nhãn', () => {

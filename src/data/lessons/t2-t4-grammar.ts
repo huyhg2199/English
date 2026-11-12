@@ -1818,6 +1818,20 @@ export const GRAMMAR_T2_W4: GrammarContent = {
 export const GRAMMAR_T3_W1: GrammarContent = { tenses: [WILL] }
 export const GRAMMAR_T3_W2: GrammarContent = { tenses: [GOING_TO], choices: [WILL_VS_GOING_TO] }
 export const GRAMMAR_T3_W3: GrammarContent = { tenses: [PRESENT_PERFECT], irregularVerbsReview: IRREGULAR_VERBS }
-export const GRAMMAR_T3_W4: GrammarContent = { tenses: [PERFECT_VS_PAST], choices: [DONT_TRANSLATE] }
+export const GRAMMAR_T3_W4: GrammarContent = {
+  tenses: [PERFECT_VS_PAST],
+  choices: [DONT_TRANSLATE],
+  // Story 40: tóm tắt T3 + mini test cuối tháng (8 câu T3, 2 câu ôn thì T1–T2).
+  review: {
+    summary: [
+      "Tương lai will: will / won't + V nguyên mẫu cho lời hứa, đề nghị, quyết định ngay lúc nói (OK, I'll help you).",
+      'be going to: am / is / are + going to + V cho kế hoạch đã định hoặc dấu hiệu trước mắt (Look! It is going to rain).',
+      "Hiện tại hoàn thành: have / has + V3 cho trải nghiệm, việc tới giờ chưa xảy ra hoặc còn kéo dài (I have never seen it. She hasn't finished yet).",
+      'Hoàn thành hay quá khứ đơn: since / for kéo tới giờ dùng have / has + V3; mốc đã xong (ago, last…, in 2020) hoặc việc đã kết thúc (kể cả có for) dùng quá khứ đơn.',
+    ],
+    note: 'Mini test 10 câu: 8 câu ôn 4 tuần T3 và 2 câu ôn thì T1–T2. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
+    quizId: 'mini-t3',
+  },
+}
 export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS] }
 export const GRAMMAR_T4_W3: GrammarContent = { tenses: [COMPARATIVES, PASSIVE_PRESENT] }

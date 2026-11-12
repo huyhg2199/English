@@ -494,3 +494,56 @@ describe('chấm câu gõ (story 35)', () => {
     expect(readMistakes(ok)).toEqual({})
   })
 })
+
+/**
+ * Đề ở baseline 79d47ee (trước story 40): `pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak, seen? })`, khoá `quiz|seed|canSpeak[|seen]`.
+ * Bài test không có `only` / `mix` phải ra đúng đề cũ.
+ */
+const BASELINE_SEEN = new Set([
+  'q-s1-t2-w2-01', 'q-s1-t2-w2-05', 'q-s1-t2-w1-01', 'q-s1-t2-w3-02', 'q-s1-t1-w1-01', 'q-s1-t1-w2-04', 'q-s1-t4-w3-03', 'q-s1-t4-w3-17',
+])
+const BASELINE_PICKS: Record<string, readonly string[]> = {
+  'mini-t1|a|true': ['q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w1-03', 'q-s1-t1-w4-08', 'q-s1-t1-w2-16', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-07', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05'],
+  'mini-t1|a|true|seen': ['q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w1-05', 'q-s1-t1-w4-08', 'q-s1-t1-w2-16', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-07', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05'],
+  'mini-t1|a|false': ['q-s1-t1-w4-02', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05', 'q-s1-t1-w1-03', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-16', 'q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w2-05'],
+  'mini-t1|a|false|seen': ['q-s1-t1-w4-02', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05', 'q-s1-t1-w1-05', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-16', 'q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w2-05'],
+  'mini-t1|b|true': ['q-s1-t1-w1-03', 'q-s1-t1-w1-04', 'q-s1-t1-w1-06', 'q-s1-t1-w3-13', 'q-s1-t1-w2-11', 'q-s1-t1-w2-09', 'q-s1-t1-w4-05', 'q-s1-t1-w2-10', 'q-s1-t1-w4-01', 'q-s1-t1-w3-12'],
+  'mini-t1|b|true|seen': ['q-s1-t1-w1-03', 'q-s1-t1-w3-06', 'q-s1-t1-w1-06', 'q-s1-t1-w3-13', 'q-s1-t1-w2-11', 'q-s1-t1-w1-04', 'q-s1-t1-w4-05', 'q-s1-t1-w2-10', 'q-s1-t1-w4-01', 'q-s1-t1-w3-12'],
+  'mini-t1|b|false': ['q-s1-t1-w1-01', 'q-s1-t1-w4-01', 'q-s1-t1-w3-13', 'q-s1-t1-w2-11', 'q-s1-t1-w2-09', 'q-s1-t1-w3-12', 'q-s1-t1-w4-05', 'q-s1-t1-w1-04', 'q-s1-t1-w1-03', 'q-s1-t1-w2-10'],
+  'mini-t1|b|false|seen': ['q-s1-t1-w4-05', 'q-s1-t1-w4-01', 'q-s1-t1-w3-13', 'q-s1-t1-w1-02', 'q-s1-t1-w1-04', 'q-s1-t1-w3-16', 'q-s1-t1-w3-12', 'q-s1-t1-w2-10', 'q-s1-t1-w2-11', 'q-s1-t1-w1-03'],
+  'mini-t2|a|true': ['q-s1-t2-w4-03', 'q-s1-t2-w3-01', 'q-s1-t2-w1-07', 'q-s1-t2-w3-04', 'q-s1-t2-w2-06', 'q-s1-t2-w2-21', 'q-s1-t2-w4-01', 'q-s1-t2-w1-03', 'q-s1-t2-w3-13', 'q-s1-t2-w2-26'],
+  'mini-t2|a|true|seen': ['q-s1-t2-w4-03', 'q-s1-t2-w3-01', 'q-s1-t2-w1-07', 'q-s1-t2-w3-04', 'q-s1-t2-w2-06', 'q-s1-t2-w2-20', 'q-s1-t2-w4-01', 'q-s1-t2-w1-03', 'q-s1-t2-w3-13', 'q-s1-t2-w2-26'],
+  'mini-t2|a|false': ['q-s1-t2-w1-07', 'q-s1-t2-w2-26', 'q-s1-t2-w3-13', 'q-s1-t2-w2-08', 'q-s1-t2-w4-01', 'q-s1-t2-w3-04', 'q-s1-t2-w4-03', 'q-s1-t2-w1-03', 'q-s1-t2-w3-01', 'q-s1-t2-w2-21'],
+  'mini-t2|a|false|seen': ['q-s1-t2-w1-07', 'q-s1-t2-w2-26', 'q-s1-t2-w3-13', 'q-s1-t2-w2-08', 'q-s1-t2-w4-01', 'q-s1-t2-w3-04', 'q-s1-t2-w4-03', 'q-s1-t2-w1-03', 'q-s1-t2-w3-01', 'q-s1-t2-w2-20'],
+  'mini-t2|b|true': ['q-s1-t2-w3-14', 'q-s1-t2-w2-16', 'q-s1-t2-w3-08', 'q-s1-t2-w3-05', 'q-s1-t2-w4-04', 'q-s1-t2-w1-06', 'q-s1-t2-w2-19', 'q-s1-t2-w4-05', 'q-s1-t2-w1-04', 'q-s1-t2-w2-13'],
+  'mini-t2|b|true|seen': ['q-s1-t2-w2-12', 'q-s1-t2-w2-16', 'q-s1-t2-w3-08', 'q-s1-t2-w3-05', 'q-s1-t2-w4-04', 'q-s1-t2-w1-06', 'q-s1-t2-w2-03', 'q-s1-t2-w4-05', 'q-s1-t2-w1-04', 'q-s1-t2-w2-13'],
+  'mini-t2|b|false': ['q-s1-t2-w3-05', 'q-s1-t2-w2-19', 'q-s1-t2-w3-14', 'q-s1-t2-w4-04', 'q-s1-t2-w2-13', 'q-s1-t2-w2-16', 'q-s1-t2-w4-05', 'q-s1-t2-w3-08', 'q-s1-t2-w1-03', 'q-s1-t2-w1-04'],
+  'mini-t2|b|false|seen': ['q-s1-t2-w3-05', 'q-s1-t2-w2-03', 'q-s1-t2-w2-12', 'q-s1-t2-w4-04', 'q-s1-t2-w2-13', 'q-s1-t2-w2-16', 'q-s1-t2-w4-05', 'q-s1-t2-w3-08', 'q-s1-t2-w1-03', 'q-s1-t2-w1-04'],
+  'lesson-s1-t2-w2|a|true': ['q-s1-t2-w2-21', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-25', 'q-s1-t2-w2-23'],
+  'lesson-s1-t2-w2|a|true|seen': ['q-s1-t2-w2-21', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-25', 'q-s1-t2-w2-23'],
+  'lesson-s1-t2-w2|a|false': ['q-s1-t2-w2-25', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-23', 'q-s1-t2-w2-21'],
+  'lesson-s1-t2-w2|a|false|seen': ['q-s1-t2-w2-25', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-23', 'q-s1-t2-w2-21'],
+  'lesson-s1-t2-w2|b|true': ['q-s1-t2-w2-16', 'q-s1-t2-w2-12', 'q-s1-t2-w2-17', 'q-s1-t2-w2-15', 'q-s1-t2-w2-13'],
+  'lesson-s1-t2-w2|b|true|seen': ['q-s1-t2-w2-16', 'q-s1-t2-w2-12', 'q-s1-t2-w2-17', 'q-s1-t2-w2-15', 'q-s1-t2-w2-13'],
+  'lesson-s1-t2-w2|b|false': ['q-s1-t2-w2-13', 'q-s1-t2-w2-12', 'q-s1-t2-w2-15', 'q-s1-t2-w2-17', 'q-s1-t2-w2-16'],
+  'lesson-s1-t2-w2|b|false|seen': ['q-s1-t2-w2-13', 'q-s1-t2-w2-12', 'q-s1-t2-w2-15', 'q-s1-t2-w2-17', 'q-s1-t2-w2-16'],
+  'lesson-s1-t4-w3|a|true': ['q-s1-t4-w3-21', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-25', 'q-s1-t4-w3-23'],
+  'lesson-s1-t4-w3|a|true|seen': ['q-s1-t4-w3-21', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-25', 'q-s1-t4-w3-23'],
+  'lesson-s1-t4-w3|a|false': ['q-s1-t4-w3-25', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-23', 'q-s1-t4-w3-21'],
+  'lesson-s1-t4-w3|a|false|seen': ['q-s1-t4-w3-25', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-23', 'q-s1-t4-w3-21'],
+  'lesson-s1-t4-w3|b|true': ['q-s1-t4-w3-16', 'q-s1-t4-w3-12', 'q-s1-t4-w3-17', 'q-s1-t4-w3-15', 'q-s1-t4-w3-13'],
+  'lesson-s1-t4-w3|b|true|seen': ['q-s1-t4-w3-13', 'q-s1-t4-w3-12', 'q-s1-t4-w3-16', 'q-s1-t4-w3-15', 'q-s1-t4-w3-01'],
+  'lesson-s1-t4-w3|b|false': ['q-s1-t4-w3-13', 'q-s1-t4-w3-12', 'q-s1-t4-w3-15', 'q-s1-t4-w3-17', 'q-s1-t4-w3-16'],
+  'lesson-s1-t4-w3|b|false|seen': ['q-s1-t4-w3-01', 'q-s1-t4-w3-12', 'q-s1-t4-w3-15', 'q-s1-t4-w3-16', 'q-s1-t4-w3-13'],
+}
+
+describe('đề cũ không đổi (story 40)', () => {
+  it('mini-t1, mini-t2, lesson-s1-t2-w2, lesson-s1-t4-w3 × seed a / b × có / không TTS (có và không có seen) ra đúng đề baseline', () => {
+    expect(Object.keys(BASELINE_PICKS)).toHaveLength(32)
+    for (const [key, ids] of Object.entries(BASELINE_PICKS)) {
+      const [quizId, seed, speak, withSeen] = key.split('|')
+      const opts = { canSpeak: speak === 'true', ...(withSeen ? { seen: BASELINE_SEEN } : {}) }
+      expect(pickQuiz(QUESTION_BANK, getQuiz(quizId)!, seed, opts).map((x) => x.id), key).toEqual(ids)
+    }
+  })
+})

@@ -191,6 +191,55 @@ describe('planQuiz', () => {
     }
   })
 
+  it('story 40: mini-t3 khi chưa học viên nào → bỏ câu thiếu nền ở cả phần chính lẫn phần ôn, skipped đếm cả hai, vẫn chạy', () => {
+    const q3 = quiz('mini-t3')
+    const T3 = q3.lessonIds
+    const review = new Set(q3.mix!.lessonIds)
+    const inMain = (q: (typeof QUESTION_BANK)[number]) => T3.includes(q.lessonId)
+    const inReview = (q: (typeof QUESTION_BANK)[number]) =>
+      review.has(q.lessonId) && q.sectionId === 'grammar' && q.tag === 'thì'
+    const lacking = QUESTION_BANK.filter((q) => (inMain(q) || inReview(q)) && missingBricks(q, none).length > 0)
+    const mainSkipped = lacking.filter(inMain).length
+    const reviewSkipped = lacking.filter(inReview).length
+    expect(mainSkipped).toBe(32)
+    expect(reviewSkipped).toBeGreaterThan(0)
+    // Câu T1–T2 ngoài đoạn Ngữ pháp nhãn thì không thuộc bài test nên không bị đếm.
+    expect(lacking.every((q) => inMain(q) || inReview(q))).toBe(true)
+    const lackingIds = new Set(lacking.map((q) => q.id))
+    for (const seed of SEEDS) {
+      for (const opts of OPTS) {
+        const plan = planQuiz(QUESTION_BANK, q3, seed, opts, none)
+        expect(plan.status, seed).toBe('run')
+        if (plan.status !== 'run') continue
+        expect(plan.skipped, seed).toBe(mainSkipped + reviewSkipped)
+        expect(plan.questions, seed).toHaveLength(10)
+        for (const q of plan.questions) expect(lackingIds.has(q.id), q.id).toBe(false)
+        expect(plan.questions.filter(inMain), seed).toHaveLength(8)
+        expect(plan.questions.filter(inReview), seed).toHaveLength(2)
+      }
+    }
+    expect(quizButtonCount(QUESTION_BANK, q3, { canSpeak: true }, none)).toBe(10)
+  })
+
+  it('story 40: mini-t3 thiếu nền còn < 4 câu → not-ready như cũ; mọi viên đã dạy → đúng pickQuiz, không bỏ câu', () => {
+    const q3 = quiz('mini-t3')
+    // Ngân hàng thử: chỉ câu cần viên gạch, cộng 3 câu không khai báo requires.
+    const free = QUESTION_BANK.filter((q) => q3.lessonIds.includes(q.lessonId) && !q.requires && q.kind !== 'listening').slice(0, 3)
+    const bank = [...QUESTION_BANK.filter((q) => q.requires && q.requires.length > 0), ...free]
+    const plan = planQuiz(bank, q3, 'a', { canSpeak: true }, none)
+    expect(plan.status).toBe('not-ready')
+    if (plan.status === 'not-ready') expect(plan.available).toBe(3)
+    expect(quizButtonCount(bank, q3, { canSpeak: true }, none)).toBeNull()
+    for (const seed of SEEDS) {
+      expect(planQuiz(QUESTION_BANK, q3, seed, { canSpeak: true }, all)).toEqual({
+        status: 'run',
+        questions: pickQuiz(QUESTION_BANK, q3, seed, { canSpeak: true }),
+        skipped: 0,
+        missingBrickIds: [],
+      })
+    }
+  })
+
   it('story 33 + 36: F14 chưa dạy → quiz s1-t2-w2 bỏ các câu mới cần F14, vẫn chạy 5 câu', () => {
     const needF14 = QUESTION_BANK.filter((q) => q.lessonId === 's1-t2-w2' && missingBricks(q, except('F14')).length > 0)
     expect(needF14.map((q) => q.id)).toEqual(
