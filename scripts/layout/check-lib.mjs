@@ -289,7 +289,8 @@ export const HOTKEY_PROBE = {
   brickRoute: '/foundation/F01',
   /** Enter ×3 từ màn 1 → màn ví dụ một chỗ trống. */
   brickScreen: 'Màn 4/6',
-  brickTyped: 'chào 1',
+  /** Chữ sai không dấu: chữ có dấu bị coi là đang bật bộ gõ tiếng Việt và không chấm (story 35). */
+  brickTyped: 'xyz 1',
   /** Bỏ focus ô rồi Enter ở màn 4 → màn luyện tập (câu đầu là `choice`). */
   checkScreen: 'Màn 5/6',
   /** Kiểm tra hàng A: `QuestionCard` từ dữ liệu sạch. */

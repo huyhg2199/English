@@ -375,7 +375,7 @@ describe('layout:check — thử phím tắt (story 31)', () => {
 
   it('F01 gõ trong ô làm đổi màn hoặc không chấm → lỗi', () => {
     expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, screenAfterTyping: 'Màn 5/6' } })).toEqual([
-      expect.stringMatching(/F01: gõ "chào 1" \+ Enter trong ô làm đổi màn: "Màn 5\/6"/),
+      expect.stringMatching(/F01: gõ "xyz 1" \+ Enter trong ô làm đổi màn: "Màn 5\/6"/),
     ])
     expect(hotkeyProblems({ ...pass, brick: { ...pass.brick, typingGraded: false } })).toEqual([
       expect.stringMatching(/không chấm/),
