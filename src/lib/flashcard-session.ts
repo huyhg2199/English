@@ -1,5 +1,5 @@
 import { BRICK_IDS, type BrickId, type RuleCard } from '@/data/foundation'
-import { lessonRuleCards } from '@/data/lessons'
+import { IRREGULAR_VERB_CARDS, IRREGULAR_VERB_GROUPS, IRREGULAR_VERBS_LESSON_ID, lessonRuleCards } from '@/data/lessons'
 import { allLessons } from '@/data/roadmap'
 import { FUNCTION_WORD_GATES, functionWordGate, STARTER_WORD_IDS, type FunctionWordGate, type Word, type WordList } from '@/data/vocab'
 import {
@@ -18,6 +18,8 @@ import {
   buildSession,
   dueCardCount,
   isRuleCardId,
+  isSameLocalDay,
+  isSrsCard,
   lockedWordIds,
   NEW_PER_DAY,
   readCards,
@@ -37,10 +39,12 @@ export const NEW_WORDS_T1 = 8
 export const HEAVY_REVIEW_THRESHOLD = 40
 /** Số từ mới tối đa hôm tồn ôn. */
 export const HEAVY_REVIEW_NEW_WORDS = 3
+/** Số động từ bất quy tắc mở thẻ mới mỗi ngày (story 38, khớp lời dặn trên bảng); luôn mở trọn nhóm. */
+export const IRREGULAR_VERBS_PER_DAY = 10
 
 /**
  * Kế hoạch từ mới của phiên: quota hôm nay (trước khi trừ số từ đã giới thiệu), id lấy trước, id hư từ còn khoá và thẻ
- * quy tắc của các viên đã học xong (hai field sau thiếu thì rỗng).
+ * quy tắc (viên đã học xong, thì của bài đã xong, động từ bất quy tắc; hai field sau thiếu thì rỗng).
  */
 export type NewWordPlan = {
   newPerDay: number
@@ -103,7 +107,8 @@ const SAVED_CARD_PREFIX = savedCardId('')
 /**
  * Thẻ đến hạn mà phiên ôn hiện là thẻ ôn (cùng tập với `buildStudySession`): bỏ thẻ riêng không còn mục lưu (mục đã xoá,
  * bỏ khỏi flashcard, hay mục trùng cụm) và thẻ quy tắc không còn trong danh sách thẻ quy tắc hiện tại (viên đổi nội dung,
- * id lạ). Thẻ đó không bao giờ hiện nên không ôn bớt được; đếm vào thì quota kẹt ở 3.
+ * id lạ, bỏ đánh dấu bài, chưa tới s1-t2-w3). Thẻ đó không bao giờ hiện nên không ôn bớt được; đếm vào thì quota kẹt ở 3.
+ * Gọi `ruleStudyWords` không có `opening`: chỉ cần thẻ đã có lịch, và tránh vòng lặp với `heavyReview`.
  */
 function reviewableDueCount(store: Store, now: Date, ruleCardsOf: (brickId: BrickId) => readonly RuleCard[]): number {
   const srs = store.data.srs
@@ -118,7 +123,8 @@ function reviewableDueCount(store: Store, now: Date, ruleCardsOf: (brickId: Bric
 
 /**
  * Kế hoạch từ mới của phiên ôn lấy từ store (dùng trong `useNewWordOptions`): quota, tồn ôn, id lấy trước, id hư từ còn
- * khoá, thẻ quy tắc và cổng hiển thị.
+ * khoá, thẻ quy tắc và cổng hiển thị. Thẻ quy tắc lấy với `{ now, heavyReview }` nên được mở thẻ động từ mới (story 38);
+ * thẻ động từ không đổi quota từ mới.
  */
 export type NewWordOptions = NewWordPlan & {
   heavyReview: boolean
@@ -140,7 +146,7 @@ export function newWordOptions(
     preferIds: preferredNewWordIds(store, themeWordIdsOf),
     gates: flashcardGates(store),
     lockedIds: lockedNewWordIds(store),
-    rules: ruleStudyWords(store, ruleCardsOf),
+    rules: ruleStudyWords(store, ruleCardsOf, { now, heavyReview }),
   }
 }
 
@@ -162,7 +168,10 @@ export function lockedNewWordIds(store: Store): Set<string> {
   })
 }
 
-/** Id SRS của thẻ quy tắc từ id nội dung: `f01-rule-2` → `rule:f01-2`; `past-to-be-rule-1` → `rule:past-to-be-1`. */
+/**
+ * Id SRS của thẻ quy tắc từ id nội dung: `f01-rule-2` → `rule:f01-2`; `past-to-be-rule-1` → `rule:past-to-be-1`;
+ * `irregular-go-rule-1` → `rule:irregular-go-1`.
+ */
 export function ruleCardId(rule: Pick<RuleCard, 'id'>): string {
   return RULE_CARD_PREFIX + rule.id.replace('-rule-', '-')
 }
@@ -173,9 +182,15 @@ export function ruleCardId(rule: Pick<RuleCard, 'id'>): string {
  *   kiểm tra hay bỏ qua Sân ga thì không góp thẻ. Nội dung viên truyền vào qua `ruleCardsOf`;
  * - sau đó thẻ của thì trong các bài đã đánh dấu xong (`readCompletedLessonIds`, story 33), theo thứ tự lộ trình rồi thứ
  *   tự trong bài (`lessonRuleCards`). Bài bị bỏ qua khi xếp lớp thì không góp; bỏ đánh dấu thì thẻ không vào phiên (mục
- *   trong `srs.cards` giữ nguyên, đánh dấu lại thì lịch cũ chạy tiếp).
+ *   trong `srs.cards` giữ nguyên, đánh dấu lại thì lịch cũ chạy tiếp);
+ * - cuối cùng thẻ động từ bất quy tắc (`irregularVerbStudyWords`, story 38). Không có `opening` thì chỉ thẻ đã có lịch;
+ *   có `opening` thì thêm thẻ mới theo luật mở nhóm.
  */
-export function ruleStudyWords(store: Store, ruleCardsOf: (brickId: BrickId) => readonly RuleCard[]): RuleStudyWord[] {
+export function ruleStudyWords(
+  store: Store,
+  ruleCardsOf: (brickId: BrickId) => readonly RuleCard[],
+  opening?: IrregularVerbOpening,
+): RuleStudyWord[] {
   const done = new Set(foundationState(store).doneBrickIds)
   const bricks = BRICK_IDS.filter((id) => done.has(id)).flatMap((id) =>
     ruleCardsOf(id).map((r) => ({
@@ -202,7 +217,73 @@ export function ruleStudyWords(store: Store, ruleCardsOf: (brickId: BrickId) => 
         vi: r.vi,
       })),
     )
-  return [...bricks, ...lessons]
+  return [...bricks, ...lessons, ...irregularVerbStudyWords(store, opening)]
+}
+
+/** Id SRS thẻ động từ theo nhóm âm, theo thứ tự trong nhóm. */
+const VERB_CARD_IDS_BY_GROUP: ReadonlyMap<string, readonly string[]> = new Map(
+  IRREGULAR_VERB_GROUPS.map((g) => [g.id, IRREGULAR_VERB_CARDS.filter((c) => c.groupId === g.id).map(ruleCardId)]),
+)
+
+/** Lúc mở phiên và cờ tồn ôn: có thì `irregularVerbStudyWords` được mở thẻ động từ mới. */
+export type IrregularVerbOpening = { now: Date; heavyReview: boolean }
+
+/**
+ * Huy đã "tới" bài có bảng động từ (s1-t2-w3, story 38): bài đã đánh dấu xong, hoặc là bài hiện tại khi đã ra khỏi Sân ga.
+ * Bài bị Mũ Phân Loại xếp qua thì chưa tới (tới khi đánh dấu xong).
+ */
+export function irregularVerbsReached(store: Store): boolean {
+  const completed = readCompletedLessonIds(store)
+  if (completed.includes(IRREGULAR_VERBS_LESSON_ID)) return true
+  if (isInFoundation(store)) return false
+  return computeRoadmapProgress(allLessons(), completed, readStartLessonId(store)).nextLessonId === IRREGULAR_VERBS_LESSON_ID
+}
+
+/**
+ * Thẻ ôn V2 · V3 của động từ bất quy tắc (story 38), theo thứ tự `IRREGULAR_VERB_CARDS` (nhóm rồi thứ tự trong nhóm):
+ * - chưa tới s1-t2-w3 (`irregularVerbsReached`) → `[]` (mục trong `srs.cards` giữ nguyên, tới lại thì lịch cũ chạy tiếp);
+ * - luôn có thẻ đã có mục hợp lệ trong `srs.cards`;
+ * - có `opening` và không tồn ôn: thêm thẻ chưa có lịch theo nhóm âm, tối đa `IRREGULAR_VERBS_PER_DAY` động từ mỗi ngày
+ *   (đếm cả thẻ đã giới thiệu hôm nay). Luôn mở trọn nhóm; nhóm đầu trong ngày luôn mở (kể cả hơn 10 động từ); nhóm đã
+ *   mở dở thì mở nốt; không nhảy cóc sang nhóm nhỏ phía sau. Nghỉ thì không dồn ngày bù.
+ * Mục sai dạng coi như chưa có mục (giống `buildSession`). Không tính quota từ mới.
+ */
+export function irregularVerbStudyWords(store: Store, opening?: IrregularVerbOpening): RuleStudyWord[] {
+  if (!irregularVerbsReached(store)) return []
+  const cards = readCards(store.data.srs)
+  const has = (id: string) => isSrsCard(cards[id])
+  const pick = new Set<string>()
+  let today = 0
+  for (const c of IRREGULAR_VERB_CARDS) {
+    const id = ruleCardId(c)
+    if (!has(id)) continue
+    pick.add(id)
+    const card = cards[id]
+    if (opening && isSrsCard(card) && isSameLocalDay(new Date(card.introducedAt), opening.now)) today++
+  }
+  if (opening && !opening.heavyReview) {
+    const budget = IRREGULAR_VERBS_PER_DAY - today
+    let taken = 0
+    for (const group of IRREGULAR_VERB_GROUPS) {
+      const ids = VERB_CARD_IDS_BY_GROUP.get(group.id) ?? []
+      const fresh = ids.filter((id) => !has(id))
+      if (fresh.length === 0) continue
+      const opened = fresh.length < ids.length
+      if (!opened && today + taken > 0 && taken + fresh.length > budget) break
+      for (const id of fresh) pick.add(id)
+      taken += fresh.length
+    }
+  }
+  return IRREGULAR_VERB_CARDS.filter((c) => pick.has(ruleCardId(c))).map((c) => ({
+    id: ruleCardId(c),
+    rule: true as const,
+    word: c.answer,
+    lessonId: IRREGULAR_VERBS_LESSON_ID,
+    verbGroup: c.groupTitle,
+    cloze: c.cloze,
+    answer: c.answer,
+    vi: c.vi,
+  }))
 }
 
 /**

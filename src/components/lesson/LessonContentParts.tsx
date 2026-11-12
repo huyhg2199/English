@@ -214,7 +214,8 @@ function Review({ review }: { review: NonNullable<GrammarContent['review']> }) {
 
 /**
  * Nội dung đoạn Ngữ pháp: từng thì (dòng thời gian, quy tắc, câu thoại, thần chú) hoặc phần ôn tập. Thì có `practice`
- * (story 35) có khối luyện ngay dưới TenseCard (cả trang bài lẫn bước Bài chính của buổi 30').
+ * (story 35) có khối luyện ngay dưới TenseCard (cả trang bài lẫn bước Bài chính của buổi 30'). Bài có
+ * `irregularVerbsReview` (s1-t3-w3, story 38) mở đầu bằng bảng ôn cột V3 che sẵn, trước các thì.
  */
 export function GrammarSection({ content }: { content: LessonContent }) {
   const unlocked = useSpells()
@@ -224,6 +225,7 @@ export function GrammarSection({ content }: { content: LessonContent }) {
   const ids = new Set(unlocked.map((s) => s.id))
   return (
     <div className="flex flex-col gap-6">
+      {content.grammar.irregularVerbsReview && <IrregularVerbTable verbs={content.grammar.irregularVerbsReview} mode="review-v3" />}
       {content.grammar.tenses.map((t) => (
         <Fragment key={t.id}>
           <TenseCard tense={t} unlockedSpellIds={ids} />

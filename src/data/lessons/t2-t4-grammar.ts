@@ -45,6 +45,38 @@ export const PRESENT_CONTINUOUS: Tense = {
   ],
   dialogues: [yg('what are you doing'), yg("I'm working on")],
   spellId: 'accio',
+  ruleCards: [
+    {
+      id: 'present-continuous-rule-1',
+      cloze: 'Look! The boys ___ (play) football outside.',
+      answer: 'are playing',
+      vi: 'am / is / are + V-ing. Thiếu một trong hai phần là sai.',
+    },
+    {
+      id: 'present-continuous-rule-2',
+      cloze: 'She ___ (not / sleep) now. She is reading.',
+      answer: "isn't sleeping",
+      vi: "Phủ định: am / is / are + not + V-ing (isn't sleeping), không mượn do / does.",
+    },
+    {
+      id: 'present-continuous-rule-3',
+      cloze: '___ you working right now? — Yes, I am.',
+      answer: 'Are',
+      vi: 'Câu hỏi: đảo am / is / are lên trước chủ ngữ, rồi V-ing (không phải Do you working?).',
+    },
+    {
+      id: 'present-continuous-rule-4',
+      cloze: 'We are ___ (sit) near the window.',
+      answer: 'sitting',
+      vi: 'Từ một âm tiết tận cùng 1 chữ nguyên âm + 1 chữ phụ âm thì gấp đôi phụ âm cuối (sit → sitting, run → running). Không gấp đôi w, x, y (play → playing, fix → fixing).',
+    },
+    {
+      id: 'present-continuous-rule-5',
+      cloze: 'I ___ (know) the answer now.',
+      answer: 'know',
+      vi: 'Động từ trạng thái (know, like, want, need) không dùng tiếp diễn.',
+    },
+  ],
   // Phần luyện có bậc (story 35): chỉ dùng Sân ga F01–F18, hiện tại đơn và chính thì này; đề không trùng đề quiz s1-t2-w1.
   practice: {
     worked: {
@@ -203,6 +235,18 @@ export const PAST_TO_BE: Tense = {
       answer: 'Were',
       vi: 'Hỏi với was / were: đảo was / were lên trước chủ ngữ, không mượn did (không nói Did they be…?).',
     },
+    {
+      id: 'past-to-be-rule-3',
+      cloze: 'We ___ busy last night. We were free.',
+      answer: "weren't",
+      vi: "Phủ định: wasn't / weren't, không mượn did (không phải We didn't be busy).",
+    },
+    {
+      id: 'past-to-be-rule-4',
+      cloze: 'There ___ three students in the room yesterday morning.',
+      answer: 'were',
+      vi: 'there was + danh từ số ít hoặc không đếm được, there were + danh từ số nhiều.',
+    },
   ],
   // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn và was / were; không -ed, không V2 khác, did chỉ là lựa
   // chọn sai để so "Were you…?" với "Did you…?" (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w2.
@@ -345,6 +389,24 @@ export const PAST_SIMPLE: Tense = {
       answer: 'did',
       vi: 'Hỏi Wh- về việc đã làm: Wh + did + S + động từ nguyên mẫu (không phải What you watched?).',
     },
+    {
+      id: 'past-simple-rule-2',
+      cloze: 'The taxi ___ (stop) in front of my house last night.',
+      answer: 'stopped',
+      vi: 'Từ một âm tiết tận cùng 1 chữ nguyên âm + 1 chữ phụ âm thì gấp đôi phụ âm cuối (stop → stopped). Không gấp đôi w, x, y (play → played, fix → fixed); visit → visited cũng không.',
+    },
+    {
+      id: 'past-simple-rule-3',
+      cloze: 'She ___ (not / call) me last night.',
+      answer: "didn't call",
+      vi: "didn't + V nguyên mẫu (không phải didn't called).",
+    },
+    {
+      id: 'past-simple-rule-4',
+      cloze: '___ you clean your room last weekend? — Yes, I did.',
+      answer: 'Did',
+      vi: "Câu hỏi: Did + chủ ngữ + V nguyên mẫu …? Trả lời ngắn: Yes, I did. / No, I didn't.",
+    },
   ],
   // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, was / were, -ed và did; không V2 bất quy tắc (xem
   // `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w2 hay đề luyện của was / were.
@@ -479,6 +541,32 @@ export const PAST_SIMPLE_IRREGULAR: Tense = {
   ],
   dialogues: [yg('I went to'), yg('I bought a new')],
   spellId: 'reparo',
+  ruleCards: [
+    {
+      id: 'past-simple-irregular-rule-1',
+      cloze: 'My mother ___ (buy) fish at the market this morning.',
+      answer: 'bought',
+      vi: 'Bất quy tắc dùng V2 (buy → bought, không phải buyed).',
+    },
+    {
+      id: 'past-simple-irregular-rule-2',
+      cloze: "He didn't ___ (go) to work yesterday.",
+      answer: 'go',
+      vi: "Sau didn't quay về V1 (không phải didn't went).",
+    },
+    {
+      id: 'past-simple-irregular-rule-3',
+      cloze: 'What did you ___ (eat) for lunch?',
+      answer: 'eat',
+      vi: 'Did / Wh + did + chủ ngữ + V1.',
+    },
+    {
+      id: 'past-simple-irregular-rule-4',
+      cloze: 'Yesterday we ___ (go) to the beach.',
+      answer: 'went',
+      vi: 'went là V2 (quá khứ đơn). gone là V3, dùng sau have / has (hiện tại hoàn thành, học ở T3).',
+    },
+  ],
   // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, quá khứ đơn (was / were, -ed, did) và V2 bất quy tắc;
   // không V3 (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w3.
   practice: {
@@ -618,6 +706,32 @@ export const WILL: Tense = {
   ],
   dialogues: [yg("I'll call you"), yg('it will be cold')],
   spellId: 'protego',
+  ruleCards: [
+    {
+      id: 'will-rule-1',
+      cloze: "It's late. I ___ (call) a taxi.",
+      answer: 'will call',
+      vi: 'Quyết định ngay lúc nói: will + V nguyên mẫu, mọi chủ ngữ (she will go, không phải will goes).',
+    },
+    {
+      id: 'will-rule-2',
+      cloze: 'We ___ (not / be) at home tomorrow.',
+      answer: "won't be",
+      vi: "Phủ định: will not (won't) + V nguyên mẫu, mọi chủ ngữ (won't be, không phải won't is).",
+    },
+    {
+      id: 'will-rule-3',
+      cloze: '___ you call me tomorrow? — Yes, I will.',
+      answer: 'Will',
+      vi: "Câu hỏi: Will + chủ ngữ + V nguyên mẫu …? Trả lời ngắn: Yes, I will. / No, I won't.",
+    },
+    {
+      id: 'will-rule-4',
+      cloze: "I'm very tired. I ___ (not) go to the party tonight.",
+      answer: "won't",
+      vi: "won't /woʊnt/ = sẽ không. want /wɑːnt/ to = muốn. I won't go ≠ I want to go.",
+    },
+  ],
 }
 
 export const GOING_TO: Tense = {
@@ -651,6 +765,32 @@ export const GOING_TO: Tense = {
   ],
   dialogues: [yg('is going to rain'), yg('what are you going to do')],
   spellId: 'wingardium-leviosa',
+  ruleCards: [
+    {
+      id: 'going-to-rule-1',
+      cloze: 'We ___ (visit) Sa Pa in July. We bought the tickets yesterday.',
+      answer: 'are going to visit',
+      vi: 'Kế hoạch đã định: am / is / are + going to + V.',
+    },
+    {
+      id: 'going-to-rule-2',
+      cloze: 'He ___ (not / buy) a car this year. He decided last month.',
+      answer: "isn't going to buy",
+      vi: "Phủ định kế hoạch đã định: am / is / are + not + going to + V nguyên mẫu (isn't going to buy).",
+    },
+    {
+      id: 'going-to-rule-3',
+      cloze: 'What ___ you going to cook tonight?',
+      answer: 'are',
+      vi: 'Câu hỏi: (Wh) + am / is / are + chủ ngữ + going to + V, không mượn do.',
+    },
+    {
+      id: 'going-to-rule-4',
+      cloze: 'Look at that boy on the wall! He ___ (fall).',
+      answer: 'is going to fall',
+      vi: 'Thấy dấu hiệu ngay trước mắt thì dùng going to. Quyết định vừa nghĩ ra thì dùng will.',
+    },
+  ],
 }
 
 export const PRESENT_PERFECT: Tense = {
@@ -687,6 +827,38 @@ export const PRESENT_PERFECT: Tense = {
   ],
   dialogues: [yg('have you ever been'), yg("I've never seen")],
   spellId: 'expecto-patronum',
+  ruleCards: [
+    {
+      id: 'present-perfect-rule-1',
+      cloze: 'We ___ (visit) Hoi An twice.',
+      answer: 'have visited',
+      vi: 'have / has + V3. I / you / we / they dùng have.',
+    },
+    {
+      id: 'present-perfect-rule-2',
+      cloze: 'My son ___ (not / finish) his lunch yet.',
+      answer: "hasn't finished",
+      vi: "Phủ định: haven't / hasn't + V3, yet ở cuối câu.",
+    },
+    {
+      id: 'present-perfect-rule-3',
+      cloze: '___ you ever sung karaoke?',
+      answer: 'Have',
+      vi: 'Câu hỏi: Have / Has + chủ ngữ + (ever) + V3 …? ever = đã từng.',
+    },
+    {
+      id: 'present-perfect-rule-4',
+      cloze: 'We have ___ (see) this show before.',
+      answer: 'seen',
+      vi: 'Sau have / has dùng V3 (seen), không dùng V2 (saw).',
+    },
+    {
+      id: 'present-perfect-rule-5',
+      cloze: "My parents aren't at home. They have ___ (go / be) to Da Nang.",
+      answer: 'gone',
+      vi: 'gone to = đã đi và giờ đang ở đó. been to = đã từng tới rồi về.',
+    },
+  ],
 }
 
 export const PERFECT_VS_PAST: Tense = {
@@ -723,6 +895,38 @@ export const PERFECT_VS_PAST: Tense = {
     },
   ],
   dialogues: [yg('how long have you lived'), yg('when did you start')],
+  ruleCards: [
+    {
+      id: 'present-perfect-vs-past-rule-1',
+      cloze: 'I have worked here ___ 2022.',
+      answer: 'since',
+      vi: 'since + mốc bắt đầu.',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-2',
+      cloze: 'She has lived in Hanoi ___ ten years.',
+      answer: 'for',
+      vi: 'for + khoảng thời gian.',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-3',
+      cloze: 'I ___ (meet) him last year.',
+      answer: 'met',
+      vi: 'Có mốc đã xong (last year, ago, yesterday) thì dùng quá khứ đơn, không dùng have met.',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-4',
+      cloze: 'When ___ you buy your car? — Two years ago.',
+      answer: 'did',
+      vi: 'Hỏi When về việc đã xảy ra thì dùng quá khứ đơn (không phải When have you bought…?).',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-5',
+      cloze: 'How long ___ your parents lived in Hanoi?',
+      answer: 'have',
+      vi: 'Hỏi kéo dài tới giờ: How long have / has + S + V3?',
+    },
+  ],
 }
 
 // ---------------------------------------------------------------- T4
@@ -756,6 +960,32 @@ export const MODALS: Tense = {
   ],
   dialogues: [yg('you should try'), yg('can I ask you')],
   spellId: 'expelliarmus',
+  ruleCards: [
+    {
+      id: 'modals-rule-1',
+      cloze: 'My grandmother can ___ (speak) French.',
+      answer: 'speak',
+      vi: 'Sau can / should / must là V nguyên mẫu, không to, không -s.',
+    },
+    {
+      id: 'modals-rule-2',
+      cloze: '___ I open the window? — Yes, of course.',
+      answer: 'Can',
+      vi: 'Hỏi xin phép: Can I …? Đảo can lên đầu, không mượn do.',
+    },
+    {
+      id: 'modals-rule-3',
+      cloze: "You ___ park your car here. It's the rule.",
+      answer: "mustn't",
+      vi: "mustn't = cấm làm (luật, biển báo). can't (không được phép) cũng đúng; shouldn't chỉ là lời khuyên, nhẹ hơn.",
+    },
+    {
+      id: 'modals-rule-4',
+      cloze: 'You look tired. You ___ take a break.',
+      answer: 'should',
+      vi: 'should = lời khuyên (nên). must = bắt buộc, mạnh hơn nhiều.',
+    },
+  ],
 }
 
 export const COMPARATIVES: Tense = {
@@ -787,6 +1017,32 @@ export const COMPARATIVES: Tense = {
   ],
   dialogues: [yg('bigger than'), yg('the best way to')],
   spellId: 'riddikulus',
+  ruleCards: [
+    {
+      id: 'comparatives-rule-1',
+      cloze: 'My room is ___ (big) than yours.',
+      answer: 'bigger',
+      vi: 'Tính từ ngắn: -er + than (big → bigger, gấp đôi g).',
+    },
+    {
+      id: 'comparatives-rule-2',
+      cloze: 'This laptop is ___ (expensive) than that one.',
+      answer: 'more expensive',
+      vi: 'Tính từ dài: more + adj + than.',
+    },
+    {
+      id: 'comparatives-rule-3',
+      cloze: 'She is ___ (good) student in the class.',
+      answer: 'the best',
+      vi: 'good → better → the best. So sánh nhất có the, trừ khi đã có my / your / his… (my best friend).',
+    },
+    {
+      id: 'comparatives-rule-4',
+      cloze: 'He is ___ (tall) than his father.',
+      answer: 'taller',
+      vi: 'Không dùng cả more và -er (không phải more taller).',
+    },
+  ],
 }
 
 export const PASSIVE_PRESENT: Tense = {
@@ -817,6 +1073,32 @@ export const PASSIVE_PRESENT: Tense = {
   ],
   dialogues: [yg('is made in'), yg('is not allowed')],
   spellId: 'finite',
+  ruleCards: [
+    {
+      id: 'passive-present-rule-1',
+      cloze: 'These bags ___ (sell) at the market.',
+      answer: 'are sold',
+      vi: 'Bị động: am / is / are + V3. Chủ ngữ số nhiều dùng are.',
+    },
+    {
+      id: 'passive-present-rule-2',
+      cloze: 'The tip ___ (not / include) in the bill.',
+      answer: "isn't included",
+      vi: "Phủ định bị động: am / is / are + not + V3 (isn't included).",
+    },
+    {
+      id: 'passive-present-rule-3',
+      cloze: '___ English taught at your school?',
+      answer: 'Is',
+      vi: 'Câu hỏi bị động: đảo am / is / are lên trước chủ ngữ, rồi V3 (không phải Does English taught?).',
+    },
+    {
+      id: 'passive-present-rule-4',
+      cloze: 'The windows are ___ (clean) every Monday.',
+      answer: 'cleaned',
+      vi: 'Bị động cần V3. "are clean" là tính từ (sạch).',
+    },
+  ],
 }
 
 // ---------------------------------------------------------------- Nội dung đoạn Ngữ pháp từng tuần
@@ -840,7 +1122,7 @@ export const GRAMMAR_T2_W4: GrammarContent = {
 }
 export const GRAMMAR_T3_W1: GrammarContent = { tenses: [WILL] }
 export const GRAMMAR_T3_W2: GrammarContent = { tenses: [GOING_TO] }
-export const GRAMMAR_T3_W3: GrammarContent = { tenses: [PRESENT_PERFECT] }
+export const GRAMMAR_T3_W3: GrammarContent = { tenses: [PRESENT_PERFECT], irregularVerbsReview: IRREGULAR_VERBS }
 export const GRAMMAR_T3_W4: GrammarContent = { tenses: [PERFECT_VS_PAST] }
 export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS] }
 export const GRAMMAR_T4_W3: GrammarContent = { tenses: [COMPARATIVES, PASSIVE_PRESENT] }

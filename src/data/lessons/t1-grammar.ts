@@ -100,6 +100,32 @@ export const PRESENT_SIMPLE: Tense = {
     { kind: 'voa', speaker: 'Marsha', text: 'She makes spoons?', vi: 'Bà ấy làm thìa à?', ...VOA_L12 },
   ],
   spellId: 'alohomora',
+  ruleCards: [
+    {
+      id: 'present-simple-rule-1',
+      cloze: 'My mother ___ (work) on Saturdays.',
+      answer: 'works',
+      vi: 'he / she / it và danh từ số ít (my mother, Anna) thì động từ thêm -s.',
+    },
+    {
+      id: 'present-simple-rule-2',
+      cloze: 'He ___ (wash) his car every week.',
+      answer: 'washes',
+      vi: 'Tận cùng -s, -ss, -sh, -ch, -x, -z, -o thì thêm -es (washes, watches, goes).',
+    },
+    {
+      id: 'present-simple-rule-3',
+      cloze: 'Minh ___ (study) English at night.',
+      answer: 'studies',
+      vi: 'Phụ âm + y đổi thành -ies (study → studies). Nguyên âm + y chỉ thêm -s (play → plays).',
+    },
+    {
+      id: 'present-simple-rule-4',
+      cloze: 'Our teacher ___ (have) a red car.',
+      answer: 'has',
+      vi: 'have đi với he / she / it thành has (không phải haves).',
+    },
+  ],
   // Phần luyện có bậc (story 36): chỉ Sân ga F01–F18 và hiện tại đơn khẳng định (không quá khứ, không be + V-ing, không
   // don't / Do…?, xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t1-w2.
   practice: {
@@ -238,6 +264,32 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
     { kind: 'voa', speaker: 'Ashley', text: 'Does she wear glasses?', vi: 'Cô ấy có đeo kính không?', ...VOA_L15 },
   ],
   spellId: 'revelio',
+  ruleCards: [
+    {
+      id: 'present-simple-questions-rule-1',
+      cloze: 'My father ___ (not / drink) coffee.',
+      answer: "doesn't drink",
+      vi: "Phủ định: he / she / it + doesn't + V nguyên mẫu (không phải not drink, không phải doesn't drinks).",
+    },
+    {
+      id: 'present-simple-questions-rule-2',
+      cloze: '___ you like tea? — Yes, I do.',
+      answer: 'Do',
+      vi: "Câu hỏi: Do + I / you / we / they + V nguyên mẫu …? Trả lời ngắn: Yes, I do. / No, I don't.",
+    },
+    {
+      id: 'present-simple-questions-rule-3',
+      cloze: 'Where ___ your sister work now?',
+      answer: 'does',
+      vi: 'Wh + do / does + chủ ngữ + V nguyên mẫu.',
+    },
+    {
+      id: 'present-simple-questions-rule-4',
+      cloze: "___ your brother tired today? — No, he isn't.",
+      answer: 'Is',
+      vi: 'Với am / is / are thì không mượn do / does (không phải Does she be busy?).',
+    },
+  ],
   // Phần luyện có bậc (story 36): chỉ Sân ga F01–F18 và hiện tại đơn (khẳng định, phủ định, câu hỏi); không quá khứ, không
   // be + V-ing (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t1-w3.
   practice: {

@@ -176,6 +176,7 @@ export type Tense = {
   /**
    * Thẻ quy tắc của thì (story 33). Bài chứa thì được đánh dấu xong thì thẻ vào phiên ôn SRS (đứng sau thẻ viên gạch),
    * id SRS `rule:<tenseId>-n` (từ id nội dung `<tenseId>-rule-n`). Bài bị bỏ qua khi xếp lớp thì không góp thẻ.
+   * Mỗi thì 4–5 thẻ (story 38): thì dạy đủ ba dạng phủ khẳng định, phủ định, câu hỏi và một cặp dễ nhầm; `to-be` không có.
    */
   ruleCards?: readonly TenseRuleCard[]
   /**
@@ -204,10 +205,21 @@ export type TenseRuleCard = { id: string; cloze: string; answer: string; vi: str
 /** Một động từ bất quy tắc: V1 (NGSL), V2, V3 và nghĩa tiếng Việt. */
 export type IrregularVerb = { v1: string; v2: string; v3: string; vi: string }
 
+/** Nhóm âm của động từ bất quy tắc (story 38): id, tên nhóm (kèm ví dụ) và động từ theo thứ tự bảng. */
+export type IrregularVerbGroup = { id: string; title: string; verbs: readonly IrregularVerb[] }
+
+/**
+ * Thẻ ôn V2 · V3 của một động từ bất quy tắc (story 38): id nội dung `irregular-<v1>-rule-1` (id SRS
+ * `rule:irregular-<v1>-1`), cloze "go → ___ (V2 · V3)", đáp án "went · gone", `vi` "<nghĩa> · Nhóm: <tên nhóm>".
+ */
+export type IrregularVerbCard = TenseRuleCard & { groupId: string; groupTitle: string }
+
 export type GrammarContent = {
   tenses: readonly Tense[]
   /** Bảng động từ bất quy tắc (s1-t2-w3). */
   irregularVerbs?: readonly IrregularVerb[]
+  /** Bảng ôn cột V3 đứng trước các thì, che sẵn V3 (story 38, s1-t3-w3). */
+  irregularVerbsReview?: readonly IrregularVerb[]
   /** Tuần ôn tập: tóm tắt các thì đã học và ghi chú mini test. */
   review?: { summary: readonly string[]; note: string; quizId?: string }
 }

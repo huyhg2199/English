@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getLesson, getSection } from '@/data/roadmap'
+import { allLessons, getLesson, getSection } from '@/data/roadmap'
 import { getBrick } from '@/data/foundation/content'
 import { BRICK_IDS } from '@/data/foundation'
 import { QUESTION_BANK } from '@/data/questions'
@@ -11,7 +11,17 @@ import { hasVietnameseMarks, normalizeTyped } from '@/lib/quiz/typed'
 import { hasPractice, practiceEnglishTexts, practiceItemIds, practiceProblems, type PracticeTense } from '@/lib/tense-practice'
 import { frontedTimeTail, isTenseScopeId, outOfScopeWords, promptEnglish, TENSE_SCOPE_IDS } from '@/lib/tense-scope'
 
-import { allTenses, getLessonContent, IRREGULAR_VERBS, LESSON_CONTENTS, lessonRuleCards, SPELLS } from './index'
+import {
+  allTenses,
+  getLessonContent,
+  IRREGULAR_VERB_CARDS,
+  IRREGULAR_VERB_GROUPS,
+  IRREGULAR_VERBS,
+  IRREGULAR_VERBS_LESSON_ID,
+  LESSON_CONTENTS,
+  lessonRuleCards,
+  SPELLS,
+} from './index'
 import type { PronunciationBlock, Sound } from './types'
 
 const words = await loadWords()
@@ -535,8 +545,12 @@ describe('to be quá khứ và Wh + did (story 33)', () => {
   })
 
   it('lessonRuleCards: thẻ của mọi thì trong bài theo thứ tự; bài không có thẻ → []', () => {
-    expect(lessonRuleCards('s1-t2-w2').map((r) => r.id)).toEqual(['past-to-be-rule-1', 'past-to-be-rule-2', 'past-simple-rule-1'])
-    expect(lessonRuleCards('s1-t2-w1')).toEqual([])
+    const n = (id: string, count: number) => Array.from({ length: count }, (_, i) => `${id}-rule-${i + 1}`)
+    expect(lessonRuleCards('s1-t2-w2').map((r) => r.id)).toEqual([...n('past-to-be', 4), ...n('past-simple', 4)])
+    // Story 38: mọi thì (trừ to be) có thẻ; bài không có thì (ôn tập) và s1-t1-w1 (to be) → [].
+    expect(lessonRuleCards('s1-t2-w1').map((r) => r.id)).toEqual(n('present-continuous', 5))
+    expect(lessonRuleCards('s1-t1-w1')).toEqual([])
+    expect(lessonRuleCards('s1-t2-w4')).toEqual([])
     expect(lessonRuleCards('nope')).toEqual([])
   })
 
@@ -871,5 +885,254 @@ describe('phần luyện T1–T2 (story 36)', () => {
       return (answer.toLowerCase().match(/[a-z]+/g) ?? []).some((w) => cues.includes(v2ToV1.get(w) ?? '#'))
     })
     expect(v1ToV2.length).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('thẻ ôn thì và động từ (story 38)', () => {
+  /** Bảng "Thẻ của thì" (Design Notes story 38): đáp án theo thứ tự thẻ. */
+  const CARDS: Record<string, readonly string[]> = {
+    'present-simple': ['works', 'washes', 'studies', 'has'],
+    'present-simple-questions': ["doesn't drink", 'Do', 'does', 'Is'],
+    'present-continuous': ['are playing', "isn't sleeping", 'Are', 'sitting', 'know'],
+    'past-to-be': ['were', 'Were', "weren't", 'were'],
+    'past-simple': ['did', 'stopped', "didn't call", 'Did'],
+    'past-simple-irregular': ['bought', 'go', 'eat', 'went'],
+    will: ['will call', "won't be", 'Will', "won't"],
+    'going-to': ['are going to visit', "isn't going to buy", 'are', 'is going to fall'],
+    'present-perfect': ['have visited', "hasn't finished", 'Have', 'seen', 'gone'],
+    'present-perfect-vs-past': ['since', 'for', 'met', 'did', 'have'],
+    modals: ['speak', 'Can', "mustn't", 'should'],
+    comparatives: ['bigger', 'more expensive', 'the best', 'taller'],
+    'passive-present': ['are sold', "isn't included", 'Is', 'cleaned'],
+  }
+  /** Thì dạy đủ khẳng định, phủ định, câu hỏi. */
+  const THREE_FORMS = [
+    'present-simple-questions',
+    'present-continuous',
+    'past-to-be',
+    'past-simple',
+    'past-simple-irregular',
+    'will',
+    'going-to',
+    'present-perfect',
+  ]
+  /** Câu đã điền đáp án, bỏ gợi ý trong ngoặc ngay sau `___`. */
+  const filled = (cloze: string, answer: string) => cloze.replace(/___(?: \([^)]*\))?/, answer)
+  const cardsOf = () =>
+    LESSON_CONTENTS.flatMap((c) =>
+      (c.grammar?.tenses ?? []).flatMap((t) => (t.ruleCards ?? []).map((r) => ({ lessonId: c.lessonId, tense: t, card: r }))),
+    )
+  const lessonIndex = (id: string) => allLessons().findIndex((l) => l.id === id)
+
+  it('đúng 13 thì có thẻ (mọi thì trừ to-be), số thẻ và đáp án theo bảng; tổng 55 thẻ', () => {
+    const withCards = allTenses().filter((t) => (t.ruleCards ?? []).length > 0)
+    expect(withCards.map((t) => t.id)).toEqual(Object.keys(CARDS))
+    expect(allTenses().filter((t) => !t.ruleCards).map((t) => t.id)).toEqual(['to-be'])
+    for (const t of withCards) {
+      expect(t.ruleCards!.map((r) => r.answer), t.id).toEqual(CARDS[t.id])
+      expect(t.ruleCards!.map((r) => r.id), t.id).toEqual(CARDS[t.id].map((_, i) => `${t.id}-rule-${i + 1}`))
+      expect(t.ruleCards!.length, t.id).toBeGreaterThanOrEqual(4)
+      expect(t.ruleCards!.length, t.id).toBeLessThanOrEqual(5)
+    }
+    expect(cardsOf()).toHaveLength(55)
+  })
+
+  it('3 thẻ của story 33 giữ đúng chữ', () => {
+    const byId = new Map(cardsOf().map(({ card }) => [card.id, card]))
+    expect(byId.get('past-to-be-rule-1')).toEqual({
+      id: 'past-to-be-rule-1',
+      cloze: 'Yesterday they ___ at home.',
+      answer: 'were',
+      vi: 'you / we / they và danh từ số nhiều + were; I / he / she / it và danh từ số ít + was.',
+    })
+    expect(byId.get('past-to-be-rule-2')).toEqual({
+      id: 'past-to-be-rule-2',
+      cloze: "___ they at work yesterday? — No, they weren't.",
+      answer: 'Were',
+      vi: 'Hỏi với was / were: đảo was / were lên trước chủ ngữ, không mượn did (không nói Did they be…?).',
+    })
+    expect(byId.get('past-simple-rule-1')).toEqual({
+      id: 'past-simple-rule-1',
+      cloze: 'What ___ she cook last Sunday?',
+      answer: 'did',
+      vi: 'Hỏi Wh- về việc đã làm: Wh + did + S + động từ nguyên mẫu (không phải What you watched?).',
+    })
+  })
+
+  it('đúng một ___, gợi ý trong ngoặc (nếu có) đứng ngay sau ___; answer, vi không rỗng', () => {
+    for (const { card } of cardsOf()) {
+      expect(card.cloze.split('___'), card.id).toHaveLength(2)
+      expect(card.cloze.replace(/___ \([^)]+\)/, '___'), card.id).not.toContain('(')
+      expect(card.answer.trim(), card.id).not.toBe('')
+      expect(card.vi.trim(), card.id).not.toBe('')
+    }
+  })
+
+  it('thì dạy đủ ba dạng có ≥ 1 thẻ phủ định và ≥ 1 thẻ câu hỏi', () => {
+    for (const id of THREE_FORMS) {
+      const texts = cardsOf()
+        .filter((c) => c.tense.id === id)
+        .map(({ card }) => filled(card.cloze, card.answer))
+      expect(texts.some((t) => /n't\b|\bnot\b/.test(t)), id).toBe(true)
+      expect(texts.some((t) => t.includes('?')), id).toBe(true)
+    }
+  })
+
+  it('thẻ T1–T2 nằm trong phạm vi chữ của thì (outOfScopeWords)', () => {
+    let checked = 0
+    for (const { tense, card } of cardsOf()) {
+      if (!isTenseScopeId(tense.id)) continue
+      const text = filled(card.cloze, card.answer)
+      expect(outOfScopeWords(tense.id, text), `${card.id}: ${text}`).toEqual([])
+      checked++
+    }
+    expect(checked).toBe(25)
+  })
+
+  it('thẻ T3–T4 không chứa dấu hiệu của bài dạy sau nó (bảng "Dấu hiệu theo bài")', () => {
+    const v3 = new Set(IRREGULAR_VERBS.flatMap((v) => v.v3.split(' / ')).map((f) => f.toLowerCase()))
+    const perfect = (text: string) =>
+      [...text.matchAll(/(?:\b(?:have|has|haven't|hasn't)|'ve)(?: (?:ever|never|just|already))? ([a-z]+)\b/g)].some(
+        (m) => /^[a-z]{2,}ed$/.test(m[1]) || v3.has(m[1]),
+      )
+    /** Bị động hiện tại: am / is / are (not) + V3 hoặc từ đuôi -ed ("isn't allowed", "are sold"). */
+    const passive = (text: string) =>
+      [...text.matchAll(/(?:\b(?:am|is|are|isn't|aren't)|'m|'s|'re)(?: not)? ([a-z]+)\b/g)].some(
+        (m) => /^[a-z]{2,}ed$/.test(m[1]) || v3.has(m[1]),
+      )
+    const SIGNALS: readonly { lessonId: string; has: (text: string) => boolean; sample: string }[] = [
+      { lessonId: 's1-t3-w2', has: (t) => /\bgoing to\b|\bgonna\b/.test(t), sample: 'is going to rain' },
+      { lessonId: 's1-t3-w3', has: perfect, sample: 'has just rained' },
+      { lessonId: 's1-t3-w4', has: (t) => /\bsince\b|\bhow long\b/.test(t), sample: 'rained since' },
+      { lessonId: 's1-t4-w1', has: (t) => /\b(?:can|can't|should|shouldn't|must|mustn't)\b/.test(t), sample: "can't rain" },
+      { lessonId: 's1-t4-w3', has: (t) => /\bthan\b|\bthe (?:best|worst|most)\b/.test(t), sample: 'rains more than' },
+      { lessonId: 's1-t4-w3', has: passive, sample: "isn't allowed" },
+    ]
+    // Tự kiểm: mỗi dấu hiệu bắt được câu của chính bài nó.
+    for (const s of SIGNALS) expect(s.has(filled('It ___ here.', s.sample).toLowerCase()), s.sample).toBe(true)
+    expect(passive("you mustn't smoke in the hospital. it isn't allowed.")).toBe(true)
+    expect(passive("i'm very tired. i won't go to the party tonight.")).toBe(false)
+    let checked = 0
+    for (const { lessonId, card } of cardsOf()) {
+      if (lessonIndex(lessonId) < lessonIndex('s1-t3-w1')) continue
+      const text = filled(card.cloze, card.answer).toLowerCase()
+      for (const s of SIGNALS) {
+        if (lessonIndex(lessonId) < lessonIndex(s.lessonId)) expect(s.has(text), `${card.id} (${s.lessonId}): ${text}`).toBe(false)
+      }
+      checked++
+    }
+    expect(checked).toBe(30)
+  })
+
+  it('không dùng some / any / many / because / so, không có "Don\'t + V"', () => {
+    for (const { card } of cardsOf()) {
+      const text = filled(card.cloze, card.answer)
+      const ws = text.toLowerCase().match(/[a-z']+/g) ?? []
+      expect(ws.filter((w) => ['some', 'any', 'many', 'because', 'so'].includes(w)), card.id).toEqual([])
+      expect(text, card.id).not.toMatch(/(?:^|[.!?—]\s*)don't\b/i)
+    }
+  })
+
+  it('câu đã điền không trùng, không gần trùng câu ví dụ, công thức, quy tắc, hội thoại, phần luyện, lỗi hay mắc hay câu quiz cùng bài', () => {
+    /** Bỏ gợi ý trong ngoặc và câu trả lời ngắn sau "—", chuẩn hoá bằng `normalizeTyped`, tách từ. */
+    const words = (text: string) => normalizeTyped(text.replace(/\s*—.*$/, '').replace(/\([^)]*\)/g, ' ')).split(' ').filter(Boolean)
+    /** Khoảng cách sửa theo từ (thêm, bớt, thay một từ). */
+    const wordDistance = (a: readonly string[], b: readonly string[]) => {
+      let prev = b.map((_, j) => j + 1)
+      prev.unshift(0)
+      for (let i = 1; i <= a.length; i++) {
+        const row = [i]
+        for (let j = 1; j <= b.length; j++) row.push(Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)))
+        prev = row
+      }
+      return prev[b.length]
+    }
+    /**
+     * Trùng (bỏ gợi ý và câu trả lời ngắn), hoặc gần trùng: câu từ 5 từ trở lên chỉ khác một từ ("My sister works in a bank"
+     * với "My friend works in a bank", "Did you watch the game yesterday" với "Did you watch the game").
+     */
+    const near = (a: readonly string[], b: readonly string[]) => {
+      const d = wordDistance(a, b)
+      return d === 0 || (Math.max(a.length, b.length) >= 5 && d <= 1)
+    }
+    /** 3 thẻ của story 33 giữ nguyên chữ (test riêng ở trên), không xét gần trùng. */
+    const STORY33 = new Set(['past-to-be-rule-1', 'past-to-be-rule-2', 'past-simple-rule-1'])
+    const problems: string[] = []
+    for (const { lessonId, card } of cardsOf()) {
+      const tenses = getLessonContent(lessonId)!.grammar!.tenses
+      const taken = [
+        ...tenses.flatMap((t) => t.examples.map((e) => e.en)),
+        ...tenses.flatMap((t) => t.mistakes.map((m) => m.right)),
+        ...tenses.flatMap((t) => t.formulas.map((f) => f.text)),
+        ...tenses.flatMap((t) => t.rules),
+        ...tenses.flatMap((t) => t.dialogues.map((d) => (d.kind === 'voa' ? d.text : d.phrase))),
+        ...tenses.flatMap((t) => (t.practice ? practiceEnglishTexts(t.practice) : [])),
+        ...QUESTION_BANK.filter((q) => q.lessonId === lessonId).flatMap((q) => [
+          q.answer,
+          q.prompt.includes('___') ? filled(q.prompt, q.answer) : q.prompt,
+        ]),
+      ].map(words)
+      if (STORY33.has(card.id)) continue
+      // So cả câu đã điền và khung câu (bỏ chỗ trống) với câu có sẵn, kể cả đề có ___ của phần luyện / quiz.
+      for (const text of [words(filled(card.cloze, card.answer)), words(card.cloze)]) {
+        const hit = taken.find((t) => near(text, t))
+        if (hit) problems.push(`${card.id}: "${text.join(' ')}" ~ "${hit.join(' ')}"`)
+      }
+    }
+    expect(problems).toEqual([])
+  })
+
+  it('15 nhóm động từ, gộp lại đúng 50 động từ của baseline theo thứ tự; cỡ nhóm theo bảng', () => {
+    const BASELINE = [
+      'be', 'have', 'do', 'go', 'get', 'make', 'see', 'know', 'take', 'give', 'come', 'become', 'say', 'pay', 'tell', 'sell',
+      'think', 'bring', 'buy', 'teach', 'catch', 'leave', 'feel', 'keep', 'sleep', 'mean', 'lose', 'send', 'spend', 'build',
+      'meet', 'hear', 'begin', 'drink', 'swim', 'sing', 'run', 'sit', 'find', 'understand', 'write', 'drive', 'speak', 'break',
+      'choose', 'forget', 'eat', 'fall', 'put', 'read',
+    ]
+    expect(IRREGULAR_VERB_GROUPS).toHaveLength(15)
+    expect(IRREGULAR_VERB_GROUPS.flatMap((g) => g.verbs).map((v) => v.v1)).toEqual(BASELINE)
+    expect(IRREGULAR_VERB_GROUPS.flatMap((g) => g.verbs)).toEqual(IRREGULAR_VERBS)
+    expect(IRREGULAR_VERB_GROUPS.map((g) => g.verbs.length)).toEqual([7, 3, 2, 2, 2, 5, 6, 3, 2, 4, 1, 1, 2, 8, 2])
+    expect(IRREGULAR_VERB_GROUPS.map((g) => g.id)).toEqual([
+      'core', 'n-en', 'come', 'ay-aid', 'ell-old', 'ought', 'long-short-t', 'd-t', 'long-short', 'i-a-u', 'u-a-u', 'i-a',
+      'ind-ound', 'vowel-en', 'same',
+    ])
+    for (const g of IRREGULAR_VERB_GROUPS) expect(g.title.trim(), g.id).not.toBe('')
+  })
+
+  it('IRREGULAR_VERB_CARDS: 50 thẻ theo thứ tự nhóm, id không trùng nhau và không trùng thẻ thì / viên gạch; golden go, be, read', () => {
+    expect(IRREGULAR_VERB_CARDS).toHaveLength(50)
+    expect(IRREGULAR_VERB_CARDS.map((c) => c.id)).toEqual(IRREGULAR_VERBS.map((v) => `irregular-${v.v1}-rule-1`))
+    const others = new Set([
+      ...cardsOf().map(({ card }) => card.id),
+      ...BRICK_IDS.flatMap((id) => (getBrick(id)?.ruleCards ?? []).map((r) => r.id)),
+    ])
+    expect(new Set(IRREGULAR_VERB_CARDS.map((c) => c.id)).size).toBe(50)
+    for (const c of IRREGULAR_VERB_CARDS) {
+      expect(others.has(c.id), c.id).toBe(false)
+      expect(c.cloze.split('___'), c.id).toHaveLength(2)
+    }
+    const card = (v1: string) => IRREGULAR_VERB_CARDS.find((c) => c.id === `irregular-${v1}-rule-1`)
+    expect(card('go')).toEqual({
+      id: 'irregular-go-rule-1',
+      groupId: 'core',
+      groupTitle: 'Rất thông dụng, mỗi từ một kiểu: học thuộc',
+      cloze: 'go → ___ (V2 · V3)',
+      answer: 'went · gone',
+      vi: 'đi · Nhóm: Rất thông dụng, mỗi từ một kiểu: học thuộc',
+    })
+    expect(card('be')?.answer).toBe('was / were · been')
+    expect(card('read')).toMatchObject({
+      answer: 'read · read',
+      vi: 'đọc (V2, V3 đọc /red/) · Nhóm: Giữ nguyên chữ cả ba cột: put – put – put',
+    })
+  })
+
+  it('s1-t3-w3 mở đầu bằng bảng ôn V3 (IRREGULAR_VERBS); s1-t2-w3 chỉ có bảng đầy đủ', () => {
+    expect(content('s1-t3-w3').grammar!.irregularVerbsReview).toBe(IRREGULAR_VERBS)
+    expect(content('s1-t3-w3').grammar!.tenses.map((t) => t.id)).toEqual(['present-perfect'])
+    expect(content(IRREGULAR_VERBS_LESSON_ID).grammar!.irregularVerbsReview).toBeUndefined()
+    expect(content(IRREGULAR_VERBS_LESSON_ID).grammar!.irregularVerbs).toBe(IRREGULAR_VERBS)
+    expect(LESSON_CONTENTS.filter((c) => c.grammar?.irregularVerbsReview).map((c) => c.lessonId)).toEqual(['s1-t3-w3'])
   })
 })

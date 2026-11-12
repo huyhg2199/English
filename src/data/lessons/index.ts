@@ -37,7 +37,10 @@ import type { LessonContent, Tense, TenseRuleCard } from './types'
 
 export * from './types'
 export { getSpell, SPELLS } from './spells'
-export { IRREGULAR_VERBS } from './irregular-verbs'
+export { IRREGULAR_VERB_CARDS, IRREGULAR_VERB_GROUPS, IRREGULAR_VERBS } from './irregular-verbs'
+
+/** Bài có bảng động từ bất quy tắc; thẻ ôn V2 · V3 mở khi Huy tới bài này (story 38). */
+export const IRREGULAR_VERBS_LESSON_ID = 's1-t2-w3'
 
 const rp = (vi: string, topicEn: string, scenario: string) => ({ roleplay: { vi, topicEn, scenario } })
 
