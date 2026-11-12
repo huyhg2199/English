@@ -210,3 +210,12 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/46-past-continuous-stage-1.md`
   summary: Trang bài `#/roadmap/lesson/s1-t2-w4` có cuộn ngang ở 375px: 4 nút "Xem IPA" (phần ôn IPA, `whitespace-nowrap`) tràn ra tới x 391, nên `scrollWidth` = 391.
   evidence: Kiểm tay story 46 bằng Chrome headless (CDP, 375px, đã bỏ qua Sân ga): lỗi có y nguyên ở HEAD `5e4a860` (chạy lại trên worktree HEAD), không do story 46; s1-t2-w3 không bị. `layout:check` không mở route s1-t2-w4 nên chưa bắt được. Cần cho các nút "Xem IPA" xuống dòng / co lại, rồi thêm `/roadmap/lesson/s1-t2-w4` vào `ROUTES` của `scripts/layout/check-lib.mjs` (đổi baseline, nên làm ở story layout).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/42-tense-map.md`
+  summary: Link "Sổ lỗi: n câu chưa thuộc" trên Bản đồ thì mở Sổ lỗi chung, không lọc theo bài / nhãn `thì`, và "ôn n câu Sổ lỗi" không nói câu nào đến hạn hôm nay.
+  evidence: Review story 42 (blind). `src/pages/Mistakes.tsx` không có bộ lọc bài (có từ trước story 42); câu chỉ "thuộc" khi khoảng ôn ≥ 21 ngày nên không ôn xong trong một lần. Lần sửa Sổ lỗi tới có thể nhận `?lesson=<id>&tag=thì` và Bản đồ thì đổi link sang đó.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/42-tense-map.md`
+  summary: Bản đồ thì tính % kiểm tra và Sổ lỗi theo bài, không theo từng thì: bài hai thì (s1-t2-w2, s1-t4-w3) chung số, lỗi của thì này chặn thì kia khỏi "chắc", và % lẫn câu phát âm / từ vựng.
+  evidence: Review story 42 (blind). Decisions story 42 chọn tính theo bài (đã ghi ở trang và `learning-rules.md`). Câu đã có nhãn `thì` và `requires` nên có thể tách điểm / lỗi theo thì nếu Huy muốn "báo theo từng thì" chặt hơn.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/42-tense-map.md`
+  summary: (Chưa kiểm chứng, nếu đúng: medium) Mục Sổ lỗi nhãn `thì` của câu đã bị gỡ khỏi kho câu hỏi vẫn được đếm là "chưa thuộc" nhưng `reviewableDue` bỏ qua, nên thì đó không bao giờ thành "chắc".
+  evidence: Review story 42 (edge). `openMistakesByLesson` không kiểm `getQuestion(id)`. Cần dò `mistakes.items` của store thật (hoặc lịch sử đổi id câu hỏi) xem có id không tra được; nếu có, bỏ qua mục đó khi đếm (cùng luật với `reviewableDue`) hoặc dọn mục mồ côi.

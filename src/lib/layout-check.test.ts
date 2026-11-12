@@ -66,7 +66,8 @@ describe('layout:check — danh sách', () => {
     ])
     expect(ROUTES).toContain('/')
     expect(ROUTES).toContain('/foundation/F01')
-    expect(ROUTES).toHaveLength(12)
+    expect(ROUTES).toContain('/practice/tense-map')
+    expect(ROUTES).toHaveLength(13)
   })
 })
 
@@ -228,9 +229,17 @@ describe('layout:check — layoutProblems', () => {
 })
 
 describe('layout:check — cột phụ hai cột (story 30)', () => {
-  it('WIDE_ROUTES: Hôm nay, Lộ trình (story 31), bài, link sâu, viên gạch, buổi học; mốc dính 16px', () => {
+  it('WIDE_ROUTES: Hôm nay, Lộ trình (story 31), bài, link sâu, viên gạch, buổi học, Bản đồ thì (story 42); mốc dính 16px', () => {
     expect([...WIDE_ROUTES].sort()).toEqual(
-      ['/', '/roadmap', '/foundation/F01', '/roadmap/lesson/s1-t1-w1', '/roadmap/lesson/s1-t1-w1/vocabulary', '/session'].sort(),
+      [
+        '/',
+        '/roadmap',
+        '/foundation/F01',
+        '/roadmap/lesson/s1-t1-w1',
+        '/roadmap/lesson/s1-t1-w1/vocabulary',
+        '/session',
+        '/practice/tense-map',
+      ].sort(),
     )
     expect(EXPECTED.railStickyOffset).toBe(16)
   })
@@ -307,8 +316,12 @@ describe('layout:check — lưới 2 cột Hôm nay / Lộ trình (story 31)', (
     grid: columns === null ? null : { selector: GRID_LANDMARKS['/'], columns },
   })
 
-  it('GRID_LANDMARKS: Hôm nay và Lộ trình, đều là route wide', () => {
-    expect(GRID_LANDMARKS).toEqual({ '/': 'main > section', '/roadmap': 'main section[aria-labelledby^="stage-"]' })
+  it('GRID_LANDMARKS: Hôm nay, Lộ trình và Bản đồ thì (story 42), đều là route wide', () => {
+    expect(GRID_LANDMARKS).toEqual({
+      '/': 'main > section',
+      '/roadmap': 'main section[aria-labelledby^="stage-"]',
+      '/practice/tense-map': 'main > section',
+    })
     for (const route of Object.keys(GRID_LANDMARKS)) expect(WIDE_ROUTES).toContain(route)
   })
 

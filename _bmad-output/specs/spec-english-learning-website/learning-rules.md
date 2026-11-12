@@ -119,6 +119,13 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 - **Từ tín hiệu và chọn thì (story 39, 44, 45):** mỗi thì có mốc thời gian hiện hàng chip từ tín hiệu. Khối "Hỏi tại sao, bao lâu một lần, bao nhiêu" (s1-t1-w3, why / how often / how many / how much với do / does), "Đơn hay tiếp diễn?" (s1-t2-w1), "Câu hỏi chủ ngữ: Who called? hay Who did you call?" (s1-t2-w2), "will hay going to?" (s1-t3-w2), "Đừng dịch từng chữ: đã · sẽ · chưa" (s1-t3-w4), "Phải, không cần, được không, muốn: have to, could, would like" (s1-t4-w1, story 45) có dòng thời gian cạnh nhau / bảng chữ Việt, cặp câu dễ nhầm và phần luyện như phần luyện của thì (không ghi Sổ lỗi). Ôn tổng s1-t4-w4 có bảng mỗi thì một dòng và luật chung trợ động từ.
 - Mini test và ôn trộn (story 40): mini-t3 (s1-t3-w4) có 2/10 câu ôn thì T1–T2; 'Ôn trộn mọi thì' 20 câu trước O.W.L. 1; tuần Tết có ôn nhẹ 5 câu thì + Sổ lỗi, tuỳ chọn.
 
+## Bản đồ thì (story 42, CAP-7, CAP-11, CAP-19)
+
+- Trang `/practice/tense-map`, lối vào là thẻ "Bản đồ thì" trên trang Luyện tập (ngay sau O.W.L. 1). Mỗi thì Năm 1 một dòng (15 thì, theo thứ tự bài, nhóm theo tháng T1–T4).
+- **Các số:** kiểm tra bài tốt nhất (quiz bài `lesson-<id>`, mọi lần làm kể cả ở trang test; mini test, ôn trộn, O.W.L., test quay lại không tính); thẻ quy tắc của chính thì đã nhớ (khoảng ôn từ 7 ngày, không đang học lại) / đến hạn; câu Sổ lỗi nhãn `thì` của bài chưa thuộc (khoảng ôn < 21 ngày). Điểm kiểm tra và Sổ lỗi tính theo bài, nên bài hai thì có hai dòng cùng số. Dòng quá khứ đơn bất quy tắc có thêm số thẻ động từ bất quy tắc đã mở / đã nhớ (chỉ để xem).
+- **Chắc** = bài đã đánh dấu xong, kiểm tra bài từ 70%, mọi thẻ quy tắc của thì đã nhớ (thì không có thẻ riêng thì coi như đạt), không còn câu Sổ lỗi chưa thuộc. **Chưa học** = chưa có dấu hiệu nào: bài chưa xong, không phải bài hiện tại (chỉ tính khi đã ra khỏi Sân ga), chưa làm kiểm tra bài, không có lỗi chưa thuộc, không có thẻ nào vào lịch. **Đang học** = còn lại, kèm câu "Để chắc: …" (đánh dấu bài xong → kiểm tra bài đạt 70% → ôn Sổ lỗi → ôn thẻ).
+- Chỉ để xem: không khoá, không ẩn thì "chưa học" (luôn có "Xem bài"), không ghi gì vào store. Thì đã bắt đầu có link "Buổi ôn 30'" (buổi bài ghim `?lesson=`, bước Bài chính) và "Làm kiểm tra" khi chưa đạt 70%.
+
 ## Tab Luyện tập (Đợt 1)
 
-Ôn flashcard, luyện phát âm, ôn Sổ lỗi, link luyện nói.
+Ôn flashcard, luyện phát âm, ôn Sổ lỗi, link luyện nói, Bản đồ thì.

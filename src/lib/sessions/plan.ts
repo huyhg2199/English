@@ -192,6 +192,16 @@ export function resolveSessionPlan(params: SessionParams, store: Store, hasConte
 }
 
 /**
+ * Link buổi 30' ghim bài `lessonId`, mở ở bước Bài chính (Bản đồ thì, story 42): `/session?lesson=<id>&step=lesson`.
+ * `resolveSessionPlan` đọc `?lesson=` thành buổi bài đó (kể cả khi đang ở Sân ga); phần của đoạn Phát âm (`?part=`) không
+ * ghi ở đây mà do `resolveSessionPlan` tự chọn (phần chưa xem đầu tiên). Bài T1 chia phần chưa xem hết thì buổi là buổi
+ * học phần đó, chưa có thẻ kiểm tra cuối Bài chính (`sessionCheckQuizId`, story 41); Bản đồ thì vẫn có nút "Làm kiểm tra".
+ */
+export function lessonSessionHref(lessonId: string): string {
+  return `/session?${new URLSearchParams({ lesson: lessonId, step: 'lesson' }).toString()}`
+}
+
+/**
  * Quiz kiểm tra cuối bước Bài chính của buổi (story 41): quiz bài `lesson-<id>` khi buổi là buổi bài, bài có quiz bài, và
  * buổi học cả bài (`partId` null: bài không chia phần hoặc buổi ôn cả tuần) hoặc phần cuối của bài. Buổi học phần 1, 2 của
  * bài T1 chia phần thì chưa học hết bài nên chưa kiểm tra; buổi Sân ga, hết lộ trình hay bài không có quiz → null.

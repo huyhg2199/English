@@ -3,6 +3,7 @@ import {
   BookX,
   ChevronRight,
   ClipboardCheck,
+  Compass,
   GraduationCap,
   HardDriveDownload,
   Layers,
@@ -15,6 +16,7 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
 import {
+  useLoadedStore,
   useMistakes,
   useNewWordList,
   useNewWordOptions,
@@ -34,6 +36,7 @@ import { buildStudySession, flashcardSummary } from '@/lib/flashcard-session'
 import { OWL_HREF, partPercent } from '@/lib/owl'
 import { listMistakes, reviewableDue } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
+import { tenseMapBlurb, tenseMapRows } from '@/lib/tense-map'
 
 function FlashcardSummary() {
   const wordsState = useWords()
@@ -96,6 +99,13 @@ function OwlSummary() {
   const last = attempts[0]
   const passes = attempts.filter((a) => a.passed).length
   return `Đã thi ${attempts.length} lần${passes > 0 ? ` · qua ${passes} lần` : ''} · gần nhất ${last.passed ? 'qua' : 'chưa qua'} (phát âm ${partPercent(last.details.pronunciation)}%, thì ${partPercent(last.details.tenses)}%${last.details.selfGraded ? ', có phần tự chấm' : ''})`
+}
+
+/** Tóm tắt Bản đồ thì (story 42): số thì chắc / đang học / chưa học. */
+function TenseMapSummary() {
+  const { store } = useLoadedStore()
+  const [now] = useNow()
+  return useMemo(() => tenseMapBlurb(tenseMapRows(store, now)), [store, now])
 }
 
 /** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */
@@ -186,6 +196,10 @@ export function Practice() {
 
       <PracticeLink to={OWL_HREF} icon={GraduationCap} title="O.W.L. 1">
         <OwlSummary />
+      </PracticeLink>
+
+      <PracticeLink to="/practice/tense-map" icon={Compass} title="Bản đồ thì">
+        <TenseMapSummary />
       </PracticeLink>
 
       <SpellList />

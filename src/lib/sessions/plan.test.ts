@@ -12,6 +12,7 @@ import {
   lazyFoundationBrick,
   LEGACY_STEP_MAP,
   LESSON_STEPS,
+  lessonSessionHref,
   lockTheory,
   markSessionPartSeen,
   readSessionDays,
@@ -492,5 +493,45 @@ describe('sessionCheckQuizId — thẻ kiểm tra cuối Bài chính (story 41)'
     const { plan } = resolveSessionPlan({ brick: 'F03', step: 'theory' }, done(['F01', 'F02']), hasContent)
     expect(plan.mode).toBe('foundation')
     expect(sessionCheckQuizId(plan)).toBeNull()
+  })
+})
+
+describe('lessonSessionHref — link buổi ôn 30\' của Bản đồ thì (story 42)', () => {
+  /** Đọc lại tham số của link như trang buổi học. */
+  const paramsOf = (href: string) => {
+    const [path, query] = href.split('?')
+    const q = new URLSearchParams(query)
+    return { path, params: { lesson: q.get('lesson'), step: q.get('step'), brick: q.get('brick'), part: q.get('part') } }
+  }
+
+  it('chuỗi link: /session?lesson=<id>&step=lesson', () => {
+    expect(lessonSessionHref('s1-t2-w1')).toBe('/session?lesson=s1-t2-w1&step=lesson')
+  })
+
+  it('resolveSessionPlan đọc lại ra buổi bài đó, bước Bài chính (sau Sân ga và khi đang ở Sân ga)', () => {
+    const inFoundation = empty()
+    expect(isInFoundation(inFoundation)).toBe(true)
+    for (const s of [skipFoundation(empty(), day(1)), inFoundation]) {
+      const { path, params } = paramsOf(lessonSessionHref('s1-t2-w1'))
+      expect(path).toBe('/session')
+      const r = resolveSessionPlan(params, s, hasContent)
+      expect(r.plan.mode).toBe('lesson')
+      expect(r.plan.mode === 'lesson' && r.plan.lesson?.lesson.id).toBe('s1-t2-w1')
+      expect(r.stepIndex).toBe(0)
+      expect(r.plan.steps[r.stepIndex].id).toBe('lesson')
+      expect(r.search).toEqual({ lesson: 's1-t2-w1', step: 'lesson' })
+    }
+  })
+  it('bài T1 chia phần: link mở phần chưa xem đầu tiên (chưa có thẻ kiểm tra); xem hết phần thì có thẻ kiểm tra', () => {
+    const W1 = 's1-t1-w1'
+    const { params } = paramsOf(lessonSessionHref(W1))
+    let s = skipFoundation(empty(), day(1))
+    const first = resolveSessionPlan(params, s, hasContent)
+    expect(first.plan).toMatchObject({ mode: 'lesson', partId: `${W1}-p1` })
+    expect(sessionCheckQuizId(first.plan)).toBeNull()
+    for (const n of [1, 2, 3]) s = markLessonPartSeen(s, W1, `${W1}-p${n}`)
+    const all = resolveSessionPlan(params, s, hasContent)
+    expect(all.plan).toMatchObject({ mode: 'lesson', partId: null })
+    expect(sessionCheckQuizId(all.plan)).toBe(`lesson-${W1}`)
   })
 })

@@ -175,6 +175,20 @@ export function allTenses(): Tense[] {
   return LESSON_CONTENTS.flatMap((c) => c.grammar?.tenses ?? [])
 }
 
+export type TenseEntry = { lessonId: string; tense: Tense }
+
+const TENSE_ENTRIES: readonly TenseEntry[] = LESSON_CONTENTS.flatMap((c) =>
+  (c.grammar?.tenses ?? []).map((tense) => ({ lessonId: c.lessonId, tense })),
+)
+
+/**
+ * Mọi thì đã soạn kèm bài chứa nó (Bản đồ thì, story 42): theo thứ tự `LESSON_CONTENTS` (thứ tự bài) rồi thứ tự thì trong
+ * bài. Dựng một lần lúc nạp module. Khối "Chọn thì" không phải thì nên không có ở đây.
+ */
+export function tenseEntries(): readonly TenseEntry[] {
+  return TENSE_ENTRIES
+}
+
 /** Mọi khối "Chọn thì" (story 39), theo thứ tự bài. */
 export function allTenseChoices(): TenseChoice[] {
   return LESSON_CONTENTS.flatMap((c) => c.grammar?.choices ?? [])
