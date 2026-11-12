@@ -3,7 +3,16 @@ import { describe, expect, it, vi } from 'vitest'
 import { completeBrick, createDefaultFoundation, finishPlacement, foundationState, markRowTested, readFoundation, resumeFoundation, skipFoundation } from '@/lib/foundation'
 import { markLessonPartSeen, readCompletedLessonIds, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { getQuestion } from '@/data/questions'
-import { dismissBrickInvite, gradeAttempt, listAttempts, readBrickInvites, readMistakes, recordAttempt } from '@/lib/quiz'
+import {
+  dismissBrickInvite,
+  dismissLessonInvite,
+  gradeAttempt,
+  listAttempts,
+  readBrickInvites,
+  readLessonInvites,
+  readMistakes,
+  recordAttempt,
+} from '@/lib/quiz'
 import { createNote, deleteNote, listNotes, readNotes } from '@/lib/notes'
 import { deleteSavedWord, readSavedWords, saveWord, savedWordId } from '@/lib/saved-words'
 import { readSessionDays, recordSession } from '@/lib/sessions'
@@ -641,6 +650,35 @@ describe('phần bài T1 và "Để sau" của lời mời ôn viên trong sao l
     expect((parsed.backup.data.mistakes as { brickInvites: object }).brickInvites).toEqual({ F09: { dismissedAt: t, updatedAt: t } })
     const odd = parseBackup(JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: t, data: { mistakes: { items: {}, brickInvites: [1] } } }))
     expect(odd.ok && odd.backup.data.mistakes).toEqual({ items: {}, brickInvites: {} })
+    const none = parseBackup(JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: t, data: { mistakes: { items: {} } } }))
+    expect(none.ok && none.backup.data.mistakes).toEqual({ items: {} })
+  })
+})
+
+describe('"Để sau" của lời mời ôn bài thì trong sao lưu (story 41)', () => {
+  it('lessonInvites hợp lệ được giữ khi khôi phục, gộp lấy dismissedAt muộn hơn; brickInvites như cũ; schemaVersion không đổi', () => {
+    let s = dismissLessonInvite(empty(), 's1-t2-w2', T1)
+    s = dismissBrickInvite(s, 'F09', T1)
+    const backup = roundTrip(s)
+    expect(backup.schemaVersion).toBe(CURRENT_VERSION)
+    const r = restoreBackup(empty(), backup)
+    expect(readLessonInvites(r.store)).toEqual({ 's1-t2-w2': { dismissedAt: T1.toISOString(), updatedAt: T1.toISOString() } })
+    expect(readBrickInvites(r.store)).toEqual({ F09: { dismissedAt: T1.toISOString(), updatedAt: T1.toISOString() } })
+    const later = dismissLessonInvite(empty(), 's1-t2-w2', T2)
+    expect(readLessonInvites(restoreBackup(later, backup).store)['s1-t2-w2']).toMatchObject({ dismissedAt: T2.toISOString() })
+  })
+
+  it('id lạ (bài không có, viên fNN), mục hỏng và __proto__ trong lessonInvites bị bỏ; sai dạng → rỗng; không có thì không thêm', () => {
+    const t = T1.toISOString()
+    const good = JSON.stringify({ dismissedAt: t, updatedAt: t })
+    const text =
+      '{"app":"lumos-english","kind":"backup","schemaVersion":' + CURRENT_VERSION + ',"exportedAt":"' + t + '","data":{"mistakes":{"items":{},' +
+      '"lessonInvites":{"s1-t2-w2":' + good + ',"s9-t9-w9":' + good + ',"f13":' + good + ',"s1-t2-w1":{"dismissedAt":"x","updatedAt":"' + t + '"},"__proto__":' + good + '}}}}'
+    const parsed = parseBackup(text)
+    if (!parsed.ok) throw new Error(parsed.message)
+    expect((parsed.backup.data.mistakes as { lessonInvites: object }).lessonInvites).toEqual({ 's1-t2-w2': { dismissedAt: t, updatedAt: t } })
+    const odd = parseBackup(JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: t, data: { mistakes: { items: {}, lessonInvites: 'x' } } }))
+    expect(odd.ok && odd.backup.data.mistakes).toEqual({ items: {}, lessonInvites: {} })
     const none = parseBackup(JSON.stringify({ app: 'lumos-english', kind: 'backup', schemaVersion: CURRENT_VERSION, exportedAt: t, data: { mistakes: { items: {} } } }))
     expect(none.ok && none.backup.data.mistakes).toEqual({ items: {} })
   })

@@ -3,6 +3,7 @@ import type { BrickId } from './types'
 /**
  * Bảng thuật ngữ (story 26): chữ thuật ngữ trong lời tiếng Việt của thẻ thì (`TenseCard`) và bảng âm (`SoundTable`)
  * thành chip bấm được, mở thẻ tóm tắt viên gạch đã dạy nó. Không khoá theo tiến độ. Định nghĩa tự soạn (≤ 25 chữ).
+ * Mục có thể là tên gọi tắt (V-ing / V2 / V3, story 39) mà viên đích có nhắc tới. Mục chỉ trỏ viên gạch, không trỏ bài.
  *
  * Cố ý không re-export từ `./index` (như `./content`): chỉ trang bài cần.
  *
@@ -109,6 +110,23 @@ export const GLOSSARY: readonly GlossaryTerm[] = [
     'Dạng ghi trong từ điển, không có to, chưa thêm -s, -ing hay đổi dạng: go, work.',
   ),
   term('past', 'Quá khứ', 'F17', ['quá khứ'], 'Thời gian đã qua. Động từ đổi dạng để nói việc đã xảy ra: go thành went.'),
+  // Story 39: tên gọi tắt các dạng động từ và trợ động từ (F17 dạy go / going / went / gone, có chèn tên gọi tắt).
+  term(
+    'auxiliary',
+    'Trợ động từ',
+    'F17',
+    ['trợ động từ'],
+    'Từ nhận not và đổi lên đầu câu hỏi: am / is / are, was / were, do / does / did, will, have / has, can.',
+  ),
+  term('v-ing', 'V-ing', 'F17', ['V-ing'], 'Động từ thêm -ing (going, working), dùng sau am / is / are trong thì tiếp diễn, sau was / were trong quá khứ tiếp diễn.'),
+  term(
+    'v2',
+    'V2 (quá khứ)',
+    'F17',
+    ['V2'],
+    'Dạng quá khứ đơn của động từ: có quy tắc thêm -ed (worked), bất quy tắc phải thuộc (went).',
+  ),
+  term('v3', 'V3', 'F17', ['V3'], 'Dạng thứ 3 của động từ, dùng sau have / has: worked, gone, seen.'),
   // F18
   term(
     'frequency-adverb',

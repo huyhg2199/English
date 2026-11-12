@@ -127,7 +127,8 @@ describe('phần của đoạn Phát âm (story 28)', () => {
     for (const c of LESSON_CONTENTS) {
       if ((SPLIT as readonly string[]).includes(c.lessonId)) continue
       expect(c.parts, c.lessonId).toBeUndefined()
-      expect(lessonPartIds(c.lessonId), c.lessonId).toEqual([])
+      // Story 47: bài T2–T4 chia Ngữ pháp theo ngày thì lessonPartIds trả id ngày; bài không chia → [].
+      expect(lessonPartIds(c.lessonId), c.lessonId).toEqual(c.grammarDays?.map((d) => d.id) ?? [])
     }
     expect(lessonPartIds('khong-co')).toEqual([])
   })

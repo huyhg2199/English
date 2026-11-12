@@ -48,16 +48,17 @@ export type CustomStudyWord = {
 }
 
 /**
- * Tiền tố id thẻ SRS của thẻ quy tắc: thẻ viên gạch `rule:fNN-n` (story 24) và thẻ của thì trong bài Chặng 1
- * `rule:<tenseId>-n` (story 33).
+ * Tiền tố id thẻ SRS của thẻ quy tắc: thẻ viên gạch `rule:fNN-n` (story 24), thẻ của thì trong bài Chặng 1
+ * `rule:<tenseId>-n` (story 33) và thẻ động từ bất quy tắc `rule:irregular-<v1>-1` (story 38).
  */
 export const RULE_CARD_PREFIX = 'rule:'
 
 /**
- * Thẻ quy tắc (thẻ điền chỗ trống): của viên gạch (story 24, id `rule:fNN-n` từ id nội dung `fNN-rule-n`, có `brickId`)
- * hoặc của thì trong bài (story 33, id `rule:<tenseId>-n` từ `<tenseId>-rule-n`, có `lessonId`); mỗi thẻ có đúng một
- * trong hai trường. Cùng shape `SrsCard` và thuật toán như thẻ từ; không tính quota từ mới, không phải thẻ Làm quen,
- * không có "Đã biết".
+ * Thẻ quy tắc (thẻ điền chỗ trống): của viên gạch (story 24, id `rule:fNN-n` từ id nội dung `fNN-rule-n`, có `brickId`),
+ * của thì trong bài (story 33, id `rule:<tenseId>-n` từ `<tenseId>-rule-n`, có `lessonId`) hoặc của động từ bất quy tắc
+ * (story 38, id `rule:irregular-<v1>-1` từ `irregular-<v1>-rule-1`, có `lessonId: 's1-t2-w3'` và `verbGroup`); mỗi thẻ có
+ * đúng một trong hai trường `brickId` / `lessonId`. Cùng shape `SrsCard` và thuật toán như thẻ từ; không tính quota từ mới,
+ * không phải thẻ Làm quen, không có "Đã biết".
  */
 export type RuleStudyWord = {
   id: string
@@ -66,8 +67,10 @@ export type RuleStudyWord = {
   word: string
   /** Viên gạch chứa thẻ (`F01`…); chỉ thẻ viên gạch có. */
   brickId?: string
-  /** Bài chứa thì của thẻ (`s1-t2-w2`…); chỉ thẻ của thì có. */
+  /** Bài chứa thì của thẻ (`s1-t2-w2`…), hoặc bài có bảng động từ (`s1-t2-w3`) với thẻ động từ; thẻ viên gạch không có. */
   lessonId?: string
+  /** Tên nhóm âm của động từ bất quy tắc (story 38); chỉ thẻ động từ có, luôn đi cùng `lessonId`. */
+  verbGroup?: string
   /** Câu có đúng một chỗ trống `___`. */
   cloze: string
   answer: string

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowLeft, GraduationCap, Loader2 } from 'lucide-react'
+import { ArrowLeft, ClipboardCheck, GraduationCap, Loader2 } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { useLoadedStore, useOwl } from '@/app/store-context'
@@ -12,16 +12,18 @@ import { OwlResult } from '@/components/owl/OwlResult'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { QUESTION_BANK, type Question } from '@/data/questions'
+import { OWL_QUESTIONS, quizHref, type Question } from '@/data/questions'
 import { STAGES } from '@/data/roadmap'
 import type { Word } from '@/data/vocab'
 import {
   gradeOwl,
+  gradeOwlTopics,
+  OWL_CONTRAST_COUNT,
+  OWL_PER_TOPIC,
   OWL_PRONUNCIATION_SIZE,
   OWL_QUIZ_ID,
   OWL_TENSES_SIZE,
   owlPassed,
-  owlTensePool,
   partPercent,
   pickOwlPronunciation,
   pickOwlTenses,
@@ -38,7 +40,7 @@ function randomPart(): string {
 
 const checkpoint = STAGES[0].checkpoint
 
-/** Phần thì: 20 câu trắc nghiệm, chọn xong hiện đúng/sai ngay (dùng lại thẻ câu hỏi của engine test). */
+/** Phần thì: 20 câu chọn hoặc gõ, trả lời xong hiện đúng/sai ngay (dùng lại thẻ câu hỏi của engine test). */
 function TensesPart({
   questions,
   seed,
@@ -115,7 +117,7 @@ function OwlRun({ words, onRetry }: { words: readonly Word[]; onRetry: () => voi
       seed,
       startedAt: new Date(),
       words: pickOwlPronunciation(store, words, seed),
-      questions: pickOwlTenses(QUESTION_BANK, seed),
+      questions: pickOwlTenses(OWL_QUESTIONS, seed),
     }
   })
   const [step, setStep] = useState<Step>('ets')
@@ -202,6 +204,7 @@ function OwlRun({ words, onRetry }: { words: readonly Word[]; onRetry: () => voi
       <OwlResult
         selfGraded={pron?.selfGraded ?? false}
         scores={scores}
+        topics={gradeOwlTopics(finished.answers)}
         passed={passed}
         plan={plan}
         words={exam.words}
@@ -251,6 +254,8 @@ function History() {
 /**
  * Kỳ thi O.W.L. 1 (story 14): ETS (tham khảo) → 30 từ đọc theo IPA → 20 câu thì. Qua khi từng phần phát âm và thì
  * ≥ 70%. Vào từ đoạn kiểm tra bài `s1-t4-w4` và từ Luyện tập; không khoá theo tiến độ.
+ * Story 40: phần thì bốc từ kho câu riêng (`OWL_QUESTIONS`, mỗi thì 2 câu, có câu chọn giữa hai thì dễ nhầm, có câu gõ),
+ * kết quả báo điểm từng thì; trước khi thi có lời mời (không bắt buộc) làm "Ôn trộn mọi thì".
  */
 export function Owl() {
   const wordsState = useWords()
@@ -262,7 +267,7 @@ export function Owl() {
       wordsState.status === 'ready'
         ? {
             words: pickOwlPronunciation(store, wordsState.words, 'probe').length,
-            questions: Math.min(OWL_TENSES_SIZE, owlTensePool(QUESTION_BANK).length),
+            questions: pickOwlTenses(OWL_QUESTIONS, 'probe').length,
           }
         : null,
     [store, wordsState],
@@ -299,8 +304,22 @@ export function Owl() {
               <ol className="list-decimal space-y-1 pl-5">
                 <li>Đề mẫu ETS Part 1, 2, 5 làm ngoài app, nhập số câu đúng (chỉ để tham khảo).</li>
                 <li>{OWL_PRONUNCIATION_SIZE} từ trong thẻ bạn đã học: nhìn IPA và đọc to.</li>
-                <li>{OWL_TENSES_SIZE} câu trắc nghiệm chia thì của chặng 1.</li>
+                <li>
+                  {OWL_TENSES_SIZE} câu thì của chặng 1 (chọn hoặc gõ), mỗi thì {OWL_PER_TOPIC} câu, có {OWL_CONTRAST_COUNT} câu
+                  chọn giữa hai thì dễ nhầm, kết quả báo từng thì.
+                </li>
               </ol>
+              <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <ClipboardCheck className="size-4 shrink-0 text-primary" aria-hidden="true" />
+                <span>Khởi động:</span>
+                <Link
+                  to={quizHref('mix-s1')}
+                  className="inline-flex min-h-9 items-center text-primary underline-offset-4 hover:underline"
+                >
+                  Ôn trộn mọi thì (20 câu)
+                </Link>
+                <span className="text-muted-foreground">· không bắt buộc</span>
+              </p>
               <p className="text-muted-foreground">
                 Qua cửa khi phần phát âm và phần thì đều đúng ≥ 70% (tính riêng từng phần). Câu sai tự vào Sổ lỗi sai của
                 Snape. {checkpoint.ifNotPassed}

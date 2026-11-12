@@ -12,12 +12,14 @@ import {
   lazyFoundationBrick,
   LEGACY_STEP_MAP,
   LESSON_STEPS,
+  lessonSessionHref,
   lockTheory,
   markSessionPartSeen,
   readSessionDays,
   recordSession,
   resolveSessionPlan,
   reviewNote,
+  sessionCheckQuizId,
   SESSION_MINUTES,
   sessionLesson,
   sessionPlan,
@@ -406,7 +408,7 @@ describe('phần của buổi bài T1 — I/O Matrix (story 28)', () => {
     })
   })
 
-  it('Bài không chia: bài hiện tại W4 hoặc T2 → không có part, giống trước story', () => {
+  it('Bài không chia: bài hiện tại W4 hoặc s1-t3-w4 → không có part, giống trước story (T2 chia Ngữ pháp theo ngày từ story 47)', () => {
     let s = after()
     for (const id of ['s1-t1-w1', 's1-t1-w2', 's1-t1-w3']) s = setLessonCompleted(s, id, true, day(2))
     const w4 = resolveSessionPlan({}, s, hasContent)
@@ -414,8 +416,8 @@ describe('phần của buổi bài T1 — I/O Matrix (story 28)', () => {
     expect(w4.search).toEqual({ lesson: 's1-t1-w4', step: 'lesson' })
     // part của W1 trên URL buổi W4 → bỏ.
     expect(resolveSessionPlan({ lesson: 's1-t1-w4', part: p(1) }, s, hasContent).search).toEqual({ lesson: 's1-t1-w4', step: 'lesson' })
-    const t2 = resolveSessionPlan({ lesson: 's1-t2-w1', step: 'lesson' }, s, hasContent)
-    expect(t2.search).toEqual({ lesson: 's1-t2-w1', step: 'lesson' })
+    const t3 = resolveSessionPlan({ lesson: 's1-t3-w4', step: 'lesson' }, s, hasContent)
+    expect(t3.search).toEqual({ lesson: 's1-t3-w4', step: 'lesson' })
   })
 
   it('Acceptance: ở W3, 4 buổi liên tiếp "Xong buổi" → Nhóm 1 → 4, buổi thứ 5 ôn cả tuần', () => {
@@ -452,5 +454,165 @@ describe('phần của buổi bài T1 — I/O Matrix (story 28)', () => {
     expect(sessionPlan(inFoundation, hasContent).mode).toBe('foundation')
     const left = skipFoundation(inFoundation, day(3))
     expect(resolveSessionPlan({}, left, hasContent).search).toEqual({ lesson: W1, part: p(1), step: 'lesson' })
+  })
+})
+
+describe('sessionCheckQuizId — thẻ kiểm tra cuối Bài chính (story 41)', () => {
+  const W1 = 's1-t1-w1'
+  const p = (n: number) => `${W1}-p${n}`
+  const after = (): Store => skipFoundation(empty(), day(1))
+
+  it('Thẻ kiểm tra hiện: buổi s1-t3-w4 (bài không chia phần) → lesson-s1-t3-w4', () => {
+    const { plan } = resolveSessionPlan({ lesson: 's1-t3-w4', step: 'lesson' }, after(), hasContent)
+    expect(sessionCheckQuizId(plan)).toBe('lesson-s1-t3-w4')
+  })
+
+  it('Bài chia phần: p1 → null; p3 (phần cuối) → có; đã xem hết (không part) → có', () => {
+    const s = after()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: W1, part: p(1), step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: W1, part: p(2), step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: W1, part: p(3), step: 'lesson' }, s, hasContent).plan)).toBe(
+      `lesson-${W1}`,
+    )
+    let all = s
+    for (const id of [p(1), p(2), p(3)]) all = markLessonPartSeen(all, W1, id)
+    const review = resolveSessionPlan({ lesson: W1, step: 'lesson' }, all, hasContent).plan
+    expect(review).toMatchObject({ partId: null })
+    expect(sessionCheckQuizId(review)).toBe(`lesson-${W1}`)
+  })
+
+  it('Bài không có quiz: Tết s1-t4-w2, bài chặng 2, hết lộ trình → null', () => {
+    const s = after()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: 's1-t4-w2', step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    const stage2 = allLessons().find((l: Lesson) => l.id.startsWith('s2-'))!
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: stage2.id, step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    expect(sessionCheckQuizId({ mode: 'lesson', lesson: null, partId: null, steps: LESSON_STEPS })).toBeNull()
+  })
+
+  it('buổi Sân ga → null', () => {
+    const { plan } = resolveSessionPlan({ brick: 'F03', step: 'theory' }, done(['F01', 'F02']), hasContent)
+    expect(plan.mode).toBe('foundation')
+    expect(sessionCheckQuizId(plan)).toBeNull()
+  })
+})
+
+describe('lessonSessionHref — link buổi ôn 30\' của Bản đồ thì (story 42)', () => {
+  /** Đọc lại tham số của link như trang buổi học. */
+  const paramsOf = (href: string) => {
+    const [path, query] = href.split('?')
+    const q = new URLSearchParams(query)
+    return { path, params: { lesson: q.get('lesson'), step: q.get('step'), brick: q.get('brick'), part: q.get('part') } }
+  }
+
+  it('chuỗi link: /session?lesson=<id>&step=lesson', () => {
+    expect(lessonSessionHref('s1-t2-w1')).toBe('/session?lesson=s1-t2-w1&step=lesson')
+  })
+
+  it('resolveSessionPlan đọc lại ra buổi bài đó, bước Bài chính (sau Sân ga và khi đang ở Sân ga)', () => {
+    const inFoundation = empty()
+    expect(isInFoundation(inFoundation)).toBe(true)
+    for (const s of [skipFoundation(empty(), day(1)), inFoundation]) {
+      const { path, params } = paramsOf(lessonSessionHref('s1-t2-w1'))
+      expect(path).toBe('/session')
+      const r = resolveSessionPlan(params, s, hasContent)
+      expect(r.plan.mode).toBe('lesson')
+      expect(r.plan.mode === 'lesson' && r.plan.lesson?.lesson.id).toBe('s1-t2-w1')
+      expect(r.stepIndex).toBe(0)
+      expect(r.plan.steps[r.stepIndex].id).toBe('lesson')
+      // Story 47: s1-t2-w1 chia Ngữ pháp theo ngày, buổi tự chốt ngày chưa xem đầu tiên.
+      expect(r.search).toEqual({ lesson: 's1-t2-w1', part: 's1-t2-w1-n1', step: 'lesson' })
+    }
+  })
+  it('bài T1 chia phần: link mở phần chưa xem đầu tiên (chưa có thẻ kiểm tra); xem hết phần thì có thẻ kiểm tra', () => {
+    const W1 = 's1-t1-w1'
+    const { params } = paramsOf(lessonSessionHref(W1))
+    let s = skipFoundation(empty(), day(1))
+    const first = resolveSessionPlan(params, s, hasContent)
+    expect(first.plan).toMatchObject({ mode: 'lesson', partId: `${W1}-p1` })
+    expect(sessionCheckQuizId(first.plan)).toBeNull()
+    for (const n of [1, 2, 3]) s = markLessonPartSeen(s, W1, `${W1}-p${n}`)
+    const all = resolveSessionPlan(params, s, hasContent)
+    expect(all.plan).toMatchObject({ mode: 'lesson', partId: null })
+    expect(sessionCheckQuizId(all.plan)).toBe(`lesson-${W1}`)
+  })
+})
+
+describe('Ngữ pháp theo ngày — buổi bài (story 47)', () => {
+  const after = (): Store => skipFoundation(empty(), day(1))
+  const n = (k: number, lesson = 's1-t2-w1') => `${lesson}-n${k}`
+  /** Sau Sân ga, xong mọi bài trước `lessonId`: bài hiện tại là `lessonId`. */
+  const at = (lessonId: string): Store => {
+    let s = after()
+    for (const l of allLessons()) {
+      if (l.id === lessonId) break
+      s = setLessonCompleted(s, l.id, true, day(2))
+    }
+    return s
+  }
+  const seenDays = (s: Store, lessonId: string, ks: readonly number[]) => ks.reduce((acc, k) => markLessonPartSeen(acc, lessonId, n(k, lessonId)), s)
+
+  it('Buổi ngày 1: bài hiện tại s1-t2-w1, partsSeen rỗng → ?lesson=s1-t2-w1&part=s1-t2-w1-n1&step=lesson, không có kiểm tra cuối Bài chính', () => {
+    const r = resolveSessionPlan({}, at('s1-t2-w1'), hasContent)
+    expect(new URLSearchParams(r.search).toString()).toBe('lesson=s1-t2-w1&part=s1-t2-w1-n1&step=lesson')
+    expect(sessionCheckQuizId(r.plan)).toBeNull()
+  })
+
+  it('Buổi ngày 3 (n1, n2 đã xem) → n3; ngày 1–4 không có kiểm tra; ngày 5 có kiểm tra 5 câu; xem hết → không part, có kiểm tra', () => {
+    const s = at('s1-t2-w1')
+    expect(resolveSessionPlan({}, seenDays(s, 's1-t2-w1', [1, 2]), hasContent).plan).toMatchObject({ partId: n(3) })
+    for (const k of [1, 2, 3, 4]) {
+      expect(sessionCheckQuizId(resolveSessionPlan({ lesson: 's1-t2-w1', part: n(k), step: 'lesson' }, s, hasContent).plan), String(k)).toBeNull()
+    }
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: 's1-t2-w1', part: n(5), step: 'lesson' }, s, hasContent).plan)).toBe(
+      'lesson-s1-t2-w1',
+    )
+    const all = seenDays(s, 's1-t2-w1', [1, 2, 3, 4, 5])
+    const review = resolveSessionPlan({}, all, hasContent)
+    expect(review.plan).toMatchObject({ mode: 'lesson', partId: null })
+    expect(review.search).toEqual({ lesson: 's1-t2-w1', step: 'lesson' })
+    expect(sessionCheckQuizId(review.plan)).toBe('lesson-s1-t2-w1')
+  })
+
+  it('URL lạ: part của bài khác (phần T1, ngày bài khác) → bỏ, tính lại từ store', () => {
+    const s = seenDays(at('s1-t2-w1'), 's1-t2-w1', [1])
+    for (const part of ['s1-t1-w1-p1', n(2, 's1-t3-w1'), 'abc']) {
+      expect(resolveSessionPlan({ lesson: 's1-t2-w1', part, step: 'lesson' }, s, hasContent).search, part).toEqual({
+        lesson: 's1-t2-w1',
+        part: n(2),
+        step: 'lesson',
+      })
+    }
+  })
+
+  it('Bài không chia: s1-t3-w4, s1-t4-w3 → không part, kiểm tra mỗi buổi như trước', () => {
+    for (const lessonId of ['s1-t3-w4', 's1-t4-w3']) {
+      const r = resolveSessionPlan({}, at(lessonId), hasContent)
+      expect(r.search, lessonId).toEqual({ lesson: lessonId, step: 'lesson' })
+      expect(sessionCheckQuizId(r.plan), lessonId).toBe(`lesson-${lessonId}`)
+    }
+  })
+
+  it('Xong buổi: buổi part=s1-t3-w1-n2 → thêm n2 vào partsSeen; đã có thì store không đổi', () => {
+    const s = at('s1-t3-w1')
+    const { plan } = resolveSessionPlan({ lesson: 's1-t3-w1', part: n(2, 's1-t3-w1'), step: 'lesson' }, s, hasContent)
+    const marked = markSessionPartSeen(s, plan)
+    expect([...readSeenPartIds(marked, 's1-t3-w1')]).toEqual([n(2, 's1-t3-w1')])
+    expect(markSessionPartSeen(marked, plan)).toBe(marked)
+  })
+
+  it('Acceptance: đang học s1-t3-w1, 5 buổi liên tiếp "Xong buổi" → ngày 1 → 5 (ngày 5 có kiểm tra), buổi thứ 6 ôn cả tuần', () => {
+    let s = at('s1-t3-w1')
+    const order: (string | null)[] = []
+    const checks: (string | null)[] = []
+    for (let i = 0; i < 6; i++) {
+      const { plan } = resolveSessionPlan({}, s, hasContent)
+      if (plan.mode !== 'lesson') throw new Error('expected lesson')
+      expect(plan.lesson?.lesson.id).toBe('s1-t3-w1')
+      order.push(plan.partId)
+      checks.push(sessionCheckQuizId(plan))
+      s = markSessionPartSeen(s, plan)
+    }
+    expect(order).toEqual([1, 2, 3, 4, 5].map((k) => n(k, 's1-t3-w1')).concat([null as unknown as string]))
+    expect(checks).toEqual([null, null, null, null, 'lesson-s1-t3-w1', 'lesson-s1-t3-w1'])
   })
 })

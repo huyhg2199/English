@@ -5,6 +5,7 @@ import { Link, Navigate } from 'react-router'
 import {
   useBrickInvite,
   useComeback,
+  useLessonInvite,
   useLoadedStore,
   useOwl,
   useSchedule,
@@ -19,6 +20,7 @@ import { BrickReviewInvite } from '@/components/foundation/BrickReviewInvite'
 import { FoundationHero } from '@/components/foundation/FoundationHero'
 import { WallPassedCard } from '@/components/foundation/WallPassedCard'
 import { OwlPlanCard } from '@/components/owl/ReviewPlan'
+import { LessonReviewInvite } from '@/components/quiz/LessonReviewInvite'
 import { ScheduleCard } from '@/components/ScheduleCard'
 import { SkillGapCard } from '@/components/SkillGapCard'
 import { StudyClock } from '@/components/StudyClock'
@@ -106,8 +108,9 @@ function ReminderBanner({ now }: { now: Date }) {
  *   đồng hồ giờ học khi đã có điểm ETS; ẩn Bài hiện tại, lịch 750, Đo trình độ và bảng kỹ năng (`todayView`).
  * - Sau Sân ga: bố cục cũ (nút 30', ngày lười, bài hiện tại, ngày dự kiến 750); cuối trang lời mời Mũ (chưa Nhà), bảng kỹ
  *   năng + đồng hồ (có điểm ETS) hoặc "Đo trình độ (tuỳ chọn)".
- * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, kế hoạch ôn O.W.L. 1 khi trượt và dải mời "Ôn viên gạch
- * X n'?" (story 28) ngay dưới nhóm nút khi sai lặp lại cùng một khái niệm nền.
+ * Luôn có dải nhắc, thẻ "Chào mừng quay lại" sau nghỉ > 7 ngày, kế hoạch ôn O.W.L. 1 khi trượt, dải mời "Ôn viên gạch
+ * X n'?" (story 28) ngay dưới nhóm nút khi sai lặp lại cùng một khái niệm nền, rồi dải "Ôn lại bài: <tên bài>?" (story 41)
+ * khi sai lặp lại về thì của cùng một bài.
  */
 export function Today() {
   const { store } = useLoadedStore()
@@ -119,6 +122,7 @@ export function Today() {
   const comeback = useComeback(now)
   const { activePlan } = useOwl(now)
   const brickInvite = useBrickInvite(now)
+  const lessonInvite = useLessonInvite(now)
   const view = useMemo(() => todayView(store, hasBrickContent), [store])
   const streak = useMemo(() => computeStreak(days, now), [days, now])
   const hours = useMemo(() => studyHours(days, now), [days, now])
@@ -206,6 +210,14 @@ export function Today() {
         <BrickReviewInvite
           invite={brickInvite.invite}
           onDismiss={(id) => brickInvite.dismiss(id)}
+          className="lg:col-span-2"
+        />
+      )}
+      {/* Lời mời ôn bài thì (story 41): sai từ 2 câu về thì của cùng một bài trong 14 ngày; hiện sau dải viên gạch. */}
+      {lessonInvite.invite && (
+        <LessonReviewInvite
+          invite={lessonInvite.invite}
+          onDismiss={(id) => lessonInvite.dismiss(id)}
           className="lg:col-span-2"
         />
       )}

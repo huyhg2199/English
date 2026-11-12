@@ -568,13 +568,13 @@
   "accepted": {
     "ngsl-ago": "ago luôn đi với quá khứ, không có câu hiện tại đơn tự nhiên chứa ago",
     "ngsl-can": "can mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
-    "ngsl-could": "could mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-could": "could dạy ở bài s1-t4-w1 (quá khứ của can, Could you…? nhờ lịch sự); chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
     "ngsl-feel": "báo nhầm: tired là tính từ (mệt), câu là hiện tại đơn",
     "ngsl-if": "chính từ if, mở khi qua hoặc bỏ qua Sân ga; câu chỉ dùng mệnh lệnh + hiện tại đơn",
     "ngsl-least": "at least là cụm cố định 'ít nhất', câu còn lại là mệnh lệnh",
     "ngsl-less": "less mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
-    "ngsl-may": "may mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
-    "ngsl-might": "might mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-may": "may (May I…?) chưa dạy ở Chặng 1, mở sau bài s2-t7-w3 (lời đề nghị, yêu cầu); chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
+    "ngsl-might": "might chưa dạy ở Chặng 1, mở sau bài s2-t7-w4 (câu điều kiện); chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
     "ngsl-more": "more mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
     "ngsl-most": "most mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
     "ngsl-must": "must mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
@@ -585,6 +585,6 @@
     "ngsl-than": "than mở sau bài s1-t4-w3 dạy so sánh; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
     "ngsl-turn": "báo nhầm: left là hướng (bên trái), câu là mệnh lệnh",
     "ngsl-will": "will mở sau bài s1-t3-w1 dạy thì tương lai; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)",
-    "ngsl-would": "would mở sau bài s1-t4-w1 dạy động từ khuyết thiếu; chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)"
+    "ngsl-would": "would dạy ở bài s1-t4-w1 dưới dạng would like (Would you like…?); chỉ được giới thiệu làm từ mới sau bài đó (thẻ cũ có từ trước vẫn ôn)"
   }
 }

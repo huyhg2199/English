@@ -1,5 +1,6 @@
 import { BRICKS, brickLessonId, isBrickId, type BrickId } from '@/data/foundation'
 import { lessonPartIds } from '@/data/lessons'
+import { getQuiz, lessonQuizId } from '@/data/questions'
 import { foundationState, isInFoundation, nextBrickIdFromState, readFoundation } from '@/lib/foundation'
 import { markLessonPartSeen, nextLessonPartId, readSeenPartIds } from '@/lib/roadmap-progress'
 import type { Store } from '@/lib/storage'
@@ -104,7 +105,11 @@ export function lazyFoundationBrick(store: Store, hasContent: HasContent): LazyF
   return first ? { brickId: first.id, mode: 'review' } : null
 }
 
-/** Phần của buổi bài: phần chưa xem đầu tiên của bài; bài không chia / đã xem hết / không có bài → null. */
+/**
+ * Phần của buổi bài: phần chưa xem đầu tiên của bài; bài không chia / đã xem hết / không có bài → null. "Phần" là phần
+ * Phát âm của bài T1 (story 28) hoặc ngày Ngữ pháp của bài T2–T4 (`grammarDays`, story 47): cả hai đều nằm trong
+ * `lessonPartIds` và `partsSeen`.
+ */
 function lessonPartOf(store: Store, lesson: SessionLesson | null): string | null {
   if (!lesson) return null
   return nextLessonPartId(lessonPartIds(lesson.lesson.id), readSeenPartIds(store, lesson.lesson.id))
@@ -127,7 +132,7 @@ export const LEGACY_STEP_MAP: Readonly<Record<'0' | '1' | '2', Readonly<Record<S
 export type SessionParams = {
   brick?: string | null
   lesson?: string | null
-  /** Phần của bài (story 28); chỉ hợp lệ khi thuộc bài của buổi. */
+  /** Phần của bài (phần Phát âm story 28 hoặc ngày Ngữ pháp story 47); chỉ hợp lệ khi thuộc bài của buổi. */
   part?: string | null
   step?: string | null
 }
@@ -167,8 +172,8 @@ export function sessionSearch(plan: SessionPlan, stepIndex: number): Record<stri
  * Chốt kế hoạch theo URL. `brick` hợp lệ → luôn là buổi Sân ga với viên đó (kể cả khi đã qua / bỏ qua tường giữa buổi);
  * có cả `brick` lẫn `lesson` thì `brick` thắng. `lesson` hợp lệ → buổi bài đó. Tham số lạ bị bỏ qua, kế hoạch tính lại
  * từ store. `step`: tên bước của kế hoạch hoặc số cũ (`LEGACY_STEP_MAP`); thiếu / sai → bước đầu.
- * `part` (story 28): phần thuộc bài của buổi thì giữ (đánh dấu phần giữa buổi hay đồng bộ không đổi phần đang học);
- * thiếu, sai hoặc của bài khác → tính lại từ store (phần chưa xem đầu tiên).
+ * `part` (story 28; story 47 thêm ngày Ngữ pháp): phần thuộc bài của buổi thì giữ (đánh dấu phần giữa buổi hay đồng bộ
+ * không đổi phần đang học); thiếu, sai hoặc của bài khác → tính lại từ store (phần chưa xem đầu tiên).
  */
 export function resolveSessionPlan(params: SessionParams, store: Store, hasContent: HasContent): ResolvedSessionPlan {
   const brickId = parseBrickParam(params.brick, hasContent)
@@ -190,6 +195,33 @@ export function resolveSessionPlan(params: SessionParams, store: Store, hasConte
   return { plan, stepIndex, search: sessionSearch(plan, stepIndex) }
 }
 
+/**
+ * Link buổi 30' ghim bài `lessonId`, mở ở bước Bài chính (Bản đồ thì, story 42): `/session?lesson=<id>&step=lesson`.
+ * `resolveSessionPlan` đọc `?lesson=` thành buổi bài đó (kể cả khi đang ở Sân ga); phần của đoạn Phát âm (`?part=`) không
+ * ghi ở đây mà do `resolveSessionPlan` tự chọn (phần / ngày chưa xem đầu tiên). Bài chia phần (T1) hay chia ngày (T2–T4,
+ * story 47) chưa xem hết thì buổi là buổi học phần đó, chưa có thẻ kiểm tra cuối Bài chính trừ phần cuối
+ * (`sessionCheckQuizId`, story 41); Bản đồ thì vẫn có nút "Làm kiểm tra".
+ */
+export function lessonSessionHref(lessonId: string): string {
+  return `/session?${new URLSearchParams({ lesson: lessonId, step: 'lesson' }).toString()}`
+}
+
+/**
+ * Quiz kiểm tra cuối bước Bài chính của buổi (story 41): quiz bài `lesson-<id>` khi buổi là buổi bài, bài có quiz bài, và
+ * buổi học cả bài (`partId` null: bài không chia phần hoặc buổi ôn cả tuần) hoặc phần cuối của bài (phần Phát âm cuối của
+ * bài T1, hay ngày 5 "Ôn trộn cả tuần" của bài chia Ngữ pháp theo ngày, story 47). Buổi học phần đầu / ngày 1–4 thì chưa học
+ * hết bài nên chưa kiểm tra; buổi Sân ga, hết lộ trình hay bài không có quiz → null.
+ */
+export function sessionCheckQuizId(plan: SessionPlan): string | null {
+  if (plan.mode !== 'lesson' || !plan.lesson) return null
+  const lessonId = plan.lesson.lesson.id
+  const quizId = lessonQuizId(lessonId)
+  if (!getQuiz(quizId)) return null
+  if (plan.partId === null) return quizId
+  const parts = lessonPartIds(lessonId)
+  return parts.length > 0 && parts[parts.length - 1] === plan.partId ? quizId : null
+}
+
 /** `lessonId` ghi vào nhật ký khi "Xong buổi": viên dạng `f03` hoặc id bài; không có → undefined. */
 export function sessionRecordLessonId(plan: SessionPlan): string | undefined {
   if (plan.mode === 'foundation') return plan.brickId ? brickLessonId(plan.brickId) : undefined
@@ -197,8 +229,9 @@ export function sessionRecordLessonId(plan: SessionPlan): string | undefined {
 }
 
 /**
- * "Xong buổi" (story 28): buổi học một phần của bài T1 cũng tính phần đó là đã xem (`markLessonPartSeen`, đã có thì trả store
- * cũ). Buổi Sân ga, buổi bài không chia phần hay buổi ôn cả tuần (`partId` null) → store cũ.
+ * "Xong buổi" (story 28): buổi học một phần của bài T1 (hay một ngày Ngữ pháp, story 47) cũng tính phần đó là đã xem
+ * (`markLessonPartSeen`, đã có thì trả store cũ). Buổi Sân ga, buổi bài không chia phần hay buổi ôn cả tuần (`partId`
+ * null) → store cũ.
  */
 export function markSessionPartSeen(store: Store, plan: SessionPlan): Store {
   if (plan.mode !== 'lesson' || !plan.lesson || !plan.partId) return store

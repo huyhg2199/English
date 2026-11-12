@@ -109,6 +109,29 @@ export type PronunciationBlock =
       /** Tóm tắt kèm link về đúng đoạn của bài. */
       items: readonly { text: string; lessonId: string; sectionId: 'pronunciation' | 'grammar' }[]
     }
+  | {
+      /**
+       * Bảng "mỗi thì một dòng" + luật chung trợ động từ (story 39, ôn tổng s1-t4-w4): mỗi dòng một thì, trợ động từ, câu
+       * khẳng định / phủ định / câu hỏi và link về đoạn Ngữ pháp của bài chứa thì. `auxRules`: lời Việt (có chip thuật ngữ).
+       */
+      kind: 'tense-table'
+      title: string
+      note?: string
+      rows: readonly TenseTableRow[]
+      auxRules: readonly string[]
+    }
+
+/** Một dòng bảng "mỗi thì một dòng" (story 39): `tenseId` trỏ Tense có thật, `lessonId` là bài chứa Tense đó. */
+export type TenseTableRow = {
+  tenseId: string
+  name: string
+  /** Trợ động từ: từ nhận not và đổi lên đầu câu hỏi. */
+  aux: string
+  affirmative: string
+  negative: string
+  question: string
+  lessonId: string
+}
 
 export type PronunciationContent = {
   intro: string
@@ -143,6 +166,7 @@ export type DialogueLine = VoaLine | YouglishLine
  * Story 10: `progress` (đang diễn ra quanh lúc nói), `past-point` (một lúc đã xong trong quá khứ),
  * `future-point` (một lúc trong tương lai), `plan` (kế hoạch đã định từ bây giờ tới tương lai),
  * `past-to-now` (từ quá khứ kéo tới bây giờ), `perfect-vs-past` (so hoàn thành với quá khứ đơn).
+ * Story 46: `past-progress` (việc đang diễn ra ở một lúc trong quá khứ, có việc ngắn chen vào).
  */
 export type TimelineKind =
   | 'state'
@@ -150,6 +174,7 @@ export type TimelineKind =
   | 'habit-question'
   | 'progress'
   | 'past-point'
+  | 'past-progress'
   | 'future-point'
   | 'plan'
   | 'past-to-now'
@@ -173,9 +198,12 @@ export type Tense = {
   dialogues: readonly DialogueLine[]
   /** Thần chú của thì; chủ điểm ôn/so sánh (hiện tại hoàn thành (2)) không có thần chú riêng. */
   spellId?: string
+  /** Từ / cụm tín hiệu của thì, hiện thành chip dưới dòng thời gian (story 39). Chỉ thì có mốc thời gian mới có. */
+  signalWords?: readonly string[]
   /**
    * Thẻ quy tắc của thì (story 33). Bài chứa thì được đánh dấu xong thì thẻ vào phiên ôn SRS (đứng sau thẻ viên gạch),
    * id SRS `rule:<tenseId>-n` (từ id nội dung `<tenseId>-rule-n`). Bài bị bỏ qua khi xếp lớp thì không góp thẻ.
+   * Mỗi thì 4–5 thẻ (story 38): thì dạy đủ ba dạng phủ khẳng định, phủ định, câu hỏi và một cặp dễ nhầm; `to-be` không có.
    */
   ruleCards?: readonly TenseRuleCard[]
   /**
@@ -204,12 +232,63 @@ export type TenseRuleCard = { id: string; cloze: string; answer: string; vi: str
 /** Một động từ bất quy tắc: V1 (NGSL), V2, V3 và nghĩa tiếng Việt. */
 export type IrregularVerb = { v1: string; v2: string; v3: string; vi: string }
 
+/** Nhóm âm của động từ bất quy tắc (story 38): id, tên nhóm (kèm ví dụ) và động từ theo thứ tự bảng. */
+export type IrregularVerbGroup = { id: string; title: string; verbs: readonly IrregularVerb[] }
+
+/**
+ * Thẻ ôn V2 · V3 của một động từ bất quy tắc (story 38): id nội dung `irregular-<v1>-rule-1` (id SRS
+ * `rule:irregular-<v1>-1`), cloze "go → ___ (V2 · V3)", đáp án "went · gone", `vi` "<nghĩa> · Nhóm: <tên nhóm>".
+ */
+export type IrregularVerbCard = TenseRuleCard & { groupId: string; groupTitle: string }
+
 export type GrammarContent = {
   tenses: readonly Tense[]
   /** Bảng động từ bất quy tắc (s1-t2-w3). */
   irregularVerbs?: readonly IrregularVerb[]
+  /** Bảng ôn cột V3 đứng trước các thì, che sẵn V3 (story 38, s1-t3-w3). */
+  irregularVerbsReview?: readonly IrregularVerb[]
+  /**
+   * Khối "Chọn thì" (story 39), đứng sau các thì của bài, trước bảng động từ và phần ôn tập: so hai thì cạnh nhau
+   * (`sides`) hoặc bảng chữ Việt → cách nói tiếng Anh (`viWords`), cặp câu dễ nhầm và phần luyện như phần luyện của thì.
+   */
+  choices?: readonly TenseChoice[]
   /** Tuần ôn tập: tóm tắt các thì đã học và ghi chú mini test. */
   review?: { summary: readonly string[]; note: string; quizId?: string }
+}
+
+/**
+ * Một bên của khối so sánh hai thì (story 39): `tenseId` trỏ Tense có thật và có `signalWords`. Tên, dòng thời gian và chip
+ * tín hiệu lấy từ chính Tense đó (`choiceSides`).
+ */
+export type TenseChoiceSide = { tenseId: string; whenVi: string; example: { en: string; vi: string } }
+
+/** Cặp câu dễ nhầm: hai câu gần nhau, khác thì vì khác ngữ cảnh (thói quen / lúc này, vừa nghĩ ra / đã định…), kèm ghi chú vì sao (story 39). */
+export type MinimalPair = { a: { en: string; vi: string }; b: { en: string; vi: string }; noteVi: string }
+
+/** Một chữ Việt (đã, sẽ, chưa) và các cách nói tiếng Anh tương ứng, mỗi cách có "khi nào" và câu ví dụ (story 39). */
+export type ViWordChoice = {
+  vi: string
+  options: readonly { en: string; whenVi: string; example: { en: string; vi: string } }[]
+}
+
+/**
+ * Khối "Chọn thì" (story 39). Id không trùng id Tense. Khối so sánh có `sides` (hai thì cạnh nhau), khối "Đừng dịch từng
+ * chữ" có `viWords`. `formulas` + `rules` là phần "Xem lại giải thích" của phần luyện; `practice` chạy bằng chính trình
+ * phát của thì (`TensePractice`), không ghi Sổ lỗi, lần làm quiz, tiến độ hay điểm Nhà (chỉ câu nói ghi điểm nói).
+ */
+export type TenseChoice = {
+  /** Ví dụ `simple-vs-continuous`. */
+  id: string
+  name: string
+  /** Một câu: khối này giúp chọn gì (lời Việt, có chip thuật ngữ). */
+  use: string
+  sides?: readonly [TenseChoiceSide, TenseChoiceSide]
+  viWords?: readonly ViWordChoice[]
+  pairs: readonly MinimalPair[]
+  formulas: Tense['formulas']
+  /** 3 quy tắc chọn. */
+  rules: readonly string[]
+  practice: TensePractice
 }
 
 /**
@@ -229,6 +308,44 @@ export type LessonPart = {
   requires: readonly RequiredConcept[]
 }
 
+/** Kiểu của một ngày Ngữ pháp (story 47), theo thứ tự N1 → N5. */
+export type GrammarDayKind = 'affirmative' | 'negative' | 'question' | 'compare' | 'mixed'
+
+/**
+ * Một ngày của đoạn Ngữ pháp chia theo ngày (story 47): bài học một thì (hay hai thì chung khuôn) trong một tuần chia 5
+ * ngày: khẳng định → phủ định → câu hỏi → so với thì trước → ôn trộn cả tuần. Ngày dùng cơ chế phần của story 28 (id
+ * nằm trong `partsSeen`, buổi chốt `?part=`). N1–N3 có đúng 3 câu luyện nói mới (id `${id}-say-${k}`); N4 có khối
+ * "Chọn thì" của bài (`choiceIds`) hoặc 3 cặp câu so với thì của bài trước (`compare`); N5 là cả đoạn Ngữ pháp như cũ.
+ */
+export type GrammarDay = {
+  /** `${lessonId}-n${k}`, k đếm từ 1. */
+  id: string
+  kind: GrammarDayKind
+  /** "Câu khẳng định", "So với hiện tại đơn", "Ôn trộn cả tuần". */
+  title: string
+  /** Một câu: hôm nay làm gì. */
+  note: string
+  /** Dòng công thức của ngày: nhãn có thật trong `Tense.formulas` của thì `tenseId`. */
+  focus?: readonly { tenseId: string; labels: readonly string[] }[]
+  /** N1–N3: đúng 3 câu luyện nói. */
+  sentences?: readonly PracticeSentence[]
+  /** Id khối "Chọn thì" của bài được gán cho ngày này (kèm khối luyện của khối). */
+  choiceIds?: readonly string[]
+  /** N4: đúng 3 cặp câu so với thì của bài trước (`withTenseIds`). */
+  compare?: { withTenseIds: readonly string[]; pairs: readonly MinimalPair[] }
+  /** Khai báo tay theo luật câu hỏi (viên bất kỳ, bài trước hoặc chính bài); bắt buộc khi có `sentences` / `compare`. */
+  requires?: readonly RequiredConcept[]
+}
+
+/** Cách hiện đoạn Phát âm của bài chia phần (story 28): mọi phần (trang bài, buổi ôn cả tuần) hoặc một phần (buổi bài). */
+export type PronunciationView = { kind: 'all' } | { kind: 'part'; partId: string }
+
+/**
+ * Cách hiện đoạn Ngữ pháp của bài chia theo ngày (story 47): `all` = trang bài (danh sách 5 ngày + cả đoạn), `week` = buổi ôn
+ * cả tuần (cả đoạn, không danh sách ngày), `day` = buổi một ngày.
+ */
+export type GrammarView = { kind: 'all' } | { kind: 'week' } | { kind: 'day'; dayId: string }
+
 export type LessonContent = {
   lessonId: string
   pronunciation?: PronunciationContent
@@ -238,6 +355,11 @@ export type LessonContent = {
    */
   parts?: readonly LessonPart[]
   grammar?: GrammarContent
+  /**
+   * Ngữ pháp theo ngày (story 47, 8 bài một thì T2–T4): 5 ngày N1–N5. Bài có `parts` thì không có `grammarDays`. Trang bài
+   * vẫn hiện đủ đoạn Ngữ pháp, đầu đoạn có danh sách 5 ngày; buổi 30' chỉ hiện ngày của buổi.
+   */
+  grammarDays?: readonly GrammarDay[]
   /** Tuần Tết: chỉ nhắc chạy chế độ ngày lười, không có nội dung mới. */
   lazyWeek?: boolean
   /**

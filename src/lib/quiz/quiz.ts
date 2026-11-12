@@ -1,4 +1,4 @@
-import { getQuestion, getQuiz, isTypedQuestion, type Question, type QuizDef } from '@/data/questions'
+import { getQuestion, getQuiz, isTypedQuestion, type Question, type QuestionFilter, type QuizDef } from '@/data/questions'
 import { isPlainObject, type Store } from '@/lib/storage'
 import { isTimeString } from '@/lib/updated-at'
 
@@ -95,17 +95,47 @@ function unseenFirst(questions: Question[], seen: ReadonlySet<string> | undefine
   return [...questions.filter((q) => !seen.has(q.id)), ...questions.filter((q) => seen.has(q.id))]
 }
 
+/** Câu khớp bộ lọc của bài test (story 40): đúng đoạn và mang một trong các nhãn. Không có bộ lọc → mọi câu khớp. */
+export function matchesFilter(q: Question, filter?: QuestionFilter): boolean {
+  return !filter || (q.sectionId === filter.sectionId && filter.tags.includes(q.tag))
+}
+
+/** Câu của phần chính một bài test: thuộc `lessonIds` và khớp `only` (nếu có). */
+export function quizPool(bank: readonly Question[], quiz: QuizDef): Question[] {
+  return bank.filter((q) => quiz.lessonIds.includes(q.lessonId) && matchesFilter(q, quiz.only))
+}
+
+/** Câu của phần ôn (`mix`, story 40): thuộc bài của phần ôn, khớp `mix.only`, không thuộc phần chính. Không có `mix` → []. */
+export function mixPool(bank: readonly Question[], quiz: QuizDef): Question[] {
+  const mix = quiz.mix
+  if (!mix) return []
+  return bank.filter(
+    (q) => mix.lessonIds.includes(q.lessonId) && matchesFilter(q, mix.only) && !(quiz.lessonIds.includes(q.lessonId) && matchesFilter(q, quiz.only)),
+  )
+}
+
+/** Câu thuộc bài test (phần chính hoặc phần ôn): `planQuiz` lọc thiếu nền và đếm trên tập này. */
+export function inQuizPool(q: Question, quiz: QuizDef): boolean {
+  if (quiz.lessonIds.includes(q.lessonId) && matchesFilter(q, quiz.only)) return true
+  return quiz.mix !== undefined && quiz.mix.lessonIds.includes(q.lessonId) && matchesFilter(q, quiz.mix.only)
+}
+
 /**
  * Chọn câu cho một bài test: mỗi bài ít nhất `minPerLesson` câu, đủ `size` câu, không trùng, thứ tự xáo theo seed.
  * Không có TTS (`canSpeak` false): chọn như khi có TTS rồi thay từng câu nghe bằng một câu chưa chọn **cùng bài**
  * (không còn câu cùng bài thì lấy câu bài khác), nên số câu mỗi bài giữ nguyên.
  * Câu đã gặp (`opts.seen`, story 35): sau mỗi lần xáo (từng bài, phần còn lại, câu thay) câu chưa gặp được xếp lên trước
  * bằng phân hoạch ổn định; số lần gọi `shuffle` không đổi, nên `seen` rỗng cho đúng kết quả cũ.
+ * Story 40: phần chính chỉ lấy câu khớp `only` (`quizPool`) và có `size − mix.size` câu. Có `mix` thì phần ôn bốc
+ * `mix.size` câu từ `mixPool` bằng luồng ngẫu nhiên riêng (`${seed}|mix`: không đổi dãy số của phần chính), câu chưa gặp
+ * trước, không có câu nghe khi không có TTS, không trùng phần chính; hai phần nối lại rồi xáo một lần cuối. Bài test
+ * không có `only` / `mix` gọi `random` đúng như cũ nên ra đúng đề cũ.
  */
 export function pickQuiz(bank: readonly Question[], quiz: QuizDef, seed: string, opts: PickOptions): Question[] {
   const random = seededRandom(`${seed}|pick`)
   const seen = opts.seen
-  const pool = bank.filter((q) => quiz.lessonIds.includes(q.lessonId))
+  const size = Math.max(0, quiz.size - (quiz.mix?.size ?? 0))
+  const pool = quizPool(bank, quiz)
   const groups = quiz.lessonIds.map((id) =>
     unseenFirst(
       shuffle(
@@ -123,8 +153,8 @@ export function pickQuiz(bank: readonly Question[], quiz: QuizDef, seed: string,
     ),
     seen,
   )
-  chosen.push(...rest.slice(0, Math.max(0, quiz.size - chosen.length)))
-  let picked = chosen.slice(0, quiz.size)
+  chosen.push(...rest.slice(0, Math.max(0, size - chosen.length)))
+  let picked = chosen.slice(0, size)
   if (!opts.canSpeak) {
     const used = new Set(picked.map((q) => q.id))
     const spare = unseenFirst(
@@ -140,6 +170,11 @@ export function pickQuiz(bank: readonly Question[], quiz: QuizDef, seed: string,
       const same = spare.findIndex((x) => x.lessonId === q.lessonId)
       return spare.splice(same >= 0 ? same : 0, 1)
     })
+  }
+  if (quiz.mix && quiz.mix.size > 0) {
+    const used = new Set(picked.map((q) => q.id))
+    const candidates = mixPool(bank, quiz).filter((q) => !used.has(q.id) && (opts.canSpeak || q.kind !== 'listening'))
+    picked = [...picked, ...unseenFirst(shuffle(candidates, seededRandom(`${seed}|mix`)), seen).slice(0, quiz.mix.size)]
   }
   return shuffle(picked, random)
 }

@@ -9,10 +9,10 @@ export const F10_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
     {
       kind: 'explain',
       textVi:
-        'Hai thứ trở lên thì danh từ thêm -s: two books. Sau s, x, ch, sh thì viết -es: boxes, watches. ' +
-        'Phụ âm + y thì đổi thành -ies: city, cities. Đuôi này đọc 3 cách: /s/ xì nhẹ sau k, t, p, f (books), ' +
-        '/z/ ngân nhẹ sau nguyên âm, n, g, d (pens), /ɪz/ thêm một âm tiết sau âm xì như s, x, ch, sh, ge (boxes, oranges). ' +
-        'Vài từ đổi hẳn: man men, child children, person people.',
+        'Danh từ số nhiều thêm -s: two books; sau s, x, ch, sh viết -es: boxes; phụ âm + y thành -ies: ' +
+        'cities. Đuôi đọc 3 cách: /s/ xì nhẹ sau k, t, p, f (books); /z/ ngân nhẹ sau nguyên âm và âm rung như b, ' +
+        'd, g, v, l, m, n, r (pens, dogs, girls, rooms, cars); /ɪz/ thêm âm tiết sau s, x, ch, sh, ge (boxes). Vài ' +
+        'từ đổi hẳn: man men, child children, person people.',
     },
     {
       kind: 'contrast',
@@ -63,7 +63,7 @@ export const F10_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
             { label: '/z/', items: ['pens', 'dogs'] },
             { label: '/ɪz/', items: ['boxes', 'watches'] },
           ],
-          hintVi: 'Sau âm xì s, x, ch, sh, ge đọc /ɪz/. Sau k, t đọc /s/ xì nhẹ. Sau n, g đọc /z/ ngân nhẹ.',
+          hintVi: 'Sau âm xì s, x, ch, sh, ge đọc /ɪz/. Sau k, t đọc /s/ xì nhẹ. Sau n, g, l, m, r đọc /z/ ngân nhẹ.',
           explanationVi: 'books, cats: /s/. pens, dogs: /z/. boxes, watches: /ɪz/ (thêm một âm tiết).',
           uses: ['plural-s-sounds', 'final-sounds'],
         },

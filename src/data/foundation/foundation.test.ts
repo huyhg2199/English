@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
-import { FOUNDATION_QUESTIONS, QUESTION_BANK } from '@/data/questions'
+import { FOUNDATION_QUESTIONS, isTypedQuestion, OWL_QUESTIONS, QUESTION_BANK, type Question } from '@/data/questions'
 import { FUNCTION_WORD_GATES, hasDetails, loadWords, POS_LABELS, STARTER_WORD_IDS } from '@/data/vocab'
-import { allTenses } from '@/data/lessons'
-import { isFadedCorrect } from '@/lib/foundation/player'
+import { allTenses, LESSON_CONTENTS } from '@/data/lessons'
+import { isCorrect, isFadedCorrect } from '@/lib/foundation/player'
 import { ruleCardId } from '@/lib/flashcard-session'
+import { promptEnglish } from '@/lib/tense-scope'
 import { checkFill } from '@/lib/subs/blanks'
 
 import { BRICKS, getBrickMeta } from './catalog'
 import { BRICK_CONTENT, getBrick, hasBrickContent } from './content'
-import type { Brick, CheckItem, ConceptId, Screen } from './types'
+import { type Brick, type CheckItem, type ConceptId, type Screen, tableHasIpa } from './types'
 
 const words = await loadWords()
 const wordById = new Map(words.map((w) => [w.id, w]))
@@ -128,6 +129,7 @@ function englishTexts(brick: Brick): { where: string; text: string }[] {
     if (item.kind === 'order') texts.push(item.tokens.join(' '))
     if (item.kind === 'sort') texts.push(...item.groups.flatMap((g) => g.items))
     if (item.kind === 'tapSyllable') texts.push(item.word)
+    if (item.kind === 'type') texts.push(item.answer, ...(item.accept ?? []))
     raw.push(...texts.map((text) => ({ where: item.id, text })))
   }
   return raw.flatMap(({ where, text }) => (text ? englishParts(text).map((part) => ({ where, text: part })) : []))
@@ -506,9 +508,14 @@ describe('nội dung viên gạch', () => {
 
     it('faded và thẻ quy tắc có đúng một ___; thẻ quy tắc thuộc viên này', () => {
       expect(blanks(screenOf(brick, 'faded').en)).toBe(1)
-      // Riêng F06 có 8 thẻ (số, thứ, tháng, ngày tháng — story 34); viên khác 1–2.
+      // Riêng F06 có 8 thẻ (số, thứ, tháng, ngày tháng — story 34), F15 có 6 (lượng từ, There phủ định / câu hỏi —
+      // story 43), F16 có 5 (nối câu — story 44); viên khác 1–2.
       if (id === 'F06') {
         expect(brick.ruleCards).toHaveLength(8)
+      } else if (id === 'F15') {
+        expect(brick.ruleCards).toHaveLength(6)
+      } else if (id === 'F16') {
+        expect(brick.ruleCards).toHaveLength(5)
       } else {
         expect(brick.ruleCards.length).toBeGreaterThanOrEqual(1)
         expect(brick.ruleCards.length).toBeLessThanOrEqual(2)
@@ -626,7 +633,7 @@ function dayMonthNames(text: string): string[] {
   ]
 }
 
-/** Chuỗi tiếng Anh của câu luyện viên: đề (đã điền đáp án), lựa chọn, audioText, mảnh xếp, mục xếp nhóm. */
+/** Chuỗi tiếng Anh của câu luyện viên: đề (đã điền đáp án), lựa chọn, audioText, mảnh xếp, mục xếp nhóm, đáp án / accept câu gõ. */
 function itemTexts(item: CheckItem): string[] {
   const texts: string[] = []
   if ('prompt' in item && item.prompt) {
@@ -638,6 +645,7 @@ function itemTexts(item: CheckItem): string[] {
   if (item.kind === 'order') texts.push(item.tokens.join(' '))
   if (item.kind === 'sort') texts.push(...item.groups.flatMap((g) => g.items))
   if (item.kind === 'tapSyllable') texts.push(item.word)
+  if (item.kind === 'type') texts.push(item.answer, ...(item.accept ?? []))
   return texts
 }
 
@@ -651,9 +659,9 @@ describe('F06 số, thứ, tháng (story 34)', () => {
   }
   const ens = (id: string) => table(id).rows.map((r) => r.en)
 
-  it('chỉ F06 có bảng; id bảng đúng thứ tự', () => {
+  it('chỉ F06, F15 và F16 có bảng; id bảng đúng thứ tự', () => {
     for (const b of bricks) {
-      if (b.id === 'F06') continue
+      if (b.id === 'F06' || b.id === 'F15' || b.id === 'F16') continue
       expect(screenOf(b, 'explain').tables, b.id).toBeUndefined()
     }
     expect(tables.map((t) => t.id)).toEqual(['f06-numbers', 'f06-tens', 'f06-days', 'f06-months', 'f06-ordinals', 'f06-time-price'])
@@ -750,6 +758,11 @@ describe('F06 số, thứ, tháng (story 34)', () => {
       for (const n of names) seen.add(n)
       if (names.length > 0 && !(q.requires as readonly string[]).includes('days-months')) missing.push(`${q.id} (${names.join(', ')})`)
     }
+    for (const d of GRAMMAR_DAY_TEXTS) {
+      const names = d.texts.flatMap(dayMonthNames)
+      for (const n of names) seen.add(n)
+      if (names.length > 0 && !d.requires.includes('days-months')) missing.push(`${d.id} (${names.join(', ')})`)
+    }
     expect(missing).toEqual([])
     // Mọi tên thứ / tháng gặp trong các câu trên đều có trong bảng F06.
     const inTables = new Set([...ens('f06-days'), ...ens('f06-months')])
@@ -780,5 +793,343 @@ describe('màn faded đổi từ checkFill sang matchesTyped (story 35): chỉ n
         if (checkFill(a, typed)) expect(isFadedCorrect(a, typed, screen.accept), `${where}: "${typed}"`).toBe(true)
       }
     }
+  })
+})
+
+/**
+ * Câu tiếng Anh của ngày Ngữ pháp (story 47: câu nói N1–N3 và cặp câu N4) kèm `requires` khai tay của ngày, để các test khai
+ * báo theo chữ (days-months, lượng từ, liên từ) quét cả ngày.
+ */
+const GRAMMAR_DAY_TEXTS = LESSON_CONTENTS.flatMap((c) =>
+  (c.grammarDays ?? []).flatMap((d) =>
+    d.requires
+      ? [
+          {
+            id: d.id,
+            requires: d.requires as readonly string[],
+            texts: [...(d.sentences ?? []).map((x) => x.text), ...(d.compare?.pairs ?? []).flatMap((p) => [p.a.en, p.b.en])],
+          },
+        ]
+      : [],
+  ),
+)
+
+/** Có lượng từ some / any / many / a lot of (không quét much: How much còn là hỏi giá của F14). */
+const QUANTIFIER_RE = /\b(?:some|any|many)\b|\ba lot of\b/i
+/** Có There phủ định (there isn't / aren't / is not / are not) hoặc câu hỏi (is there / are there). */
+const THERE_NQ_RE = /\bthere (?:isn't|aren't|is not|are not)\b|\b(?:is|are) there\b/i
+const straightQuotes = (text: string) => text.replace(/[’‘ʼ`]/g, "'")
+/** Khái niệm mới (story 43) mà chuỗi cần khai báo. */
+function quantifierConcepts(text: string): ConceptId[] {
+  const t = straightQuotes(text)
+  return [
+    ...(QUANTIFIER_RE.test(t) ? (['quantifiers'] as const) : []),
+    ...(THERE_NQ_RE.test(t) ? (['there-negative-questions'] as const) : []),
+  ]
+}
+
+/** Câu luyện đã điền đáp án: đề + đáp án đúng (không lựa chọn nhiễu), audioText, đáp án / accept câu gõ, mảnh, mục. */
+function filledItemTexts(item: CheckItem): string[] {
+  switch (item.kind) {
+    case 'choice':
+    case 'listen': {
+      const correct = item.options[item.answer]
+      const prompt = item.prompt ?? ''
+      return [
+        prompt.includes('___') ? prompt.replace('___', correct) : prompt,
+        correct,
+        ...(item.kind === 'listen' ? [item.audioText] : []),
+      ]
+    }
+    case 'type':
+      return [item.prompt.includes('___') ? item.prompt.replace('___', item.answer) : item.prompt, item.answer, ...(item.accept ?? [])]
+    case 'order':
+      return [item.prompt ?? '', item.tokens.join(' ')]
+    case 'sort':
+      return [item.prompt ?? '', ...item.groups.flatMap((g) => g.items)]
+    case 'tapSyllable':
+      return [item.word]
+  }
+}
+
+/** Câu quiz đã điền đáp án: đề + đáp án đúng, audioText, accept của câu gõ (không lựa chọn nhiễu). */
+function filledQuestionTexts(q: Question): string[] {
+  return [
+    q.prompt.replace('___', q.answer),
+    q.answer,
+    ...('audioText' in q && q.audioText ? [q.audioText] : []),
+    ...(isTypedQuestion(q) ? (q.accept ?? []) : []),
+  ]
+}
+
+describe('F15 lượng từ, There is phủ định / câu hỏi (story 43)', () => {
+  const f15 = getBrick('F15')!
+  const tables = screenOf(f15, 'explain').tables ?? []
+  const table = (id: string) => {
+    const t = tables.find((x) => x.id === id)
+    if (!t) throw new Error(`F15 thiếu bảng ${id}`)
+    return t
+  }
+  const ens = (id: string) => table(id).rows.map((r) => r.en)
+
+  it('id bảng đúng thứ tự; teaches đúng 4 khái niệm', () => {
+    expect(tables.map((t) => t.id)).toEqual(['f15-forms', 'f15-quantifiers'])
+    expect(f15.teaches).toEqual(['there-is-are', 'prepositions-of-place', 'there-negative-questions', 'quantifiers'])
+  })
+
+  it('bảng: en là câu hoàn chỉnh (chữ, dấu cách, nháy, phẩy, chấm, hỏi), kết thúc . hoặc ?; vi không rỗng; không ipa; en không trùng', () => {
+    for (const t of tables) {
+      expect(t.rows.length, t.id).toBeGreaterThan(0)
+      expect(t.noteVi?.trim(), t.id).toBeTruthy()
+      expect(new Set(t.rows.map((r) => r.en)).size, t.id).toBe(t.rows.length)
+      for (const r of t.rows) {
+        expect(r.en, `${t.id}: ${r.en}`).toMatch(/^[A-Za-z' ,.?]+$/)
+        expect(/[.?]$/.test(r.en), `${t.id}: ${r.en}`).toBe(true)
+        expect(r.vi.trim(), `${t.id}: ${r.en}`).not.toBe('')
+        expect(r.ipa, `${t.id}: ${r.en}`).toBeUndefined()
+      }
+    }
+    expect(ens('f15-forms')).toHaveLength(6)
+    expect(ens('f15-quantifiers')).toHaveLength(7)
+  })
+
+  it('bảng 3 dạng có There isn’t / aren’t, Is / Are there, trả lời ngắn; bảng lượng từ có some … How much', () => {
+    const forms = ens('f15-forms').join(' | ')
+    for (const s of ["There isn't", "There aren't", 'Is there', 'Are there', 'Yes, there is', "No, there aren't"]) {
+      expect(forms, s).toContain(s)
+    }
+    const quantifiers = ens('f15-quantifiers').join(' | ')
+    for (const re of [/\bsome\b/, /\bany\b/, /\bmany\b/, /\bmuch\b/, /\ba lot of\b/, /\bHow many\b/, /\bHow much\b/]) {
+      expect(re.test(quantifiers), String(re)).toBe(true)
+    }
+  })
+
+  it('thẻ quy tắc: 1–2 giữ nguyên, 3–6 đúng đáp án; -4 / -6 có gợi ý trong ngoặc', () => {
+    const cards = f15.ruleCards
+    expect(cards.map((c) => c.id)).toEqual(Array.from({ length: 6 }, (_, i) => `f15-rule-${i + 1}`))
+    expect(cards.map(ruleCardId)).toEqual(Array.from({ length: 6 }, (_, i) => `rule:f15-${i + 1}`))
+    expect([cards[0].cloze, cards[0].answer]).toEqual(['There ___ two beds in my room. (có)', 'are'])
+    expect([cards[1].cloze, cards[1].answer]).toEqual(['The cat is ___ the bed. (ở dưới)', 'under'])
+    expect(cards.slice(2).map((c) => c.answer)).toEqual(['Is', 'any', 'many', 'much'])
+    expect(cards[4].cloze).toBe('How ___ books are there on the desk?')
+    for (const c of [cards[3], cards[5]]) expect(c.cloze, c.id).toMatch(/\([^)]+\)$/)
+  })
+
+  it('id câu luyện, câu gõ f15-c5 có accept, câu nói f15-say-1 … -5', () => {
+    expect(allItems(f15).map((i) => i.id)).toEqual(['f15-c1', 'f15-c2', 'f15-c3', 'f15-c4', 'f15-c5', 'f15-e1', 'f15-e2', 'f15-a1'])
+    const c5 = allItems(f15).find((i) => i.id === 'f15-c5')!
+    expect(c5.kind).toBe('type')
+    if (c5.kind === 'type') {
+      expect(c5.answer).toBe("There aren't any eggs in the kitchen.")
+      expect(c5.accept).toEqual(['There are not any eggs in the kitchen.'])
+    }
+    // Chấm câu gõ (review story 43): aren't / are not / thiếu nháy / không dấu chấm đều đúng; giữ some hay câu khẳng định là sai.
+    for (const text of [
+      "There aren't any eggs in the kitchen.",
+      'There are not any eggs in the kitchen',
+      'there arent any eggs in the kitchen',
+      'There aren’t any eggs in the kitchen.',
+    ]) {
+      expect(isCorrect(c5, { kind: 'type', text }), text).toBe(true)
+    }
+    for (const text of ["There aren't some eggs in the kitchen.", 'There are some eggs in the kitchen.', '']) {
+      expect(isCorrect(c5, { kind: 'type', text }), text).toBe(false)
+    }
+    expect(c5.kind === 'type' && c5.prompt).toContain('dùng any')
+    const c3 = allItems(f15).find((i) => i.id === 'f15-c3')!
+    expect(c3.kind === 'listen' && /^Are there any\b.*\?$/.test(c3.audioText)).toBe(true)
+    expect((screenOf(f15, 'apply').speak ?? []).map((s) => s.id)).toEqual(
+      Array.from({ length: 5 }, (_, i) => `f15-say-${i + 1}`),
+    )
+  })
+
+  it('f15-e2 chỉ một đáp án đúng: không có many (There aren’t many chairs cũng đúng)', () => {
+    const e2 = allItems(f15).find((i) => i.id === 'f15-e2')!
+    expect(e2.kind === 'choice' && e2.options).toEqual(['any', 'some', 'a'])
+  })
+
+  it('cột IPA (tableHasIpa): 5 bảng F06 có, bảng giờ / giá của F06, 2 bảng F15 và bảng F16 không', () => {
+    const all = bricks.flatMap((b) => screenOf(b, 'explain').tables ?? [])
+    const withIpa = all.filter(tableHasIpa).map((t) => t.id)
+    expect(withIpa).toEqual(['f06-numbers', 'f06-tens', 'f06-days', 'f06-months', 'f06-ordinals'])
+    const without = all.filter((t) => !tableHasIpa(t)).map((t) => t.id)
+    expect(without).toEqual(['f06-time-price', 'f15-forms', 'f15-quantifiers', 'f16-linkers'])
+  })
+
+  it('câu có lượng từ / There phủ định, câu hỏi thì khai báo quantifiers / there-negative-questions', () => {
+    const missing: string[] = []
+    let hits = 0
+    for (const b of bricks) {
+      for (const item of allItems(b)) {
+        if (!item.uses) continue
+        const need = new Set(filledItemTexts(item).flatMap(quantifierConcepts))
+        if (need.size > 0) hits++
+        for (const c of need) if (!item.uses.includes(c)) missing.push(`${item.id} thiếu ${c}`)
+      }
+    }
+    for (const q of [...FOUNDATION_QUESTIONS, ...QUESTION_BANK, ...OWL_QUESTIONS]) {
+      if (!q.requires) continue
+      const need = new Set(filledQuestionTexts(q).flatMap(quantifierConcepts))
+      if (need.size > 0) hits++
+      for (const c of need) if (!(q.requires as readonly string[]).includes(c)) missing.push(`${q.id} thiếu ${c}`)
+    }
+    for (const d of GRAMMAR_DAY_TEXTS) {
+      const need = new Set(d.texts.flatMap(quantifierConcepts))
+      if (need.size > 0) hits++
+      for (const c of need) if (!d.requires.includes(c)) missing.push(`${d.id} thiếu ${c}`)
+    }
+    expect(missing).toEqual([])
+    expect(hits).toBeGreaterThanOrEqual(5)
+    // Tự kiểm helper.
+    expect(quantifierConcepts('Someone is here.')).toEqual([])
+    expect(quantifierConcepts('How much is it?')).toEqual([])
+    expect(quantifierConcepts('Are there any eggs?')).toEqual(['quantifiers', 'there-negative-questions'])
+    expect(quantifierConcepts('There aren’t a lot of cars.')).toEqual(['quantifiers', 'there-negative-questions'])
+    expect(quantifierConcepts('Is there a bank? There are two banks.')).toEqual(['there-negative-questions'])
+  })
+})
+
+/** Có liên từ but / or / because / so (không quét and: F10, F11, F15 đã dùng and để nối từ). */
+const CONJUNCTION_RE = /\b(?:but|or|because|so)\b/i
+const needsConjunctions = (text: string) => CONJUNCTION_RE.test(straightQuotes(text))
+/** Câu đúng có "because … (,) so …" (lỗi “Vì… nên…”), có hay không có dấu phẩy trước so. */
+const BECAUSE_SO_RE = /\bbecause\b[^.?!]*\bso\b/i
+
+describe('F16 nối câu (story 44)', () => {
+  const f16 = getBrick('F16')!
+  const tables = screenOf(f16, 'explain').tables ?? []
+  const table = tables[0]
+  const ens = table.rows.map((r) => r.en)
+
+  it('teaches đúng have-has, conjunctions; id bảng đúng f16-linkers', () => {
+    expect(f16.teaches).toEqual(['have-has', 'conjunctions'])
+    expect(tables.map((t) => t.id)).toEqual(['f16-linkers'])
+    expect(tableHasIpa(table)).toBe(false)
+  })
+
+  it('bảng: 7 dòng câu hoàn chỉnh, kết thúc . hoặc ?, vi không rỗng, không ipa, en không trùng, có noteVi', () => {
+    expect(table.noteVi?.trim()).toBeTruthy()
+    expect(table.rows).toHaveLength(7)
+    expect(new Set(ens).size).toBe(7)
+    for (const r of table.rows) {
+      expect(r.en, r.en).toMatch(/^[A-Za-z' ,.?]+$/)
+      expect(/[.?]$/.test(r.en), r.en).toBe(true)
+      expect(r.vi.trim(), r.en).not.toBe('')
+      expect(r.ipa, r.en).toBeUndefined()
+    }
+  })
+
+  it('bảng có đủ and, but, or, because, so và một dòng mở đầu bằng Because', () => {
+    const joined = ens.join(' | ')
+    for (const w of ['and', 'but', 'or', 'because', 'so']) expect(new RegExp(`\\b${w}\\b`).test(joined), w).toBe(true)
+    expect(ens.some((e) => e.startsWith('Because '))).toBe(true)
+  })
+
+  it('thẻ quy tắc: 1–2 giữ nguyên, 3–5 đúng đáp án so / because / but, cloze có gợi ý trong ngoặc', () => {
+    const cards = f16.ruleCards
+    expect(cards.map((c) => c.id)).toEqual(Array.from({ length: 5 }, (_, i) => `f16-rule-${i + 1}`))
+    expect(cards.map(ruleCardId)).toEqual(Array.from({ length: 5 }, (_, i) => `rule:f16-${i + 1}`))
+    expect([cards[0].cloze, cards[0].answer]).toEqual(['He ___ a big car. (có)', 'has'])
+    expect([cards[1].cloze, cards[1].answer]).toEqual(['I ___ 25. (tuổi)', 'am'])
+    expect(cards.slice(2).map((c) => c.answer)).toEqual(['so', 'because', 'but'])
+    for (const c of cards.slice(2)) expect(c.cloze, c.id).toMatch(/\([^)]+\)$/)
+  })
+
+  it('id câu luyện, câu gõ f16-c5 có accept, câu nói f16-say-1 … -5', () => {
+    expect(allItems(f16).map((i) => i.id)).toEqual(['f16-c1', 'f16-c2', 'f16-c3', 'f16-c4', 'f16-c5', 'f16-e1', 'f16-e2', 'f16-a1'])
+    const c5 = allItems(f16).find((i) => i.id === 'f16-c5')!
+    expect(c5.kind).toBe('type')
+    expect(c5.kind === 'type' && c5.accept).toEqual(['Because I have a new phone, I am happy.'])
+    expect((screenOf(f16, 'apply').speak ?? []).map((s) => s.id)).toEqual(Array.from({ length: 5 }, (_, i) => `f16-say-${i + 1}`))
+  })
+
+  it('chấm cố định f16-c5', () => {
+    const c5 = allItems(f16).find((i) => i.id === 'f16-c5')!
+    for (const text of ["I'm happy because I have a new phone", 'Because I have a new phone, I am happy.', 'I am happy because I have a new phone.']) {
+      expect(isCorrect(c5, { kind: 'type', text }), text).toBe(true)
+    }
+    for (const text of ['Because I have a new phone, so I am happy.', 'I have a new phone because I am happy.', '']) {
+      expect(isCorrect(c5, { kind: 'type', text }), text).toBe(false)
+    }
+    // Lỗi “Vì… nên…” hay gặp nhất phải được giải thích.
+    expect(c5.explanationVi).toContain('Chỉ dùng một từ nối')
+  })
+
+  it('không "Because…, so…" trong chuỗi đúng của F16 (tự kiểm regex)', () => {
+    expect(BECAUSE_SO_RE.test('Because I have a new job, so I am happy.')).toBe(true)
+    expect(BECAUSE_SO_RE.test('Because I have a new job, I am happy.')).toBe(false)
+    expect(BECAUSE_SO_RE.test('Because I have a new job so I am happy.')).toBe(true)
+    expect(BECAUSE_SO_RE.test('I am happy because I have a new job. I have a new job, so I am happy.')).toBe(false)
+    const contrast = screenOf(f16, 'contrast')
+    const worked = screenOf(f16, 'worked')
+    const faded = screenOf(f16, 'faded')
+    const apply = screenOf(f16, 'apply')
+    const correct = [
+      ...ens,
+      ...(contrast.examples ?? []).map((ex) => ex.en),
+      worked.en,
+      faded.en.replace('___', faded.answer),
+      ...(apply.sampleEn ? [apply.sampleEn] : []),
+      ...(apply.speak ?? []).map((sp) => sp.text),
+      ...f16.ruleCards.map((c) => c.cloze.replace('___', c.answer)),
+      ...allItems(f16).flatMap((i) =>
+        i.kind === 'choice' || i.kind === 'listen'
+          ? [i.options[i.answer], (i.prompt ?? '').replace('___', i.options[i.answer])]
+          : i.kind === 'type'
+            ? [i.answer, ...(i.accept ?? [])]
+            : [],
+      ),
+    ]
+    expect(correct.length).toBeGreaterThan(20)
+    for (const t of correct) expect(BECAUSE_SO_RE.test(t), t).toBe(false)
+  })
+
+  it('câu có but / or / because / so thì khai báo conjunctions (câu luyện mọi viên, câu FOUNDATION_QUESTIONS và QUESTION_BANK)', () => {
+    const missing: string[] = []
+    let hits = 0
+    for (const b of bricks) {
+      for (const item of allItems(b)) {
+        if (!item.uses) continue
+        if (!filledItemTexts(item).some(needsConjunctions)) continue
+        hits++
+        if (!item.uses.includes('conjunctions')) missing.push(item.id)
+      }
+    }
+    // Story 47: mọi câu T1–T4 có requires nên quét cả QUESTION_BANK. Đề câu bài có thể là tiếng Việt ("so sánh"), nên chỉ
+    // lấy phần tiếng Anh của đề (`promptEnglish`).
+    const bankTexts = (q: Question) => [promptEnglish(q.prompt).replace('___', q.answer), ...filledQuestionTexts(q).slice(1)]
+    const scanned: (readonly [Question, string[]])[] = [
+      ...FOUNDATION_QUESTIONS.map((q) => [q, filledQuestionTexts(q)] as const),
+      ...QUESTION_BANK.map((q) => [q, bankTexts(q)] as const),
+    ]
+    for (const [q, texts] of scanned) {
+      if (!q.requires) continue
+      if (!texts.some(needsConjunctions)) continue
+      hits++
+      if (!(q.requires as readonly string[]).includes('conjunctions')) missing.push(q.id)
+    }
+    for (const d of GRAMMAR_DAY_TEXTS) {
+      if (!d.texts.some(needsConjunctions)) continue
+      hits++
+      if (!d.requires.includes('conjunctions')) missing.push(d.id)
+    }
+    expect(missing).toEqual([])
+    expect(hits).toBeGreaterThanOrEqual(5)
+    // Tự kiểm helper: không quét and, không bắt chữ chứa but / or (button, for, also).
+    expect(needsConjunctions('I have a sister and a brother.')).toBe(false)
+    expect(needsConjunctions('The button is for you. It is also here.')).toBe(false)
+    expect(needsConjunctions('Is it a cat or a dog?')).toBe(true)
+    expect(needsConjunctions('So the room is small.')).toBe(true)
+    // Lựa chọn nhiễu không bị quét: chỉ đề đã điền + đáp án đúng.
+    const fake: CheckItem = {
+      id: 'x',
+      kind: 'choice',
+      prompt: 'I ___ a cat.',
+      options: ['have', 'have, but', 'has'],
+      answer: 0,
+      hintVi: 'x',
+      explanationVi: 'x',
+    }
+    expect(filledItemTexts(fake).some(needsConjunctions)).toBe(false)
   })
 })

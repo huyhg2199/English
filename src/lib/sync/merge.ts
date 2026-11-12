@@ -2,7 +2,7 @@ import { mergeFoundation } from '@/lib/foundation'
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
 import { isPronunciationItem, type PronunciationItem } from '@/lib/pronunciation'
-import { isMistakeItem, isQuizAttempt, mergeBrickInvites, mergeMistakeItem } from '@/lib/quiz'
+import { isMistakeItem, isQuizAttempt, mergeBrickInvites, mergeLessonInvites, mergeMistakeItem } from '@/lib/quiz'
 import { isLessonProgress, seenPartIdsOf, type LessonProgress } from '@/lib/roadmap-progress'
 import { isSavedWord } from '@/lib/saved-words'
 import { isReminders } from '@/lib/reminders/reminders'
@@ -245,16 +245,24 @@ export const mergeQuizzes = mergeKeyed('attempts', mergeQuizAttempts)
 const mergeMistakeBook = mergeKeyed('items', mergeMistakeItems)
 
 /**
- * Gộp `mistakes`: `items` theo câu như cũ; `brickInvites` (dấu "Để sau" của lời mời ôn viên, story 28) theo viên lấy
- * `dismissedAt` muộn hơn, chỉ có key khi một bên có.
+ * Gộp `mistakes`: `items` theo câu như cũ; `brickInvites` (dấu "Để sau" của lời mời ôn viên, story 28) theo viên và
+ * `lessonInvites` (lời mời ôn bài thì, story 41) theo bài, cùng luật lấy `dismissedAt` muộn hơn; mỗi field chỉ có key khi
+ * một bên có.
  */
 export function mergeMistakes(local: unknown, server: unknown): unknown {
   const merged = mergeMistakeBook(local, server)
   if (!isPlainObject(merged)) return merged
-  const l = isPlainObject(local) ? local.brickInvites : undefined
-  const s = isPlainObject(server) ? server.brickInvites : undefined
-  if (l === undefined && s === undefined) return merged
-  return { ...merged, brickInvites: mergeBrickInvites(l, s) }
+  let out = merged
+  for (const [field, merge] of [
+    ['brickInvites', mergeBrickInvites],
+    ['lessonInvites', mergeLessonInvites],
+  ] as const) {
+    const l = isPlainObject(local) ? local[field] : undefined
+    const s = isPlainObject(server) ? server[field] : undefined
+    if (l === undefined && s === undefined) continue
+    out = { ...out, [field]: merge(l, s) }
+  }
+  return out
 }
 export const mergeSessions = mergeKeyed('days', mergeSessionDays)
 export const mergePronunciation = mergeKeyed('items', mergePronunciationItems)

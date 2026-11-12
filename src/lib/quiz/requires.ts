@@ -1,12 +1,12 @@
 import { BRICK_IDS, type BrickId } from '@/data/foundation'
 import { conceptSource, MIN_QUIZ_QUESTIONS, QUIZZES, type Question, type QuizDef } from '@/data/questions'
 
-import { pickQuiz, type PickOptions } from './quiz'
+import { inQuizPool, mixPool, pickQuiz, quizPool, type PickOptions } from './quiz'
 
 /**
  * Lập đề có lọc "chỉ dùng kiến thức đã dạy" (story 27). Hàm thuần: viên nào đã dạy do nơi gọi truyền vào
  * (`isTaught`, thường là `isBrickTaught(store, id)`), nên module này không import `@/lib/foundation`.
- * Chỉ lọc bài test trong `QUIZZES` (quiz từng bài, mini test); câu chỉ bị bỏ khi cần khái niệm của viên gạch chưa dạy.
+ * Chỉ lọc bài test trong `QUIZZES` (quiz từng bài, mini test, ôn trộn; cả phần ôn `mix`, story 40); câu chỉ bị bỏ khi cần khái niệm của viên gạch chưa dạy.
  * Khái niệm bài T1 không kiểm lúc chạy (test tĩnh đã bảo đảm câu chỉ cần bài của nó hoặc bài T1 trước đó).
  */
 
@@ -34,20 +34,35 @@ export function missingBricks(q: Question, isTaught: IsBrickTaught): BrickId[] {
 
 type Filtered = {
   bank: readonly Question[]
-  /** Số câu đủ nền của bài test, và số câu đủ nền không phải câu nghe (máy không có TTS chỉ chạy được loại này). */
+  /**
+   * Số câu `planQuiz` chạy được với bank đã lọc: có TTS (`eligible`) và không có TTS (`eligibleNonListening`, máy không có
+   * TTS chỉ chạy được câu không phải câu nghe). Bài test có `mix` (story 40) tính riêng từng phần, mỗi phần tối đa số câu
+   * của phần đó.
+   */
   eligible: number
   eligibleNonListening: number
   skipped: number
   missingBrickIds: BrickId[]
 }
 
-/** Bỏ khỏi ngân hàng các câu của bài test cần viên chưa dạy; test ngoài `QUIZZES` giữ nguyên. */
+/** Số câu đề có được từ ngân hàng `kept`: phần chính tối đa `size − mix.size`, phần ôn tối đa `mix.size`. */
+function partCounts(kept: readonly Question[], quiz: QuizDef, canSpeak: boolean): number {
+  const usable = (qs: readonly Question[]) => (canSpeak ? qs.length : qs.filter((q) => q.kind !== 'listening').length)
+  if (!quiz.mix) return usable(quizPool(kept, quiz))
+  const mainSize = Math.max(0, quiz.size - quiz.mix.size)
+  return Math.min(mainSize, usable(quizPool(kept, quiz))) + Math.min(quiz.mix.size, usable(mixPool(kept, quiz)))
+}
+
+/**
+ * Bỏ khỏi ngân hàng các câu của bài test (phần chính và phần ôn, `inQuizPool`) cần viên chưa dạy; test ngoài `QUIZZES`
+ * giữ nguyên.
+ */
 function filterBank(bank: readonly Question[], quiz: QuizDef, isTaught: IsBrickTaught): Filtered {
-  const inQuiz = (q: Question) => quiz.lessonIds.includes(q.lessonId)
-  const counts = (kept: readonly Question[]) => {
-    const pool = kept.filter(inQuiz)
-    return { eligible: pool.length, eligibleNonListening: pool.filter((q) => q.kind !== 'listening').length }
-  }
+  const inQuiz = (q: Question) => inQuizPool(q, quiz)
+  const counts = (kept: readonly Question[]) => ({
+    eligible: partCounts(kept, quiz, true),
+    eligibleNonListening: partCounts(kept, quiz, false),
+  })
   if (!QUIZZES.some((d) => d.id === quiz.id)) {
     return { bank, ...counts(bank), skipped: 0, missingBrickIds: [] }
   }

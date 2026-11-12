@@ -29,10 +29,14 @@ export const F17_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
         { vi: 'Tôi đang về nhà. (Bây giờ)', en: "I'm going home." },
         { vi: 'Anh ấy đi làm. (Thói quen, ngày nào cũng vậy)', en: 'He goes to work.' },
         {
-          vi: 'Cô ấy đi rồi, giờ không còn ở đây. (have / has + gone: nối việc đã đi với bây giờ, học kỹ ở T3)',
+          vi: 'Cô ấy đi rồi, giờ không còn ở đây. (have / has là trợ động từ; have / has + gone: nối việc đã đi với bây giờ, học kỹ ở T3)',
           en: 'She has gone.',
         },
-        { vi: '5 dạng của go', en: 'go · goes · going · went · gone', audioText: 'go, goes, going, went, gone' },
+        {
+          vi: '5 dạng của go. Từ Năm 1 gọi tắt: V1 = nguyên mẫu (go), goes = V1 thêm -es, V-ing (going), V2 (went), V3 (gone)',
+          en: 'go · goes · going · went · gone',
+          audioText: 'go, goes, going, went, gone',
+        },
         {
           vi: 'Động từ khác cũng đổi dạng như vậy (học dần ở Năm 1)',
           en: 'start · starts · starting',

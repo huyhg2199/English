@@ -76,8 +76,13 @@ export const CONCEPT_IDS = [
   // F15
   'there-is-are',
   'prepositions-of-place',
+  // F15, story 43: There isn't / Is there…? + lượng từ (some, any, many, much, a lot of, How many / How much)
+  'there-negative-questions',
+  'quantifiers',
   // F16
   'have-has',
+  // F16, story 44: and / but / or / because / so
+  'conjunctions',
   // F17
   'tenses-overview',
   'verb-forms',
@@ -109,7 +114,7 @@ export type Screen =
       kind: 'explain'
       /** Giải thích tiếng Việt, 40–80 chữ. */
       textVi: string
-      /** Bảng tra (story 34, tuỳ chọn): hiện dưới đoạn giải thích, mỗi bảng đóng sẵn. Hiện chỉ F06 có. */
+      /** Bảng tra (story 34, tuỳ chọn): hiện dưới đoạn giải thích, mỗi bảng đóng sẵn. Hiện F06, F15 và F16 có. */
       tables?: readonly BrickTable[]
     }
   | {
@@ -180,6 +185,11 @@ export type BrickTableRow = { en: string; ipa?: string; vi: string }
 
 /** Bảng tra trong màn giải thích (story 34): id dạng `fNN-…`, tiêu đề, ghi chú cuối bảng (tuỳ chọn), các dòng. */
 export type BrickTable = { id: string; title: string; noteVi?: string; rows: readonly BrickTableRow[] }
+
+/** Bảng có cột IPA khi ít nhất một dòng có `ipa` (story 43): bảng câu của F15 và bảng giờ / giá của F06 không có cột này. */
+export function tableHasIpa(table: BrickTable): boolean {
+  return table.rows.some((r) => Boolean(r.ipa))
+}
 
 /** Dòng thời gian minh hoạ một màn (như `TenseCard`). */
 export type BrickTimeline = { kind: TimelineKind; label: string }

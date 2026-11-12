@@ -3,6 +3,7 @@ import {
   BookX,
   ChevronRight,
   ClipboardCheck,
+  Compass,
   GraduationCap,
   HardDriveDownload,
   Layers,
@@ -15,6 +16,7 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
 import {
+  useLoadedStore,
   useMistakes,
   useNewWordList,
   useNewWordOptions,
@@ -34,6 +36,7 @@ import { buildStudySession, flashcardSummary } from '@/lib/flashcard-session'
 import { OWL_HREF, partPercent } from '@/lib/owl'
 import { listMistakes, reviewableDue } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
+import { tenseMapBlurb, tenseMapRows } from '@/lib/tense-map'
 
 function FlashcardSummary() {
   const wordsState = useWords()
@@ -80,10 +83,11 @@ function MistakesSummary() {
   return `${total} câu trong sổ · ${due} câu đến hạn ôn`
 }
 
-function MiniTestSummary({ quizId, month }: { quizId: string; month: string }) {
+/** Tóm tắt lần làm của một mini test / bài ôn trộn; chưa làm lần nào thì hiện `blurb`. */
+function MiniTestSummary({ quizId, blurb }: { quizId: string; blurb: string }) {
   const { attempts } = useQuizzes()
   const mine = attempts.filter((a) => a.quizId === quizId)
-  if (mine.length === 0) return `10 câu ôn cả 4 tuần ${month}. Chưa làm lần nào.`
+  if (mine.length === 0) return blurb
   const best = Math.max(...mine.map((a) => a.score))
   return `Đã làm ${mine.length} lần · cao nhất ${best}/${mine[0].total} · lần gần nhất ${mine[0].score}/${mine[0].total}`
 }
@@ -95,6 +99,13 @@ function OwlSummary() {
   const last = attempts[0]
   const passes = attempts.filter((a) => a.passed).length
   return `Đã thi ${attempts.length} lần${passes > 0 ? ` · qua ${passes} lần` : ''} · gần nhất ${last.passed ? 'qua' : 'chưa qua'} (phát âm ${partPercent(last.details.pronunciation)}%, thì ${partPercent(last.details.tenses)}%${last.details.selfGraded ? ', có phần tự chấm' : ''})`
+}
+
+/** Tóm tắt Bản đồ thì (story 42): số thì chắc / đang học / chưa học. */
+function TenseMapSummary() {
+  const { store } = useLoadedStore()
+  const [now] = useNow()
+  return useMemo(() => tenseMapBlurb(tenseMapRows(store, now)), [store, now])
 }
 
 /** Danh sách thần chú đã mở (mỗi thì đã học là một thần chú), link về đoạn ngữ pháp của bài. */
@@ -165,15 +176,30 @@ export function Practice() {
       </PracticeLink>
 
       <PracticeLink to={quizHref('mini-t1')} icon={ClipboardCheck} title="Mini test tháng T1">
-        <MiniTestSummary quizId="mini-t1" month="T1" />
+        <MiniTestSummary quizId="mini-t1" blurb="10 câu ôn cả 4 tuần T1. Chưa làm lần nào." />
       </PracticeLink>
 
       <PracticeLink to={quizHref('mini-t2')} icon={ClipboardCheck} title="Mini test tháng T2">
-        <MiniTestSummary quizId="mini-t2" month="T2" />
+        <MiniTestSummary quizId="mini-t2" blurb="10 câu ôn cả 4 tuần T2. Chưa làm lần nào." />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mini-t3')} icon={ClipboardCheck} title="Mini test tháng T3">
+        <MiniTestSummary quizId="mini-t3" blurb="10 câu: 8 câu ôn 4 tuần T3 và 2 câu ôn thì T1–T2. Chưa làm lần nào." />
+      </PracticeLink>
+
+      <PracticeLink to={quizHref('mix-s1')} icon={ClipboardCheck} title="Ôn trộn mọi thì">
+        <MiniTestSummary
+          quizId="mix-s1"
+          blurb="20 câu Ngữ pháp trộn mọi thì của chặng 1, khởi động trước O.W.L. 1. Chưa làm lần nào."
+        />
       </PracticeLink>
 
       <PracticeLink to={OWL_HREF} icon={GraduationCap} title="O.W.L. 1">
         <OwlSummary />
+      </PracticeLink>
+
+      <PracticeLink to="/practice/tense-map" icon={Compass} title="Bản đồ thì">
+        <TenseMapSummary />
       </PracticeLink>
 
       <SpellList />

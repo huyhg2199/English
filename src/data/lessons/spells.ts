@@ -55,6 +55,15 @@ export const SPELLS: readonly Spell[] = [
     grammarEn: 'the past simple with common irregular verbs (went, saw, had, bought)',
   },
   {
+    id: 'impedimenta',
+    name: 'Impedimenta',
+    description:
+      'Chặn ngang một việc đang diễn ra: was / were + V-ing cho việc dài, quá khứ đơn cho việc ngắn chen vào (when), while cho hai việc cùng lúc.',
+    tenseId: 'past-continuous',
+    lessonId: 's1-t2-w4',
+    grammarEn: 'the past continuous (was / were + -ing, with when and while)',
+  },
+  {
     id: 'protego',
     name: 'Protego',
     description: 'Tấm khiên cho lời hứa và dự đoán: will + động từ nguyên mẫu.',
@@ -81,10 +90,11 @@ export const SPELLS: readonly Spell[] = [
   {
     id: 'expelliarmus',
     name: 'Expelliarmus',
-    description: 'Ra lệnh, khuyên, xin phép: can / should / must + động từ nguyên mẫu.',
+    description:
+      'Khuyên, bắt buộc, xin phép, nhờ: can / could / should / must / have to + động từ nguyên mẫu; would like để nói muốn một cách lịch sự.',
     tenseId: 'modals',
     lessonId: 's1-t4-w1',
-    grammarEn: 'the modal verbs can, should and must',
+    grammarEn: 'the modal verbs can, could, should and must, plus have to and would like',
   },
   {
     id: 'riddikulus',

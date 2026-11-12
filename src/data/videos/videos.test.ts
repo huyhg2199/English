@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { LESSON_CONTENTS } from '@/data/lessons'
-import { FOUNDATION_FUN_LINKS, getLesson, STAGES } from '@/data/roadmap'
+import { allLessons, FOUNDATION_FUN_LINKS, getLesson, STAGES } from '@/data/roadmap'
 
 import { CC_BY_LICENSE_URL } from '../../../scripts/subs/parse.mjs'
 
@@ -108,6 +108,29 @@ describe('videosFor', () => {
     expect(videosFor('s1-t1-w1', 'pronunciation').every((v) => v.sectionId === 'pronunciation')).toBe(true)
     expect(videosFor('s1-t1-w1', 'vocabulary')).toEqual([])
     expect(videosFor('khong-co')).toEqual([])
+  })
+
+  it('story 39: video will hay going to ở đoạn Ngữ pháp s1-t3-w2 (sau bài going to); video nối âm sang ôn tổng s1-t4-w4', () => {
+    const ids = (xs: readonly { id: string }[]) => xs.map((v) => v.id)
+    expect(ids(videosFor('s1-t3-w2', 'grammar'))).toEqual(['begKNGxcjdk'])
+    expect(ids(videosFor('s1-t3-w2'))).toEqual(['begKNGxcjdk', 'UkBzUmRhs6w'])
+    expect(ids(videosFor('s1-t3-w1'))).toEqual(['psI7E_J1zPo'])
+    expect(ids(videosFor('s1-t4-w4', 'pronunciation'))).toEqual(['sAumTZ1lkZE', 'mV_CEIroJs8'])
+  })
+
+  it('story 47: "My Weekend" (động từ bất quy tắc) chuyển sang đoạn giải trí s1-t2-w4; s1-t2-w2 còn 1 video', () => {
+    const ids = (xs: readonly { id: string }[]) => xs.map((v) => v.id)
+    expect(ids(videosFor('s1-t2-w2'))).toEqual(['RGFc-1uNHX8'])
+    expect(ids(videosFor('s1-t2-w2', 'entertainment'))).toEqual([])
+    expect(ids(videosFor('s1-t2-w4'))).toEqual(['4cU9fqpCqBA', 'n7RA6XxfpNU'])
+    expect(ids(videosFor('s1-t2-w4', 'entertainment'))).toEqual(['n7RA6XxfpNU'])
+  })
+
+  it('mục trong videos.json xếp theo thứ tự bài', () => {
+    const order = new Map(allLessons().map((l, i) => [l.id, i]))
+    const idx = LESSON_VIDEOS.map((v) => order.get(v.lessonId) ?? -1)
+    expect(idx.every((n) => n >= 0)).toBe(true)
+    expect(idx).toEqual([...idx].sort((a, b) => a - b))
   })
 })
 

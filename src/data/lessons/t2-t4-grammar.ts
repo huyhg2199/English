@@ -1,4 +1,11 @@
 import { IRREGULAR_VERBS } from './irregular-verbs'
+import {
+  DONT_TRANSLATE,
+  HAVE_TO_COULD_WOULD_LIKE,
+  SIMPLE_VS_CONTINUOUS,
+  SUBJECT_QUESTIONS,
+  WILL_VS_GOING_TO,
+} from './tense-choices'
 import type { DialogueLine, GrammarContent, Tense } from './types'
 
 /**
@@ -20,6 +27,7 @@ export const PRESENT_CONTINUOUS: Tense = {
   name: 'Hiện tại tiếp diễn',
   use: 'Việc đang diễn ra ngay lúc nói, hoặc quanh khoảng thời gian này (tuần này, dạo này).',
   timeline: { kind: 'progress', label: 'Đang diễn ra quanh lúc nói' },
+  signalWords: ['now', 'right now', 'today', 'this year', 'Look!'],
   formulas: [
     { label: 'Khẳng định', text: 'S + am / is / are + V-ing: I am working. She is cooking.' },
     { label: 'Phủ định', text: "S + am / is / are + not + V-ing: He isn't sleeping." },
@@ -45,6 +53,38 @@ export const PRESENT_CONTINUOUS: Tense = {
   ],
   dialogues: [yg('what are you doing'), yg("I'm working on")],
   spellId: 'accio',
+  ruleCards: [
+    {
+      id: 'present-continuous-rule-1',
+      cloze: 'Look! The boys ___ (play) football outside.',
+      answer: 'are playing',
+      vi: 'am / is / are + V-ing. Thiếu một trong hai phần là sai.',
+    },
+    {
+      id: 'present-continuous-rule-2',
+      cloze: 'She ___ (not / sleep) now. She is reading.',
+      answer: "isn't sleeping",
+      vi: "Phủ định: am / is / are + not + V-ing (isn't sleeping), không mượn do / does.",
+    },
+    {
+      id: 'present-continuous-rule-3',
+      cloze: '___ you working right now? — Yes, I am.',
+      answer: 'Are',
+      vi: 'Câu hỏi: đảo am / is / are lên trước chủ ngữ, rồi V-ing (không phải Do you working?).',
+    },
+    {
+      id: 'present-continuous-rule-4',
+      cloze: 'We are ___ (sit) near the window.',
+      answer: 'sitting',
+      vi: 'Từ một âm tiết tận cùng 1 chữ nguyên âm + 1 chữ phụ âm thì gấp đôi phụ âm cuối (sit → sitting, run → running). Không gấp đôi w, x, y (play → playing, fix → fixing).',
+    },
+    {
+      id: 'present-continuous-rule-5',
+      cloze: 'I ___ (know) the answer now.',
+      answer: 'know',
+      vi: 'Động từ trạng thái (know, like, want, need) không dùng tiếp diễn.',
+    },
+  ],
   // Phần luyện có bậc (story 35): chỉ dùng Sân ga F01–F18, hiện tại đơn và chính thì này; đề không trùng đề quiz s1-t2-w1.
   practice: {
     worked: {
@@ -110,6 +150,17 @@ export const PRESENT_CONTINUOUS: Tense = {
           hintVi: 'Trả lời ngắn dùng lại are, không lặp lại working.',
           explanationVi: "Hỏi bằng Are thì trả lời ngắn cũng dùng are: No, they aren't (are not). Không trả lời bằng don't.",
         },
+        // Câu dịch Việt → Anh (story 36).
+        {
+          id: 'present-continuous-c7',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Bây giờ chúng tôi đang ăn tối. (have dinner)',
+          answer: 'We are having dinner now.',
+          accept: ['Now we are having dinner.'],
+          hintVi: 'chúng tôi = we → are; "đang" = are + V-ing; have bỏ e câm rồi thêm -ing.',
+          explanationVi:
+            'Tiếng Việt chỉ cần "đang", tiếng Anh phải có đủ are (vì we) + having. have tận cùng e câm nên bỏ e: having. now đặt cuối hoặc đầu câu đều được. have dinner (= ăn tối) là hành động nên dùng được -ing; have = có (have a car) thì không.',
+        },
       ],
       easier: [
         {
@@ -148,6 +199,7 @@ export const PAST_TO_BE: Tense = {
   name: 'Quá khứ đơn: to be (was / were)',
   use: 'Nói ai / cái gì đã là gì, ở đâu, thế nào ở một lúc trong quá khứ (yesterday, last night, in 2020).',
   timeline: { kind: 'past-point', label: 'Trạng thái đúng ở một lúc trong quá khứ' },
+  signalWords: ['yesterday', 'last night', 'last Monday', 'in 2020'],
   formulas: [
     { label: 'Khẳng định', text: 'I / he / she / it was · you / we / they were + danh từ / tính từ / nơi chốn: I was tired. They were at home.' },
     { label: 'Phủ định', text: "S + was / were + not (wasn't, weren't): She wasn't at work." },
@@ -192,7 +244,120 @@ export const PAST_TO_BE: Tense = {
       answer: 'Were',
       vi: 'Hỏi với was / were: đảo was / were lên trước chủ ngữ, không mượn did (không nói Did they be…?).',
     },
+    {
+      id: 'past-to-be-rule-3',
+      cloze: 'We ___ busy last night. We were free.',
+      answer: "weren't",
+      vi: "Phủ định: wasn't / weren't, không mượn did (không phải We didn't be busy).",
+    },
+    {
+      id: 'past-to-be-rule-4',
+      cloze: 'There ___ three students in the room yesterday morning.',
+      answer: 'were',
+      vi: 'there was + danh từ số ít hoặc không đếm được, there were + danh từ số nhiều.',
+    },
   ],
+  // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn và was / were; không -ed, không V2 khác, did chỉ là lựa
+  // chọn sai để so "Were you…?" với "Did you…?" (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w2.
+  practice: {
+    worked: {
+      en: 'We were at home last night.',
+      vi: 'Tối qua chúng tôi ở nhà.',
+      noteVi:
+        'we đi với were; at home là nơi chốn nên chỉ cần to be, không cần động từ khác. Tiếng Việt nói "ở nhà" không có động từ "là", tiếng Anh bắt buộc có were.',
+      timeline: { kind: 'past-point', label: 'Ở nhà vào tối qua' },
+    },
+    faded: {
+      en: 'My phone ___ (be) on the table yesterday.',
+      answer: 'was',
+      vi: 'Hôm qua điện thoại của tôi ở trên bàn.',
+      hintVi: 'my phone là một vật (số ít) nên dùng was.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-to-be-c1',
+          kind: 'type',
+          prompt: 'Lan and Minh ___ (be) at the park last Sunday.',
+          answer: 'were',
+          hintVi: 'Lan and Minh là hai người (= they).',
+          explanationVi: 'Lan and Minh = they (số nhiều) nên dùng were. last Sunday là quá khứ nên không dùng are.',
+        },
+        {
+          id: 'past-to-be-c2',
+          kind: 'choice',
+          prompt: '___ you at school yesterday?',
+          options: ['Were', 'Did', 'Was'],
+          answer: 0,
+          hintVi: 'Câu không có động từ thường, chỉ có nơi chốn (at school).',
+          explanationVi:
+            'Câu chỉ có nơi chốn (at school), không có động từ thường, nên dùng to be: Were you at school? Không mượn Did (không nói Did you be…?). you luôn đi với were.',
+        },
+        {
+          id: 'past-to-be-c3',
+          kind: 'type',
+          prompt: 'He ___ (not / be) at work last Monday.',
+          answer: "wasn't",
+          hintVi: 'he đi với was; phủ định thêm not ngay sau was.',
+          explanationVi: "last Monday là quá khứ. he đi với was, phủ định là was not (wasn't). Không dùng didn't với to be.",
+        },
+        {
+          id: 'past-to-be-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: She was happy.',
+          answer: 'Was she happy?',
+          hintVi: 'Chỉ cần đưa was lên trước she.',
+          explanationVi: 'Câu hỏi với was / were: đảo was lên trước chủ ngữ, phần còn lại giữ nguyên: Was she happy?',
+        },
+        {
+          id: 'past-to-be-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Hôm qua có một con mèo trong bếp. (a cat, the kitchen, yesterday)',
+          answer: 'There was a cat in the kitchen yesterday.',
+          accept: ['Yesterday there was a cat in the kitchen.'],
+          hintVi: '"có" (ở đâu đó) = There is / are; quá khứ thì đổi sang There was / were.',
+          explanationVi:
+            'a cat là số ít nên dùng There was (quá khứ của There is). Trong bếp = in the kitchen. yesterday đặt cuối hoặc đầu câu đều được.',
+        },
+        {
+          id: 'past-to-be-c6',
+          kind: 'type',
+          prompt: 'Was the movie good? — Yes, it ___.',
+          answer: 'was',
+          hintVi: 'Hỏi bằng Was thì trả lời ngắn cũng dùng was.',
+          explanationVi: 'Trả lời ngắn dùng lại was: Yes, it was. it đi với was, không đi với were.',
+        },
+      ],
+      easier: [
+        {
+          id: 'past-to-be-e1',
+          kind: 'choice',
+          prompt: 'I ___ tired yesterday.',
+          options: ['was', 'were', 'am'],
+          answer: 0,
+          hintVi: 'I đi với was.',
+          explanationVi: 'I đi với was (quá khứ của am). yesterday là quá khứ nên không dùng am.',
+        },
+        {
+          id: 'past-to-be-e2',
+          kind: 'choice',
+          prompt: 'They ___ at home last night.',
+          options: ['were', 'was', 'are'],
+          answer: 0,
+          hintVi: 'they là số nhiều.',
+          explanationVi: 'they đi với were (quá khứ của are). last night là quá khứ nên không dùng are.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về hôm qua: bạn ở đâu, thấy thế nào, có ai ở cùng.',
+      sampleEn: 'I was at the office yesterday. I was tired. My friends were at the cafe.',
+      speak: [
+        { id: 'past-to-be-say-1', text: 'I was at work yesterday.', vi: 'Hôm qua tôi ở chỗ làm.' },
+        { id: 'past-to-be-say-2', text: 'My friends were at the park.', vi: 'Các bạn tôi đã ở công viên.' },
+      ],
+    },
+  },
 }
 
 export const PAST_SIMPLE: Tense = {
@@ -200,6 +365,7 @@ export const PAST_SIMPLE: Tense = {
   name: 'Quá khứ đơn: động từ có quy tắc',
   use: 'Việc đã xảy ra và đã xong ở một lúc trong quá khứ (yesterday, last week, two days ago).',
   timeline: { kind: 'past-point', label: 'Đã xảy ra và kết thúc trong quá khứ' },
+  signalWords: ['yesterday', 'last night', 'last week', 'last year', 'ago'],
   formulas: [
     { label: 'Khẳng định', text: 'S + V-ed (mọi chủ ngữ): I worked. She played.' },
     { label: 'Phủ định', text: "S + did not (didn't) + động từ nguyên mẫu: He didn't call." },
@@ -233,7 +399,132 @@ export const PAST_SIMPLE: Tense = {
       answer: 'did',
       vi: 'Hỏi Wh- về việc đã làm: Wh + did + S + động từ nguyên mẫu (không phải What you watched?).',
     },
+    {
+      id: 'past-simple-rule-2',
+      cloze: 'The taxi ___ (stop) in front of my house last night.',
+      answer: 'stopped',
+      vi: 'Từ một âm tiết tận cùng 1 chữ nguyên âm + 1 chữ phụ âm thì gấp đôi phụ âm cuối (stop → stopped). Không gấp đôi w, x, y (play → played, fix → fixed); visit → visited cũng không.',
+    },
+    {
+      id: 'past-simple-rule-3',
+      cloze: 'She ___ (not / call) me last night.',
+      answer: "didn't call",
+      vi: "didn't + V nguyên mẫu (không phải didn't called).",
+    },
+    {
+      id: 'past-simple-rule-4',
+      cloze: '___ you clean your room last weekend? — Yes, I did.',
+      answer: 'Did',
+      vi: "Câu hỏi: Did + chủ ngữ + V nguyên mẫu …? Trả lời ngắn: Yes, I did. / No, I didn't.",
+    },
+    {
+      id: 'past-simple-rule-5',
+      cloze: 'Who ___ (call) you last night? — My sister.',
+      answer: 'called',
+      vi: 'Who là người làm (chủ ngữ): Who + V-ed, không mượn did (không nói Who did call you?). Hỏi người được gọi thì mượn did: Who did you call?',
+    },
   ],
+  // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, was / were, -ed và did; không V2 bất quy tắc (xem
+  // `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w2 hay đề luyện của was / were.
+  practice: {
+    worked: {
+      en: 'She cooked dinner yesterday.',
+      vi: 'Hôm qua cô ấy nấu bữa tối.',
+      noteVi:
+        'cook thêm -ed cho mọi chủ ngữ (không thêm -s cho she). Tiếng Việt chỉ cần "hôm qua", nhưng tiếng Anh có yesterday rồi vẫn phải đổi động từ: cooked.',
+      timeline: { kind: 'past-point', label: 'Đã nấu xong hôm qua' },
+    },
+    faded: {
+      en: 'We ___ (stay) at home last Sunday.',
+      answer: 'stayed',
+      vi: 'Chủ nhật vừa rồi chúng tôi ở nhà.',
+      hintVi: 'stay tận cùng nguyên âm + y nên giữ y, chỉ thêm -ed.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-simple-c1',
+          kind: 'type',
+          prompt: 'He ___ (plan) a trip last month.',
+          answer: 'planned',
+          hintVi: 'plan là từ một âm tiết, tận cùng 1 nguyên âm + 1 phụ âm.',
+          explanationVi: 'plan là từ một âm tiết tận cùng a + n (1 nguyên âm + 1 phụ âm) nên gấp đôi n rồi thêm -ed: planned. -ed dùng cho mọi chủ ngữ.',
+        },
+        {
+          id: 'past-simple-c2',
+          kind: 'type',
+          prompt: 'I ___ (listen) to music last night.',
+          answer: 'listened',
+          hintVi: 'listen có hai âm tiết, nhấn âm đầu (LIS-ten).',
+          explanationVi: 'listen nhấn âm đầu nên không gấp đôi n, chỉ thêm -ed: listened (không phải listenned).',
+        },
+        {
+          id: 'past-simple-c3',
+          kind: 'choice',
+          prompt: '___ she clean her room yesterday?',
+          options: ['Did', 'Was', 'Does'],
+          answer: 0,
+          hintVi: 'clean là động từ thường, việc ở quá khứ.',
+          explanationVi:
+            'Có động từ thường (clean) ở quá khứ thì mượn Did, clean về nguyên mẫu: Did she clean…? Was chỉ dùng khi không có động từ thường; yesterday là quá khứ nên không dùng Does.',
+        },
+        {
+          id: 'past-simple-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu phủ định: He opened the window.',
+          answer: "He didn't open the window.",
+          hintVi: "Phủ định quá khứ: didn't + động từ nguyên mẫu.",
+          explanationVi: "Thêm didn't trước động từ và đưa opened về nguyên mẫu open: He didn't open the window (không phải didn't opened).",
+        },
+        {
+          id: 'past-simple-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Tuần trước chúng tôi đến thăm bà. (visit, our grandmother, last week)',
+          answer: 'We visited our grandmother last week.',
+          accept: ['Last week we visited our grandmother.'],
+          hintVi: 'Tuần trước = last week, nên visit đổi sang quá khứ.',
+          explanationVi:
+            'last week là quá khứ nên visit thêm -ed: visited. visit nhấn âm đầu (VIS-it) nên không gấp đôi t. last week đặt cuối hoặc đầu câu đều được.',
+        },
+        {
+          id: 'past-simple-c6',
+          kind: 'type',
+          prompt: 'Where ___ you work last year?',
+          answer: 'did',
+          hintVi: 'Câu hỏi Wh- ở quá khứ với động từ thường (work).',
+          explanationVi: 'Hỏi Wh- về việc đã làm: Where + did + you + work (nguyên mẫu)? last year là quá khứ nên không dùng do.',
+        },
+      ],
+      easier: [
+        {
+          id: 'past-simple-e1',
+          kind: 'choice',
+          prompt: 'She ___ TV last night.',
+          options: ['watched', 'watches', 'watch'],
+          answer: 0,
+          hintVi: 'last night là quá khứ.',
+          explanationVi: 'last night là quá khứ nên watch thêm -ed: watched. Quá khứ không thêm -s cho she.',
+        },
+        {
+          id: 'past-simple-e2',
+          kind: 'choice',
+          prompt: "I didn't ___ my sister yesterday.",
+          options: ['call', 'called', 'calls'],
+          answer: 0,
+          hintVi: "Sau didn't là động từ nguyên mẫu.",
+          explanationVi: "did đã mang quá khứ nên sau didn't dùng nguyên mẫu: I didn't call my sister (không phải didn't called).",
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về việc bạn đã làm hôm qua (chỉ dùng động từ có quy tắc: work, cook, watch, play, study…).',
+      sampleEn: 'Yesterday I worked late. I cooked dinner and watched TV.',
+      speak: [
+        { id: 'past-simple-say-1', text: 'I worked at home yesterday.', vi: 'Hôm qua tôi làm việc ở nhà.' },
+        { id: 'past-simple-say-2', text: 'We played games last weekend.', vi: 'Cuối tuần trước chúng tôi chơi game.' },
+      ],
+    },
+  },
 }
 
 export const PAST_SIMPLE_IRREGULAR: Tense = {
@@ -241,6 +532,7 @@ export const PAST_SIMPLE_IRREGULAR: Tense = {
   name: 'Quá khứ đơn: động từ bất quy tắc',
   use: 'Nhiều động từ thông dụng nhất không thêm -ed mà đổi hẳn dạng: go → went, see → saw.',
   timeline: { kind: 'past-point', label: 'Đã xảy ra và kết thúc trong quá khứ' },
+  signalWords: ['yesterday', 'last night', 'last week', 'last weekend'],
   formulas: [
     { label: 'Khẳng định', text: 'S + V2 (cột 2 của bảng): I went. She bought a phone.' },
     { label: 'Phủ định / câu hỏi', text: "didn't / Did + V1 (nguyên mẫu): I didn't go. Did you see it?" },
@@ -266,6 +558,325 @@ export const PAST_SIMPLE_IRREGULAR: Tense = {
   ],
   dialogues: [yg('I went to'), yg('I bought a new')],
   spellId: 'reparo',
+  ruleCards: [
+    {
+      id: 'past-simple-irregular-rule-1',
+      cloze: 'My mother ___ (buy) fish at the market this morning.',
+      answer: 'bought',
+      vi: 'Bất quy tắc dùng V2 (buy → bought, không phải buyed).',
+    },
+    {
+      id: 'past-simple-irregular-rule-2',
+      cloze: "He didn't ___ (go) to work yesterday.",
+      answer: 'go',
+      vi: "Sau didn't quay về V1 (không phải didn't went).",
+    },
+    {
+      id: 'past-simple-irregular-rule-3',
+      cloze: 'What did you ___ (eat) for lunch?',
+      answer: 'eat',
+      vi: 'Did / Wh + did + chủ ngữ + V1.',
+    },
+    {
+      id: 'past-simple-irregular-rule-4',
+      cloze: 'Yesterday we ___ (go) to the beach.',
+      answer: 'went',
+      vi: 'went là V2 (quá khứ đơn). gone là V3, dùng sau have / has (hiện tại hoàn thành, học ở T3).',
+    },
+  ],
+  // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, quá khứ đơn (was / were, -ed, did) và V2 bất quy tắc;
+  // không V3 (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t2-w3.
+  practice: {
+    worked: {
+      en: 'My father made a cake yesterday.',
+      vi: 'Hôm qua bố tôi làm một cái bánh.',
+      noteVi: 'make là bất quy tắc: make → made (V2), không thêm -ed (không nói maked). V2 giống nhau cho mọi chủ ngữ.',
+      timeline: { kind: 'past-point', label: 'Đã làm xong hôm qua' },
+    },
+    faded: {
+      en: 'We ___ (see) a good movie last night.',
+      answer: 'saw',
+      vi: 'Tối qua chúng tôi xem một bộ phim hay.',
+      hintVi: 'see là bất quy tắc: see – saw.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-simple-irregular-c1',
+          kind: 'type',
+          prompt: 'I ___ (get) up at six this morning.',
+          answer: 'got',
+          hintVi: 'get là bất quy tắc: get – got.',
+          explanationVi: 'Sáng nay đã qua nên dùng quá khứ. get là bất quy tắc, V2 là got (không phải getted).',
+        },
+        {
+          id: 'past-simple-irregular-c2',
+          kind: 'type',
+          prompt: 'She ___ (write) a long email to her boss last night.',
+          answer: 'wrote',
+          hintVi: 'write là bất quy tắc: write – wrote.',
+          explanationVi: 'last night là quá khứ. write đổi nguyên âm: write → wrote (V2). Không thêm -ed.',
+        },
+        {
+          id: 'past-simple-irregular-c3',
+          kind: 'choice',
+          prompt: 'Did they ___ the bus?',
+          options: ['catch', 'caught', 'catched'],
+          answer: 0,
+          hintVi: 'Sau Did là động từ nguyên mẫu.',
+          explanationVi: 'Did đã mang quá khứ nên động từ về V1: Did they catch the bus? caught là V2, "catched" không có.',
+        },
+        {
+          id: 'past-simple-irregular-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu phủ định: He drove to work.',
+          answer: "He didn't drive to work.",
+          hintVi: "didn't + V1: drove là V2 của drive.",
+          explanationVi: "Phủ định quá khứ: didn't + V1. drove (V2) về drive: He didn't drive to work (không phải didn't drove).",
+        },
+        {
+          id: 'past-simple-irregular-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Hôm qua tôi gửi cho anh ấy một tin nhắn. (send, a message, yesterday)',
+          answer: 'I sent him a message yesterday.',
+          accept: [
+            'Yesterday I sent him a message.',
+            'I sent a message to him yesterday.',
+            'Yesterday I sent a message to him.',
+          ],
+          hintVi: 'send là bất quy tắc: send – sent. "cho anh ấy" = him.',
+          explanationVi: 'yesterday là quá khứ: send → sent (V2, -d đổi thành -t). anh ấy làm tân ngữ nên dùng him.',
+        },
+        {
+          id: 'past-simple-irregular-c6',
+          kind: 'type',
+          prompt: 'Where ___ she find her keys yesterday?',
+          answer: 'did',
+          hintVi: 'find ở dạng V1, câu hỏi Wh- ở quá khứ.',
+          explanationVi: 'Câu hỏi Wh- ở quá khứ: Where + did + S + V1? find giữ V1 vì đã có did (không nói Where did she found…?).',
+        },
+      ],
+      easier: [
+        {
+          id: 'past-simple-irregular-e1',
+          kind: 'choice',
+          prompt: 'I ___ to school yesterday.',
+          options: ['went', 'go', 'goed'],
+          answer: 0,
+          hintVi: 'go là bất quy tắc.',
+          explanationVi: 'yesterday là quá khứ; go là bất quy tắc nên V2 là went (không có "goed").',
+        },
+        {
+          id: 'past-simple-irregular-e2',
+          kind: 'choice',
+          prompt: "She didn't ___ the cake.",
+          options: ['eat', 'ate', 'eats'],
+          answer: 0,
+          hintVi: "Sau didn't là V1.",
+          explanationVi: "didn't đã mang quá khứ nên dùng V1: She didn't eat the cake (không phải didn't ate).",
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu về cuối tuần trước của bạn: đi đâu, ăn gì, gặp ai.',
+      sampleEn: 'Last weekend I went to Vung Tau. I ate seafood and met my friends.',
+      speak: [
+        { id: 'past-simple-irregular-say-1', text: 'I went to the beach last weekend.', vi: 'Cuối tuần trước tôi đi biển.' },
+        { id: 'past-simple-irregular-say-2', text: 'We ate dinner with our family.', vi: 'Chúng tôi ăn tối cùng gia đình.' },
+      ],
+    },
+  },
+}
+
+export const PAST_CONTINUOUS: Tense = {
+  id: 'past-continuous',
+  name: 'Quá khứ tiếp diễn (was / were + V-ing)',
+  use: 'Nói việc đang diễn ra ở một lúc trong quá khứ (at 8 p.m. yesterday, at that time), việc đang diễn ra thì có việc ngắn chen vào (when …), hoặc hai việc cùng diễn ra (while …).',
+  timeline: { kind: 'past-progress', label: 'Đang diễn ra ở một lúc trong quá khứ, có việc ngắn chen vào' },
+  signalWords: ['at that time', 'at 8 p.m. yesterday', 'when', 'while'],
+  formulas: [
+    { label: 'Khẳng định', text: 'I / he / she / it was · you / we / they were + V-ing: I was cooking at 8 p.m. yesterday.' },
+    { label: 'Phủ định', text: "S + wasn't / weren't + V-ing: We weren't sleeping at that time." },
+    { label: 'Câu hỏi', text: "Was / Were + S + V-ing …?  → Yes, I was. / No, they weren't.  What were you doing?" },
+    {
+      label: 'when · while',
+      text: 'Việc dài (was / were + V-ing) + when + việc ngắn (V2 / V-ed): She was reading when I called. · While + việc dài, việc khác: While he was driving, I was sleeping.',
+    },
+  ],
+  rules: [
+    "was / were + V-ing: I / he / she / it was working; you / we / they were working. Đuôi -ing viết như hiện tại tiếp diễn (write → writing, run → running). Phủ định và câu hỏi dùng chính was / were, không mượn did: She wasn't working. Were you working?",
+    'Hai việc trong quá khứ: việc dài, đang diễn ra dùng was / were + V-ing; việc ngắn chen vào giữa dùng quá khứ đơn (V2 / V-ed). when thường đi với việc ngắn, nên động từ ngay sau when thường ở quá khứ đơn (I was cooking when my friend called); while thường đi với việc dài (While I was cooking, my son was watching TV).',
+    'Tiếng Việt chỉ thêm “đang”, “lúc đó”; tiếng Anh phải đủ was / were + V-ing (không nói I cooking, I was cook). Việc đã xong, kể lần lượt thì vẫn dùng quá khứ đơn: I cooked dinner and watched TV.',
+  ],
+  examples: [
+    { en: 'I was cooking dinner at 7 p.m. yesterday.', vi: 'Lúc 7 giờ tối qua tôi đang nấu bữa tối.' },
+    { en: "They weren't working at that time.", vi: 'Lúc đó họ đang không làm việc.' },
+    { en: 'Were you sleeping when I called? — Yes, I was.', vi: 'Lúc tôi gọi bạn đang ngủ à? — Ừ.' },
+    { en: 'What were you doing at 9 p.m. last night?', vi: 'Lúc 9 giờ tối qua bạn đang làm gì?' },
+    { en: 'My mother was watching TV when I got home.', vi: 'Lúc tôi về đến nhà, mẹ tôi đang xem TV.' },
+    { en: 'While I was reading, my brother was playing games.', vi: 'Trong lúc tôi đọc sách, em trai tôi đang chơi điện tử.' },
+  ],
+  mistakes: [
+    { wrong: 'I was cook dinner.', right: 'I was cooking dinner.', why: 'Sau was / were là V-ing, không dùng động từ nguyên mẫu.' },
+    {
+      wrong: 'I cooking when you called.',
+      right: 'I was cooking when you called.',
+      why: 'Tiếng Việt chỉ cần “đang”; tiếng Anh phải có was / were trước V-ing.',
+    },
+    {
+      wrong: 'Did you sleeping at 10 p.m.?',
+      right: 'Were you sleeping at 10 p.m.?',
+      why: 'Câu hỏi đưa was / were lên trước chủ ngữ, không mượn did.',
+    },
+    {
+      wrong: 'I was watching TV when she was arriving.',
+      right: 'I was watching TV when she arrived.',
+      why: 'Muốn nói cô ấy đến (việc ngắn) chen vào lúc tôi đang xem TV thì dùng quá khứ đơn arrived; was / were + V-ing dành cho việc dài, đang diễn ra.',
+    },
+    { wrong: 'They was playing football.', right: 'They were playing football.', why: 'you / we / they và danh từ số nhiều đi với were.' },
+  ],
+  dialogues: [yg('what were you doing'), yg('i was sleeping when')],
+  spellId: 'impedimenta',
+  ruleCards: [
+    {
+      id: 'past-continuous-rule-1',
+      cloze: 'At 6 p.m. yesterday, my parents ___ (drive) home.',
+      answer: 'were driving',
+      vi: 'Việc đang diễn ra ở một lúc trong quá khứ: was / were + V-ing (my parents = they → were; drive bỏ e → driving).',
+    },
+    {
+      id: 'past-continuous-rule-2',
+      cloze: 'Lan ___ (not / listen) to the teacher. She was looking at her phone.',
+      answer: "wasn't listening",
+      vi: "Phủ định: wasn't / weren't + V-ing, không mượn didn't.",
+    },
+    {
+      id: 'past-continuous-rule-3',
+      cloze: '___ your children sleeping when you got home?',
+      answer: 'Were',
+      vi: 'Hỏi: Was / Were + S + V-ing …? Không mượn Did (không nói Did they sleeping…?).',
+    },
+    {
+      id: 'past-continuous-rule-4',
+      cloze: 'We were walking in the park when we ___ (see) our teacher.',
+      answer: 'saw',
+      vi: 'Việc dài: was / were + V-ing; việc ngắn chen vào (sau when): quá khứ đơn (see – saw).',
+    },
+  ],
+  // Phần luyện có bậc (story 46): phạm vi chữ `past-continuous` (Sân ga, hiện tại đơn / tiếp diễn, quá khứ đơn với was / were,
+  // -ed, did, V2 của bảng 50 động từ và was / were + V-ing; không V3, will, modal, bị động; xem `src/lib/tense-scope.ts`);
+  // đề không trùng đề quiz s1-t2-w4.
+  practice: {
+    worked: {
+      en: 'We were having dinner when my father came home.',
+      vi: 'Lúc bố tôi về nhà, chúng tôi đang ăn tối.',
+      noteVi:
+        'Ăn tối là việc dài, đang diễn ra → were having (we đi với were). Bố về nhà là việc ngắn chen vào → quá khứ đơn came.',
+      timeline: { kind: 'past-progress', label: 'Đang ăn tối thì bố về' },
+    },
+    faded: {
+      en: 'At 9 p.m. last night, the children ___ (watch) a movie.',
+      answer: 'were watching',
+      vi: 'Lúc 9 giờ tối qua bọn trẻ đang xem phim.',
+      hintVi: 'the children là số nhiều → were; thêm -ing vào watch.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-continuous-c1',
+          kind: 'type',
+          prompt: 'My sister ___ (study) at 11 p.m. last night.',
+          answer: 'was studying',
+          hintVi: 'my sister = she → was; study thêm -ing (giữ y).',
+          explanationVi:
+            'Lúc 11 giờ tối qua việc học đang diễn ra → was / were + V-ing. my sister = she nên dùng was; study thêm -ing thành studying (không đổi y).',
+        },
+        {
+          id: 'past-continuous-c2',
+          kind: 'choice',
+          prompt: 'Tom was walking to school when he ___ his teacher.',
+          options: ['met', 'was meeting', 'meet'],
+          answer: 0,
+          hintVi: 'Đi bộ là việc dài; gặp thầy là việc dài hay ngắn?',
+          explanationVi:
+            'Đi bộ là việc dài (was walking). Gặp là việc ngắn chen vào → quá khứ đơn met (meet – met), không dùng was meeting. meet là hiện tại, không hợp với câu quá khứ.',
+        },
+        {
+          id: 'past-continuous-c3',
+          kind: 'type',
+          prompt: 'They ___ (not / play) football at that time.',
+          answer: "weren't playing",
+          hintVi: "they → were; phủ định thêm not: weren't + V-ing.",
+          explanationVi:
+            "Đang (lúc đó) → weren't + V-ing, không mượn didn't: They weren't (were not) playing. they đi với were.",
+        },
+        {
+          id: 'past-continuous-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: He was working at that time.',
+          answer: 'Was he working at that time?',
+          hintVi: 'Chỉ cần đưa was lên trước he, working giữ nguyên.',
+          explanationVi:
+            'Câu hỏi quá khứ tiếp diễn: đưa was lên trước he, không mượn did: Was he working at that time? (không nói Did he working…?).',
+        },
+        {
+          id: 'past-continuous-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Trong lúc mẹ tôi đang nấu ăn, tôi đang dọn phòng. (my mother, while, cook, clean my room)',
+          answer: 'While my mother was cooking, I was cleaning my room.',
+          accept: [
+            'I was cleaning my room while my mother was cooking.',
+            'My mother was cooking while I was cleaning my room.',
+            'While I was cleaning my room, my mother was cooking.',
+          ],
+          hintVi: 'Hai việc dài cùng diễn ra: cả hai đều was + V-ing; while đứng trước một việc.',
+          explanationVi:
+            'Hai việc cùng diễn ra trong quá khứ: cả hai dùng was / were + V-ing (my mother → was, I → was). while đặt trước một việc (việc nào cũng được, vì cả hai đều đang diễn ra); đảo hai vế cũng đúng. "While my mother cooked, I cleaned my room" là kể hai việc đã xong, thiếu nghĩa "đang".',
+        },
+        {
+          id: 'past-continuous-c6',
+          kind: 'type',
+          prompt: 'Was Lan swimming when you saw her? — No, she ___.',
+          answer: "wasn't",
+          hintVi: 'Hỏi bằng Was thì trả lời ngắn cũng dùng was.',
+          explanationVi: "Trả lời ngắn dùng lại was (vì she) + not, không lặp lại swimming: No, she wasn't. Không trả lời bằng didn't.",
+        },
+      ],
+      easier: [
+        {
+          id: 'past-continuous-e1',
+          kind: 'choice',
+          prompt: 'We ___ lunch at that time.',
+          options: ['were having', 'was having', 'are having'],
+          answer: 0,
+          hintVi: 'we đi với was hay were? at that time là lúc nào?',
+          explanationVi:
+            'Câu này nói về một lúc đã qua (at that time = lúc đó) nên không dùng are having. we đi với were: We were having lunch. was dùng cho I / he / she / it.',
+        },
+        {
+          id: 'past-continuous-e2',
+          kind: 'choice',
+          prompt: 'He ___ TV when I called.',
+          options: ['was watching', 'were watching', 'watching'],
+          answer: 0,
+          hintVi: 'he đi với was; cần đủ was + V-ing.',
+          explanationVi: 'Xem TV là việc dài đang diễn ra lúc tôi gọi → was watching (he đi với was). Thiếu was ("watching") là sai.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu: lúc 8 giờ tối qua bạn đang làm gì, người nhà bạn đang làm gì, và một việc chen vào (… when …).',
+      sampleEn: 'At 8 p.m. yesterday I was reading a book. My parents were watching TV. I was reading when my friend called.',
+      speak: [
+        { id: 'past-continuous-say-1', text: 'I was working at 8 p.m. yesterday.', vi: 'Lúc 8 giờ tối qua tôi đang làm việc.' },
+        {
+          id: 'past-continuous-say-2',
+          text: 'My son was doing his homework when I got home.',
+          vi: 'Lúc tôi về đến nhà, con trai tôi đang làm bài tập.',
+        },
+      ],
+    },
+  },
 }
 
 // ---------------------------------------------------------------- T3
@@ -275,6 +886,7 @@ export const WILL: Tense = {
   name: 'Tương lai với will',
   use: 'Quyết định ngay lúc nói, dự đoán, lời hứa và lời đề nghị giúp đỡ.',
   timeline: { kind: 'future-point', label: 'Một lúc trong tương lai' },
+  signalWords: ['tomorrow', 'tonight'],
   formulas: [
     { label: 'Khẳng định', text: "S + will + động từ nguyên mẫu: I will help you. (I'll, you'll, she'll)" },
     { label: 'Phủ định', text: "S + will not (won't) + động từ nguyên mẫu" },
@@ -303,6 +915,132 @@ export const WILL: Tense = {
   ],
   dialogues: [yg("I'll call you"), yg('it will be cold')],
   spellId: 'protego',
+  ruleCards: [
+    {
+      id: 'will-rule-1',
+      cloze: "It's late. I ___ (call) a taxi.",
+      answer: 'will call',
+      vi: 'Quyết định ngay lúc nói: will + V nguyên mẫu, mọi chủ ngữ (she will go, không phải will goes).',
+    },
+    {
+      id: 'will-rule-2',
+      cloze: 'We ___ (not / be) at home tomorrow.',
+      answer: "won't be",
+      vi: "Phủ định: will not (won't) + V nguyên mẫu, mọi chủ ngữ (won't be, không phải won't is).",
+    },
+    {
+      id: 'will-rule-3',
+      cloze: '___ you call me tomorrow? — Yes, I will.',
+      answer: 'Will',
+      vi: "Câu hỏi: Will + chủ ngữ + V nguyên mẫu …? Trả lời ngắn: Yes, I will. / No, I won't.",
+    },
+    {
+      id: 'will-rule-4',
+      cloze: "I'm very tired. I ___ (not) go to the party tonight.",
+      answer: "won't",
+      vi: "won't /woʊnt/ = sẽ không. want /wɑːnt/ to = muốn. I won't go ≠ I want to go.",
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T2 và will (lời hứa, đề nghị, quyết định ngay lúc nói, nhờ, từ chối);
+  // không going to, hoàn thành, modal (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t3-w1.
+  practice: {
+    worked: {
+      en: "It's raining. I'll take an umbrella.",
+      vi: 'Trời đang mưa. Tôi sẽ mang ô.',
+      noteVi: 'Thấy mưa mới quyết định, ngay lúc nói, nên dùng will. I\'ll = I will. take giữ nguyên mẫu (không phải will takes, will to take).',
+      timeline: { kind: 'future-point', label: 'Quyết định lúc nói, làm ngay sau đó' },
+    },
+    faded: {
+      en: 'We ___ (not / be) late. I promise.',
+      answer: "won't be",
+      vi: 'Chúng tôi sẽ không đến muộn. Tôi hứa.',
+      hintVi: "Lời hứa dùng will; phủ định là won't (will not) + nguyên mẫu be.",
+    },
+    check: {
+      items: [
+        {
+          id: 'will-c1',
+          kind: 'type',
+          prompt: 'Your bag looks heavy. I ___ (carry) it for you.',
+          answer: 'will carry',
+          accept: ["'ll carry"],
+          hintVi: 'Vừa thấy túi nặng mới đề nghị giúp.',
+          explanationVi: 'Đề nghị giúp, nghĩ ra ngay lúc nói → will + nguyên mẫu: I will (I\'ll) carry it. Không thêm -s, không có to.',
+        },
+        {
+          id: 'will-c2',
+          kind: 'choice',
+          prompt: 'I ___ go out tonight. I am very tired.',
+          options: ["won't", 'want to', 'will'],
+          answer: 0,
+          hintVi: 'Đang rất mệt: sẽ đi hay không đi?',
+          explanationVi: "Rất mệt nên sẽ không đi: won't /woʊnt/ (= will not). want to /wɑːnt/ là \"muốn\", nghe gần won't nhưng nghĩa ngược lại. will (sẽ đi) không hợp vì đang rất mệt.",
+        },
+        {
+          id: 'will-c3',
+          kind: 'type',
+          prompt: 'Will you be at home tonight? — Yes, I ___.',
+          answer: 'will',
+          hintVi: 'Hỏi bằng Will thì trả lời ngắn dùng lại will.',
+          explanationVi: "Will you…? → Yes, I will. / No, I won't. Không trả lời Yes, I do, và không lặp lại be at home.",
+        },
+        {
+          id: 'will-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: She will call her mother.',
+          answer: 'Will she call her mother?',
+          hintVi: 'Chỉ cần đưa will lên trước she.',
+          explanationVi: 'Câu hỏi với will: Will + chủ ngữ + nguyên mẫu …? call giữ nguyên, không thêm Does, không thêm -s.',
+        },
+        {
+          id: 'will-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Để tôi rửa bát. (wash the dishes)',
+          answer: 'I will wash the dishes.',
+          accept: ['Let me wash the dishes.'],
+          hintVi: '"Để tôi…" là đề nghị làm giúp, nghĩ ra ngay lúc nói.',
+          explanationVi: 'Đề nghị làm giúp ngay lúc nói → I will (I\'ll) + nguyên mẫu: I will wash the dishes. "Let me wash the dishes." cũng đúng.',
+        },
+        {
+          id: 'will-c6',
+          kind: 'type',
+          prompt: "It's dark in here. I ___ (turn on) the light.",
+          answer: 'will turn on',
+          accept: ["'ll turn on"],
+          hintVi: 'Thấy tối mới quyết định bật đèn.',
+          explanationVi: 'Quyết định ngay lúc nói (vì thấy tối) → will + nguyên mẫu: I will (I\'ll) turn on the light. Trước đó không có kế hoạch.',
+        },
+      ],
+      easier: [
+        {
+          id: 'will-e1',
+          kind: 'choice',
+          prompt: 'He will ___ the bus.',
+          options: ['take', 'takes', 'to take'],
+          answer: 0,
+          hintVi: 'Sau will là động từ nguyên mẫu.',
+          explanationVi: 'will đi với mọi chủ ngữ và không đổi; động từ sau will luôn nguyên mẫu: He will take (không thêm -s, không có to).',
+        },
+        {
+          id: 'will-e2',
+          kind: 'choice',
+          prompt: 'I ___ help you. I promise.',
+          options: ['will', 'wills', 'will to'],
+          answer: 0,
+          hintVi: 'will không thêm -s và không đi với to.',
+          explanationVi: 'Lời hứa → will + nguyên mẫu: I will help you. Không có "wills", không có "will to".',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu: một lời hứa với bạn bè và một lời đề nghị giúp ai đó ngay lúc nói (will).',
+      sampleEn: "I promise I'll be careful. It's late. I'll take a taxi home.",
+      speak: [
+        { id: 'will-say-1', text: 'I will help you with your homework.', vi: 'Tôi sẽ giúp bạn làm bài tập.' },
+        { id: 'will-say-2', text: "I promise I won't forget your birthday.", vi: 'Tôi hứa sẽ không quên sinh nhật bạn.' },
+      ],
+    },
+  },
 }
 
 export const GOING_TO: Tense = {
@@ -310,6 +1048,7 @@ export const GOING_TO: Tense = {
   name: 'be going to (gonna)',
   use: 'Kế hoạch đã quyết từ trước, hoặc dự đoán khi đã thấy dấu hiệu ngay trước mắt.',
   timeline: { kind: 'plan', label: 'Đã định từ bây giờ, sẽ làm trong tương lai' },
+  signalWords: ['this weekend', 'next month', 'Look!'],
   formulas: [
     { label: 'Khẳng định', text: "S + am / is / are + going to + động từ nguyên mẫu: I'm going to visit my parents." },
     { label: 'Phủ định', text: "S + am / is / are + not + going to + V: She isn't going to come." },
@@ -336,6 +1075,132 @@ export const GOING_TO: Tense = {
   ],
   dialogues: [yg('is going to rain'), yg('what are you going to do')],
   spellId: 'wingardium-leviosa',
+  ruleCards: [
+    {
+      id: 'going-to-rule-1',
+      cloze: 'We ___ (visit) Sa Pa in July. We bought the tickets yesterday.',
+      answer: 'are going to visit',
+      vi: 'Kế hoạch đã định: am / is / are + going to + V.',
+    },
+    {
+      id: 'going-to-rule-2',
+      cloze: 'He ___ (not / buy) a car this year. He decided last month.',
+      answer: "isn't going to buy",
+      vi: "Phủ định kế hoạch đã định: am / is / are + not + going to + V nguyên mẫu (isn't going to buy).",
+    },
+    {
+      id: 'going-to-rule-3',
+      cloze: 'What ___ you going to cook tonight?',
+      answer: 'are',
+      vi: 'Câu hỏi: (Wh) + am / is / are + chủ ngữ + going to + V, không mượn do.',
+    },
+    {
+      id: 'going-to-rule-4',
+      cloze: 'Look at that boy on the wall! He ___ (fall).',
+      answer: 'is going to fall',
+      vi: 'Thấy dấu hiệu ngay trước mắt thì dùng going to. Quyết định vừa nghĩ ra thì dùng will.',
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T2, will và be going to (kế hoạch đã định, dấu hiệu trước mắt); không
+  // hoàn thành, modal (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t3-w2 hay đề luyện khối "will hay going to?".
+  practice: {
+    worked: {
+      en: "She's going to study in Japan next year. She bought the plane ticket.",
+      vi: 'Năm sau cô ấy sẽ đi học ở Nhật Bản. Cô ấy đã mua vé máy bay rồi.',
+      noteVi: "Đã mua vé = kế hoạch đã định từ trước, nên dùng going to. She's = She is: cần đủ is + going to + study (nguyên mẫu).",
+      timeline: { kind: 'plan', label: 'Đã mua vé, năm sau đi' },
+    },
+    faded: {
+      en: 'Look at the time! We ___ (miss) the bus.',
+      answer: 'are going to miss',
+      accept: ["'re going to miss"],
+      vi: 'Nhìn đồng hồ kìa! Chúng ta sắp lỡ xe buýt rồi.',
+      hintVi: 'Thấy dấu hiệu ngay trước mắt (đã muộn) → going to; we đi với are.',
+    },
+    check: {
+      items: [
+        {
+          id: 'going-to-c1',
+          kind: 'type',
+          prompt: 'I ___ (paint) my room this weekend. I bought the paint yesterday.',
+          answer: 'am going to paint',
+          accept: ["'m going to paint", 'am painting', "'m painting"],
+          hintVi: 'Đã mua sơn từ hôm qua = kế hoạch đã định. I đi với am.',
+          explanationVi: 'Đã chuẩn bị từ trước → be going to: I am (I\'m) going to paint. Cần đủ am + going to + nguyên mẫu. Việc đã sắp xếp cũng nói được bằng hiện tại tiếp diễn: am painting.',
+        },
+        {
+          id: 'going-to-c2',
+          kind: 'type',
+          prompt: 'My father ___ (not / buy) a new phone. He decided this morning.',
+          answer: "isn't going to buy",
+          hintVi: 'Quyết định từ sáng = đã định. My father là he → is; phủ định thêm not sau is.',
+          explanationVi: "Phủ định kế hoạch đã định: is + not (isn't) + going to + nguyên mẫu: isn't going to buy. Không dùng doesn't.",
+        },
+        {
+          id: 'going-to-c3',
+          kind: 'choice',
+          prompt: '___ your parents going to visit you? — Yes, they are.',
+          options: ['Are', 'Do', 'Will'],
+          answer: 0,
+          hintVi: 'Câu hỏi be going to đảo am / is / are lên đầu.',
+          explanationVi: 'your parents = they → Are your parents going to visit you? Không dùng Do với going to; will và be going to là hai cách nói tương lai riêng, không đi cùng nhau; câu hỏi going to đảo am / is / are.',
+        },
+        {
+          id: 'going-to-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: You are going to take a taxi.',
+          answer: 'Are you going to take a taxi?',
+          hintVi: 'Chỉ cần đưa are lên trước you.',
+          explanationVi: 'Câu hỏi be going to: Are + you + going to + nguyên mẫu …? Không thêm Do, phần going to take giữ nguyên.',
+        },
+        {
+          id: 'going-to-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Tối nay tôi định nấu bữa tối cho bố mẹ tôi. (cook dinner, for my parents, tonight)',
+          answer: 'I am going to cook dinner for my parents tonight.',
+          accept: ['Tonight I am going to cook dinner for my parents.'],
+          hintVi: '"định" = kế hoạch đã có → am going to + nguyên mẫu.',
+          explanationVi: '"định" là kế hoạch có trước lúc nói → I am (I\'m) going to cook. tonight đặt cuối hoặc đầu câu đều được.',
+        },
+        {
+          id: 'going-to-c6',
+          kind: 'type',
+          prompt: 'What ___ she going to wear to the party?',
+          answer: 'is',
+          hintVi: 'Wh + am / is / are + chủ ngữ + going to. she đi với gì?',
+          explanationVi: 'Câu hỏi Wh- với be going to: What + is + she + going to + wear? she đi với is; không dùng does.',
+        },
+      ],
+      easier: [
+        {
+          id: 'going-to-e1',
+          kind: 'choice',
+          prompt: 'We are going to ___ a movie tonight.',
+          options: ['watch', 'watching', 'watches'],
+          answer: 0,
+          hintVi: 'Sau going to là động từ nguyên mẫu.',
+          explanationVi: 'going to + nguyên mẫu: going to watch. Không thêm -ing hay -s sau going to.',
+        },
+        {
+          id: 'going-to-e2',
+          kind: 'choice',
+          prompt: 'She ___ going to buy a new bag.',
+          options: ['is', 'are', 'am'],
+          answer: 0,
+          hintVi: 'she đi với is.',
+          explanationVi: 'be going to cần to be theo chủ ngữ: she → is going to buy. are dùng cho you / we / they, am cho I.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu về kế hoạch đã định của bạn và người nhà (am / is / are going to).',
+      sampleEn: "I'm going to study English tonight. My sister is going to cook dinner.",
+      speak: [
+        { id: 'going-to-say-1', text: "I'm going to visit my friends next week.", vi: 'Tuần sau tôi sẽ đi thăm bạn bè.' },
+        { id: 'going-to-say-2', text: 'My parents are going to travel to Hue next month.', vi: 'Tháng sau bố mẹ tôi sẽ đi du lịch Huế.' },
+      ],
+    },
+  },
 }
 
 export const PRESENT_PERFECT: Tense = {
@@ -343,6 +1208,7 @@ export const PRESENT_PERFECT: Tense = {
   name: 'Hiện tại hoàn thành (1): trải nghiệm',
   use: 'Nói về trải nghiệm từ trước tới giờ (không nói rõ lúc nào), hoặc việc vừa xong còn liên quan tới bây giờ.',
   timeline: { kind: 'past-to-now', label: 'Từ quá khứ tới bây giờ, không nói rõ lúc nào' },
+  signalWords: ['ever', 'never', 'just', 'already', 'yet', 'before', 'twice'],
   formulas: [
     { label: 'Khẳng định', text: "S + have / has + V3: I have visited Da Lat. She has finished. (I've, she's)" },
     { label: 'Phủ định', text: "S + have / has + not (haven't / hasn't) + V3" },
@@ -372,6 +1238,136 @@ export const PRESENT_PERFECT: Tense = {
   ],
   dialogues: [yg('have you ever been'), yg("I've never seen")],
   spellId: 'expecto-patronum',
+  ruleCards: [
+    {
+      id: 'present-perfect-rule-1',
+      cloze: 'We ___ (visit) Hoi An twice.',
+      answer: 'have visited',
+      vi: 'have / has + V3. I / you / we / they dùng have.',
+    },
+    {
+      id: 'present-perfect-rule-2',
+      cloze: 'My son ___ (not / finish) his lunch yet.',
+      answer: "hasn't finished",
+      vi: "Phủ định: haven't / hasn't + V3, yet ở cuối câu.",
+    },
+    {
+      id: 'present-perfect-rule-3',
+      cloze: '___ you ever sung karaoke?',
+      answer: 'Have',
+      vi: 'Câu hỏi: Have / Has + chủ ngữ + (ever) + V3 …? ever = đã từng.',
+    },
+    {
+      id: 'present-perfect-rule-4',
+      cloze: 'We have ___ (see) this show before.',
+      answer: 'seen',
+      vi: 'Sau have / has dùng V3 (seen), không dùng V2 (saw).',
+    },
+    {
+      id: 'present-perfect-rule-5',
+      cloze: "My parents aren't at home. They have ___ (go / be) to Da Nang.",
+      answer: 'gone',
+      vi: 'gone to = đã đi và giờ đang ở đó. been to = đã từng tới rồi về.',
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T2, will, going to và have / has + V3; không since / how long, modal
+  // (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t3-w3.
+  practice: {
+    worked: {
+      en: 'I have read this book twice.',
+      vi: 'Tôi đã đọc cuốn sách này hai lần.',
+      noteVi: 'have + V3: read – read – read (chữ giữ nguyên, V3 đọc /red/). twice (hai lần) kể trải nghiệm tới giờ, không nói lúc nào nên dùng hiện tại hoàn thành.',
+      timeline: { kind: 'past-to-now', label: 'Hai lần, tính tới bây giờ' },
+    },
+    faded: {
+      en: 'She has never ___ (write) a letter in English.',
+      answer: 'written',
+      vi: 'Cô ấy chưa bao giờ viết thư bằng tiếng Anh.',
+      hintVi: 'Sau has never là V3: write – wrote – written.',
+    },
+    check: {
+      items: [
+        {
+          id: 'present-perfect-c1',
+          kind: 'type',
+          prompt: 'We have ___ (be) to Hue three times.',
+          answer: 'been',
+          hintVi: 'Sau have là V3 của be.',
+          explanationVi: 'be – was / were – been. have been to = đã từng tới (rồi về). Không dùng have went hay have was.',
+        },
+        {
+          id: 'present-perfect-c2',
+          kind: 'choice',
+          prompt: 'Have you ever ___ sushi?',
+          options: ['eaten', 'ate', 'eat'],
+          answer: 0,
+          hintVi: 'Have you ever + V3?',
+          explanationVi: 'Hỏi trải nghiệm: Have you ever + V3? eat – ate – eaten nên dùng eaten. ate là V2 (quá khứ đơn).',
+        },
+        {
+          id: 'present-perfect-c3',
+          kind: 'type',
+          prompt: 'I ___ (have / not / answer) the email yet.',
+          answer: "haven't answered",
+          hintVi: "Phủ định: haven't + V3; answer có quy tắc.",
+          explanationVi: "I đi với have; phủ định have + not (haven't) + V3: answered. yet ở cuối câu = vẫn chưa.",
+        },
+        {
+          id: 'present-perfect-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: They have washed the car.',
+          answer: 'Have they washed the car?',
+          hintVi: 'Đưa have lên trước they, giữ nguyên V3.',
+          explanationVi: 'Câu hỏi hiện tại hoàn thành: Have + they + V3 …? Không thêm Do, không đổi washed.',
+        },
+        {
+          id: 'present-perfect-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Anh ấy đã đến Sa Pa hai lần. (be to, Sa Pa, twice)',
+          answer: 'He has been to Sa Pa twice.',
+          accept: ["He's been to Sa Pa twice."],
+          hintVi: 'Kể trải nghiệm tới giờ (hai lần): has + been to.',
+          explanationVi: 'Không nói lúc nào, chỉ kể số lần tới giờ → has (vì he) + V3: has been to (đã tới rồi về). He\'s been cũng đúng.',
+        },
+        {
+          id: 'present-perfect-c6',
+          kind: 'type',
+          prompt: '___ Minh ever cooked pho? — Yes, he has.',
+          answer: 'Has',
+          hintVi: 'Minh là he; câu trả lời dùng has.',
+          explanationVi: 'Câu hỏi hiện tại hoàn thành với he / she / it: Has + chủ ngữ + (ever) + V3? Trả lời ngắn Yes, he has. Không dùng Did hay Does với cooked.',
+        },
+      ],
+      easier: [
+        {
+          id: 'present-perfect-e1',
+          kind: 'choice',
+          prompt: 'She has ___ her lunch.',
+          options: ['eaten', 'ate', 'eat'],
+          answer: 0,
+          hintVi: 'Sau has là V3.',
+          explanationVi: 'has + V3: eat – ate – eaten → has eaten. Không dùng V2 (ate) sau has.',
+        },
+        {
+          id: 'present-perfect-e2',
+          kind: 'choice',
+          prompt: 'They ___ seen snow.',
+          options: ['have', 'has', 'are'],
+          answer: 0,
+          hintVi: 'they đi với have hay has?',
+          explanationVi: 'I / you / we / they dùng have, he / she / it dùng has: They have seen snow. are + V3 không phải thì hoàn thành.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu về trải nghiệm của bạn: một việc đã từng làm (have + V3) và một việc chưa bao giờ làm (never).',
+      sampleEn: 'I have visited Hue. I have never driven a car.',
+      speak: [
+        { id: 'present-perfect-say-1', text: 'I have been to Ha Long Bay.', vi: 'Tôi đã từng đến vịnh Hạ Long.' },
+        { id: 'present-perfect-say-2', text: 'I have never seen snow.', vi: 'Tôi chưa bao giờ thấy tuyết.' },
+      ],
+    },
+  },
 }
 
 export const PERFECT_VS_PAST: Tense = {
@@ -379,6 +1375,7 @@ export const PERFECT_VS_PAST: Tense = {
   name: 'Hiện tại hoàn thành (2) và so sánh với quá khứ đơn',
   use: 'Hiện tại hoàn thành với for / since (kéo dài tới giờ), và cách chọn giữa nó với quá khứ đơn.',
   timeline: { kind: 'perfect-vs-past', label: 'Quá khứ đơn: một lúc đã xong · Hoàn thành: kéo tới bây giờ' },
+  signalWords: ['since', 'How long', 'so far'],
   formulas: [
     { label: 'Kéo dài tới giờ', text: 'S + have / has + V3 + for + khoảng thời gian / since + mốc bắt đầu' },
     { label: 'Hỏi bao lâu', text: 'How long have you + V3 …?  → For three years. / Since 2023.' },
@@ -386,7 +1383,7 @@ export const PERFECT_VS_PAST: Tense = {
   ],
   rules: [
     'for + khoảng thời gian (for two years, for a week); since + mốc bắt đầu (since 2020, since Monday).',
-    'Có mốc đã xong (yesterday, ago, last …, in 2020) hoặc hỏi When …? thì dùng quá khứ đơn.',
+    'Có mốc đã xong (yesterday, ago, last …, in 2020), hoặc hỏi When …? về việc đã xảy ra, thì dùng quá khứ đơn.',
     'Không có mốc, hoặc khoảng thời gian chưa hết (today, this week, so far) hoặc việc vẫn còn đúng tới giờ thì dùng hiện tại hoàn thành.',
   ],
   examples: [
@@ -399,7 +1396,7 @@ export const PERFECT_VS_PAST: Tense = {
   ],
   mistakes: [
     { wrong: 'I live here since 2020.', right: 'I have lived here since 2020.', why: 'Việc kéo dài từ một mốc tới giờ dùng hiện tại hoàn thành, không dùng hiện tại đơn.' },
-    { wrong: 'When have you arrived?', right: 'When did you arrive?', why: 'Câu hỏi When … luôn hỏi về một lúc đã xong → quá khứ đơn.' },
+    { wrong: 'When have you arrived?', right: 'When did you arrive?', why: 'Hỏi When … về việc đã xảy ra là hỏi một lúc đã xong nên dùng quá khứ đơn (When will you…? vẫn dùng cho tương lai).' },
     { wrong: 'I have worked here since three years.', right: 'I have worked here for three years.', why: 'Khoảng thời gian dùng for; since chỉ đi với mốc bắt đầu.' },
     {
       wrong: 'Have you called him yesterday?',
@@ -408,18 +1405,155 @@ export const PERFECT_VS_PAST: Tense = {
     },
   ],
   dialogues: [yg('how long have you lived'), yg('when did you start')],
+  ruleCards: [
+    {
+      id: 'present-perfect-vs-past-rule-1',
+      cloze: 'I have worked here ___ 2022.',
+      answer: 'since',
+      vi: 'since + mốc bắt đầu.',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-2',
+      cloze: 'She has lived in Hanoi ___ ten years.',
+      answer: 'for',
+      vi: 'for + khoảng thời gian.',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-3',
+      cloze: 'I ___ (meet) him last year.',
+      answer: 'met',
+      vi: 'Có mốc đã xong (last year, ago, yesterday) thì dùng quá khứ đơn, không dùng have met.',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-4',
+      cloze: 'When ___ you buy your car? — Two years ago.',
+      answer: 'did',
+      vi: 'Hỏi When về việc đã xảy ra thì dùng quá khứ đơn (không phải When have you bought…?).',
+    },
+    {
+      id: 'present-perfect-vs-past-rule-5',
+      cloze: 'How long ___ your parents lived in Hanoi?',
+      answer: 'have',
+      vi: 'Hỏi kéo dài tới giờ: How long have / has + S + V3?',
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T2, will, going to, hoàn thành, since / how long; không modal, so sánh,
+  // bị động (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t3-w4 hay đề luyện khối "Đừng dịch từng chữ".
+  practice: {
+    worked: {
+      en: 'My aunt moved to Da Lat in 2018. She has lived there since 2018.',
+      vi: 'Dì tôi chuyển đến Đà Lạt năm 2018. Dì sống ở đó từ năm 2018 tới giờ.',
+      noteVi: 'in 2018 là mốc đã xong nên dùng moved (quá khứ đơn). Việc sống ở đó kéo tới bây giờ (since 2018) nên dùng has lived (hoàn thành).',
+      timeline: { kind: 'perfect-vs-past', label: 'Chuyển đến: một lúc đã xong · Sống ở đó: kéo tới bây giờ' },
+    },
+    faded: {
+      en: 'We ___ (know) each other for five years.',
+      answer: 'have known',
+      accept: ["'ve known"],
+      vi: 'Chúng tôi quen nhau được năm năm rồi.',
+      hintVi: 'Vẫn quen nhau tới giờ: have + V3 (know – knew – known).',
+    },
+    check: {
+      items: [
+        {
+          id: 'present-perfect-vs-past-c1',
+          kind: 'type',
+          prompt: 'She ___ (live) in Hue for two years. Now she lives in Hanoi.',
+          answer: 'lived',
+          hintVi: 'Bây giờ cô ấy không còn sống ở Huế.',
+          explanationVi: 'Việc sống ở Huế đã kết thúc (giờ sống ở Hà Nội) nên dùng quá khứ đơn: lived, dù có for. for không quyết định thì; việc còn kéo tới giờ mới dùng has lived.',
+        },
+        {
+          id: 'present-perfect-vs-past-c2',
+          kind: 'choice',
+          prompt: 'We have known Lan ___ March.',
+          options: ['since', 'for', 'ago'],
+          answer: 0,
+          hintVi: 'March là một mốc bắt đầu.',
+          explanationVi: 'since + mốc bắt đầu (since March); for + khoảng thời gian (for two months). ago đi với quá khứ đơn.',
+        },
+        {
+          id: 'present-perfect-vs-past-c3',
+          kind: 'type',
+          prompt: '___ did you meet your wife? — Ten years ago.',
+          answer: 'When',
+          hintVi: 'Câu trả lời là một mốc thời gian.',
+          explanationVi: 'Hỏi lúc nào việc đã xảy ra → When did …? (quá khứ đơn). Trả lời bằng mốc đã xong: Ten years ago.',
+        },
+        {
+          id: 'present-perfect-vs-past-c4',
+          kind: 'type',
+          prompt: 'Đổi sang hiện tại hoàn thành (for three years): I work in a bank.',
+          answer: 'I have worked in a bank for three years.',
+          hintVi: 'Kéo dài tới giờ: have + V3 + for + khoảng thời gian.',
+          explanationVi: 'Làm từ ba năm trước tới giờ → have + V3: have worked … for three years. Không nói "I work in a bank for three years".',
+        },
+        {
+          id: 'present-perfect-vs-past-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Tôi đã mua chiếc xe này năm 2020. (buy, this car, in 2020)',
+          answer: 'I bought this car in 2020.',
+          accept: ['In 2020 I bought this car.'],
+          hintVi: 'Có mốc đã xong (năm 2020): V2 của buy.',
+          explanationVi: 'Chữ "đã" không bắt buộc have. Có mốc đã xong (in 2020) → quá khứ đơn: bought (buy – bought). "I have bought this car in 2020" là sai.',
+        },
+        {
+          id: 'present-perfect-vs-past-c6',
+          kind: 'type',
+          prompt: 'How long ___ your sister worked in Japan?',
+          answer: 'has',
+          hintVi: 'your sister là she; hỏi bao lâu tính tới giờ.',
+          explanationVi: 'How long + has (vì your sister = she) + chủ ngữ + V3? hỏi việc kéo dài tới bây giờ. Không dùng does hay did với worked.',
+        },
+      ],
+      easier: [
+        {
+          id: 'present-perfect-vs-past-e1',
+          kind: 'choice',
+          prompt: 'They have lived here ___ ten years.',
+          options: ['for', 'since', 'ago'],
+          answer: 0,
+          hintVi: 'ten years là một khoảng thời gian.',
+          explanationVi: 'for + khoảng thời gian (for ten years). since đi với mốc (since 2015); ago đi với quá khứ đơn.',
+        },
+        {
+          id: 'present-perfect-vs-past-e2',
+          kind: 'choice',
+          prompt: 'I ___ him last week.',
+          options: ['saw', 'have seen', 'see'],
+          answer: 0,
+          hintVi: 'last week là mốc đã xong.',
+          explanationVi: 'Có mốc đã xong (last week) → quá khứ đơn: saw. have seen không đi với last week; see là hiện tại.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu: bạn sống hoặc làm ở đâu được bao lâu rồi (for / since), và một việc đã làm có mốc (last …, ago, in + năm).',
+      sampleEn: 'I have worked here for two years. I started this job in 2023.',
+      speak: [
+        { id: 'present-perfect-vs-past-say-1', text: 'I have lived here for three years.', vi: 'Tôi sống ở đây được ba năm rồi.' },
+        { id: 'present-perfect-vs-past-say-2', text: 'I bought my phone two years ago.', vi: 'Tôi mua điện thoại hai năm trước.' },
+      ],
+    },
+  },
 }
 
 // ---------------------------------------------------------------- T4
 
 export const MODALS: Tense = {
   id: 'modals',
-  name: 'Động từ khuyết thiếu: can / should / must',
-  use: 'can: có thể, xin phép · should: lời khuyên · must: bắt buộc, rất cần thiết.',
+  name: 'Động từ khuyết thiếu: can / should / must, have to, could, would like',
+  use:
+    'can: có thể, xin phép · should: lời khuyên · must: bắt buộc, rất cần thiết · have to: phải (do hoàn cảnh) · ' +
+    'could: làm được (ngày trước), nhờ lịch sự · would like: muốn (lịch sự).',
   formulas: [
     { label: 'Khẳng định', text: 'S + can / should / must + động từ nguyên mẫu: You should rest.' },
     { label: 'Phủ định', text: "can't (cannot) · shouldn't · mustn't (cấm) + động từ nguyên mẫu" },
     { label: 'Câu hỏi', text: 'Can / Should + S + động từ nguyên mẫu …?  Can I sit here?' },
+    {
+      label: 'have to · could · would like',
+      text: "have / has to + V (don't / doesn't have to, Do you have to…?) · could + V · would like + danh từ / to + V: I'd like a coffee.",
+    },
   ],
   rules: [
     'Sau can / should / must là động từ nguyên mẫu, không có to, không thêm -s: She can swim (không phải can swims / can to swim).',
@@ -438,9 +1572,148 @@ export const MODALS: Tense = {
     { wrong: 'He can speaks English.', right: 'He can speak English.', why: 'Sau can là động từ nguyên mẫu, không thêm -s.' },
     { wrong: 'You should to rest.', right: 'You should rest.', why: 'Không có to sau should / can / must.' },
     { wrong: 'Do you can help me?', right: 'Can you help me?', why: 'Câu hỏi đảo can lên đầu, không mượn do.' },
+    {
+      wrong: 'My boss have to travel a lot.',
+      right: 'My boss has to travel a lot.',
+      why: 'have to là động từ thường: he / she / it (my boss) dùng has to.',
+    },
+    {
+      wrong: "Yesterday I can't go to work.",
+      right: "Yesterday I couldn't go to work.",
+      why: "Quá khứ của can là could: couldn't + động từ nguyên mẫu.",
+    },
   ],
   dialogues: [yg('you should try'), yg('can I ask you')],
   spellId: 'expelliarmus',
+  ruleCards: [
+    {
+      id: 'modals-rule-1',
+      cloze: 'My grandmother can ___ (speak) French.',
+      answer: 'speak',
+      vi: 'Sau can / should / must là V nguyên mẫu, không to, không -s.',
+    },
+    {
+      id: 'modals-rule-2',
+      cloze: '___ I open the window? — Yes, of course.',
+      answer: 'Can',
+      vi: 'Hỏi xin phép: Can I …? Đảo can lên đầu, không mượn do.',
+    },
+    {
+      id: 'modals-rule-3',
+      cloze: "You ___ park your car here. It's the rule.",
+      answer: "mustn't",
+      vi: "mustn't = cấm làm (luật, biển báo). can't (không được phép) cũng đúng; shouldn't chỉ là lời khuyên, nhẹ hơn.",
+    },
+    {
+      id: 'modals-rule-4',
+      cloze: 'You look tired. You ___ take a break.',
+      answer: 'should',
+      vi: 'should = lời khuyên (nên). must = bắt buộc, mạnh hơn nhiều.',
+    },
+    {
+      id: 'modals-rule-5',
+      cloze: 'My father ___ (have to) work on Saturdays.',
+      answer: 'has to',
+      vi: "have to là động từ thường: he / she / it → has to + V. Phủ định, câu hỏi mượn do / does: doesn't have to, Does he have to…?",
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T3 và can / should / must; không so sánh, bị động (xem
+  // `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t4-w1. Câu luyện của thì giữ can / should / must; have to, could,
+  // would like luyện ở khối `have-to-could-would-like` (story 45).
+  practice: {
+    worked: {
+      en: "You should wear a coat. It's cold outside.",
+      vi: 'Bạn nên mặc áo khoác. Ngoài trời lạnh lắm.',
+      noteVi: 'should = lời khuyên (nên). Sau should là động từ nguyên mẫu: không có to, không thêm -s (không phải should to wear, should wears).',
+    },
+    faded: {
+      en: 'My sister can ___ (play) the guitar.',
+      answer: 'play',
+      vi: 'Chị tôi chơi được đàn ghi-ta.',
+      hintVi: 'Sau can là nguyên mẫu, dù chủ ngữ là my sister.',
+    },
+    check: {
+      items: [
+        {
+          id: 'modals-c1',
+          kind: 'type',
+          prompt: 'Students ___ (must / be) quiet in the library.',
+          answer: 'must be',
+          hintVi: 'Quy định bắt buộc: must + nguyên mẫu.',
+          explanationVi: 'Luật của thư viện → must + nguyên mẫu: must be quiet. Không có to (must to be), không chia be thành are.',
+        },
+        {
+          id: 'modals-c2',
+          kind: 'choice',
+          prompt: 'She can ___ very fast.',
+          options: ['run', 'runs', 'to run'],
+          answer: 0,
+          hintVi: 'Sau can là động từ nguyên mẫu.',
+          explanationVi: 'can không đổi theo chủ ngữ; động từ sau can giữ nguyên mẫu: She can run (không thêm -s, không có to).',
+        },
+        {
+          id: 'modals-c3',
+          kind: 'type',
+          prompt: 'You ___ (must / not / use) your phone during the test.',
+          answer: "mustn't use",
+          hintVi: "Cấm làm: must + not = mustn't.",
+          explanationVi: "Quy định cấm → mustn't (must not) + nguyên mẫu: mustn't use. Không mượn don't.",
+        },
+        {
+          id: 'modals-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: I can park my car here.',
+          answer: 'Can I park my car here?',
+          hintVi: 'Đưa can lên trước I, không thêm Do.',
+          explanationVi: 'Câu hỏi với can: Can + chủ ngữ + nguyên mẫu …? Can I park…? là xin phép. Không nói "Do I can park…?".',
+        },
+        {
+          id: 'modals-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Anh ấy không nên làm việc muộn. (work, late)',
+          answer: "He shouldn't work late.",
+          hintVi: '"không nên" = should not.',
+          explanationVi: "\"không nên\" là lời khuyên phủ định: shouldn't (should not) + nguyên mẫu. Không thêm -s cho work, không mượn doesn't.",
+        },
+        {
+          id: 'modals-c6',
+          kind: 'type',
+          prompt: "It's very late. You ___ (should / go) home.",
+          answer: 'should go',
+          hintVi: 'Lời khuyên: should + nguyên mẫu.',
+          explanationVi: 'Khuyên ai nên làm gì → should + nguyên mẫu: should go. Không có to sau should.',
+        },
+      ],
+      easier: [
+        {
+          id: 'modals-e1',
+          kind: 'choice',
+          prompt: 'He ___ swim very well.',
+          options: ['can', 'cans', 'can to'],
+          answer: 0,
+          hintVi: 'can không thêm -s và không đi với to.',
+          explanationVi: 'can giống nhau với mọi chủ ngữ: He can swim. Không có "cans", không có "can to".',
+        },
+        {
+          id: 'modals-e2',
+          kind: 'choice',
+          prompt: "You mustn't ___ here.",
+          options: ['smoke', 'smoking', 'to smoke'],
+          answer: 0,
+          hintVi: "Sau mustn't là nguyên mẫu.",
+          explanationVi: "mustn't + động từ nguyên mẫu: You mustn't smoke here. Không thêm -ing, không có to.",
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu: một việc bạn làm được (can) và một lời khuyên cho bạn của bạn (should / shouldn\'t).',
+      sampleEn: 'I can cook pho. You should drink more water.',
+      speak: [
+        { id: 'modals-say-1', text: 'I can speak English and Vietnamese.', vi: 'Tôi nói được tiếng Anh và tiếng Việt.' },
+        { id: 'modals-say-2', text: "You shouldn't go to bed late.", vi: 'Bạn không nên đi ngủ muộn.' },
+      ],
+    },
+  },
 }
 
 export const COMPARATIVES: Tense = {
@@ -455,7 +1728,7 @@ export const COMPARATIVES: Tense = {
   rules: [
     'Tính từ một âm tiết (và hai âm tiết tận cùng -y) thêm -er / -est: big → bigger (gấp đôi g), easy → easier.',
     'Tính từ dài (hai âm tiết trở lên, trừ -y) dùng more / the most: more useful, the most important.',
-    'Không dùng cả hai: "more cheaper" sai. So sánh nhất luôn có the.',
+    'Không dùng cả hai: "more cheaper" sai. So sánh nhất có the, trừ khi đã có my / your / his… (my best friend).',
   ],
   examples: [
     { en: 'My phone is cheaper than yours.', vi: 'Điện thoại của tôi rẻ hơn của bạn.' },
@@ -468,10 +1741,133 @@ export const COMPARATIVES: Tense = {
   mistakes: [
     { wrong: 'She is more taller than me.', right: 'She is taller than me.', why: 'Tính từ ngắn chỉ thêm -er, không thêm more.' },
     { wrong: 'This is gooder.', right: 'This is better.', why: 'good là bất quy tắc: better, the best.' },
-    { wrong: 'He is tallest in the class.', right: 'He is the tallest in the class.', why: 'So sánh nhất phải có the.' },
+    { wrong: 'He is tallest in the class.', right: 'He is the tallest in the class.', why: 'So sánh nhất cần the (khi trước nó không có my / your / his…).' },
   ],
   dialogues: [yg('bigger than'), yg('the best way to')],
   spellId: 'riddikulus',
+  ruleCards: [
+    {
+      id: 'comparatives-rule-1',
+      cloze: 'My room is ___ (big) than yours.',
+      answer: 'bigger',
+      vi: 'Tính từ ngắn: -er + than (big → bigger, gấp đôi g).',
+    },
+    {
+      id: 'comparatives-rule-2',
+      cloze: 'This laptop is ___ (expensive) than that one.',
+      answer: 'more expensive',
+      vi: 'Tính từ dài: more + adj + than.',
+    },
+    {
+      id: 'comparatives-rule-3',
+      cloze: 'She is ___ (good) student in the class.',
+      answer: 'the best',
+      vi: 'good → better → the best. So sánh nhất có the, trừ khi đã có my / your / his… (my best friend).',
+    },
+    {
+      id: 'comparatives-rule-4',
+      cloze: 'He is ___ (tall) than his father.',
+      answer: 'taller',
+      vi: 'Không dùng cả more và -er (không phải more taller).',
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T4 trước nó và so sánh; không bị động (xem `src/lib/tense-scope.ts`);
+  // đề không trùng đề quiz s1-t4-w3 hay đề luyện bị động cùng bài.
+  practice: {
+    worked: {
+      en: 'My new job is easier than my old job.',
+      vi: 'Công việc mới của tôi dễ hơn công việc cũ.',
+      noteVi: 'easy tận cùng phụ âm + y nên đổi y thành -ier: easier, rồi + than. Không nói more easy.',
+    },
+    faded: {
+      en: 'This summer is ___ (hot) than last summer.',
+      answer: 'hotter',
+      vi: 'Mùa hè năm nay nóng hơn mùa hè năm ngoái.',
+      hintVi: 'hot tận cùng o + t (1 nguyên âm + 1 phụ âm): gấp đôi t rồi thêm -er.',
+    },
+    check: {
+      items: [
+        {
+          id: 'comparatives-c1',
+          kind: 'type',
+          prompt: 'Mai is ___ (good) cook in my family.',
+          answer: 'the best',
+          hintVi: 'Đứng đầu cả nhà → so sánh nhất của good.',
+          explanationVi: 'good là bất quy tắc: good → better → the best. Chọn ra một người đứng đầu cả nhà (in my family) nên dùng the best; không nói the goodest.',
+        },
+        {
+          id: 'comparatives-c2',
+          kind: 'choice',
+          prompt: 'My bag is ___ than your bag.',
+          options: ['bigger', 'more big', 'biggest'],
+          answer: 0,
+          hintVi: 'big là tính từ ngắn, có than.',
+          explanationVi: 'Có than nên dùng so sánh hơn; big ngắn nên gấp đôi g + -er: bigger. Không dùng more big; biggest là so sánh nhất.',
+        },
+        {
+          id: 'comparatives-c3',
+          kind: 'type',
+          prompt: 'Math is ___ (difficult) than English for me.',
+          answer: 'more difficult',
+          hintVi: 'difficult có 3 âm tiết.',
+          explanationVi: 'difficult là tính từ dài nên dùng more + tính từ + than: more difficult than. Không nói difficulter.',
+        },
+        {
+          id: 'comparatives-c4',
+          kind: 'type',
+          prompt: 'Đổi sang so sánh nhất (in the class): Nam is short.',
+          answer: 'Nam is the shortest in the class.',
+          accept: ['Nam is the shortest student in the class.'],
+          hintVi: 'Tính từ ngắn: the + adj-est.',
+          explanationVi: 'short là tính từ ngắn: the shortest. Cần the trước so sánh nhất (chưa có my / your…). "the shortest student" cũng đúng.',
+        },
+        {
+          id: 'comparatives-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Đây là món ăn ngon nhất ở nhà hàng này. (this, good, dish, in this restaurant)',
+          answer: 'This is the best dish in this restaurant.',
+          hintVi: '"ngon nhất" = so sánh nhất của good.',
+          explanationVi: '"nhất" → so sánh nhất; good là bất quy tắc: the best. Đặt the best trước danh từ: the best dish.',
+        },
+        {
+          id: 'comparatives-c6',
+          kind: 'type',
+          prompt: 'Which is ___ (expensive) phone in the shop?',
+          answer: 'the most expensive',
+          hintVi: 'Chọn một chiếc đứng đầu cả cửa hàng; expensive là tính từ dài.',
+          explanationVi: 'So sánh nhất của tính từ dài: the most + tính từ: the most expensive. Không nói the expensivest.',
+        },
+      ],
+      easier: [
+        {
+          id: 'comparatives-e1',
+          kind: 'choice',
+          prompt: 'He is ___ than me.',
+          options: ['older', 'more old', 'oldest'],
+          answer: 0,
+          hintVi: 'old là tính từ ngắn, có than.',
+          explanationVi: 'Có than → so sánh hơn; old ngắn nên thêm -er: older than. Không dùng more old; oldest là so sánh nhất.',
+        },
+        {
+          id: 'comparatives-e2',
+          kind: 'choice',
+          prompt: 'This is the ___ day of my life!',
+          options: ['best', 'better', 'good'],
+          answer: 0,
+          hintVi: 'Có the và "of my life" → so sánh nhất.',
+          explanationVi: 'So sánh nhất của good là the best. better là so sánh hơn (đi với than); good là tính từ gốc, chưa phải dạng so sánh.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu: so sánh 2 thứ quanh bạn (hơn) và chọn ra 1 thứ đứng đầu (nhất).',
+      sampleEn: 'My brother is taller than me. Pho is the best food in Hanoi.',
+      speak: [
+        { id: 'comparatives-say-1', text: 'My city is bigger than my hometown.', vi: 'Thành phố tôi ở lớn hơn quê tôi.' },
+        { id: 'comparatives-say-2', text: 'Summer is the hottest season in Hanoi.', vi: 'Mùa hè là mùa nóng nhất ở Hà Nội.' },
+      ],
+    },
+  },
 }
 
 export const PASSIVE_PRESENT: Tense = {
@@ -502,30 +1898,168 @@ export const PASSIVE_PRESENT: Tense = {
   ],
   dialogues: [yg('is made in'), yg('is not allowed')],
   spellId: 'finite',
+  ruleCards: [
+    {
+      id: 'passive-present-rule-1',
+      cloze: 'These bags ___ (sell) at the market.',
+      answer: 'are sold',
+      vi: 'Bị động: am / is / are + V3. Chủ ngữ số nhiều dùng are.',
+    },
+    {
+      id: 'passive-present-rule-2',
+      cloze: 'The tip ___ (not / include) in the bill.',
+      answer: "isn't included",
+      vi: "Phủ định bị động: am / is / are + not + V3 (isn't included).",
+    },
+    {
+      id: 'passive-present-rule-3',
+      cloze: '___ English taught at your school?',
+      answer: 'Is',
+      vi: 'Câu hỏi bị động: đảo am / is / are lên trước chủ ngữ, rồi V3 (không phải Does English taught?).',
+    },
+    {
+      id: 'passive-present-rule-4',
+      cloze: 'The windows are ___ (clean) every Monday.',
+      answer: 'cleaned',
+      vi: 'Bị động cần V3. "are clean" là tính từ (sạch).',
+    },
+  ],
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì / chủ điểm T1–T4 và bị động hiện tại; không bị động quá khứ, could, have to
+  // (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t4-w3 hay đề luyện so sánh cùng bài.
+  practice: {
+    worked: {
+      en: 'This bread is made every morning.',
+      vi: 'Bánh mì này được làm mỗi sáng.',
+      noteVi: 'Bánh mì "được làm" nên dùng bị động: is + V3 (make – made – made). Không cần nói ai làm.',
+    },
+    faded: {
+      en: 'These books ___ (write) in English.',
+      answer: 'are written',
+      vi: 'Những cuốn sách này được viết bằng tiếng Anh.',
+      hintVi: 'these books số nhiều → are; write – wrote – written.',
+    },
+    check: {
+      items: [
+        {
+          id: 'passive-present-c1',
+          kind: 'type',
+          prompt: 'This song ___ (sing) by children all over Vietnam.',
+          answer: 'is sung',
+          hintVi: 'Bài hát "được hát": is + V3 của sing.',
+          explanationVi: 'Bị động: is (vì this song số ít) + V3: sing – sang – sung. by + người làm vì muốn nói rõ ai hát.',
+        },
+        {
+          id: 'passive-present-c2',
+          kind: 'choice',
+          prompt: 'Green tea ___ in China and Vietnam.',
+          options: ['is drunk', 'drinks', 'is drink'],
+          answer: 0,
+          hintVi: 'Trà không tự uống: trà "được uống".',
+          explanationVi: 'Trà được uống → bị động: is + V3 (drink – drank – drunk). "Green tea drinks" nghĩa là trà tự uống; "is drink" thiếu V3.',
+        },
+        {
+          id: 'passive-present-c3',
+          kind: 'type',
+          prompt: 'Credit cards ___ (not / accept) in this shop.',
+          answer: "aren't accepted",
+          hintVi: "Credit cards = thẻ tín dụng. Phủ định bị động: are + not + V3.",
+          explanationVi: "Credit cards số nhiều → are; phủ định: are not (aren't) + V3: accepted. Không mượn don't.",
+        },
+        {
+          id: 'passive-present-c4',
+          kind: 'type',
+          prompt: 'Đổi sang bị động: People eat pho for breakfast.',
+          answer: 'Pho is eaten for breakfast.',
+          hintVi: 'pho lên làm chủ ngữ; is + V3 của eat.',
+          explanationVi: 'Thứ chịu tác động (pho) làm chủ ngữ, to be theo chủ ngữ mới (pho số ít → is) + V3 (eaten). people không cần nói nên bỏ.',
+        },
+        {
+          id: 'passive-present-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Bài hát này có được hát bằng tiếng Anh không? (this song, sing, in English)',
+          answer: 'Is this song sung in English?',
+          hintVi: 'Câu hỏi bị động: Is + chủ ngữ + V3?',
+          explanationVi: 'Câu hỏi bị động: đảo is lên trước this song, rồi V3 (sing – sang – sung). Không dùng Does: "Does this song sing…?" là bài hát tự hát.',
+        },
+        {
+          id: 'passive-present-c6',
+          kind: 'type',
+          prompt: '___ this word used in American English?',
+          answer: 'Is',
+          hintVi: 'this word số ít; câu hỏi bị động đảo to be lên đầu.',
+          explanationVi: 'Câu hỏi bị động: Is (vì this word số ít) + chủ ngữ + V3 (used)? Không dùng Does với used.',
+        },
+      ],
+      easier: [
+        {
+          id: 'passive-present-e1',
+          kind: 'choice',
+          prompt: 'English ___ spoken in Singapore.',
+          options: ['is', 'are', 'be'],
+          answer: 0,
+          hintVi: 'English là số ít.',
+          explanationVi: 'Bị động cần to be theo chủ ngữ: English số ít → is spoken.',
+        },
+        {
+          id: 'passive-present-e2',
+          kind: 'choice',
+          prompt: 'These cups are ___ in Bat Trang.',
+          options: ['made', 'make', 'making'],
+          answer: 0,
+          hintVi: 'Sau are của câu bị động là V3.',
+          explanationVi: 'Bị động: are + V3. make – made – made nên are made. are making là "đang làm" (cốc tự làm).',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói 2 câu bị động về đồ vật hoặc món ăn quen thuộc: thứ gì được làm, bán hay dùng ở đâu.',
+      sampleEn: 'English is spoken at my office. My car is washed every Sunday.',
+      speak: [
+        { id: 'passive-present-say-1', text: 'Rice is eaten every day in Vietnam.', vi: 'Ở Việt Nam, cơm được ăn mỗi ngày.' },
+        { id: 'passive-present-say-2', text: 'My shirts are washed every week.', vi: 'Áo sơ mi của tôi được giặt mỗi tuần.' },
+      ],
+    },
+  },
 }
 
 // ---------------------------------------------------------------- Nội dung đoạn Ngữ pháp từng tuần
 
-export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS] }
-export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE] }
+export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS], choices: [SIMPLE_VS_CONTINUOUS] }
+export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE], choices: [SUBJECT_QUESTIONS] }
 export const GRAMMAR_T2_W3: GrammarContent = { tenses: [PAST_SIMPLE_IRREGULAR], irregularVerbs: IRREGULAR_VERBS }
 export const GRAMMAR_T2_W4: GrammarContent = {
-  tenses: [],
+  // Story 46: quá khứ tiếp diễn đưa vào Chặng 1 (quyết định ngày 2026-11-11), đứng trước phần ôn tập T2.
+  tenses: [PAST_CONTINUOUS],
   review: {
     summary: [
       'Hiện tại tiếp diễn: am / is / are + V-ing cho việc đang diễn ra (I am working now).',
       "Quá khứ của to be: was / were; hỏi và phủ định không mượn did (Were you…? I wasn't…).",
       "Quá khứ đơn có quy tắc: V-ed cho mọi chủ ngữ; hỏi / phủ định dùng did / didn't + nguyên mẫu.",
       'Quá khứ đơn bất quy tắc: học thuộc V2 (went, saw, bought); sau did vẫn là V1.',
-      'Không trộn: không nói "I am work", "I didn\'t went", "Did you watched", "Did you be".',
+      'Quá khứ tiếp diễn: was / were + V-ing cho việc đang diễn ra ở một lúc trong quá khứ; việc ngắn chen vào dùng quá khứ đơn (I was cooking when you called).',
+      'Không trộn: không nói "I am work", "I didn\'t went", "Did you watched", "Did you be", "I was cook".',
     ],
     note: 'Mini test 10 câu ôn cả 4 tuần T2. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
     quizId: 'mini-t2',
   },
 }
 export const GRAMMAR_T3_W1: GrammarContent = { tenses: [WILL] }
-export const GRAMMAR_T3_W2: GrammarContent = { tenses: [GOING_TO] }
-export const GRAMMAR_T3_W3: GrammarContent = { tenses: [PRESENT_PERFECT] }
-export const GRAMMAR_T3_W4: GrammarContent = { tenses: [PERFECT_VS_PAST] }
-export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS] }
+export const GRAMMAR_T3_W2: GrammarContent = { tenses: [GOING_TO], choices: [WILL_VS_GOING_TO] }
+export const GRAMMAR_T3_W3: GrammarContent = { tenses: [PRESENT_PERFECT], irregularVerbsReview: IRREGULAR_VERBS }
+export const GRAMMAR_T3_W4: GrammarContent = {
+  tenses: [PERFECT_VS_PAST],
+  choices: [DONT_TRANSLATE],
+  // Story 40: tóm tắt T3 + mini test cuối tháng (8 câu T3, 2 câu ôn thì T1–T2).
+  review: {
+    summary: [
+      "Tương lai will: will / won't + V nguyên mẫu cho lời hứa, đề nghị, quyết định ngay lúc nói (OK, I'll help you).",
+      'be going to: am / is / are + going to + V cho kế hoạch đã định hoặc dấu hiệu trước mắt (Look! It is going to rain).',
+      "Hiện tại hoàn thành: have / has + V3 cho trải nghiệm, việc tới giờ chưa xảy ra hoặc còn kéo dài (I have never seen it. She hasn't finished yet).",
+      'Hoàn thành hay quá khứ đơn: since / for kéo tới giờ dùng have / has + V3; mốc đã xong (ago, last…, in 2020) hoặc việc đã kết thúc (kể cả có for) dùng quá khứ đơn.',
+    ],
+    note: 'Mini test 10 câu: 8 câu ôn 4 tuần T3 và 2 câu ôn thì T1–T2. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
+    quizId: 'mini-t3',
+  },
+}
+export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS], choices: [HAVE_TO_COULD_WOULD_LIKE] }
 export const GRAMMAR_T4_W3: GrammarContent = { tenses: [COMPARATIVES, PASSIVE_PRESENT] }

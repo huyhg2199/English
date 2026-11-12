@@ -1,5 +1,7 @@
-import { getQuestion, quizHref, type Question } from '@/data/questions'
-import { allLessons, getLesson } from '@/data/roadmap'
+import { BRICK_IDS, brickIdFromLessonId, brickLessonId, getBrickMeta, type BrickId } from '@/data/foundation'
+import { FOUNDATION_QUESTIONS, getQuestion, QUESTION_BANK, quizHref, type Question } from '@/data/questions'
+import { allLessons, getLesson, lessonHref, SECTION_TITLES, sectionHref, type SectionId } from '@/data/roadmap'
+import { brickHref, foundationState, isInFoundation, nextBrickIdFromState, readFoundation } from '@/lib/foundation'
 import { listAttempts, listMistakes, readMistakes, recordAttempt, seededRandom, shuffle, isMastered } from '@/lib/quiz'
 import { addDays, currentLessonId, daysBetween, sessionDates, startOfLocalDay } from '@/lib/schedule'
 import { localDayKey } from '@/lib/sessions'
@@ -8,7 +10,12 @@ import type { Store } from '@/lib/storage'
 /**
  * Quay lại sau nghỉ (story 11, CAP-6): phát hiện nghỉ > 7 ngày, chọn câu test 5', chỉ tới đoạn hổng.
  * Hàm thuần: thời gian qua `now`, ngẫu nhiên qua `seed`. Lần làm nằm trong `quizzes.attempts` (`kind: 'comeback'`).
+ * Story 47: khi đang ở Sân ga, đề lấy câu kiểm tra hàng của các viên đã học xong (không lấy câu bài lộ trình chưa học) và
+ * kết quả trỏ về viên chứa lỗ hổng (`comebackTarget`).
  */
+
+/** Ngân hàng của test quay lại: câu bài lộ trình và câu kiểm tra hàng Sân ga (story 47). */
+export const COMEBACK_BANK: readonly Question[] = [...QUESTION_BANK, ...FOUNDATION_QUESTIONS]
 
 export const COMEBACK_QUIZ_ID = 'comeback'
 /** Trang làm test quay lại (dùng chung trang làm bài của story 9). */
@@ -67,6 +74,11 @@ export type PickComebackOptions = { canSpeak: boolean }
  * 8 câu: tối đa 3 câu trong Sổ lỗi (ưu tiên câu chưa thuộc) + câu của tối đa 4 bài có câu hỏi gần nhất trước bài
  * hiện tại (theo thứ tự lộ trình, chia đều các bài). Thiếu câu thì lấy thêm từ các bài trước đó, rồi mới tới bài
  * hiện tại. Không trùng câu; không có TTS thì bỏ câu nghe. Thứ tự xáo theo seed.
+ *
+ * Đang ở Sân ga (story 47): thay cho bài là các viên đã học xong (`doneBrickIds`), xếp theo `lastDoneAt` mới nhất trước:
+ * 4 viên gần nhất chia đều, thiếu thì viên cũ hơn. Câu của viên là câu kiểm tra hàng (`FOUNDATION_QUESTIONS`, `lessonId`
+ * `fNN`, cần có trong `bank`); câu luyện trong viên không phải câu của Quiz engine nên không vào đề. Câu bài lộ trình chỉ
+ * vào đề khi nằm trong Sổ lỗi. Chưa xong viên nào và Sổ lỗi trống → `[]`.
  */
 export function pickComebackTest(
   store: Store,
@@ -88,18 +100,6 @@ export function pickComebackTest(
   const byLesson = new Map<string, Question[]>()
   for (const q of bank) if (usable(q)) byLesson.set(q.lessonId, [...(byLesson.get(q.lessonId) ?? []), q])
 
-  const lessons = allLessons()
-  const currentId = currentLessonId(store)
-  const currentIndex = currentId ? lessons.findIndex((l) => l.id === currentId) : lessons.length
-  const before = lessons
-    .slice(0, Math.max(0, currentIndex))
-    .reverse()
-    .filter((l) => byLesson.has(l.id))
-    .map((l) => l.id)
-  const recent = before.slice(0, COMEBACK_RECENT_LESSONS)
-  const older = before.slice(COMEBACK_RECENT_LESSONS)
-  const current = currentId && byLesson.has(currentId) ? [currentId] : []
-
   const fill = (lessonIds: readonly string[]) => {
     const groups = lessonIds.map((id) => shuffle((byLesson.get(id) ?? []).filter((q) => !chosen.has(q.id)), random))
     // Lần lượt từng bài một câu để chia đều.
@@ -111,20 +111,56 @@ export function pickComebackTest(
       }
     }
   }
-  fill(recent)
-  for (const id of older) {
-    if (chosen.size >= COMEBACK_SIZE) break
-    fill([id])
+  /** 4 nguồn đầu chia đều, thiếu thì lần lượt từng nguồn sau. */
+  const fillRecentThenOlder = (ids: readonly string[]) => {
+    fill(ids.slice(0, COMEBACK_RECENT_LESSONS))
+    for (const id of ids.slice(COMEBACK_RECENT_LESSONS)) {
+      if (chosen.size >= COMEBACK_SIZE) break
+      fill([id])
+    }
   }
+
+  if (isInFoundation(store)) {
+    const bricks = readFoundation(store).bricks
+    // Viên xong gần nhất trước (lastDoneAt mới hơn, so theo thời điểm chứ không theo chuỗi); bằng nhau thì viên đứng sau trước.
+    const doneAt = (id: BrickId) => Date.parse(bricks[id]?.lastDoneAt ?? '') || 0
+    const recentBricks = [...foundationState(store).doneBrickIds]
+      .sort((a, b) => doneAt(b) - doneAt(a) || BRICK_IDS.indexOf(b) - BRICK_IDS.indexOf(a))
+      .map(brickLessonId)
+      .filter((id) => byLesson.has(id))
+    fillRecentThenOlder(recentBricks)
+    return shuffle([...chosen.values()], random)
+  }
+
+  const lessons = allLessons()
+  const currentId = currentLessonId(store)
+  const currentIndex = currentId ? lessons.findIndex((l) => l.id === currentId) : lessons.length
+  const before = lessons
+    .slice(0, Math.max(0, currentIndex))
+    .reverse()
+    .filter((l) => byLesson.has(l.id))
+    .map((l) => l.id)
+  const current = currentId && byLesson.has(currentId) ? [currentId] : []
+
+  fillRecentThenOlder(before)
   if (chosen.size < COMEBACK_SIZE) fill(current)
   return shuffle([...chosen.values()], random)
+}
+
+/**
+ * Đề test quay lại dùng ở cả thẻ Hôm nay (`useComeback`, đếm câu) lẫn trang làm test (`ComebackRun`, chốt đề): luôn lấy từ
+ * `COMEBACK_BANK` (câu bài lộ trình + câu kiểm tra hàng Sân ga, story 47) để hai nơi không lệch nhau.
+ */
+export function comebackQuestions(store: Store, seed: string, opts: PickComebackOptions): Question[] {
+  return pickComebackTest(store, COMEBACK_BANK, seed, opts)
 }
 
 export type WeakSection = { lessonId: string; sectionId: string; wrong: number }
 
 /**
  * Đoạn bài có nhiều câu sai nhất trong lần làm (hoà thì bài sớm hơn trên lộ trình, rồi đoạn sớm hơn trong bài).
- * Không sai câu nào (hoặc không tra được câu nào) → null (về bài hiện tại).
+ * Câu viên gạch (`lessonId` `fNN`) tính như một "bài" đứng sau mọi bài lộ trình, theo thứ tự F01 → F18 (story 47); id lạ
+ * đứng cuối. Không sai câu nào (hoặc không tra được câu nào) → null (về bài hiện tại).
  */
 export function weakestSectionFrom(
   attempt: { answers: readonly { questionId: string; correct: boolean }[] },
@@ -140,10 +176,15 @@ export function weakestSectionFrom(
     entry.wrong++
     counts.set(key, entry)
   }
-  const lessonOrder = new Map(allLessons().map((l, i) => [l.id, i]))
+  const lessons = allLessons()
+  const lessonOrder = new Map(lessons.map((l, i) => [l.id, i]))
   const lastIfMissing = (i: number | undefined) => (i === undefined || i < 0 ? Number.MAX_SAFE_INTEGER : i)
+  const lessonRank = (lessonId: string) => {
+    const brick = brickIdFromLessonId(lessonId)
+    return brick ? lessons.length + BRICK_IDS.indexOf(brick) : lastIfMissing(lessonOrder.get(lessonId))
+  }
   const order = (s: WeakSection) => [
-    lastIfMissing(lessonOrder.get(s.lessonId)),
+    lessonRank(s.lessonId),
     lastIfMissing(getLesson(s.lessonId)?.sections.findIndex((x) => x.id === s.sectionId)),
   ]
   let best: WeakSection | null = null
@@ -158,4 +199,51 @@ export function weakestSectionFrom(
     if (li < bl || (li === bl && si < bs)) best = s
   }
   return best
+}
+
+/** Chỗ học tiếp khi không có lỗ hổng, chốt lúc bắt đầu test quay lại (story 47). */
+export type ComebackHome =
+  | { kind: 'brick'; brickId: BrickId }
+  /** Đang ở Sân ga mà hết viên tiếp theo (đã xong / thuộc hàng đã xong). */
+  | { kind: 'foundation' }
+  | { kind: 'lesson'; lessonId: string }
+
+/**
+ * Đích "Học tiếp" khi đúng hết: đang ở Sân ga → viên tiếp theo (hết viên → trang Sân ga); sau Sân ga → bài hiện tại; đã đi
+ * hết lộ trình → null.
+ */
+export function comebackHome(store: Store, hasContent: (id: BrickId) => boolean): ComebackHome | null {
+  if (isInFoundation(store)) {
+    const next = nextBrickIdFromState(foundationState(store), hasContent)
+    return next ? { kind: 'brick', brickId: next } : { kind: 'foundation' }
+  }
+  const lessonId = currentLessonId(store)
+  return lessonId ? { kind: 'lesson', lessonId } : null
+}
+
+const FOUNDATION_HREF = '/foundation'
+
+const brickTargetLabel = (id: BrickId) => `${id} · ${getBrickMeta(id)?.title ?? id}`
+
+/**
+ * Nút "Học tiếp" sau test quay lại (story 47): có lỗ hổng → viên chứa nó (`/foundation/Fxx`, "Fxx · tên viên") hoặc đoạn
+ * bài ("Tên bài · Ngữ pháp"); không có → `home` (viên tiếp theo, Sân ga, bài hiện tại); không có cả hai → Lộ trình.
+ */
+export function comebackTarget(weak: WeakSection | null, home: ComebackHome | null): { href: string; label: string } {
+  if (weak) {
+    const brick = brickIdFromLessonId(weak.lessonId)
+    if (brick) return { href: brickHref(brick), label: brickTargetLabel(brick) }
+    const title = getLesson(weak.lessonId)?.title ?? weak.lessonId
+    const section = SECTION_TITLES[weak.sectionId as SectionId] ?? weak.sectionId
+    return { href: sectionHref(weak.lessonId, weak.sectionId), label: `${title} · ${section}` }
+  }
+  if (!home) return { href: '/roadmap', label: 'Lộ trình' }
+  switch (home.kind) {
+    case 'brick':
+      return { href: brickHref(home.brickId), label: brickTargetLabel(home.brickId) }
+    case 'foundation':
+      return { href: FOUNDATION_HREF, label: 'Sân ga 9¾' }
+    case 'lesson':
+      return { href: lessonHref(home.lessonId), label: getLesson(home.lessonId)?.title ?? home.lessonId }
+  }
 }

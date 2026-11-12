@@ -191,9 +191,10 @@ export const stage1: Stage = {
           id: 's1-t2-w4',
           monthId: 't2',
           week: 4,
-          title: 'Ôn lại · mini test · ôn IPA',
+          // Quyết định 2026-11-11 (story 46): thêm quá khứ tiếp diễn vào Chặng 1; md gốc ghi 'Ôn lại · mini test'.
+          title: 'Quá khứ tiếp diễn · ôn lại · ôn IPA',
           pronunciation: ['Ôn IPA, tự đọc 20 từ rồi so với từ điển', P],
-          grammar: 'Ôn lại · mini test',
+          grammar: 'Quá khứ tiếp diễn · ôn lại · mini test',
           words: 500,
           entertainment: 'LyricsTraining',
         }),

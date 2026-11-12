@@ -23,8 +23,7 @@ import {
   recordAttempt as recordPronunciationAttempt,
   type SpeakOutcome,
 } from '@/lib/pronunciation'
-import { QUESTION_BANK } from '@/data/questions'
-import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
+import { COMEBACK_QUIZ_ID, comebackQuestions, pendingComeback, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
 import {
   completeBrick,
@@ -48,6 +47,8 @@ import {
   attemptId,
   brickReviewInvite,
   dismissBrickInvite,
+  dismissLessonInvite,
+  lessonReviewInvite,
   listGradedAttempts,
   readMistakes,
   recordAttempt,
@@ -211,6 +212,26 @@ export function useBrickInvite(now: Date) {
   const invite = useMemo(() => brickInviteFor(store, now), [store, now])
   const dismiss = useCallback(
     (brickId: string, at: Date = new Date()) => handle.update((s) => dismissBrickInvite(s, brickId, at)),
+    [handle],
+  )
+  return { invite, dismiss }
+}
+
+/** Lời mời ôn bài thì mà Hôm nay hiện (story 41): `lessonReviewInvite` với bài của lộ trình. */
+export function lessonInviteFor(store: Store, now: Date) {
+  return lessonReviewInvite(store, now)
+}
+
+/**
+ * Lời mời "Ôn lại bài: <tên bài>?" (story 41) tại `now`: `invite` (null khi không có) và `dismiss` ("Để sau", ghi
+ * `mistakes.lessonInvites`, đồng bộ). Đã đạt kiểm tra bài sau câu sai mới nhất thì không mời.
+ */
+export function useLessonInvite(now: Date) {
+  const handle = useStoreHandle()
+  const { store } = useLoadedStore()
+  const invite = useMemo(() => lessonInviteFor(store, now), [store, now])
+  const dismiss = useCallback(
+    (lessonId: string, at: Date = new Date()) => handle.update((s) => dismissLessonInvite(s, lessonId, at)),
     [handle],
   )
   return { invite, dismiss }
@@ -551,7 +572,7 @@ export function useComeback(now: Date) {
   const { store } = useLoadedStore()
   const pending = useMemo(() => pendingComeback(store, now), [store, now])
   const questionCount = useMemo(
-    () => (pending ? pickComebackTest(store, QUESTION_BANK, 'probe', { canSpeak: canSpeak() }).length : 0),
+    () => (pending ? comebackQuestions(store, 'probe', { canSpeak: canSpeak() }).length : 0),
     [store, pending],
   )
   const skip = useCallback(

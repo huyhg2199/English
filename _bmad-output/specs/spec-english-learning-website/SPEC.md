@@ -95,7 +95,7 @@ Vision kết hợp pain. Huy (người dùng duy nhất) mất gốc tiếng Anh
 
 - Front-end (React + shadcn/ui), không backend tự viết, không Edge Function. Dữ liệu học local-first: luôn đọc/ghi localStorage và chạy được offline; Supabase (Auth đăng nhập bằng mã OTP email + một bảng có RLS) là nơi lưu chính, đồng bộ hai chiều khi có mạng và là bản chuẩn khi đổi máy. Chỉ các key trong allowlist được đồng bộ, không bao giờ đẩy API key/PAT/token. GitHub vẫn dùng cho Gist (trạng thái "đã học hôm nay" cho cron, CAP-21) và Actions chạy cron. Chi tiết trong `stack.md`.
 - Không dùng proxy. Nguồn không gọi trực tiếp được từ trình duyệt thì chỉ link ra ngoài.
-- Thứ tự làm theo `mvp-phases.md`. Luật học và luật chấm điểm theo `learning-rules.md`. Chỗ nào `lo-trinh-toeic-12-thang.md` nói khác về Sân ga 9¾ trước Chặng 1 và ngày bắt đầu lịch 12 tháng thì SPEC và `learning-rules.md` thắng.
+- Thứ tự làm theo `mvp-phases.md`. Luật học và luật chấm điểm theo `learning-rules.md`. Chỗ nào `lo-trinh-toeic-12-thang.md` nói khác về Sân ga 9¾ trước Chặng 1, ngày bắt đầu lịch 12 tháng và quá khứ tiếp diễn ở s1-t2-w4 (quyết định ngày 2026-11-11, story 46) thì SPEC và `learning-rules.md` thắng.
 - PWA host miễn phí trên GitHub Pages, dùng chính trên iPhone qua "Thêm vào MH chính". Vì vậy app mobile-first. Điều hướng chính có đúng 5 mục theo thứ tự Hôm nay / Lộ trình / Luyện tập / Sổ tay / Phòng Cúp: dưới 1024px là bottom nav; từ 1024px trở lên là thanh điều hướng trên cùng, cùng 5 mục, cùng thứ tự. Giao diện 375px không đổi khi thêm bố cục máy tính (`stack.md`).
 - AI theo kiểu BYOK: Huy tự nhập key, key lưu ở localStorage, không bao giờ commit hay deploy kèm key.
 - Không khoá, không phạt, không xoá hay reset tiến độ. Khi sai nhiều, app mở thêm gợi ý và chia nhỏ bài.

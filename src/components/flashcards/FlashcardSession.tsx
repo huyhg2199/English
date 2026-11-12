@@ -284,9 +284,10 @@ function ruleParts(word: RuleStudyWord): ClozeParts {
 }
 
 /**
- * Thẻ quy tắc (story 24 viên gạch, story 33 thì của bài): mặt trước nhãn "Thẻ quy tắc · Fnn" / "Thẻ quy tắc · T2 tuần 2"
- * + câu có chỗ trống; lật thẻ thấy câu đã điền (đáp án in đậm), dòng quy tắc tiếng Việt, link xem lại viên / bài và 4 nút
- * chấm. Không có "Đã biết", không đọc TTS (câu có thể chứa IPA).
+ * Thẻ quy tắc (story 24 viên gạch, story 33 thì của bài, story 38 động từ bất quy tắc): mặt trước nhãn "Thẻ quy tắc · Fnn"
+ * / "Thẻ quy tắc · T2 tuần 2" / "Thẻ quy tắc · Động từ bất quy tắc" + câu có chỗ trống; lật thẻ thấy câu đã điền (đáp án in
+ * đậm), dòng quy tắc tiếng Việt, link xem lại viên / bài / bảng động từ và 4 nút chấm. Không có "Đã biết", không đọc TTS
+ * (câu có thể chứa IPA).
  */
 function RuleFlashcard({ word, kind, previous, now, onGrade }: Pick<FlashcardProps, 'previous' | 'now' | 'onGrade'> & {
   word: RuleStudyWord

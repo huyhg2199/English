@@ -82,20 +82,31 @@ describe('brickReviewInvite — I/O Matrix (story 28)', () => {
     expect(brickReviewInvite(s, NOW, { ...deps(), lookup: (id) => fake[id] })).toBeNull()
   })
 
-  it('Không có viên dạy: câu T2–T4 không có requires, câu ngoài ngân hàng, mục từ O.W.L. → không tính', () => {
+  it('Không có viên dạy: câu không có requires, câu ngoài ngân hàng, mục từ O.W.L. → không tính', () => {
     const t2 = ['q-s1-t2-w1-01', 'q-s1-t2-w1-02', 'q-s1-t2-w2-01']
-    for (const id of t2) {
-      expect(getQuestion(id), id).toBeDefined()
-      expect(getQuestion(id)!.requires, id).toBeUndefined()
-    }
+    for (const id of t2) expect(getQuestion(id), id).toBeDefined()
     let s = empty()
     for (const id of t2) s = wrong(s, id, ago(1))
-    expect(brickReviewInvite(s, NOW, deps())).toBeNull()
+    // Câu không khai báo requires (dựng tay: từ story 47 mọi câu bài đều có) → không tính.
+    const noRequires = (id: string): Question | undefined => {
+      const q = getQuestion(id)
+      return q ? { ...q, requires: undefined } : undefined
+    }
+    expect(brickReviewInvite(s, NOW, { ...deps(), lookup: noRequires })).toBeNull()
     // 1 câu thật cần F09 + câu ngoài ngân hàng + mục từ O.W.L. → vẫn chỉ 1 câu.
     s = wrong(empty(), 'q-s1-t1-w1-03', ago(1))
     s = wrong(s, 'q-da-bi-xoa', ago(1))
     s = recordMistake(s, { id: 'owl-word-think', tag: 'phát âm', lessonId: 's1-t4-w4', sectionId: 'checkpoint' as const, word: { text: 'think', ipa: 'θɪŋk' } }, 'x', ago(1))
     expect(brickReviewInvite(s, NOW, { ...deps(), lookup: (id) => (id === 'owl-word-think' ? getQuestion('q-s1-t1-w4-04') : getQuestion(id)) })).toBeNull()
+  })
+
+  it('story 47: câu T2–T4 cũ nay có requires nên cũng được tính (luật mời không đổi); khái niệm bài T2 không mời viên nào', () => {
+    // q-s1-t2-w1-02 và q-s1-t2-w2-01 đều cần subject-pronouns (F09).
+    const s = wrong(wrong(empty(), 'q-s1-t2-w1-02', ago(2)), 'q-s1-t2-w2-01', ago(1))
+    expect(brickReviewInvite(s, NOW, deps())?.brickId).toBe('F09')
+    // q-s1-t2-w2-05 chỉ cần stress (F04) + suffix-stress (khái niệm bài): cùng q-s1-t2-w1-05 (stress) → F04.
+    const stress = wrong(wrong(empty(), 'q-s1-t2-w2-05', ago(2)), 'q-s1-t2-w1-05', ago(1))
+    expect(brickReviewInvite(stress, NOW, deps())?.brickId).toBe('F04')
   })
 
   it('Hoà: sai w1-01 + w1-04 cùng lúc → F09 = 2, F13 = 2, mời F13 (viên đứng sau)', () => {

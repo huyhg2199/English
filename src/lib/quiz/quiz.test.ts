@@ -368,12 +368,14 @@ describe('pickQuiz ưu tiên câu chưa gặp (story 35)', () => {
     }
   })
 
-  it('bài 10 câu, đã gặp 5 câu → lần sau bốc đúng 5 câu còn lại', () => {
-    expect(w1).toHaveLength(10)
+  it('bài 14 câu (story 36), đã gặp 9 câu → lần sau bốc đúng 5 câu còn lại', () => {
+    expect(w1).toHaveLength(14)
     for (const seed of seeds) {
       const first = pickQuiz(QUESTION_BANK, lessonQuiz, `${seed}-a`, { canSpeak: true })
       expect(first).toHaveLength(5)
-      const seen = new Set(ids(first))
+      // 5 câu vừa làm cộng 4 câu chưa làm khác (theo thứ tự ngân hàng) → còn đúng 5 câu chưa gặp.
+      const others = w1.map((x) => x.id).filter((id) => !ids(first).includes(id)).slice(0, 4)
+      const seen = new Set([...ids(first), ...others])
       const second = pickQuiz(QUESTION_BANK, lessonQuiz, `${seed}-b`, { canSpeak: true, seen })
       expect(new Set(ids(second)), seed).toEqual(new Set(w1.map((x) => x.id).filter((id) => !seen.has(id))))
     }
@@ -410,8 +412,8 @@ describe('pickQuiz ưu tiên câu chưa gặp (story 35)', () => {
   it('không có TTS: câu thay câu nghe là câu chưa gặp cùng bài', () => {
     const listening = w1.filter((x) => x.kind === 'listening')
     expect(listening.map((x) => x.id)).toEqual(['q-s1-t2-w1-06'])
-    // Đã gặp 4 câu không nghe → còn đúng 5 câu chưa gặp không nghe + 1 câu nghe.
-    const seen = new Set(w1.filter((x) => x.kind !== 'listening').slice(0, 4).map((x) => x.id))
+    // Đã gặp 8 câu không nghe (bài có 13 câu không nghe sau story 36) → còn đúng 5 câu chưa gặp không nghe + 1 câu nghe.
+    const seen = new Set(w1.filter((x) => x.kind !== 'listening').slice(0, 8).map((x) => x.id))
     const unseenNonListening = w1.filter((x) => x.kind !== 'listening' && !seen.has(x.id)).map((x) => x.id)
     expect(unseenNonListening).toHaveLength(5)
     let replaced = 0
@@ -490,5 +492,59 @@ describe('chấm câu gõ (story 35)', () => {
     expect(shuffleOptions(real, 's')).toEqual([])
     const ok = finish(empty(), [real], { [real.id]: 'are they waiting for the bus' }, T0)
     expect(readMistakes(ok)).toEqual({})
+  })
+})
+
+/**
+ * Đề ở baseline 79d47ee (trước story 40): `pickQuiz(QUESTION_BANK, quiz, seed, { canSpeak, seen? })`, khoá `quiz|seed|canSpeak[|seen]`.
+ * Bài test không có `only` / `mix` phải ra đúng đề cũ.
+ */
+const BASELINE_SEEN = new Set([
+  'q-s1-t2-w2-01', 'q-s1-t2-w2-05', 'q-s1-t2-w1-01', 'q-s1-t2-w3-02', 'q-s1-t1-w1-01', 'q-s1-t1-w2-04', 'q-s1-t4-w3-03', 'q-s1-t4-w3-17',
+])
+const BASELINE_PICKS: Record<string, readonly string[]> = {
+  'mini-t1|a|true': ['q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w1-03', 'q-s1-t1-w4-08', 'q-s1-t1-w2-16', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-07', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05'],
+  'mini-t1|a|true|seen': ['q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w1-05', 'q-s1-t1-w4-08', 'q-s1-t1-w2-16', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-07', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05'],
+  'mini-t1|a|false': ['q-s1-t1-w4-02', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05', 'q-s1-t1-w1-03', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-16', 'q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w2-05'],
+  'mini-t1|a|false|seen': ['q-s1-t1-w4-02', 'q-s1-t1-w2-08', 'q-s1-t1-w4-05', 'q-s1-t1-w1-05', 'q-s1-t1-w3-15', 'q-s1-t1-w1-04', 'q-s1-t1-w2-16', 'q-s1-t1-w3-08', 'q-s1-t1-w1-02', 'q-s1-t1-w2-05'],
+  'mini-t1|b|true': ['q-s1-t1-w1-03', 'q-s1-t1-w1-04', 'q-s1-t1-w1-06', 'q-s1-t1-w3-13', 'q-s1-t1-w2-11', 'q-s1-t1-w2-09', 'q-s1-t1-w4-05', 'q-s1-t1-w2-10', 'q-s1-t1-w4-01', 'q-s1-t1-w3-12'],
+  'mini-t1|b|true|seen': ['q-s1-t1-w1-03', 'q-s1-t1-w3-06', 'q-s1-t1-w1-06', 'q-s1-t1-w3-13', 'q-s1-t1-w2-11', 'q-s1-t1-w1-04', 'q-s1-t1-w4-05', 'q-s1-t1-w2-10', 'q-s1-t1-w4-01', 'q-s1-t1-w3-12'],
+  'mini-t1|b|false': ['q-s1-t1-w1-01', 'q-s1-t1-w4-01', 'q-s1-t1-w3-13', 'q-s1-t1-w2-11', 'q-s1-t1-w2-09', 'q-s1-t1-w3-12', 'q-s1-t1-w4-05', 'q-s1-t1-w1-04', 'q-s1-t1-w1-03', 'q-s1-t1-w2-10'],
+  'mini-t1|b|false|seen': ['q-s1-t1-w4-05', 'q-s1-t1-w4-01', 'q-s1-t1-w3-13', 'q-s1-t1-w1-02', 'q-s1-t1-w1-04', 'q-s1-t1-w3-16', 'q-s1-t1-w3-12', 'q-s1-t1-w2-10', 'q-s1-t1-w2-11', 'q-s1-t1-w1-03'],
+  // Story 46 thêm 12 câu ở s1-t2-w4 nên đề mini-t2 đổi có chủ đích (8 khoá dưới ghi lại); 24 khoá còn lại giữ nguyên.
+  'mini-t2|a|true': ['q-s1-t2-w3-13', 'q-s1-t2-w3-04', 'q-s1-t2-w2-26', 'q-s1-t2-w2-06', 'q-s1-t2-w2-24', 'q-s1-t2-w4-17', 'q-s1-t2-w4-14', 'q-s1-t2-w1-07', 'q-s1-t2-w1-04', 'q-s1-t2-w1-03'],
+  'mini-t2|a|true|seen': ['q-s1-t2-w3-13', 'q-s1-t2-w3-04', 'q-s1-t2-w2-26', 'q-s1-t2-w2-06', 'q-s1-t2-w2-24', 'q-s1-t2-w4-17', 'q-s1-t2-w4-14', 'q-s1-t2-w1-07', 'q-s1-t2-w1-04', 'q-s1-t2-w1-03'],
+  'mini-t2|a|false': ['q-s1-t2-w3-13', 'q-s1-t2-w2-09', 'q-s1-t2-w3-04', 'q-s1-t2-w1-07', 'q-s1-t2-w2-24', 'q-s1-t2-w2-26', 'q-s1-t2-w4-14', 'q-s1-t2-w1-03', 'q-s1-t2-w1-04', 'q-s1-t2-w4-17'],
+  'mini-t2|a|false|seen': ['q-s1-t2-w3-13', 'q-s1-t2-w2-09', 'q-s1-t2-w3-04', 'q-s1-t2-w1-07', 'q-s1-t2-w2-24', 'q-s1-t2-w2-26', 'q-s1-t2-w4-14', 'q-s1-t2-w1-03', 'q-s1-t2-w1-04', 'q-s1-t2-w4-17'],
+  'mini-t2|b|true': ['q-s1-t2-w2-16', 'q-s1-t2-w1-04', 'q-s1-t2-w3-08', 'q-s1-t2-w2-13', 'q-s1-t2-w3-14', 'q-s1-t2-w1-06', 'q-s1-t2-w4-01', 'q-s1-t2-w4-10', 'q-s1-t2-w3-05', 'q-s1-t2-w3-06'],
+  'mini-t2|b|true|seen': ['q-s1-t2-w2-16', 'q-s1-t2-w1-04', 'q-s1-t2-w3-08', 'q-s1-t2-w2-13', 'q-s1-t2-w3-01', 'q-s1-t2-w1-06', 'q-s1-t2-w4-01', 'q-s1-t2-w4-10', 'q-s1-t2-w3-05', 'q-s1-t2-w3-06'],
+  'mini-t2|b|false': ['q-s1-t2-w2-13', 'q-s1-t2-w1-04', 'q-s1-t2-w3-05', 'q-s1-t2-w3-04', 'q-s1-t2-w1-13', 'q-s1-t2-w3-08', 'q-s1-t2-w4-01', 'q-s1-t2-w4-10', 'q-s1-t2-w2-16', 'q-s1-t2-w3-14'],
+  'mini-t2|b|false|seen': ['q-s1-t2-w2-13', 'q-s1-t2-w1-04', 'q-s1-t2-w3-05', 'q-s1-t2-w3-07', 'q-s1-t2-w1-13', 'q-s1-t2-w3-08', 'q-s1-t2-w4-01', 'q-s1-t2-w4-10', 'q-s1-t2-w2-16', 'q-s1-t2-w3-01'],
+  'lesson-s1-t2-w2|a|true': ['q-s1-t2-w2-21', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-25', 'q-s1-t2-w2-23'],
+  'lesson-s1-t2-w2|a|true|seen': ['q-s1-t2-w2-21', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-25', 'q-s1-t2-w2-23'],
+  'lesson-s1-t2-w2|a|false': ['q-s1-t2-w2-25', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-23', 'q-s1-t2-w2-21'],
+  'lesson-s1-t2-w2|a|false|seen': ['q-s1-t2-w2-25', 'q-s1-t2-w2-22', 'q-s1-t2-w2-12', 'q-s1-t2-w2-23', 'q-s1-t2-w2-21'],
+  'lesson-s1-t2-w2|b|true': ['q-s1-t2-w2-16', 'q-s1-t2-w2-12', 'q-s1-t2-w2-17', 'q-s1-t2-w2-15', 'q-s1-t2-w2-13'],
+  'lesson-s1-t2-w2|b|true|seen': ['q-s1-t2-w2-16', 'q-s1-t2-w2-12', 'q-s1-t2-w2-17', 'q-s1-t2-w2-15', 'q-s1-t2-w2-13'],
+  'lesson-s1-t2-w2|b|false': ['q-s1-t2-w2-13', 'q-s1-t2-w2-12', 'q-s1-t2-w2-15', 'q-s1-t2-w2-17', 'q-s1-t2-w2-16'],
+  'lesson-s1-t2-w2|b|false|seen': ['q-s1-t2-w2-13', 'q-s1-t2-w2-12', 'q-s1-t2-w2-15', 'q-s1-t2-w2-17', 'q-s1-t2-w2-16'],
+  'lesson-s1-t4-w3|a|true': ['q-s1-t4-w3-21', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-25', 'q-s1-t4-w3-23'],
+  'lesson-s1-t4-w3|a|true|seen': ['q-s1-t4-w3-21', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-25', 'q-s1-t4-w3-23'],
+  'lesson-s1-t4-w3|a|false': ['q-s1-t4-w3-25', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-23', 'q-s1-t4-w3-21'],
+  'lesson-s1-t4-w3|a|false|seen': ['q-s1-t4-w3-25', 'q-s1-t4-w3-22', 'q-s1-t4-w3-12', 'q-s1-t4-w3-23', 'q-s1-t4-w3-21'],
+  'lesson-s1-t4-w3|b|true': ['q-s1-t4-w3-16', 'q-s1-t4-w3-12', 'q-s1-t4-w3-17', 'q-s1-t4-w3-15', 'q-s1-t4-w3-13'],
+  'lesson-s1-t4-w3|b|true|seen': ['q-s1-t4-w3-13', 'q-s1-t4-w3-12', 'q-s1-t4-w3-16', 'q-s1-t4-w3-15', 'q-s1-t4-w3-01'],
+  'lesson-s1-t4-w3|b|false': ['q-s1-t4-w3-13', 'q-s1-t4-w3-12', 'q-s1-t4-w3-15', 'q-s1-t4-w3-17', 'q-s1-t4-w3-16'],
+  'lesson-s1-t4-w3|b|false|seen': ['q-s1-t4-w3-01', 'q-s1-t4-w3-12', 'q-s1-t4-w3-15', 'q-s1-t4-w3-16', 'q-s1-t4-w3-13'],
+}
+
+describe('đề cũ không đổi (story 40)', () => {
+  it('mini-t1, mini-t2, lesson-s1-t2-w2, lesson-s1-t4-w3 × seed a / b × có / không TTS (có và không có seen) ra đúng đề baseline', () => {
+    expect(Object.keys(BASELINE_PICKS)).toHaveLength(32)
+    for (const [key, ids] of Object.entries(BASELINE_PICKS)) {
+      const [quizId, seed, speak, withSeen] = key.split('|')
+      const opts = { canSpeak: speak === 'true', ...(withSeen ? { seen: BASELINE_SEEN } : {}) }
+      expect(pickQuiz(QUESTION_BANK, getQuiz(quizId)!, seed, opts).map((x) => x.id), key).toEqual(ids)
+    }
   })
 })

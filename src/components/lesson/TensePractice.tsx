@@ -8,14 +8,13 @@ import { SCREEN_TITLES } from '@/components/foundation/screen-titles'
 import { Kbd } from '@/components/Kbd'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import type { Tense } from '@/data/lessons'
 import { advanceCheck, recordAnswer, skipEasier, startCheck, startEasier, type CheckFlow } from '@/lib/foundation'
-import { practiceScreens, type PracticeTense } from '@/lib/tense-practice'
+import { practiceScreens, type PracticeSubject } from '@/lib/tense-practice'
 
 import { SpeakPractice } from './SpeakPractice'
 
-/** Tóm tắt công thức + 3 quy tắc của thì: mở ra khi bấm "Xem lại giải thích" (lời mời < 60%). */
-function TenseRecap({ tense }: { tense: Tense }) {
+/** Tóm tắt công thức + 3 quy tắc của thì (hoặc khối "Chọn thì"): mở ra khi bấm "Xem lại giải thích" (lời mời < 60%). */
+function TenseRecap({ tense }: { tense: Pick<PracticeSubject, 'formulas' | 'rules'> }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-3">
       <dl className="flex flex-col gap-2">
@@ -50,7 +49,7 @@ function PracticePlayer({
   onClose,
   onRestart,
 }: {
-  tense: PracticeTense
+  tense: PracticeSubject
   onClose: () => void
   onRestart: () => void
 }) {
@@ -179,7 +178,7 @@ function PracticePlayer({
 }
 
 /**
- * Khối "Luyện: {thì}" dưới TenseCard (story 35). Đóng sẵn: một dòng mô tả và nút "Bắt đầu luyện". Mở: trình phát 4 bước.
+ * Khối "Luyện: {thì}" dưới TenseCard (story 35), hoặc dưới thẻ khối "Chọn thì" (story 39, cùng trình phát). Đóng sẵn: một dòng mô tả và nút "Bắt đầu luyện". Mở: trình phát 4 bước.
  * Trạng thái đóng / mở do cha giữ (`GrammarSection`: mỗi lúc chỉ mở một khối, để phím tắt không chạy hai nơi); đóng là mất
  * trạng thái. Không ghi Sổ lỗi, lần làm quiz, tiến độ hay điểm Nhà (chỉ điểm nói ở bước áp dụng, như viên gạch).
  */
@@ -189,7 +188,7 @@ export function TensePractice({
   onOpen,
   onClose,
 }: {
-  tense: PracticeTense
+  tense: PracticeSubject
   open: boolean
   onOpen: () => void
   onClose: () => void

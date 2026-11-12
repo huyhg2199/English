@@ -41,7 +41,7 @@ export type HotkeyProbe = {
   brick: {
     /** Chữ "Màn n/6" sau Enter ×3 từ màn 1. */
     screenAfterEnter: string | null
-    /** Chữ "Màn n/6" sau khi gõ "chào 1" + Enter trong ô "Từ còn thiếu". */
+    /** Chữ "Màn n/6" sau khi gõ "xyz 1" + Enter trong ô "Từ còn thiếu". */
     screenAfterTyping: string | null
     /** Có "Chưa đúng" (form đã chấm). */
     typingGraded: boolean

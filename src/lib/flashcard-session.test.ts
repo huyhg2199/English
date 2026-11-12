@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { allLessons } from '@/data/roadmap'
+import { IRREGULAR_VERB_CARDS } from '@/data/lessons'
 import { getBrick, hasBrickContent } from '@/data/foundation/content'
 import type { BrickId } from '@/data/foundation'
 import { FUNCTION_WORD_GATES, loadWords, STARTER_WORD_IDS, type Word, type WordList } from '@/data/vocab'
@@ -29,6 +30,9 @@ import {
   functionWordCloze,
   HEAVY_REVIEW_NEW_WORDS,
   HEAVY_REVIEW_THRESHOLD,
+  IRREGULAR_VERBS_PER_DAY,
+  irregularVerbStudyWords,
+  irregularVerbsReached,
   lockedNewWordIds,
   NEW_WORDS_FOUNDATION,
   NEW_WORDS_T1,
@@ -506,11 +510,18 @@ describe('phiên ôn với cổng hư từ và thẻ quy tắc (story 24)', () =
   })
 })
 
-describe('thẻ quy tắc của thì trong bài (story 33)', () => {
-  const W2_RULES = ['rule:past-to-be-1', 'rule:past-to-be-2', 'rule:past-simple-1']
+describe('thẻ quy tắc của thì trong bài (story 33, dữ liệu story 38)', () => {
+  /** Id SRS `rule:<tenseId>-1..n`. */
+  const n = (tenseId: string, count: number) => Array.from({ length: count }, (_, i) => `rule:${tenseId}-${i + 1}`)
+  const W2_RULES = [...n('past-to-be', 4), ...n('past-simple', 5)]
+  /** 3 thẻ của story 33 (thẻ có lịch trong store cũ). */
+  const STORY33 = ['rule:past-to-be-1', 'rule:past-to-be-2', 'rule:past-simple-1']
+  /** Thẻ thì của T1 (s1-t1-w2, s1-t1-w3) và s1-t2-w1, theo lộ trình. */
+  const T1_W1_RULES = [...n('present-simple', 4), ...n('present-simple-questions', 5), ...n('present-continuous', 5)]
   const T1_AND_W1 = lessonIds((id) => id.startsWith('s1-t1-') || id === 's1-t2-w1')
-  /** Đã bỏ qua Sân ga, xong T1, s1-t2-w1 và s1-t2-w2. */
+  /** Đã bỏ qua Sân ga, xong T1, s1-t2-w1 và s1-t2-w2 (bài hiện tại s1-t2-w3: thẻ động từ cũng mở). */
   const doneW2 = () => completeLessons(skipFoundation(empty(), day(3)), [...T1_AND_W1, 's1-t2-w2'])
+  const isVerb = (id: string) => id.startsWith('rule:irregular-')
   const dueCard = (at: Date): SrsCard => {
     const iso = at.toISOString()
     return { due: iso, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: iso, known: false, updatedAt: iso }
@@ -520,13 +531,14 @@ describe('thẻ quy tắc của thì trong bài (story 33)', () => {
     data: { ...store.data, srs: { cards: { ...(readSrs(store).cards as Record<string, SrsCard>), ...extra } } },
   })
 
-  it('đánh dấu xong s1-t2-w2 → 3 thẻ của bài, theo thứ tự, đứng sau thẻ viên gạch; có lessonId, không có brickId', () => {
+  it('đánh dấu xong s1-t2-w2 → 9 thẻ của bài (past-simple-rule-5 thêm ở story 44), theo thứ tự, đứng sau thẻ viên gạch; có lessonId, không có brickId', () => {
     const store = completeLessons(completeBrick(empty(), 'F01', day(9)), ['s1-t2-w2'])
-    const rules = ruleStudyWords(store, ruleCardsOf)
+    const rules = ruleStudyWords(store, ruleCardsOf, { now: NOW, heavyReview: false })
     expect(rules.map((r) => r.id)).toEqual(['rule:f01-1', 'rule:f01-2', ...W2_RULES])
     for (const r of rules.slice(2)) {
       expect(r.lessonId, r.id).toBe('s1-t2-w2')
       expect('brickId' in r, r.id).toBe(false)
+      expect('verbGroup' in r, r.id).toBe(false)
       expect(r.word, r.id).toBe(r.answer)
     }
     for (const r of rules.slice(0, 2)) expect('lessonId' in r, r.id).toBe(false)
@@ -541,7 +553,7 @@ describe('thẻ quy tắc của thì trong bài (story 33)', () => {
     })
   })
 
-  it('phiên hôm đó: 3 thẻ quy tắc mới đứng sau từ mới, quota và từ mới không đổi', () => {
+  it('phiên hôm đó: thẻ quy tắc mới (thì rồi động từ) đứng sau từ mới, quota và từ mới không đổi', () => {
     const store = doneW2()
     const s = fullSession(store)
     const plain = buildStudySession(readSrs(store), words, readSavedWords(store), NOW, newWordListFor(store), {
@@ -549,10 +561,14 @@ describe('thẻ quy tắc của thì trong bài (story 33)', () => {
       rules: [],
     })
     const rulesIn = s.queue.filter((i) => i.word.id.startsWith('rule:'))
-    expect(rulesIn.map((i) => [i.word.id, i.kind, i.intro === true])).toEqual(W2_RULES.map((id) => [id, 'new', false]))
+    const tenseRules = [...T1_W1_RULES, ...W2_RULES]
+    expect(rulesIn.map((i) => [i.word.id, i.kind, i.intro === true])).toEqual(
+      [...tenseRules, ...rulesIn.filter((i) => isVerb(i.word.id)).map((i) => i.word.id)].map((id) => [id, 'new', false]),
+    )
+    expect(rulesIn.filter((i) => isVerb(i.word.id))).toHaveLength(10)
     expect(s.queue.filter((i) => !i.word.id.startsWith('rule:'))).toEqual(plain.queue)
-    expect(s.newCount).toBe(plain.newCount + 3)
-    const lastWord = Math.max(...s.queue.map((i, n) => (i.word.id.startsWith('rule:') ? -1 : n)))
+    expect(s.newCount).toBe(plain.newCount + tenseRules.length + 10)
+    const lastWord = Math.max(...s.queue.map((i, k) => (i.word.id.startsWith('rule:') ? -1 : k)))
     const firstRule = s.queue.findIndex((i) => i.word.id.startsWith('rule:'))
     expect(firstRule).toBeGreaterThan(lastWord)
     expect(newPerDayFor(store, NOW, ruleCardsOf)).toEqual(newPerDayFor(store, NOW))
@@ -564,26 +580,29 @@ describe('thẻ quy tắc của thì trong bài (story 33)', () => {
 
   it('bài chưa xong hoặc bị Mũ Phân Loại xếp qua → không có thẻ của bài', () => {
     const notDone = completeLessons(skipFoundation(empty(), day(3)), T1_AND_W1)
-    expect(ruleStudyWords(notDone, ruleCardsOf)).toEqual([])
+    expect(ruleStudyWords(notDone, ruleCardsOf, { now: NOW, heavyReview: false }).map((r) => r.id)).toEqual(T1_W1_RULES)
+    // Xếp bắt đầu ở s1-t2-w3: các bài trước bị bỏ qua không góp thẻ thì; bài hiện tại là s1-t2-w3 nên chỉ có thẻ động từ.
     const { store: placed } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's1-t2-w3')
     expect(ruleStudyWords(placed, ruleCardsOf)).toEqual([])
-    expect(fullSession(placed).queue.some((i) => i.word.id.startsWith('rule:'))).toBe(false)
+    const placedRules = fullSession(placed).queue.filter((i) => i.word.id.startsWith('rule:'))
+    expect(placedRules.length).toBe(10)
+    expect(placedRules.every((i) => isVerb(i.word.id))).toBe(true)
   })
 
   it('bỏ đánh dấu → thẻ đã có không vào phiên, không đếm tồn ôn; mục srs.cards còn; đánh dấu lại thì lịch cũ chạy tiếp', () => {
     const due = dueCard(day(9))
-    const store = withCards(withDueCards(doneW2(), 38), Object.fromEntries(W2_RULES.map((id) => [id, due])))
+    const store = withCards(withDueCards(doneW2(), 38), Object.fromEntries(STORY33.map((id) => [id, due])))
     expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(true)
-    expect(fullSession(store).queue.filter((i) => W2_RULES.includes(i.word.id)).map((i) => i.kind)).toEqual(['review', 'review', 'review'])
+    expect(fullSession(store).queue.filter((i) => STORY33.includes(i.word.id)).map((i) => i.kind)).toEqual(['review', 'review', 'review'])
 
     const unmarked = setLessonCompleted(store, 's1-t2-w2', false, day(10))
-    expect(ruleStudyWords(unmarked, ruleCardsOf)).toEqual([])
+    expect(ruleStudyWords(unmarked, ruleCardsOf, { now: NOW, heavyReview: false }).map((r) => r.id)).toEqual(T1_W1_RULES)
     expect(fullSession(unmarked).queue.some((i) => W2_RULES.includes(i.word.id))).toBe(false)
     expect(newPerDayFor(unmarked, NOW, ruleCardsOf).heavyReview).toBe(false)
-    for (const id of W2_RULES) expect(readSrs(unmarked).cards[id], id).toEqual(due)
+    for (const id of STORY33) expect(readSrs(unmarked).cards[id], id).toEqual(due)
 
     const again = setLessonCompleted(unmarked, 's1-t2-w2', true, day(10, 10))
-    expect(fullSession(again).queue.filter((i) => W2_RULES.includes(i.word.id)).map((i) => i.kind)).toEqual(['review', 'review', 'review'])
+    expect(fullSession(again).queue.filter((i) => STORY33.includes(i.word.id)).map((i) => i.kind)).toEqual(['review', 'review', 'review'])
   })
 
   it('thẻ mồ côi rule:past-to-be-9 không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
@@ -595,6 +614,272 @@ describe('thẻ quy tắc của thì trong bài (story 33)', () => {
     expect(s.dueCount).toBe(0)
     expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(false)
     expect(readSrs(store).cards['rule:past-to-be-9']).toBeDefined()
+  })
+
+  it('Thẻ thì T1: bỏ qua Sân ga, xong s1-t1-w2 → rule:present-simple-1 … -4 là thẻ mới sau từ mới; quota không đổi', () => {
+    const store = completeLessons(skipFoundation(empty(), day(3)), ['s1-t1-w2'])
+    const s = fullSession(store)
+    const plain = buildStudySession(readSrs(store), words, readSavedWords(store), NOW, newWordListFor(store), {
+      ...newWordOptions(store, NOW, themeWordIdsOf, ruleCardsOf),
+      rules: [],
+    })
+    const rulesIn = s.queue.filter((i) => i.word.id.startsWith('rule:'))
+    expect(rulesIn.map((i) => [i.word.id, i.kind])).toEqual(n('present-simple', 4).map((id) => [id, 'new']))
+    expect(s.queue.slice(-4).map((i) => i.word.id)).toEqual(n('present-simple', 4))
+    expect(s.newCount).toBe(plain.newCount + 4)
+    expect(newPerDayFor(store, NOW, ruleCardsOf)).toEqual(newPerDayFor(store, NOW))
+    expect(rulesIn[0].word).toMatchObject({ lessonId: 's1-t1-w2', cloze: 'My mother ___ (work) on Saturdays.', answer: 'works' })
+  })
+
+  it('Bài cũ đã xong: 3 thẻ story 33 có lịch → phiên thêm 6 thẻ mới của s1-t2-w2, 3 thẻ cũ giữ lịch', () => {
+    const future = withFutureCards(completeLessons(completeBrick(empty(), 'F01', day(9)), ['s1-t2-w2']), STORY33)
+    const before = readSrs(future).cards
+    const s = fullSession(future)
+    const fresh = s.queue.filter((i) => i.word.id.startsWith('rule:') && !i.word.id.startsWith('rule:f01-'))
+    expect(fresh.map((i) => [i.word.id, i.kind])).toEqual(
+      ['rule:past-to-be-3', 'rule:past-to-be-4', 'rule:past-simple-2', 'rule:past-simple-3', 'rule:past-simple-4', 'rule:past-simple-5'].map((id) => [id, 'new']),
+    )
+    expect(s.queue.some((i) => STORY33.includes(i.word.id))).toBe(false)
+    for (const id of STORY33) expect(readSrs(future).cards[id]).toEqual(before[id])
+    expect(newPerDayFor(future, NOW, ruleCardsOf)).toEqual(newPerDayFor(future, NOW))
+  })
+
+  it('Bài chưa xong / bị xếp qua: s1-t3-w1 chưa đánh dấu hoặc bị xếp qua → không có rule:will-*', () => {
+    const upToT2 = completeLessons(skipFoundation(empty(), day(3)), lessonIds((id) => /^s1-t[12]-/.test(id)))
+    const willOf = (store: Store) => fullSession(store).queue.filter((i) => i.word.id.startsWith('rule:will-'))
+    expect(willOf(upToT2)).toEqual([])
+    const { store: placed } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's1-t3-w2')
+    expect(willOf(placed)).toEqual([])
+    expect(ruleStudyWords(placed, ruleCardsOf, { now: NOW, heavyReview: false })).toEqual([])
+    const done = setLessonCompleted(upToT2, 's1-t3-w1', true, day(9))
+    expect(willOf(done).map((i) => i.word.id)).toEqual(n('will', 4))
+  })
+})
+
+describe('thẻ quy tắc quá khứ tiếp diễn ở s1-t2-w4 (story 46)', () => {
+  const PC_RULES = Array.from({ length: 4 }, (_, i) => `rule:past-continuous-${i + 1}`)
+  const UP_TO_W3 = lessonIds((id) => /^s1-t1-/.test(id) || ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3'].includes(id))
+  /** Bỏ qua Sân ga, xong mọi bài tới s1-t2-w4. */
+  const doneW4 = () => completeLessons(skipFoundation(empty(), day(3)), [...UP_TO_W3, 's1-t2-w4'])
+  const tenseRuleIds = (store: Store) =>
+    ruleStudyWords(store, ruleCardsOf, { now: NOW, heavyReview: false })
+      .map((r) => r.id)
+      .filter((id) => !id.startsWith('rule:irregular-'))
+  const dueCard = (at: Date): SrsCard => {
+    const iso = at.toISOString()
+    return { due: iso, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: iso, known: false, updatedAt: iso }
+  }
+  const withCards = (store: Store, extra: Record<string, SrsCard>): Store => ({
+    ...store,
+    data: { ...store.data, srs: { cards: { ...(readSrs(store).cards as Record<string, SrsCard>), ...extra } } },
+  })
+
+  it('bỏ qua Sân ga, xong tới s1-t2-w4 → rule:past-continuous-1 … -4 (lessonId s1-t2-w4) đứng ngay sau thẻ past-simple-irregular', () => {
+    const rules = ruleStudyWords(doneW4(), ruleCardsOf, { now: NOW, heavyReview: false })
+    const ids = tenseRuleIds(doneW4())
+    const at = ids.indexOf('rule:past-continuous-1')
+    expect(ids.slice(at, at + 4)).toEqual(PC_RULES)
+    expect(ids[at - 1]).toBe('rule:past-simple-irregular-4')
+    for (const id of PC_RULES) expect(rules.find((r) => r.id === id)?.lessonId, id).toBe('s1-t2-w4')
+    expect(rules.find((r) => r.id === 'rule:past-continuous-1')).toMatchObject({
+      word: 'were driving',
+      cloze: 'At 6 p.m. yesterday, my parents ___ (drive) home.',
+      answer: 'were driving',
+    })
+    expect(fullSession(doneW4()).queue.filter((i) => PC_RULES.includes(i.word.id)).map((i) => i.kind)).toEqual(['new', 'new', 'new', 'new'])
+  })
+
+  it('s1-t2-w4 chưa đánh dấu, hoặc bị Mũ Phân Loại xếp bắt đầu từ s1-t3-w1 → không có rule:past-continuous-*', () => {
+    const notDone = completeLessons(skipFoundation(empty(), day(3)), UP_TO_W3)
+    expect(tenseRuleIds(notDone).some((id) => id.startsWith('rule:past-continuous-'))).toBe(false)
+    const { store: placed } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's1-t3-w1')
+    expect(fullSession(placed).queue.some((i) => i.word.id.startsWith('rule:past-continuous-'))).toBe(false)
+  })
+
+  it('bỏ đánh dấu s1-t2-w4 → thẻ không vào phiên, không đếm tồn ôn; mục srs.cards giữ nguyên', () => {
+    const due = dueCard(day(9))
+    const store = withCards(doneW4(), Object.fromEntries(PC_RULES.map((id) => [id, due])))
+    expect(fullSession(store).queue.filter((i) => PC_RULES.includes(i.word.id)).map((i) => i.kind)).toEqual(['review', 'review', 'review', 'review'])
+    const unmarked = setLessonCompleted(store, 's1-t2-w4', false, day(10))
+    expect(tenseRuleIds(unmarked).some((id) => PC_RULES.includes(id))).toBe(false)
+    const s = fullSession(unmarked)
+    expect(s.queue.some((i) => PC_RULES.includes(i.word.id))).toBe(false)
+    expect(s.dueCount).toBe(fullSession(store).dueCount - 4)
+    for (const id of PC_RULES) expect(readSrs(unmarked).cards[id], id).toEqual(due)
+  })
+
+  it('thẻ mồ côi rule:past-continuous-9 không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const base = doneW4()
+    const store = withCards(base, { 'rule:past-continuous-9': dueCard(day(9)) })
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:past-continuous-9')).toBe(false)
+    expect(s.dueCount).toBe(fullSession(base).dueCount)
+    expect(readSrs(store).cards['rule:past-continuous-9']).toBeDefined()
+  })
+})
+
+describe('thẻ động từ bất quy tắc (story 38)', () => {
+  const T1_AND_W1 = lessonIds((id) => id.startsWith('s1-t1-') || id === 's1-t2-w1')
+  /** Bỏ qua Sân ga, xong T1 + s1-t2-w1, -w2: bài hiện tại s1-t2-w3. */
+  const reachW3 = () => completeLessons(skipFoundation(empty(), day(3)), [...T1_AND_W1, 's1-t2-w2'])
+  const isVerb = (id: string) => id.startsWith('rule:irregular-')
+  const vid = (v1: string) => `rule:irregular-${v1}-1`
+  const v1Of = (id: string) => id.replace(/^rule:irregular-(.+)-1$/, '$1')
+  /** Động từ mới (V1) trong phiên lúc `now`, theo thứ tự hàng đợi. */
+  const newVerbs = (store: Store, now: Date) =>
+    fullSession(store, now)
+      .queue.filter((i) => isVerb(i.word.id) && i.kind === 'new')
+      .map((i) => v1Of(i.word.id))
+  /** Chấm "good" mọi thẻ động từ trong phiên lúc `now` (mới và đến hạn). */
+  const gradeVerbs = (store: Store, now: Date, limit = Infinity) =>
+    fullSession(store, now)
+      .queue.filter((i) => isVerb(i.word.id))
+      .slice(0, limit)
+      .reduce((s, i) => gradeCard(s, i.word.id, 'good', now), store)
+  const dueCard = (at: Date): SrsCard => {
+    const iso = at.toISOString()
+    return { due: iso, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: iso, known: false, updatedAt: iso }
+  }
+  const withCards = (store: Store, extra: Record<string, unknown>): Store => ({
+    ...store,
+    data: { ...store.data, srs: { cards: { ...(readSrs(store).cards as Record<string, unknown>), ...extra } } },
+  })
+  const DAY1 = ['be', 'have', 'do', 'go', 'get', 'make', 'see', 'know', 'take', 'give']
+  const DAY2 = ['come', 'become', 'say', 'pay', 'tell', 'sell']
+
+  it('tới T2-W3, ngày 1: 10 thẻ động từ mới đúng thứ tự, đứng sau thẻ thì; quota từ mới không đổi, newCount cộng đủ', () => {
+    const store = reachW3()
+    expect(IRREGULAR_VERBS_PER_DAY).toBe(10)
+    expect(irregularVerbsReached(store)).toBe(true)
+    const s = fullSession(store)
+    const rulesIn = s.queue.filter((i) => i.word.id.startsWith('rule:'))
+    expect(rulesIn.filter((i) => isVerb(i.word.id)).map((i) => [v1Of(i.word.id), i.kind])).toEqual(DAY1.map((v) => [v, 'new']))
+    const firstVerb = rulesIn.findIndex((i) => isVerb(i.word.id))
+    expect(rulesIn.slice(firstVerb).every((i) => isVerb(i.word.id))).toBe(true)
+    expect(rulesIn.slice(0, firstVerb).every((i) => !isVerb(i.word.id))).toBe(true)
+    expect(rulesIn[firstVerb].word).toEqual({
+      id: 'rule:irregular-be-1',
+      rule: true,
+      word: 'was / were · been',
+      lessonId: 's1-t2-w3',
+      verbGroup: 'Rất thông dụng, mỗi từ một kiểu: học thuộc',
+      cloze: 'be → ___ (V2 · V3)',
+      answer: 'was / were · been',
+      vi: 'thì, là, ở · Nhóm: Rất thông dụng, mỗi từ một kiểu: học thuộc',
+    })
+    const plain = buildStudySession(readSrs(store), words, readSavedWords(store), NOW, newWordListFor(store), {
+      ...newWordOptions(store, NOW, themeWordIdsOf, ruleCardsOf),
+      rules: [],
+    })
+    expect(s.queue.filter((i) => !i.word.id.startsWith('rule:'))).toEqual(plain.queue)
+    expect(s.newCount).toBe(plain.newCount + rulesIn.length)
+    expect(newPerDayFor(store, NOW, ruleCardsOf)).toEqual(newPerDayFor(store, NOW))
+    // Không có `opening`: chưa có thẻ nào có lịch → không có thẻ động từ.
+    expect(irregularVerbStudyWords(store)).toEqual([])
+  })
+
+  it('ngày 1 đã chấm hết: không mở nhóm mới, 10 thẻ đi theo lịch', () => {
+    const graded = gradeVerbs(reachW3(), day(10, 10))
+    expect(DAY1.every((v) => readSrs(graded).cards[vid(v)] !== undefined)).toBe(true)
+    expect(newVerbs(graded, day(10, 20))).toEqual([])
+    expect(irregularVerbStudyWords(graded).map((r) => v1Of(r.id))).toEqual(DAY1)
+    expect(newPerDayFor(graded, day(10, 20), ruleCardsOf)).toEqual(newPerDayFor(graded, day(10, 20)))
+  })
+
+  it('ngày 1 chấm dở 4 thẻ rồi mở lại: 6 thẻ còn lại của nhóm 1 và 2 vẫn là thẻ mới, không thêm nhóm 3', () => {
+    const half = gradeVerbs(reachW3(), day(10, 10), 4)
+    expect(DAY1.slice(0, 4).every((v) => readSrs(half).cards[vid(v)] !== undefined)).toBe(true)
+    expect(newVerbs(half, day(10, 11))).toEqual(DAY1.slice(4))
+  })
+
+  it('ngày 2 → 7, chấm hết mỗi ngày: 6, 5, 9, 10, 10 rồi hết; đủ 50 động từ theo nhóm', () => {
+    let store = gradeVerbs(reachW3(), day(10, 10))
+    const opened: string[][] = []
+    for (let d = 11; d <= 16; d++) {
+      const now = day(d, 9)
+      expect(newPerDayFor(store, now, ruleCardsOf).heavyReview, `ngày ${d}`).toBe(false)
+      expect(newPerDayFor(store, now, ruleCardsOf), `ngày ${d}`).toEqual(newPerDayFor(store, now))
+      const s = fullSession(store, now)
+      const plain = buildStudySession(readSrs(store), words, readSavedWords(store), now, newWordListFor(store), {
+        ...newWordOptions(store, now, themeWordIdsOf, ruleCardsOf),
+        rules: [],
+      })
+      const newRules = s.queue.filter((i) => i.word.id.startsWith('rule:') && i.kind === 'new')
+      expect(s.newCount, `ngày ${d}`).toBe(plain.newCount + newRules.length)
+      opened.push(newVerbs(store, now))
+      store = gradeVerbs(store, now)
+    }
+    expect(opened.map((o) => o.length)).toEqual([6, 5, 9, 10, 10, 0])
+    expect(opened[0]).toEqual(DAY2)
+    expect(opened[1]).toEqual(['think', 'bring', 'buy', 'teach', 'catch'])
+    expect([...DAY1, ...opened.flat()]).toEqual(IRREGULAR_VERB_CARDS.map((c) => c.id.replace(/^irregular-(.+)-rule-1$/, '$1')))
+    expect(Object.keys(readSrs(store).cards).filter(isVerb)).toHaveLength(50)
+  })
+
+  it('nghỉ vài ngày: ngày 2 không mở app, ngày 4 mở → đúng 6 thẻ của "ngày 2", không dồn', () => {
+    const store = gradeVerbs(reachW3(), day(10, 10))
+    expect(newVerbs(store, day(13, 9))).toEqual(DAY2)
+  })
+
+  it('ngày tồn ôn (> 40 thẻ đến hạn): không có thẻ động từ mới; thẻ động từ đến hạn vẫn ôn và được đếm', () => {
+    const store = withCards(withDueCards(reachW3(), 40), { [vid('go')]: dueCard(day(9)) })
+    expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(true)
+    // Không có thẻ go thì 40 thẻ đến hạn chưa tới ngưỡng: thẻ động từ đến hạn được đếm tồn ôn.
+    expect(newPerDayFor(withDueCards(reachW3(), 40), NOW, ruleCardsOf).heavyReview).toBe(false)
+    const verbs = fullSession(store).queue.filter((i) => isVerb(i.word.id))
+    expect(verbs.map((i) => [i.word.id, i.kind])).toEqual([[vid('go'), 'review']])
+  })
+
+  it('còn ở Sân ga (chưa qua / chưa bỏ qua) dù đã xong T1 + s1-t2-w1, -w2: không có thẻ động từ', () => {
+    const store = completeLessons(empty(), [...T1_AND_W1, 's1-t2-w2'])
+    expect(irregularVerbsReached(store)).toBe(false)
+    expect(newVerbs(store, NOW)).toEqual([])
+  })
+
+  it('bị xếp qua T2-W3 (bắt đầu ở s1-t3-w1): không có thẻ động từ; đánh dấu xong s1-t2-w3 thì bắt đầu mở', () => {
+    const { store: placed } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's1-t3-w1')
+    expect(irregularVerbsReached(placed)).toBe(false)
+    expect(newVerbs(placed, NOW)).toEqual([])
+    const done = setLessonCompleted(placed, 's1-t2-w3', true, day(9))
+    expect(irregularVerbsReached(done)).toBe(true)
+    expect(newVerbs(done, NOW)).toEqual(DAY1)
+  })
+
+  it('bỏ đánh dấu lùi về s1-t2-w2: thẻ động từ không vào phiên, không đếm tồn ôn, vẫn trong store; đánh dấu lại thì lịch cũ chạy tiếp', () => {
+    const due = dueCard(day(9))
+    const store = withCards(withDueCards(reachW3(), 38), Object.fromEntries(DAY1.map((v) => [vid(v), due])))
+    expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(true)
+    expect(fullSession(store).queue.filter((i) => isVerb(i.word.id)).map((i) => i.kind)).toEqual(DAY1.map(() => 'review'))
+
+    const unmarked = setLessonCompleted(store, 's1-t2-w2', false, day(10))
+    expect(irregularVerbsReached(unmarked)).toBe(false)
+    expect(irregularVerbStudyWords(unmarked, { now: NOW, heavyReview: false })).toEqual([])
+    expect(fullSession(unmarked).queue.some((i) => isVerb(i.word.id))).toBe(false)
+    expect(newPerDayFor(unmarked, NOW, ruleCardsOf).heavyReview).toBe(false)
+    for (const v of DAY1) expect(readSrs(unmarked).cards[vid(v)], v).toEqual(due)
+
+    const again = setLessonCompleted(unmarked, 's1-t2-w2', true, day(10, 10))
+    expect(fullSession(again).queue.filter((i) => isVerb(i.word.id)).map((i) => i.kind)).toEqual(DAY1.map(() => 'review'))
+  })
+
+  it('thẻ mồ côi rule:irregular-swimx-1, rule:will-9: không hiện, không đếm tồn ôn, vẫn trong store', () => {
+    const orphans: Record<string, SrsCard> = { 'rule:will-9': dueCard(day(9)) }
+    for (let i = 0; i < 41; i++) orphans[`rule:irregular-swimx${i === 0 ? '' : i}-1`] = dueCard(day(9))
+    const store = withCards(reachW3(), orphans)
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id in orphans)).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(false)
+    expect(readSrs(store).cards['rule:irregular-swimx-1']).toBeDefined()
+    expect(readSrs(store).cards['rule:will-9']).toBeDefined()
+    // Thẻ mồ côi không làm nhóm đầu bị coi là đã mở / đã giới thiệu hôm nay.
+    expect(newVerbs(store, NOW)).toEqual(DAY1)
+  })
+
+  it('mục sai dạng trong srs.cards coi như chưa có mục (không mở nhóm, không phải thẻ có lịch)', () => {
+    const store = withCards(reachW3(), { [vid('be')]: 'junk', [vid('come')]: { due: 1 } })
+    expect(irregularVerbStudyWords(store, { now: NOW, heavyReview: false }).map((r) => v1Of(r.id))).toEqual(DAY1)
+    expect(irregularVerbStudyWords(store)).toEqual([])
   })
 })
 
@@ -677,7 +962,8 @@ describe('hàng C–D có nội dung (story 26, getBrick thật)', () => {
     expect(sessionPlan(store, hasBrickContent)).toMatchObject({ mode: 'foundation', brickId: 'F13', review: false })
   })
 
-  it('xong lần lượt F13, F14, F15, F16, F18 → khoá 75 → 74 → 67 → 62 → 61 → 56; xong thêm F17 thì qua tường, còn khoá 15', () => {
+  // F15 mở 8 hư từ từ story 43 (thêm some, any, many vốn là cổng tường); F16 mở 4 từ story 44 (thêm but, or, because).
+  it('xong lần lượt F13, F14, F15, F16, F18 → khoá 75 → 74 → 67 → 59 → 55 → 50; xong thêm F17 thì qua tường, còn khoá 15', () => {
     let store = doneAll(ROW_AB)
     const sizes = [lockedNewWordIds(store).size]
     for (const [i, id] of (['F13', 'F14', 'F15', 'F16', 'F18'] as const).entries()) {
@@ -686,7 +972,7 @@ describe('hàng C–D có nội dung (story 26, getBrick thật)', () => {
       // Từ chủ đề của viên vừa học lên đầu từ mới.
       expect(preferredNewWordIds(store, themeWordIdsOf).slice(0, 5), id).toEqual([...themeWordIdsOf(id)])
     }
-    expect(sizes).toEqual([75, 74, 67, 62, 61, 56])
+    expect(sizes).toEqual([75, 74, 67, 59, 55, 50])
     expect(readFoundationCompletedAt(store)).toBeNull()
 
     store = completeBrick(store, 'F17', day(10))
@@ -775,5 +1061,258 @@ describe('thẻ quy tắc F06: số, thứ, tháng (story 34)', () => {
     for (let i = 9; i < 50; i++) many[`rule:f06-${i}`] = c
     const heavy: Store = { ...base, data: { ...base.data, srs: { cards: many } } }
     expect(newPerDayFor(heavy, NOW, ruleCardsOf)).toEqual({ count: NEW_WORDS_FOUNDATION, heavyReview: false })
+  })
+})
+
+describe('F15 lượng từ, There is phủ định / câu hỏi (story 43)', () => {
+  const UP_TO_F14: BrickId[] = [
+    'F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12', 'F13', 'F14',
+  ]
+  const F15_RULES = Array.from({ length: 6 }, (_, i) => `rule:f15-${i + 1}`)
+  const QUANTIFIER_IDS = ['ngsl-some', 'ngsl-any', 'ngsl-many']
+  const learned = (list: readonly BrickId[], at: Date = day(9)) => list.reduce((s, id) => completeBrick(s, id, at), empty())
+
+  it('xong F01–F15 → rule:f15-1 … -6 theo thứ tự, đứng cuối; some / any / many hết khoá', () => {
+    const store = learned([...UP_TO_F14, 'F15'])
+    const rules = ruleStudyWords(store, ruleCardsOf).map((r) => r.id)
+    expect(rules.filter((id) => id.startsWith('rule:f15-'))).toEqual(F15_RULES)
+    expect(rules.slice(-6)).toEqual(F15_RULES)
+    const locked = lockedNewWordIds(store)
+    for (const id of QUANTIFIER_IDS) expect(locked.has(id), id).toBe(false)
+    expect(locked.has('ngsl-much')).toBe(false)
+    // F15 xong hôm nay: 6 thẻ mới đứng sau từ mới, không chiếm quota.
+    const queue = fullSession(learned([...UP_TO_F14, 'F15'], day(10, 8))).queue
+    const f15 = queue.filter((i) => i.word.id.startsWith('rule:f15-'))
+    expect(f15.map((i) => [i.word.id, i.kind])).toEqual(F15_RULES.map((id) => [id, 'new']))
+    expect(queue.filter((i) => !i.word.id.startsWith('rule:') && i.kind === 'new')).toHaveLength(NEW_WORDS_FOUNDATION)
+  })
+
+  it('mới xong F01–F14 → some / any / many vẫn khoá (much đã mở từ F14)', () => {
+    const locked = lockedNewWordIds(learned(UP_TO_F14))
+    for (const id of QUANTIFIER_IDS) expect(locked.has(id), id).toBe(true)
+    expect(locked.has('ngsl-much')).toBe(false)
+  })
+
+  it('hàng C qua kiểm tra hoặc bỏ qua Sân ga, chưa học F15 → some / any / many mở, không có thẻ rule:f15-*', () => {
+    for (const store of [markRowTested(empty(), 'C', 7, 8, day(9)), skipFoundation(empty(), day(9))]) {
+      const locked = lockedNewWordIds(store)
+      for (const id of QUANTIFIER_IDS) expect(locked.has(id), id).toBe(false)
+      expect(ruleStudyWords(store, ruleCardsOf).some((r) => r.id.startsWith('rule:f15-'))).toBe(false)
+    }
+  })
+
+  it('đã có rule:f15-1, -2 (trước story 43) → thêm 4 thẻ mới 3–6, thẻ 1–2 giữ lịch cũ', () => {
+    const base = learned([...UP_TO_F14, 'F15'], day(1))
+    const others = ruleStudyWords(base, ruleCardsOf).map((r) => r.id).filter((id) => !id.startsWith('rule:f15-'))
+    const store = withFutureCards(base, [...others, 'rule:f15-1', 'rule:f15-2', ...getBrick('F01')!.themeWordIds])
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const f15 = queue.filter((i) => i.word.id.startsWith('rule:f15-'))
+    expect(f15.map((i) => [i.word.id, i.kind])).toEqual(F15_RULES.slice(2).map((id) => [id, 'new']))
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of ['rule:f15-1', 'rule:f15-2']) expect(cards[id], id).toEqual(before[id])
+    for (const id of F15_RULES.slice(2)) expect(cards[id], id).toBeDefined()
+  })
+
+  it('thẻ mồ côi rule:f15-7 (F15 đã học) không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const due = day(9).toISOString()
+    const c = { due, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: due, known: false, updatedAt: due }
+    const base = learned([...UP_TO_F14, 'F15'])
+    const store: Store = { ...base, data: { ...base.data, srs: { cards: { 'rule:f15-7': c } } } }
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:f15-7')).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(Object.keys(readSrs(store).cards)).toEqual(['rule:f15-7'])
+  })
+})
+
+describe('F16 nối câu, thẻ từ để hỏi và câu hỏi chủ ngữ (story 44)', () => {
+  const UP_TO_F15: BrickId[] = [
+    'F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15',
+  ]
+  const F16_RULES = Array.from({ length: 5 }, (_, i) => `rule:f16-${i + 1}`)
+  const LINKER_IDS = ['ngsl-but', 'ngsl-or', 'ngsl-because']
+  const learned = (list: readonly BrickId[], at: Date = day(9)) => list.reduce((s, id) => completeBrick(s, id, at), empty())
+  const n = (tenseId: string, count: number) => Array.from({ length: count }, (_, i) => `rule:${tenseId}-${i + 1}`)
+
+  it('xong F01–F16 → rule:f16-1 … -5 theo thứ tự, đứng cuối; but / or / because hết khoá, and / why còn khoá', () => {
+    const store = learned([...UP_TO_F15, 'F16'])
+    const rules = ruleStudyWords(store, ruleCardsOf).map((r) => r.id)
+    expect(rules.filter((id) => id.startsWith('rule:f16-'))).toEqual(F16_RULES)
+    expect(rules.slice(-5)).toEqual(F16_RULES)
+    const locked = lockedNewWordIds(store)
+    for (const id of LINKER_IDS) expect(locked.has(id), id).toBe(false)
+    for (const id of ['ngsl-and', 'ngsl-why']) expect(locked.has(id), id).toBe(true)
+    // F16 xong hôm nay: 5 thẻ mới đứng sau từ mới, không chiếm quota.
+    const queue = fullSession(learned([...UP_TO_F15, 'F16'], day(10, 8))).queue
+    const f16 = queue.filter((i) => i.word.id.startsWith('rule:f16-'))
+    expect(f16.map((i) => [i.word.id, i.kind])).toEqual(F16_RULES.map((id) => [id, 'new']))
+    expect(queue.filter((i) => !i.word.id.startsWith('rule:') && i.kind === 'new')).toHaveLength(NEW_WORDS_FOUNDATION)
+    expect(f16[2].word).toMatchObject({ cloze: 'My son has a new game, ___ he is happy. (nên)', answer: 'so', brickId: 'F16' })
+  })
+
+  it('mới xong F01–F15 → but / or / because vẫn khoá (nay vì F16); and / why vẫn khoá vì tường', () => {
+    const locked = lockedNewWordIds(learned(UP_TO_F15))
+    for (const id of [...LINKER_IDS, 'ngsl-and', 'ngsl-why']) expect(locked.has(id), id).toBe(true)
+  })
+
+  it('hàng C qua kiểm tra hoặc bỏ qua Sân ga, chưa học F16 → but / or / because mở, không có thẻ rule:f16-*', () => {
+    for (const store of [markRowTested(empty(), 'C', 7, 8, day(9)), skipFoundation(empty(), day(9))]) {
+      const locked = lockedNewWordIds(store)
+      for (const id of LINKER_IDS) expect(locked.has(id), id).toBe(false)
+      expect(ruleStudyWords(store, ruleCardsOf).some((r) => r.id.startsWith('rule:f16-'))).toBe(false)
+    }
+  })
+
+  it('đã có rule:f16-1, -2 (trước story 44) → thêm 3 thẻ mới 3–5, thẻ 1–2 giữ lịch cũ', () => {
+    const base = learned([...UP_TO_F15, 'F16'], day(1))
+    const others = ruleStudyWords(base, ruleCardsOf).map((r) => r.id).filter((id) => !id.startsWith('rule:f16-'))
+    const store = withFutureCards(base, [...others, 'rule:f16-1', 'rule:f16-2', ...getBrick('F01')!.themeWordIds])
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const f16 = queue.filter((i) => i.word.id.startsWith('rule:f16-'))
+    expect(f16.map((i) => [i.word.id, i.kind])).toEqual(F16_RULES.slice(2).map((id) => [id, 'new']))
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of ['rule:f16-1', 'rule:f16-2']) expect(cards[id], id).toEqual(before[id])
+    for (const id of F16_RULES.slice(2)) expect(cards[id], id).toBeDefined()
+  })
+
+  it('thẻ mồ côi rule:f16-6 (F16 đã học) không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const due = day(9).toISOString()
+    const c = { due, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: due, known: false, updatedAt: due }
+    const base = learned([...UP_TO_F15, 'F16'])
+    const store: Store = { ...base, data: { ...base.data, srs: { cards: { 'rule:f16-6': c } } } }
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:f16-6')).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(Object.keys(readSrs(store).cards)).toEqual(['rule:f16-6'])
+  })
+
+  it('bài s1-t1-w3 đã xong trước story 44 (có rule:present-simple-questions-1 … -4) → phiên thêm đúng -5, thẻ cũ giữ lịch', () => {
+    const OLD = n('present-simple-questions', 4)
+    const base = completeLessons(skipFoundation(empty(), day(3)), ['s1-t1-w3'])
+    expect(ruleStudyWords(base, ruleCardsOf, { now: NOW, heavyReview: false }).map((r) => r.id)).toEqual(
+      n('present-simple-questions', 5),
+    )
+    const store = withFutureCards(base, OLD)
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const fresh = queue.filter((i) => i.word.id.startsWith('rule:'))
+    expect(fresh.map((i) => [i.word.id, i.kind])).toEqual([['rule:present-simple-questions-5', 'new']])
+    expect(fresh[0].word).toMatchObject({ lessonId: 's1-t1-w3', cloze: 'How ___ do you play football? — Every Sunday.', answer: 'often' })
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of OLD) expect(cards[id], id).toEqual(before[id])
+    expect(cards['rule:present-simple-questions-5']).toBeDefined()
+  })
+})
+
+describe('modal mở rộng: have to, could, would like; may / might dời sang Chặng 2 (story 45)', () => {
+  const n = (tenseId: string, count: number) => Array.from({ length: count }, (_, i) => `rule:${tenseId}-${i + 1}`)
+  const MODAL_RULES = n('modals', 5)
+  const OPEN = ['ngsl-can', 'ngsl-could', 'ngsl-would', 'ngsl-should', 'ngsl-must']
+  const dueCard = (at: Date): SrsCard => {
+    const iso = at.toISOString()
+    return { due: iso, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: iso, known: false, updatedAt: iso }
+  }
+  const withCards = (store: Store, extra: Record<string, SrsCard>): Store => ({
+    ...store,
+    data: { ...store.data, srs: { cards: { ...(readSrs(store).cards as Record<string, SrsCard>), ...extra } } },
+  })
+  /** Bỏ qua Sân ga và đánh dấu xong s1-t4-w1. */
+  const doneModals = () => completeLessons(skipFoundation(empty(), day(3)), ['s1-t4-w1'])
+
+  it('bỏ qua Sân ga + xong s1-t4-w1 → can, could, would, should, must mở; may, might vẫn khoá', () => {
+    const locked = lockedNewWordIds(doneModals())
+    for (const id of OPEN) expect(locked.has(id), id).toBe(false)
+    for (const id of ['ngsl-may', 'ngsl-might']) expect(locked.has(id), id).toBe(true)
+  })
+
+  it('thêm s2-t7-w3 → may mở, might khoá; thêm s2-t7-w4 → might mở', () => {
+    const w3 = completeLessons(doneModals(), ['s2-t7-w3'])
+    expect(lockedNewWordIds(w3).has('ngsl-may')).toBe(false)
+    expect(lockedNewWordIds(w3).has('ngsl-might')).toBe(true)
+    const w4 = completeLessons(w3, ['s2-t7-w4'])
+    expect(lockedNewWordIds(w4).has('ngsl-might')).toBe(false)
+  })
+
+  it('Mũ xếp bắt đầu s2-t8-w1 → may, might mở (bài bị xếp qua)', () => {
+    const { store } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's2-t8-w1')
+    const locked = lockedNewWordIds(store)
+    for (const id of [...OPEN, 'ngsl-may', 'ngsl-might']) expect(locked.has(id), id).toBe(false)
+  })
+
+  it('đã xong s1-t4-w1, chưa tới s2-t7-w3: phiên nhiều ngày không bao giờ giới thiệu may hay might', () => {
+    let store = doneModals()
+    const introduced: string[] = []
+    for (let d = 10; d <= 30; d++) {
+      const at = new Date(2026, 10, d, 9)
+      for (const item of fullSession(store, at).queue) {
+        if (item.kind === 'new') {
+          introduced.push(item.word.id)
+          expect(['ngsl-may', 'ngsl-might'], item.word.id).not.toContain(item.word.id)
+        }
+        store = gradeCard(store, item.word.id, 'good', at)
+      }
+    }
+    // Tự kiểm: phiên đã đi qua hạng của may (97) và might (159), và giới thiệu could, would.
+    const rankOf = new Map(words.map((w) => [w.id, w.rank]))
+    expect(Math.max(...introduced.filter((id) => id.startsWith('ngsl-')).map((id) => rankOf.get(id) ?? 0))).toBeGreaterThan(159)
+    for (const id of ['ngsl-could', 'ngsl-would']) expect(introduced, id).toContain(id)
+    // Thẻ hư từ could hiện dạng điền chỗ trống (AC story 45).
+    const could = functionWordCloze(words.find((w) => w.id === 'ngsl-could')!)
+    expect(could && clozeText(could)).toBe('___ you open the window?')
+    expect(could?.answer).toBe('Could')
+  })
+
+  it('có thẻ ngsl-may từ trước, chưa xong s2-t7-w3 → thẻ vẫn là thẻ ôn khi tới hạn, không bị xoá', () => {
+    const store = withCards(doneModals(), { 'ngsl-may': dueCard(day(9)) })
+    expect(lockedNewWordIds(store).has('ngsl-may')).toBe(true)
+    expect(fullSession(store).queue.find((i) => i.word.id === 'ngsl-may')).toMatchObject({ kind: 'review' })
+    expect(readSrs(store).cards['ngsl-may']).toEqual(dueCard(day(9)))
+  })
+
+  it('xong s1-t4-w1 → ruleStudyWords có rule:modals-1 … -5 đúng thứ tự, lessonId s1-t4-w1; thẻ 5 lật ra has to', () => {
+    const rules = ruleStudyWords(doneModals(), ruleCardsOf, { now: NOW, heavyReview: false })
+    expect(rules.map((r) => r.id)).toEqual(MODAL_RULES)
+    for (const r of rules) expect('lessonId' in r && r.lessonId, r.id).toBe('s1-t4-w1')
+    expect(rules[4]).toMatchObject({ cloze: 'My father ___ (have to) work on Saturdays.', answer: 'has to' })
+  })
+
+  it('bỏ đánh dấu s1-t4-w1 → could, would để dành lại; thẻ đã có giữ nguyên; rule:modals-* không vào phiên', () => {
+    const withCard = gradeCard(doneModals(), 'ngsl-could', 'good', day(9))
+    const undone = setLessonCompleted(withCard, 's1-t4-w1', false, day(9, 10))
+    for (const id of ['ngsl-could', 'ngsl-would']) expect(lockedNewWordIds(undone).has(id), id).toBe(true)
+    expect(readSrs(undone).cards['ngsl-could']).toEqual(readSrs(withCard).cards['ngsl-could'])
+    expect(ruleStudyWords(undone, ruleCardsOf, { now: NOW, heavyReview: false }).some((r) => r.id.startsWith('rule:modals-'))).toBe(false)
+  })
+
+  it('store có rule:modals-1 … -4 (bài xong trước story 45) → phiên thêm đúng -5, thẻ cũ giữ lịch', () => {
+    const OLD = MODAL_RULES.slice(0, 4)
+    const store = withFutureCards(doneModals(), OLD)
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const fresh = queue.filter((i) => i.word.id.startsWith('rule:'))
+    expect(fresh.map((i) => [i.word.id, i.kind])).toEqual([['rule:modals-5', 'new']])
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of OLD) expect(cards[id], id).toEqual(before[id])
+    expect(cards['rule:modals-5']).toBeDefined()
+  })
+
+  it('thẻ mồ côi rule:modals-6 không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const base = doneModals()
+    const store: Store = { ...base, data: { ...base.data, srs: { cards: { 'rule:modals-6': dueCard(day(9)) } } } }
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:modals-6')).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(false)
+    expect(Object.keys(readSrs(store).cards)).toEqual(['rule:modals-6'])
   })
 })

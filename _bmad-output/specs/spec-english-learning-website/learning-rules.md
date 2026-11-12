@@ -26,9 +26,9 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 | F12 this/that + 's | B | 6 | this/that/these/those, "Huy's phone"; tránh "this books" |
 | F13 to be khẳng định | C · Câu đầu tiên | 10 | am/is/are + danh từ/tính từ/nơi chốn; giới thiệu bản thân bằng 3 câu |
 | F14 to be phủ định, hỏi + từ để hỏi | C | 10 | isn't/aren't, câu hỏi, trả lời ngắn, what/where/who/how old/how much |
-| F15 There is/are + giới từ nơi chốn | C | 10 | Tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1) |
-| F16 have/has | C | 6 | Nói sở hữu, has với he/she/it, "I am 25" |
-| F17 Thì là gì | D · Cầu sang Năm 1 | 8 | Nhận ra go/goes/going/went/gone trên trục thời gian; chỉ cần nhận ra |
+| F15 There is/are + giới từ nơi chốn | C | 13 | There is/are đủ 3 dạng (There isn't…, Is there…? Yes, there is), some/any, many/much/a lot of, How many/How much; tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1) |
+| F16 have/has + nối câu | C | 10 | Nói sở hữu, has với he/she/it, "I am 25"; nối 2 câu bằng and/but/or/because/so, không nói "Because…, so…" |
+| F17 Thì là gì | D · Cầu sang Năm 1 | 8 | Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has (học ở T3); chỉ cần nhận ra |
 | F18 at/in/on + trạng từ tần suất | D | 8 | at + giờ, on + thứ, in + tháng; always/usually… đứng đâu; kể lịch một ngày |
 
 - **Thứ tự màn trong viên:** giải thích tiếng Việt (40–80 chữ) → "Tiếng Việt nói… / Tiếng Anh bắt buộc…" → ví dụ mẫu → ví dụ một chỗ trống → 2–5 câu luyện có nút "Gợi ý" (chủ yếu bấm chọn 3 đáp án; có thể là nghe rồi chọn, chạm âm tiết, sắp thứ tự, xếp nhóm) → Áp dụng (làm ra một thứ cụ thể: đánh vần tên mình, nói một giá tiền, tả căn phòng bằng 2–3 câu).
@@ -49,7 +49,8 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - Lý thuyết luôn đi trước luyện.
 - **Khi đang ở Sân ga:** Lý thuyết 12' (1 viên gạch, hiện ngay trong buổi; xong viên có nút "Học tiếp viên sau", không bắt buộc, chỉ hiện khi còn viên tiếp theo) → Ôn & từ mới 8' → Giải trí nhẹ 10' (VOA Let's Learn English L1–L3, có phụ đề Việt khi có).
-- **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài. Thì có phần luyện có bậc (ví dụ mẫu → tự điền → 5–7 câu luyện có Gợi ý, dưới 60% mời xem lại + 2 câu dễ hơn → áp dụng) hiện ngay dưới TenseCard. Sai thì giải thích và làm lại, không ghi Sổ lỗi, không lưu tiến độ hay lần làm quiz; chỉ câu nói ở bước áp dụng ghi điểm nói như viên gạch (story 35).
+- **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài. Thì có phần luyện có bậc (ví dụ mẫu → tự điền → 5–7 câu luyện có Gợi ý, dưới 60% mời xem lại + 2 câu dễ hơn → áp dụng) hiện ngay dưới TenseCard. Sai thì giải thích và làm lại, không ghi Sổ lỗi, không lưu tiến độ hay lần làm quiz; chỉ câu nói ở bước áp dụng ghi điểm nói như viên gạch (story 35). Các thì T1–T2 (hiện tại đơn, hiện tại tiếp diễn, quá khứ đơn với to be, có quy tắc, bất quy tắc, quá khứ tiếp diễn (s1-t2-w4: was / were + V-ing, when + quá khứ đơn, while; đưa vào Chặng 1 theo quyết định ngày 2026-11-11, story 46)) đều có phần luyện và 12 câu quiz mỗi thì, trong đó có câu gõ dạng đúng, biến đổi và dịch Việt → Anh (story 36). Các chủ điểm T3–T4 (will, be going to, hiện tại hoàn thành, hoàn thành và quá khứ đơn, can / should / must, so sánh, bị động hiện tại) cũng có phần luyện và 12 câu quiz mỗi chủ điểm, gồm câu gõ dạng đúng, biến đổi và dịch Việt → Anh (story 37).
+- **Ngữ pháp theo ngày (story 47):** 8 bài học một thì (hay hai thì chung khuôn) trong một tuần (s1-t2-w1 → s1-t2-w4, s1-t3-w1 → s1-t3-w3, s1-t4-w1) chia đoạn Ngữ pháp thành 5 ngày: N1 khẳng định, N2 phủ định, N3 câu hỏi (thêm khối luyện của thì), N4 so với thì trước (khối "Chọn thì" có sẵn của bài hoặc 3 cặp câu mới), N5 ôn trộn cả tuần (cả đoạn Ngữ pháp, có kiểm tra 5 câu cuối Bài chính). Ngày N1–N3 hiện phần đầu thẻ thì với các dòng công thức của ngày và 3 câu luyện nói mới; N4 hiện dòng công thức gán cho ngày (nếu có), khối "Chọn thì" và / hoặc 3 cặp câu, không có câu luyện nói; ngày nào cũng có nút "Xem cả thẻ" (đóng sẵn) cho từng thì của bài. Dùng đúng cơ chế phần của bài T1 (story 28): id ngày `<bài>-n1` … `-n5` nằm trong `partsSeen`, buổi 30' chốt `?part=` là ngày chưa xem đầu tiên, "Xong buổi" đánh dấu ngày đó, xem đủ 5 ngày thì buổi ôn cả tuần ("Đã xem đủ 5 ngày Ngữ pháp, hôm nay ôn lại cả tuần."). Trang bài vẫn hiện đủ nội dung, đầu đoạn Ngữ pháp có danh sách "5 ngày của tuần" (nhãn "Đã xem" / "Ngày tiếp theo", nút "Xong ngày này"; chỉ ở trang bài). Cả đoạn (trang bài, ngày 5, buổi ôn cả tuần) có khối "Câu luyện theo ngày" (câu nói và cặp câu của N1–N4, đóng sẵn). Không khoá ngày nào. Không chia: T1 (đã chia đoạn Phát âm), s1-t3-w4, s1-t4-w3, s1-t4-w4; đoạn Phát âm của T2–T4 không chia.
 - Kế hoạch buổi chốt lúc bắt đầu buổi: xong viên cuối cùng giữa buổi thì buổi vẫn chạy hết 3 phần như đã chốt.
 - `prioritizeSections` (đẩy kỹ năng yếu, CAP-7) chỉ đổi thứ tự giữa các phần luyện, không bao giờ đẩy phần lý thuyết xuống dưới phần luyện.
 - **Ngày lười (10'):** ở Sân ga là ôn 1 viên gạch (viên xong gần nhất; chưa xong viên nào thì xem phần giải thích của viên tiếp theo) + 3 từ (không dùng tin); sau Sân ga là 1 tin + 3 từ (mục Nội dung bài). Vẫn giữ streak.
@@ -65,11 +66,11 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - **Số từ mới mỗi ngày:** 5 khi đang ở Sân ga; 8 cho phần còn lại của T1; 10 từ T2. Hôm nào còn hơn 40 thẻ đến hạn ôn thì chỉ 3 từ mới, kèm lời nhắn nhẹ "Hôm nay ôn kỹ, mai học từ mới tiếp".
 - **Thứ tự từ mới:** từ chủ đề của viên gạch/bài và danh sách từ khởi đầu (thời gian, gia đình, nghề, đồ vật lớp học; số và tên thứ/tháng không có trong NGSL nên viên F06 dạy bằng bảng tra và thẻ quy tắc) trước, rồi mới tới NGSL theo hạng → TSL.
-- **Hư từ** (the, a/an, of, be, have, can, will, đại từ, giới từ…) được dạy như ngữ pháp: chỉ mở khi viên gạch dạy nó đã dạy (mục Sân ga) hoặc bài T1 dạy nó đã xong. Hư từ không có viên gạch nào dạy (vd can, will, do/does, and/but/or) gắn với bài đầu tiên của Chặng 1 dạy nó; không bài nào dạy thì mở khi qua hoặc bỏ qua Sân ga. Trước đó để dành, không mất, và giữ thứ tự NGSL khi mở. Hư từ chỉ ôn bằng thẻ điền chỗ trống trong câu, không có thẻ kiểu "the = ?".
+- **Hư từ** (the, a/an, of, be, have, can, will, đại từ, giới từ…) được dạy như ngữ pháp: chỉ mở khi viên gạch dạy nó đã dạy (mục Sân ga) hoặc bài T1 dạy nó đã xong. Hư từ không có viên gạch nào dạy (vd can, will, do/does) gắn với bài đầu tiên dạy nó (thường ở Chặng 1); không bài nào dạy thì mở khi qua hoặc bỏ qua Sân ga. may, might chưa dạy ở Chặng 1 nên mở sau bài Chặng 2 dạy chúng: may ở s2-t7-w3, might ở s2-t7-w4 (story 45). but, or, because mở theo viên F16 (story 44). and, why có dạy (and ở F16, why ở khối "Hỏi tại sao…" của s1-t1-w3) nhưng cố ý giữ cổng tường: F10, F11, F15 đã dùng and để nối từ, còn dời why sang bài sẽ đóng cổng đã mở. Trước đó để dành, không mất, và giữ thứ tự NGSL khi mở. Hư từ chỉ ôn bằng thẻ điền chỗ trống trong câu, không có thẻ kiểu "the = ?".
 - **Thẻ "Làm quen":** lần đầu gặp một từ thì thẻ hiện nghĩa, có audio và nút "Đã xem", chưa chấm Quên/Khó/Nhớ/Dễ. Những lần sau thẻ đi theo lịch SRS như cũ.
 - **Hiển thị trên thẻ:** IPA chỉ hiện sau F03, tô trọng âm và âm tiết sau F04, nhãn từ loại sau F07 (viên tính là đã dạy theo mục Sân ga: xong viên, hàng qua bằng kiểm tra, hoặc đã bỏ qua Sân ga). Chữ "NGSL #n" đổi thành "Từ phổ biến #n".
-- **Ví dụ:** câu ví dụ AI nào dùng ngữ pháp chưa học thì thay bằng câu tự viết. Tập rà: NGSL hạng 1–500, danh sách từ khởi đầu và từ chủ đề của mọi viên gạch có nội dung. Câu ví dụ chỉ dùng ngữ pháp Sân ga (F01–F18) và hiện tại đơn (khẳng định, phủ định, câu hỏi); ngoại lệ là câu của chính hư từ được mở sau bài dạy nó (will, can…).
-- **Thẻ quy tắc** của viên gạch là thẻ điền chỗ trống. Chỉ viên đã học xong mới góp thẻ (hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không). Thẻ quy tắc vào phiên ôn ngay hôm học xong viên, đứng sau từ mới và không tính vào số từ mới mỗi ngày. Thì trong bài Chặng 1 cũng có thể góp thẻ quy tắc: chỉ bài đã đánh dấu xong mới góp (bài bỏ qua khi xếp lớp thì không), thẻ đứng sau thẻ viên gạch (story 33).
+- **Ví dụ:** câu ví dụ AI nào dùng ngữ pháp chưa học thì thay bằng câu tự viết. Tập rà: NGSL hạng 1–500, danh sách từ khởi đầu và từ chủ đề của mọi viên gạch có nội dung. Câu ví dụ chỉ dùng ngữ pháp Sân ga (F01–F18) và hiện tại đơn (khẳng định, phủ định, câu hỏi); ngoại lệ là câu của chính hư từ được mở sau bài dạy nó (will, can, could, would…).
+- **Thẻ quy tắc** của viên gạch là thẻ điền chỗ trống. Chỉ viên đã học xong mới góp thẻ (hàng qua bằng kiểm tra hay bỏ qua Sân ga thì không). Thẻ quy tắc vào phiên ôn ngay hôm học xong viên, đứng sau từ mới và không tính vào số từ mới mỗi ngày. Thì trong bài Chặng 1 cũng có thể góp thẻ quy tắc: chỉ bài đã đánh dấu xong mới góp (bài bỏ qua khi xếp lớp thì không), thẻ đứng sau thẻ viên gạch (story 33). Mọi thì Chặng 1 (trừ to be ôn ở s1-t1-w1) góp 4–5 thẻ quy tắc. 50 động từ bất quy tắc thành thẻ V1 → V2 · V3: mở từ khi tới bài s1-t2-w3 (bài hiện tại sau Sân ga hoặc đã xong; bài bị xếp qua thì không), theo nhóm âm, tối đa 10 động từ mỗi ngày (trọn nhóm; nhóm đầu trong ngày luôn mở), ngày tồn ôn không mở; không tính quota từ mới. Bảng động từ có chế độ che cột V2 / V3; s1-t3-w3 mở đầu bằng bảng ôn cột V3 che sẵn (story 38).
 - Thuật toán SRS và lịch của thẻ cũ giữ nguyên. Không xoá hay reset thẻ.
 
 ## Mũ Phân Loại (CAP-3)
@@ -91,7 +92,8 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - Áp dụng khi nghỉ hơn 1 tuần.
 - Test 5' lấy câu từ các bài của 4 tuần gần nhất và từ Sổ lỗi.
-- Khi đang ở Sân ga: test lấy câu từ các viên đã xong (câu luyện, quiz hàng) và Sổ lỗi, kết quả đưa Huy tới viên chứa lỗ hổng. Chưa xong viên nào thì không có test, app mời học tiếp viên tiếp theo.
+- Khi đang ở Sân ga (story 47): test lấy câu kiểm tra hàng (Quiz engine) của các viên đã học xong, ưu tiên 4 viên xong gần nhất, cộng tối đa 3 câu Sổ lỗi. Câu luyện trong viên không phải câu của Quiz engine nên không vào đề; câu bài lộ trình chưa học không bao giờ vào đề (câu bài chỉ vào khi nằm trong Sổ lỗi). Kết quả đưa Huy tới viên chứa lỗ hổng (`/foundation/Fxx`); đúng hết thì tới viên tiếp theo (hết viên thì trang Sân ga). Chưa xong viên nào và Sổ lỗi trống thì không có test, thẻ Sân ga vẫn mời học viên tiếp theo.
+- Sau Sân ga, câu Sổ lỗi của viên gạch sai nhiều nhất cũng trỏ về viên đó; hoà với câu bài thì bài lộ trình thắng.
 
 ## Sổ lỗi & AI (CAP-19)
 
@@ -105,17 +107,27 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - **O.W.L. 1:** ngưỡng ≥70% tính **riêng cho từng phần**: phần thì và phần phát âm.
 - **Chấm đọc IPA:** dùng nhận giọng nói nếu trình duyệt hỗ trợ. Nếu không, Huy nghe audio mẫu rồi tự chấm.
+- O.W.L. 1 phần Thì (story 40): kho câu riêng 42 câu, đề 20 câu, mỗi thì 2 câu, có 4 câu chọn giữa hai thì dễ nhầm, có câu gõ. Kết quả báo % từng thì; thì dưới 70% vào kế hoạch ôn 14 ngày kể cả khi đã qua (chỉ là lời mời). Ngoại lệ: kho chưa có câu quá khứ tiếp diễn (thêm ở s1-t2-w4 theo quyết định ngày 2026-11-11, story 46), nên thì này chưa có điểm riêng và chưa vào kế hoạch ôn 14 ngày; xem `deferred-work.md`.
 - Các ngưỡng khác lấy theo `lo-trinh-toeic-12-thang.md`.
 
 ## Nội dung bài (CAP-2, CAP-9, CAP-11, CAP-18)
 
-- **Chỉ dùng kiến thức đã dạy:** mỗi câu hỏi khai báo khái niệm nó cần. Quiz bài và mini test bỏ câu chưa đủ nền; còn dưới 4 câu thì hiện thông báo nhẹ, không chặn việc xong bài. Ngoại lệ: Soát vé và "Tôi biết rồi" (mục Sân ga), "Đo trình độ" (đề ETS làm ngoài app). Nội dung giải trí (video, nhạc, tin) không thuộc luật này.
+- **Chỉ dùng kiến thức đã dạy:** mỗi câu hỏi khai báo khái niệm nó cần. Từ story 47 mọi câu quiz của 15 bài T1–T4 đều khai báo (thiếu là lỗi test): khái niệm viên gạch bất kỳ, hoặc khái niệm bài (T1 và T2–T4: hiện tại tiếp diễn, quá khứ, will, going to, hoàn thành, modal, so sánh, bị động, các khái niệm phát âm của bài) của bài đứng trước hay chính bài; câu đoạn Ngữ pháp T2–T4 có ít nhất 1 khái niệm của chính bài (trừ câu ôn). Lúc chạy vẫn chỉ lọc theo viên gạch; khái niệm bài được bảo đảm bằng test tĩnh. "Don't + V" (mệnh lệnh phủ định) dạy ở s1-t1-w3. Quiz bài và mini test bỏ câu chưa đủ nền; còn dưới 4 câu thì hiện thông báo nhẹ, không chặn việc xong bài. Ngoại lệ: Soát vé và "Tôi biết rồi" (mục Sân ga), "Đo trình độ" (đề ETS làm ngoài app). Nội dung giải trí (video, nhạc, tin) không thuộc luật này.
 - **Dữ liệu từ** (IPA, trọng âm, nghĩa Việt, câu ví dụ) do AI sinh lúc build. Huy duyệt một mẫu. Mỗi từ có link sang Cambridge để đối chiếu.
 - **Câu thoại minh hoạ các thì** lấy từ transcript VOA và YouGlish.
 - **Phần 10' giải trí (Đợt 1):** khi soạn bài, chọn sẵn 1–2 link ngoài cho mỗi bài.
 - **Ngày lười sau Sân ga:** tin lấy từ nguồn gọi trực tiếp được trong app (Hacker News, Google AI Blog). Bôi đen để lưu 3 từ mới. Khi đang ở Sân ga, ngày lười là ôn 1 viên gạch + 3 từ (mục Buổi học).
 - **Bôi đen lưu sổ tay (Đợt 1):** làm được trong bài đọc và tin trong app.
+- **Từ tín hiệu và chọn thì (story 39, 44, 45):** mỗi thì có mốc thời gian hiện hàng chip từ tín hiệu. Khối "Hỏi tại sao, bao lâu một lần, bao nhiêu" (s1-t1-w3, why / how often / how many / how much với do / does), "Đơn hay tiếp diễn?" (s1-t2-w1), "Câu hỏi chủ ngữ: Who called? hay Who did you call?" (s1-t2-w2), "will hay going to?" (s1-t3-w2), "Đừng dịch từng chữ: đã · sẽ · chưa" (s1-t3-w4), "Phải, không cần, được không, muốn: have to, could, would like" (s1-t4-w1, story 45) có dòng thời gian cạnh nhau / bảng chữ Việt, cặp câu dễ nhầm và phần luyện như phần luyện của thì (không ghi Sổ lỗi). Ôn tổng s1-t4-w4 có bảng mỗi thì một dòng và luật chung trợ động từ.
+- Mini test và ôn trộn (story 40): mini-t3 (s1-t3-w4) có 2/10 câu ôn thì T1–T2; 'Ôn trộn mọi thì' 20 câu trước O.W.L. 1; tuần Tết có ôn nhẹ 5 câu thì + Sổ lỗi, tuỳ chọn.
+
+## Bản đồ thì (story 42, CAP-7, CAP-11, CAP-19)
+
+- Trang `/practice/tense-map`, lối vào là thẻ "Bản đồ thì" trên trang Luyện tập (ngay sau O.W.L. 1). Mỗi thì Năm 1 một dòng (15 thì, theo thứ tự bài, nhóm theo tháng T1–T4).
+- **Các số:** kiểm tra bài tốt nhất (quiz bài `lesson-<id>`, mọi lần làm kể cả ở trang test; mini test, ôn trộn, O.W.L., test quay lại không tính); thẻ quy tắc của chính thì đã nhớ (khoảng ôn từ 7 ngày, không đang học lại) / đến hạn; câu Sổ lỗi nhãn `thì` của bài chưa thuộc (khoảng ôn < 21 ngày). Điểm kiểm tra và Sổ lỗi tính theo bài, nên bài hai thì có hai dòng cùng số. Dòng quá khứ đơn bất quy tắc có thêm số thẻ động từ bất quy tắc đã mở / đã nhớ (chỉ để xem).
+- **Chắc** = bài đã đánh dấu xong, kiểm tra bài từ 70%, mọi thẻ quy tắc của thì đã nhớ (thì không có thẻ riêng thì coi như đạt), không còn câu Sổ lỗi chưa thuộc. **Chưa học** = chưa có dấu hiệu nào: bài chưa xong, không phải bài hiện tại (chỉ tính khi đã ra khỏi Sân ga), chưa làm kiểm tra bài, không có lỗi chưa thuộc, không có thẻ nào vào lịch. **Đang học** = còn lại, kèm câu "Để chắc: …" (đánh dấu bài xong → kiểm tra bài đạt 70% → ôn Sổ lỗi → ôn thẻ).
+- Chỉ để xem: không khoá, không ẩn thì "chưa học" (luôn có "Xem bài"), không ghi gì vào store. Thì đã bắt đầu có link "Buổi ôn 30'" (buổi bài ghim `?lesson=`, bước Bài chính) và "Làm kiểm tra" khi chưa đạt 70%.
 
 ## Tab Luyện tập (Đợt 1)
 
-Ôn flashcard, luyện phát âm, ôn Sổ lỗi, link luyện nói.
+Ôn flashcard, luyện phát âm, ôn Sổ lỗi, link luyện nói, Bản đồ thì.

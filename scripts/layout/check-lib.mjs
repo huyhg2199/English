@@ -22,6 +22,7 @@ export const ROUTES = [
   '/practice',
   '/practice/flashcards',
   '/practice/mistakes',
+  '/practice/tense-map',
   '/notebook',
   '/trophies',
   '/backup',
@@ -38,6 +39,7 @@ export const WIDE_ROUTES = [
   '/roadmap/lesson/s1-t1-w1/vocabulary',
   '/foundation/F01',
   '/session',
+  '/practice/tense-map',
 ]
 
 /**
@@ -51,12 +53,14 @@ export const RAIL_LANDMARKS = {
 }
 
 /**
- * Lưới 2 cột của route `wide` không có cột phụ (story 31): phần tử khớp đầu tiên; số cột = số giá trị `left` (làm tròn) khác
+ * Lưới 2 cột của route `wide` không có cột phụ (story 31, 42): phần tử khớp đầu tiên; số cột = số giá trị `left` (làm tròn) khác
  * nhau của các con trực tiếp đang hiện. Lộ trình: lưới nằm trong mỗi chặng (thẻ chặng trải 2 cột, các tháng xếp 2 cột).
  */
 export const GRID_LANDMARKS = {
   '/': 'main > section',
   '/roadmap': 'main section[aria-labelledby^="stage-"]',
+  // Bản đồ thì (story 42): đầu trang trải 2 cột, mỗi tháng một ô.
+  '/practice/tense-map': 'main > section',
 }
 
 /** Route tĩnh dưới AppShell cố ý không đo (màn phụ cần dữ liệu riêng hoặc chỉ là luồng một lần). Test kiểm cây routes. */
@@ -285,7 +289,8 @@ export const HOTKEY_PROBE = {
   brickRoute: '/foundation/F01',
   /** Enter ×3 từ màn 1 → màn ví dụ một chỗ trống. */
   brickScreen: 'Màn 4/6',
-  brickTyped: 'chào 1',
+  /** Chữ sai không dấu: chữ có dấu bị coi là đang bật bộ gõ tiếng Việt và không chấm (story 35). */
+  brickTyped: 'xyz 1',
   /** Bỏ focus ô rồi Enter ở màn 4 → màn luyện tập (câu đầu là `choice`). */
   checkScreen: 'Màn 5/6',
   /** Kiểm tra hàng A: `QuestionCard` từ dữ liệu sạch. */

@@ -1,26 +1,46 @@
 import { getLesson } from '@/data/roadmap'
+import type { SectionId } from '@/data/roadmap/types'
 
+import { T1_LESSON_IDS } from './concepts'
 import { FOUNDATION_QUESTIONS } from './foundation'
+import { OWL_QUESTIONS } from './owl'
 import { T1_QUESTIONS } from './t1'
 import { T2_T4_QUESTIONS } from './t2-t4'
-import type { Question } from './types'
+import type { MistakeTag, Question } from './types'
 
 export * from './types'
 export * from './concepts'
 export { FOUNDATION_QUESTIONS, FOUNDATION_QUIZZES, foundationQuiz, ROW_QUIZ_ID, ROW_QUIZ_SIZE } from './foundation'
+export {
+  OWL_CONTRASTS,
+  OWL_QUESTIONS,
+  OWL_TOPICS,
+  type OwlContrast,
+  type OwlContrastId,
+  type OwlQuestion,
+  type OwlTopic,
+  type OwlTopicId,
+} from './owl'
 
 /** Toàn bộ ngân hàng câu: T1 (story 9) và T2–T4 (story 10). */
 export const QUESTION_BANK: readonly Question[] = [...T1_QUESTIONS, ...T2_T4_QUESTIONS]
 
-// Tra cả câu Sân ga (không nằm trong `QUESTION_BANK`) để Sổ lỗi hiện được câu của kiểm tra cuối hàng.
-const byId = new Map([...QUESTION_BANK, ...FOUNDATION_QUESTIONS].map((q) => [q.id, q]))
+// Tra cả câu Sân ga và kho câu O.W.L. (story 40), không nằm trong `QUESTION_BANK`, để Sổ lỗi, kế hoạch ôn và
+// "Vì sao sai?" hiện được câu của kiểm tra cuối hàng và của kỳ thi.
+const byId = new Map<string, Question>([...QUESTION_BANK, ...FOUNDATION_QUESTIONS, ...OWL_QUESTIONS].map((q) => [q.id, q]))
 
-/** Câu theo id, trong `QUESTION_BANK` hoặc ngân hàng Sân ga. */
+/** Câu theo id, trong `QUESTION_BANK`, ngân hàng Sân ga hoặc kho câu O.W.L. */
 export function getQuestion(id: string): Question | undefined {
   return byId.get(id)
 }
 
-/** Một bài test bám bài: lấy `size` câu từ các bài `lessonIds`, mỗi bài ít nhất `minPerLesson` câu. */
+/** Bộ lọc câu của một bài test (story 40): chỉ câu thuộc đoạn `sectionId` và mang một trong các nhãn `tags`. */
+export type QuestionFilter = { sectionId: SectionId; tags: readonly MistakeTag[] }
+
+/**
+ * Một bài test bám bài: lấy `size` câu từ các bài `lessonIds`, mỗi bài ít nhất `minPerLesson` câu.
+ * Story 40 thêm hai field tuỳ chọn; test không có hai field này chọn câu đúng như cũ.
+ */
 export type QuizDef = {
   id: string
   title: string
@@ -30,6 +50,13 @@ export type QuizDef = {
   minPerLesson: number
   /** Bài chứa link vào test (để quay lại). */
   homeLessonId: string
+  /** Chỉ lấy câu khớp bộ lọc (vd đoạn Ngữ pháp nhãn `thì`) ở phần chính. Thiếu = mọi câu của `lessonIds`. */
+  only?: QuestionFilter
+  /**
+   * Phần ôn bài cũ (nằm trong `size`): `size` câu khớp `only` lấy từ các bài `lessonIds` của phần ôn (không trùng bài
+   * của phần chính), bốc bằng luồng ngẫu nhiên riêng. Phần chính còn `size − mix.size` câu.
+   */
+  mix?: { lessonIds: readonly string[]; size: number; only: QuestionFilter }
 }
 
 /** Số câu của bài kiểm tra một bài: 5 trong 6 câu (không có TTS thì câu nghe được thay bằng câu còn lại). */
@@ -46,6 +73,11 @@ export function lessonQuizId(lessonId: string): string {
   return `lesson-${lessonId}`
 }
 
+/** Câu đoạn Ngữ pháp nhãn `thì` (phần ôn của mini-t3, ôn trộn mix-s1 / mix-tet; story 40). */
+const TENSE_GRAMMAR: QuestionFilter = { sectionId: 'grammar', tags: ['thì'] }
+const T2_LESSON_IDS = ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3', 's1-t2-w4'] as const
+const T3_LESSON_IDS = ['s1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4'] as const
+
 export const QUIZZES: readonly QuizDef[] = [
   {
     id: 'mini-t1',
@@ -59,11 +91,42 @@ export const QUIZZES: readonly QuizDef[] = [
   {
     id: 'mini-t2',
     title: 'Mini test tháng T2',
-    description: '10 câu ôn cả 4 tuần T2: hiện tại tiếp diễn, quá khứ đơn, động từ bất quy tắc, trọng âm, đuôi -ed.',
+    description: '10 câu ôn cả 4 tuần T2: hiện tại tiếp diễn, quá khứ đơn, động từ bất quy tắc, quá khứ tiếp diễn, trọng âm, đuôi -ed.',
     lessonIds: ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3', 's1-t2-w4'],
     size: 10,
     minPerLesson: 2,
     homeLessonId: 's1-t2-w4',
+  },
+  {
+    id: 'mini-t3',
+    title: 'Mini test tháng T3',
+    description:
+      '10 câu: 8 câu ôn 4 tuần T3 (will, be going to, hiện tại hoàn thành, hoàn thành hay quá khứ đơn) và 2 câu ôn thì T1–T2.',
+    lessonIds: T3_LESSON_IDS,
+    size: 10,
+    minPerLesson: 2,
+    mix: { lessonIds: [...T1_LESSON_IDS, ...T2_LESSON_IDS], size: 2, only: TENSE_GRAMMAR },
+    homeLessonId: 's1-t3-w4',
+  },
+  {
+    id: 'mix-s1',
+    title: 'Ôn trộn mọi thì',
+    description: '20 câu Ngữ pháp trộn mọi thì của chặng 1, mỗi bài ít nhất 1 câu. Khởi động trước O.W.L. 1, không bắt buộc.',
+    lessonIds: [...T1_LESSON_IDS, ...T2_LESSON_IDS, ...T3_LESSON_IDS, 's1-t4-w1', 's1-t4-w3'],
+    size: 20,
+    minPerLesson: 1,
+    only: TENSE_GRAMMAR,
+    homeLessonId: 's1-t4-w4',
+  },
+  {
+    id: 'mix-tet',
+    title: 'Ôn nhẹ ngày Tết',
+    description: '5 câu Ngữ pháp trộn các thì đã học (T1 tới bài can / should / must). Không làm cũng không sao.',
+    lessonIds: [...T1_LESSON_IDS, ...T2_LESSON_IDS, ...T3_LESSON_IDS, 's1-t4-w1'],
+    size: 5,
+    minPerLesson: 0,
+    only: TENSE_GRAMMAR,
+    homeLessonId: 's1-t4-w2',
   },
   ...lessonQuizzes(),
 ]

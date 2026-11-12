@@ -66,6 +66,15 @@ const MD_OVERRIDES: Readonly<Record<string, readonly [md: string, app: string]>>
   's1-t1-w4': ['Âm cuối, đọc -s và -ed', 'Âm cuối, đọc -s'],
 }
 
+/**
+ * Ô Ngữ pháp của bảng tuần chặng 1 mà app cố ý khác md (không sửa md), cùng kiểu `MD_OVERRIDES`: bài → [chữ gốc trong md,
+ * chữ trong app].
+ */
+const MD_GRAMMAR_OVERRIDES: Readonly<Record<string, readonly [md: string, app: string]>> = {
+  // Quyết định ngày 2026-11-11 (story 46): thêm quá khứ tiếp diễn vào Chặng 1, ở s1-t2-w4 trước phần ôn tập T2.
+  's1-t2-w4': ['Ôn lại · mini test', 'Quá khứ tiếp diễn · ôn lại · mini test'],
+}
+
 describe('cấu trúc dữ liệu lộ trình', () => {
   it('3 chặng, 12 tháng, 48 bài, mỗi tháng 4 tuần', () => {
     expect(STAGES).toHaveLength(3)
@@ -244,6 +253,10 @@ describe('đối chiếu với lo-trinh-toeic-12-thang.md', () => {
       } else if (lesson.checkpointId) {
         expect(getSection(lesson.id, 'checkpoint')?.task, label).toBe(grammar)
         expect(grammar).toBe(stage.checkpoint.name)
+      } else if (MD_GRAMMAR_OVERRIDES[lesson.id]) {
+        const [mdGrammar, appGrammar] = MD_GRAMMAR_OVERRIDES[lesson.id]
+        expect(grammar, `${label}: ô md đã đổi, xem lại MD_GRAMMAR_OVERRIDES`).toBe(mdGrammar)
+        expect(getSection(lesson.id, 'grammar')?.task, label).toBe(appGrammar)
       } else {
         expect(getSection(lesson.id, 'grammar')?.task, label).toBe(grammar)
       }

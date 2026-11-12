@@ -225,6 +225,26 @@ export function reviewableDue(
   return { due, skippedListening }
 }
 
+/** Số câu Sổ lỗi đến hạn ôn ở đầu bước Ôn của buổi 30' (story 41); ngày tồn ôn (`heavyReview`) chỉ 3. */
+export const SESSION_MISTAKES_MAX = 5
+export const SESSION_MISTAKES_HEAVY = 3
+
+/**
+ * Câu Sổ lỗi ôn ở đầu bước Ôn của buổi 30' (story 41): các câu `reviewableDue` (bỏ câu không còn tra được, câu nghe khi
+ * không có TTS; giữ mục từ đọc O.W.L.), hạn sớm trước, tối đa 5 (ngày tồn ôn 3). Không có câu → [].
+ */
+export function sessionMistakeIds(
+  items: Record<string, unknown>,
+  now: Date,
+  opts: { canSpeak: boolean; heavyReview: boolean },
+  lookup: (id: string) => Question | undefined = getQuestion,
+): string[] {
+  const max = opts.heavyReview ? SESSION_MISTAKES_HEAVY : SESSION_MISTAKES_MAX
+  return reviewableDue(items, now, { canSpeak: opts.canSpeak }, lookup)
+    .due.slice(0, max)
+    .map((m) => m.id)
+}
+
 /** Lọc theo nhãn lỗi; `null` = tất cả. */
 export function filterMistakes<T extends { tag: MistakeTag }>(list: readonly T[], tag: MistakeTag | null): T[] {
   return tag === null ? [...list] : list.filter((m) => m.tag === tag)

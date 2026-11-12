@@ -36,8 +36,8 @@ describe('missingBricks', () => {
     expect(missingBricks(getQuestion('q-s1-t1-w1-04')!, taught(...upTo('F13')))).toEqual(['F14'])
   })
 
-  it('câu không khai báo requires không thiếu gì', () => {
-    const t2 = QUESTION_BANK.find((q) => q.lessonId === 's1-t2-w1')!
+  it('câu không khai báo requires không thiếu gì (câu dựng tay: từ story 47 mọi câu bài đều có requires)', () => {
+    const t2 = { ...getQuestion('q-s1-t2-w1-01')!, requires: undefined }
     expect(missingBricks(t2, none)).toEqual([])
   })
 })
@@ -93,9 +93,14 @@ describe('planQuiz', () => {
     expect(plan.startBrickId).toBe('F06')
   })
 
-  it('mới xong F01–F12: quiz W2 chỉ còn câu phát âm / nghe đủ nền nên chưa chạy', () => {
-    const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t1-w2'), 's', { canSpeak: true }, taught(...upTo('F12')))
-    expect(plan).toMatchObject({ status: 'not-ready', missingBrickIds: ['F13', 'F15', 'F16', 'F18'], startBrickId: 'F13' })
+  it('mới xong F01–F12: quiz W2 bỏ 9 câu cần F13–F18, vẫn chạy bằng câu phát âm / nghe và câu gõ đủ nền (story 36)', () => {
+    for (const seed of SEEDS) {
+      const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t1-w2'), seed, { canSpeak: true }, taught(...upTo('F12')))
+      expect(plan).toMatchObject({ status: 'run', skipped: 9, missingBrickIds: ['F13', 'F15', 'F16', 'F18'] })
+      if (plan.status !== 'run') continue
+      expect(plan.questions).toHaveLength(5)
+      for (const q of plan.questions) expect(missingBricks(q, taught(...upTo('F12'))), q.id).toEqual([])
+    }
   })
 
   it('hàng qua kiểm tra (hàng C qua Soát vé, F13–F16 chưa học xong): câu cần F13–F16 tính là đủ nền', () => {
@@ -132,37 +137,128 @@ describe('planQuiz', () => {
     }
   })
 
-  it('thiếu F18, không TTS: quiz W2 còn 4 câu (câu nghe không có câu thay), vẫn chạy', () => {
+  it('thiếu F18, không TTS: quiz W2 bỏ 1 câu, câu nghe có câu thay cùng bài (bài có 15 câu sau story 36), vẫn đủ 5 câu', () => {
     const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t1-w2'), 'x', { canSpeak: false }, except('F18'))
     expect(plan.status).toBe('run')
     if (plan.status === 'run') {
-      expect(plan.questions).toHaveLength(4)
+      expect(plan.questions).toHaveLength(5)
       expect(plan.skipped).toBe(1)
+      for (const q of plan.questions) expect(q.kind, q.id).not.toBe('listening')
     }
   })
 
-  it('quiz T2–T4 không có câu khai báo requires thì không lọc gì kể cả khi chưa học viên nào', () => {
-    for (const id of ['lesson-s1-t2-w3', 'lesson-s1-t3-w1']) {
+  it('thiếu F13, không TTS: quiz W1 còn 4 câu đủ nền nhưng 1 câu là câu nghe → không chạy', () => {
+    const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t1-w1'), 'x', { canSpeak: false }, except('F13'))
+    expect(plan).toMatchObject({ status: 'not-ready', missingBrickIds: ['F13'] })
+  })
+
+  it('story 47: mọi câu T2–T4 khai báo requires → chưa học viên nào thì quiz bài T2–T4 không chạy; ngân hàng không khai báo thì không lọc gì', () => {
+    const t2t4 = QUIZZES.filter((d) => /^lesson-s1-t[234]-/.test(d.id))
+    expect(t2t4).toHaveLength(11)
+    for (const def of t2t4) {
+      // Còn tối đa 1 câu chỉ cần khái niệm bài (vd q-s1-t3-w4-05: weak-forms, present-perfect-vs-past).
+      for (const opts of OPTS) {
+        const plan = planQuiz(QUESTION_BANK, def, 's', opts, none)
+        expect(plan.status, def.id).toBe('not-ready')
+        if (plan.status === 'not-ready') expect(plan.available, def.id).toBeLessThanOrEqual(1)
+      }
+    }
+    const stripped = QUESTION_BANK.map((q) => ({ ...q, requires: undefined }))
+    for (const seed of SEEDS) {
+      expect(planQuiz(stripped, quiz('lesson-s1-t4-w4'), seed, { canSpeak: true }, none)).toEqual({
+        status: 'run',
+        questions: pickQuiz(stripped, quiz('lesson-s1-t4-w4'), seed, { canSpeak: true }),
+        skipped: 0,
+        missingBrickIds: [],
+      })
+    }
+  })
+
+  it('story 37 + 47: thiếu F17 (verb-forms) → quiz mỗi bài T3–T4 bỏ đúng các câu cần F17, vẫn chạy (5 câu, hoặc mọi câu còn lại khi ít hơn)', () => {
+    const isTaught = except('F17')
+    for (const lessonId of ['s1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4', 's1-t4-w1', 's1-t4-w3']) {
+      const lacking = new Set(QUESTION_BANK.filter((q) => q.lessonId === lessonId && missingBricks(q, isTaught).length > 0).map((q) => q.id))
+      expect(lacking.size, lessonId).toBeGreaterThanOrEqual(6)
       for (const seed of SEEDS) {
-        expect(planQuiz(QUESTION_BANK, quiz(id), seed, { canSpeak: true }, none)).toEqual({
-          status: 'run',
-          questions: pickQuiz(QUESTION_BANK, quiz(id), seed, { canSpeak: true }),
-          skipped: 0,
-          missingBrickIds: [],
-        })
+        // Có TTS (s1-t3-w3 còn 4 câu, 1 câu là câu nghe: không TTS thì không đủ 4 câu).
+        for (const opts of [{ canSpeak: true }]) {
+          const plan = planQuiz(QUESTION_BANK, quiz(`lesson-${lessonId}`), seed, opts, isTaught)
+          expect(plan.status, `${lessonId} ${seed}`).toBe('run')
+          if (plan.status !== 'run') continue
+          const usable = QUESTION_BANK.filter((q) => q.lessonId === lessonId && !lacking.has(q.id)).length
+          expect(plan.questions, `${lessonId} ${seed}`).toHaveLength(Math.min(5, usable))
+          expect(plan.questions.length).toBeGreaterThanOrEqual(MIN_QUIZ_QUESTIONS)
+          expect(plan.skipped, `${lessonId} ${seed}`).toBe(lacking.size)
+          expect(plan.missingBrickIds).toEqual(['F17'])
+          for (const q of plan.questions) expect(lacking.has(q.id), q.id).toBe(false)
+        }
       }
     }
   })
 
-  it('story 33: F14 chưa dạy → quiz s1-t2-w2 bỏ các câu mới cần F14, vẫn chạy 5 câu', () => {
+  it('story 40: mini-t3 thiếu F17 → bỏ câu thiếu nền ở cả phần chính lẫn phần ôn, skipped đếm cả hai, vẫn chạy; chưa học viên nào → không chạy', () => {
+    const q3 = quiz('mini-t3')
+    const T3 = q3.lessonIds
+    const review = new Set(q3.mix!.lessonIds)
+    const isTaught = except('F17')
+    const inMain = (q: (typeof QUESTION_BANK)[number]) => T3.includes(q.lessonId)
+    const inReview = (q: (typeof QUESTION_BANK)[number]) =>
+      review.has(q.lessonId) && q.sectionId === 'grammar' && q.tag === 'thì'
+    const lacking = QUESTION_BANK.filter((q) => (inMain(q) || inReview(q)) && missingBricks(q, isTaught).length > 0)
+    const mainSkipped = lacking.filter(inMain).length
+    const reviewSkipped = lacking.filter(inReview).length
+    expect(mainSkipped).toBeGreaterThan(0)
+    expect(reviewSkipped).toBeGreaterThan(0)
+    const lackingIds = new Set(lacking.map((q) => q.id))
+    for (const seed of SEEDS) {
+      for (const opts of OPTS) {
+        const plan = planQuiz(QUESTION_BANK, q3, seed, opts, isTaught)
+        expect(plan.status, seed).toBe('run')
+        if (plan.status !== 'run') continue
+        expect(plan.skipped, seed).toBe(mainSkipped + reviewSkipped)
+        expect(plan.questions, seed).toHaveLength(10)
+        for (const q of plan.questions) expect(lackingIds.has(q.id), q.id).toBe(false)
+        expect(plan.questions.filter(inMain), seed).toHaveLength(8)
+        expect(plan.questions.filter(inReview), seed).toHaveLength(2)
+      }
+    }
+    expect(quizButtonCount(QUESTION_BANK, q3, { canSpeak: true }, isTaught)).toBe(10)
+    expect(planQuiz(QUESTION_BANK, q3, 's', { canSpeak: true }, none).status).toBe('not-ready')
+  })
+
+  it('story 40: mini-t3 thiếu nền còn < 4 câu → not-ready như cũ; mọi viên đã dạy → đúng pickQuiz, không bỏ câu', () => {
+    const q3 = quiz('mini-t3')
+    // Ngân hàng thử: mọi câu (story 47: chỉ q-s1-t3-w4-05 không cần viên gạch nào), cộng 2 câu dựng tay không khai báo
+    // requires → còn 3 câu.
+    const free = QUESTION_BANK.filter((q) => q3.lessonIds.includes(q.lessonId) && q.kind !== 'listening')
+      .slice(0, 2)
+      .map((q) => ({ ...q, id: `${q.id}-free`, requires: undefined }))
+    const bank = [...QUESTION_BANK, ...free]
+    const plan = planQuiz(bank, q3, 'a', { canSpeak: true }, none)
+    expect(plan.status).toBe('not-ready')
+    if (plan.status === 'not-ready') expect(plan.available).toBe(3)
+    expect(quizButtonCount(bank, q3, { canSpeak: true }, none)).toBeNull()
+    for (const seed of SEEDS) {
+      expect(planQuiz(QUESTION_BANK, q3, seed, { canSpeak: true }, all)).toEqual({
+        status: 'run',
+        questions: pickQuiz(QUESTION_BANK, q3, seed, { canSpeak: true }),
+        skipped: 0,
+        missingBrickIds: [],
+      })
+    }
+  })
+
+  it('story 33 + 36: F14 chưa dạy → quiz s1-t2-w2 bỏ các câu mới cần F14, vẫn chạy 5 câu', () => {
     const needF14 = QUESTION_BANK.filter((q) => q.lessonId === 's1-t2-w2' && missingBricks(q, except('F14')).length > 0)
-    expect(needF14.map((q) => q.id)).toEqual(['q-s1-t2-w2-07', 'q-s1-t2-w2-08', 'q-s1-t2-w2-09', 'q-s1-t2-w2-10', 'q-s1-t2-w2-12'])
+    expect(needF14.map((q) => q.id)).toEqual(
+      [7, 8, 9, 10, 12, 13, 15, 16, 17, 18, 19, 26].map((n) => `q-s1-t2-w2-${String(n).padStart(2, '0')}`),
+    )
     for (const seed of SEEDS) {
       for (const opts of OPTS) {
         const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w2'), seed, opts, except('F14'))
         expect(plan.status).toBe('run')
         if (plan.status !== 'run') continue
-        expect(plan.skipped).toBe(5)
+        expect(plan.skipped).toBe(12)
         expect(plan.missingBrickIds).toEqual(['F14'])
         expect(plan.questions.length).toBeGreaterThanOrEqual(MIN_QUIZ_QUESTIONS)
         expect(plan.questions).toHaveLength(5)
@@ -171,16 +267,18 @@ describe('planQuiz', () => {
     }
   })
 
-  it('story 33: mới xong F01–F12 → quiz s1-t2-w2 chạy bằng 6 câu cũ (không có requires)', () => {
+  it('story 33 + 36 + 47: mới xong F01–F12 → quiz s1-t2-w2 chạy bằng các câu đủ nền', () => {
+    const isTaught = taught(...upTo('F12'))
     for (const seed of SEEDS) {
       for (const opts of OPTS) {
-        const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w2'), seed, opts, taught(...upTo('F12')))
+        const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w2'), seed, opts, isTaught)
         expect(plan.status).toBe('run')
         if (plan.status !== 'run') continue
-        expect(plan.skipped).toBe(6)
-        expect(plan.missingBrickIds).toEqual(['F13', 'F14', 'F15', 'F17'])
+        // 18 câu mới (story 33, 36) + q-s1-t2-w2-02 (at university, in 2019: F15, F18) + -20, -23 (thêm verb-forms, F17).
+        expect(plan.skipped).toBe(21)
+        expect(plan.missingBrickIds).toEqual(['F13', 'F14', 'F15', 'F17', 'F18'])
         expect(plan.questions.length).toBeGreaterThanOrEqual(MIN_QUIZ_QUESTIONS)
-        for (const q of plan.questions) expect(q.requires, q.id).toBeUndefined()
+        for (const q of plan.questions) expect(missingBricks(q, isTaught), q.id).toEqual([])
       }
     }
   })
@@ -194,13 +292,19 @@ describe('planQuiz', () => {
     }
   })
 
-  it('story 33 + 35: chưa học viên nào → mini-t2 bỏ 10 câu mới (6 câu W2 + 4 câu gõ W1), vẫn 10 câu, mỗi bài T2 ≥ 2 câu, không trùng', () => {
+  it('story 46 + 47: thiếu F17 → mini-t2 bỏ các câu cần verb-forms, vẫn 10 câu, mỗi bài T2 ≥ 2 câu, không trùng; chưa học viên nào → không chạy', () => {
+    const isTaught = except('F17')
+    const lacking = new Set(
+      QUESTION_BANK.filter((q) => quiz('mini-t2').lessonIds.includes(q.lessonId) && missingBricks(q, isTaught).length > 0).map((q) => q.id),
+    )
+    expect(lacking.size).toBeGreaterThanOrEqual(12)
     for (const seed of SEEDS) {
       for (const opts of OPTS) {
-        const plan = planQuiz(QUESTION_BANK, quiz('mini-t2'), seed, opts, none)
+        const plan = planQuiz(QUESTION_BANK, quiz('mini-t2'), seed, opts, isTaught)
         expect(plan.status).toBe('run')
         if (plan.status !== 'run') continue
-        expect(plan.skipped).toBe(10)
+        expect(plan.skipped).toBe(lacking.size)
+        for (const q of plan.questions) expect(lacking.has(q.id), q.id).toBe(false)
         expect(plan.questions).toHaveLength(10)
         expect(new Set(plan.questions.map((q) => q.id)).size).toBe(10)
         if (!opts.canSpeak) continue
@@ -209,25 +313,42 @@ describe('planQuiz', () => {
         }
       }
     }
+    expect(planQuiz(QUESTION_BANK, quiz('mini-t2'), 's', { canSpeak: true }, none)).toMatchObject({ status: 'not-ready', available: 0 })
   })
 
-  it('story 35: F09 chưa dạy → quiz s1-t2-w1 bỏ các câu gõ mới cần F09, vẫn chạy 5 câu', () => {
+  it('story 46: quiz s1-t2-w4 thiếu F17 → 5 câu từ 6 câu ôn cũ (12 câu quá khứ tiếp diễn đều cần verb-forms), skipped 12; mọi viên đã dạy → skipped 0', () => {
+    for (const seed of SEEDS) {
+      for (const opts of OPTS) {
+        const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w4'), seed, opts, except('F17'))
+        expect(plan.status, seed).toBe('run')
+        if (plan.status !== 'run') continue
+        expect(plan.skipped).toBe(12)
+        expect(plan.questions).toHaveLength(5)
+        expect(new Set(plan.questions.map((q) => q.id)).size).toBe(5)
+        for (const q of plan.questions) expect(Number(q.id.slice(-2)), q.id).toBeLessThanOrEqual(6)
+        const full = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w4'), seed, opts, all)
+        expect(full).toMatchObject({ status: 'run', skipped: 0, missingBrickIds: [] })
+      }
+    }
+  })
+
+  it('story 35 + 36 + 47: F09 chưa dạy → quiz s1-t2-w1 bỏ các câu cần F09 (cả câu cũ có đại từ), chạy 4 câu còn lại', () => {
     const needF09 = QUESTION_BANK.filter((q) => q.lessonId === 's1-t2-w1' && missingBricks(q, except('F09')).length > 0)
-    expect(needF09.map((q) => q.id)).toEqual(['q-s1-t2-w1-08', 'q-s1-t2-w1-09', 'q-s1-t2-w1-10'])
+    expect(needF09.map((q) => q.id)).toEqual([2, 3, 4, 6, 8, 9, 10, 12, 13, 14].map((n) => `q-s1-t2-w1-${String(n).padStart(2, '0')}`))
     for (const seed of SEEDS) {
       for (const opts of OPTS) {
         const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w1'), seed, opts, except('F09'))
         expect(plan.status).toBe('run')
         if (plan.status !== 'run') continue
-        expect(plan.skipped).toBe(3)
+        expect(plan.skipped).toBe(10)
         expect(plan.missingBrickIds).toEqual(['F09'])
-        expect(plan.questions).toHaveLength(5)
+        expect(plan.questions).toHaveLength(MIN_QUIZ_QUESTIONS)
         for (const q of plan.questions) expect(needF09.map((x) => x.id)).not.toContain(q.id)
       }
     }
-    // F11 chưa dạy: cả 3 câu có mạo từ (07, 09, 10) bị bỏ.
+    // F11 chưa dạy: cả 7 câu có mạo từ (01, 04, 07, 09, 10, 11, 12) bị bỏ.
     const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w1'), 's', { canSpeak: true }, except('F11'))
-    expect(plan).toMatchObject({ status: 'run', skipped: 3, missingBrickIds: ['F11'] })
+    expect(plan).toMatchObject({ status: 'run', skipped: 7, missingBrickIds: ['F11'] })
   })
 
   it('story 35: planQuiz chuyển seen cho pickQuiz (câu chưa gặp lấy trước)', () => {
@@ -290,15 +411,19 @@ describe('quizButtonCount', () => {
 
   it('bỏ bớt: số câu còn đủ nền; còn < 4 câu → null', () => {
     expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t1-w2'), TTS, except('F18'))).toBe(5)
-    expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t1-w2'), TTS, except('F16', 'F18'))).toBe(4)
+    // Sau story 36 quiz W2 có 15 câu, thiếu F16, F18 vẫn còn 12 câu đủ nền → đủ 5; quiz W1 thiếu F13 còn 4 câu.
+    expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t1-w2'), TTS, except('F16', 'F18'))).toBe(5)
+    expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t1-w1'), TTS, except('F13'))).toBe(4)
     expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t1-w1'), TTS, taught(...upTo('F12')))).toBeNull()
-    expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t2-w1'), TTS, none)).toBe(5)
+    // Story 47: câu T2–T4 cũ cũng khai báo requires, nên chưa học viên nào thì quiz T2 không có số; thiếu F09 còn 4 câu.
+    expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t2-w1'), TTS, none)).toBeNull()
+    expect(quizButtonCount(QUESTION_BANK, quiz('lesson-s1-t2-w1'), TTS, except('F09'))).toBe(4)
   })
 
-  it('không TTS: thiếu F16, F18 ở quiz W2 còn 4 câu đủ nền nhưng 1 câu là câu nghe → nhãn không có số, đề không chạy', () => {
-    const w2 = quiz('lesson-s1-t1-w2')
-    expect(quizButtonCount(QUESTION_BANK, w2, { canSpeak: false }, except('F16', 'F18'))).toBeNull()
-    expect(planQuiz(QUESTION_BANK, w2, 's', { canSpeak: false }, except('F16', 'F18')).status).toBe('not-ready')
+  it('không TTS: thiếu F13 ở quiz W1 còn 4 câu đủ nền nhưng 1 câu là câu nghe → nhãn không có số, đề không chạy', () => {
+    const w1 = quiz('lesson-s1-t1-w1')
+    expect(quizButtonCount(QUESTION_BANK, w1, { canSpeak: false }, except('F13'))).toBeNull()
+    expect(planQuiz(QUESTION_BANK, w1, 's', { canSpeak: false }, except('F13')).status).toBe('not-ready')
   })
 
   it('nhãn khớp số câu planQuiz chạy (mọi quiz, nhiều trạng thái, có/không TTS)', () => {

@@ -1,15 +1,47 @@
-import type { ChoiceQuestion } from './types'
+import type { RequiredConcept } from './concepts'
+import type { Question, TypedQuestion, TypedQuestionKind } from './types'
 
 /**
- * 24 câu tháng T1 (6 câu mỗi bài `s1-t1-w1…w4`), bám nội dung story 6: to be, hiện tại đơn (khẳng định,
- * hỏi, phủ định), nguyên âm đơn / đôi, phụ âm /θ ð ʃ ʒ/, âm cuối và đuôi -s, trọng âm (từ trong bảng âm). Tự soạn, không chép đề ETS.
+ * 42 câu tháng T1, bám nội dung story 6: to be, hiện tại đơn (khẳng định, hỏi, phủ định), nguyên âm đơn / đôi, phụ âm
+ * /θ ð ʃ ʒ/, âm cuối và đuôi -s, trọng âm (từ trong bảng âm). Tự soạn, không chép đề ETS. `s1-t1-w1` và `s1-t1-w4` có 6 câu;
+ * `s1-t1-w2` và `s1-t1-w3` có 15 câu: 6 câu cũ cộng 9 câu gõ (`type` / `transform`: gõ dạng đúng, biến đổi, dịch Việt → Anh)
+ * của story 36, để mỗi thì có 12 câu nhãn `thì`.
  * Chỉ dùng kiến thức đã dạy (story 27): không thì quá khứ, không đuôi -ed (học ở T2 tuần 3). Mỗi câu khai báo tay
  * `requires` (khái niệm viên gạch hoặc khái niệm bài T1 đứng trước / chính bài của câu), xem `concepts.ts`.
+ * Id đã bỏ (q-s1-t1-w2-06, q-s1-t1-w3-05, q-s1-t1-w4-03, q-s1-t1-w4-06) không dùng lại, để Sổ lỗi cũ không trỏ nhầm câu.
  */
 
 const LISTEN_PROMPT = 'Nghe và chọn câu bạn vừa nghe.'
 
-export const T1_QUESTIONS: readonly ChoiceQuestion[] = [
+/**
+ * Câu gõ (story 36): tag `thì`, đoạn Ngữ pháp, `requires` bắt buộc; `accept` (nếu có) là cách viết khác cũng đúng.
+ * Chấm bằng `matchesTyped` (hoa thường, dấu câu không tính; n't = not).
+ */
+function typed(
+  kind: TypedQuestionKind,
+  lessonId: 's1-t1-w2' | 's1-t1-w3',
+  n: number,
+  prompt: string,
+  answer: string,
+  explanation: string,
+  requires: readonly RequiredConcept[],
+  accept?: readonly string[],
+): TypedQuestion {
+  return {
+    id: `q-${lessonId}-${String(n).padStart(2, '0')}`,
+    lessonId,
+    sectionId: 'grammar',
+    tag: 'thì',
+    kind,
+    prompt,
+    answer,
+    explanation,
+    requires,
+    ...(accept && accept.length > 0 ? { accept } : {}),
+  }
+}
+
+export const T1_QUESTIONS: readonly Question[] = [
   // ── Tuần 1: động từ to be · 12 nguyên âm đơn ──
   {
     id: 'q-s1-t1-w1-01',
@@ -163,6 +195,35 @@ export const T1_QUESTIONS: readonly ChoiceQuestion[] = [
     requires: ['present-simple', 'possessive-adjectives', 'adjective-before-noun'],
   },
 
+  // Câu gõ hiện tại đơn khẳng định (story 36): gõ dạng đúng, đổi chủ ngữ, dịch Việt → Anh (W2 chưa học phủ định / câu hỏi).
+  typed('type', 's1-t1-w2', 8, 'My mother ___ (teach) English at a school.', 'teaches',
+    'my mother = she (ngôi thứ ba số ít) nên động từ thêm -s; teach tận cùng -ch nên thêm -es: teaches.',
+    ['present-simple', 'possessive-adjectives', 'articles', 'prepositions-of-place']),
+  typed('type', 's1-t1-w2', 9, 'He ___ (go) to work by bus.', 'goes',
+    'he là ngôi thứ ba số ít nên động từ thêm -s; go tận cùng -o nên thêm -es: goes (như do → does).',
+    ['present-simple', 'subject-pronouns']),
+  typed('type', 's1-t1-w2', 10, 'Lan ___ (fix) phones in her shop.', 'fixes',
+    'Lan = she nên động từ thêm -s; fix tận cùng -x nên thêm -es: fixes.',
+    ['present-simple', 'plurals', 'possessive-adjectives', 'prepositions-of-place']),
+  typed('type', 's1-t1-w2', 11, 'They ___ (live) in Da Nang.', 'live',
+    'they là số nhiều nên động từ giữ nguyên, không thêm -s: They live. Chỉ he / she / it mới thêm -s.',
+    ['present-simple', 'subject-pronouns', 'prepositions-of-place']),
+  typed('type', 's1-t1-w2', 12, 'My sister ___ (play) the piano every evening.', 'plays',
+    'my sister = she nên động từ thêm -s. play tận cùng a + y (nguyên âm + y) nên giữ y, chỉ thêm -s: plays (không đổi thành -ies).',
+    ['present-simple', 'possessive-adjectives', 'articles']),
+  typed('transform', 's1-t1-w2', 13, 'Đổi chủ ngữ sang He: I study English every day.', 'He studies English every day.',
+    'Đổi I thành he thì động từ phải thêm -s. study tận cùng phụ âm d + y nên đổi y thành -ies: studies.',
+    ['present-simple', 'subject-pronouns'], ['Every day he studies English.']),
+  typed('transform', 's1-t1-w2', 14, 'Đổi chủ ngữ sang My father: We have a big car.', 'My father has a big car.',
+    'my father = he. have là bất quy tắc: he / she / it đi với has (không phải haves): My father has a big car.',
+    ['have-has', 'present-simple', 'possessive-adjectives', 'articles', 'adjective-before-noun']),
+  typed('transform', 's1-t1-w2', 15, 'Dịch sang tiếng Anh: Anh ấy làm việc ở một bệnh viện. (work, a hospital)', 'He works in a hospital.',
+    'Anh ấy = he nên work thêm -s: works. Tiếng Việt "làm việc" không đổi theo người, tiếng Anh bắt buộc có -s. Ở một nơi làm việc dùng in (hoặc at).',
+    ['present-simple', 'subject-pronouns', 'articles', 'prepositions-of-place'], ['He works at a hospital.']),
+  typed('transform', 's1-t1-w2', 16, 'Dịch sang tiếng Anh: Bố tôi rửa bát mỗi tối. (father, wash, the dishes, every evening)', 'My father washes the dishes every evening.',
+    'my father = he nên động từ thêm -s; wash tận cùng -sh nên thêm -es: washes. every evening đặt cuối hoặc đầu câu đều được.',
+    ['present-simple', 'possessive-adjectives', 'articles', 'plurals'], ['Every evening my father washes the dishes.']),
+
   // ── Tuần 3: hiện tại đơn câu hỏi, phủ định · 24 phụ âm ──
   {
     id: 'q-s1-t1-w3-01',
@@ -223,7 +284,8 @@ export const T1_QUESTIONS: readonly ChoiceQuestion[] = [
     options: ['because', 'music', 'usually', 'television'],
     answer: 'because',
     explanation: 'because /bɪˈkɑːz/ nhấn âm thứ hai (be-CAUSE). music /ˈmjuːzɪk/, usually /ˈjuːʒuəli/, television /ˈteləvɪʒən/ nhấn âm đầu.',
-    requires: ['ipa', 'syllables', 'stress'],
+    // Story 47: test liên từ quét cả QUESTION_BANK; because là liên từ của F16.
+    requires: ['ipa', 'syllables', 'stress', 'conjunctions'],
   },
   {
     id: 'q-s1-t1-w3-06',
@@ -239,6 +301,35 @@ export const T1_QUESTIONS: readonly ChoiceQuestion[] = [
       "Nghe /ʃ/ ở đầu \"she\" (khác /h/ của \"he\") và \"doesn't\" ở giữa câu (she đi với doesn't, không phải don't); câu phủ định nên watch không có -es.",
     requires: ['present-simple-negative', 'subject-pronouns', 'ipa', 'consonants'],
   },
+
+  // Câu gõ hiện tại đơn phủ định / câu hỏi (story 36): gõ dạng đúng, biến đổi, dịch Việt → Anh.
+  typed('type', 's1-t1-w3', 8, 'My father ___ (not / like) fish.', "doesn't like",
+    "my father = he nên phủ định dùng does not (doesn't), rồi like về nguyên mẫu: doesn't like (không phải doesn't likes).",
+    ['present-simple-negative', 'possessive-adjectives']),
+  typed('type', 's1-t1-w3', 9, 'We ___ (not / live) in Hanoi.', "don't live",
+    "we đi với do nên phủ định là do not (don't) + động từ nguyên mẫu: We don't live in Hanoi.",
+    ['present-simple-negative', 'subject-pronouns', 'prepositions-of-place']),
+  typed('type', 's1-t1-w3', 10, 'Does your sister work here? — Yes, she ___.', 'does',
+    'Hỏi bằng Does thì trả lời ngắn cũng dùng does: Yes, she does. Không lặp lại work, không trả lời Yes, she is.',
+    ['present-simple-questions', 'possessive-adjectives', 'subject-pronouns']),
+  typed('type', 's1-t1-w3', 11, 'Where ___ your parents live?', 'do',
+    'Câu hỏi Wh-: Where + do / does + chủ ngữ + động từ nguyên mẫu. your parents là số nhiều (= they) nên dùng do.',
+    ['present-simple-questions', 'wh-questions', 'possessive-adjectives', 'plurals']),
+  typed('type', 's1-t1-w3', 12, 'Do you like coffee? — No, I ___.', "don't",
+    "Hỏi bằng Do thì trả lời ngắn dùng do: No, I don't (do not). Không lặp lại like.",
+    ['present-simple-questions', 'present-simple-negative', 'subject-pronouns']),
+  typed('transform', 's1-t1-w3', 13, 'Đổi sang câu phủ định: He plays football.', "He doesn't play football.",
+    "he đi với does: thêm doesn't trước động từ và bỏ -s của plays (does đã mang -s): He doesn't play football.",
+    ['present-simple-negative', 'subject-pronouns']),
+  typed('transform', 's1-t1-w3', 14, 'Đổi sang câu hỏi: She works in a bank.', 'Does she work in a bank?',
+    'Câu hỏi với động từ thường mượn does (vì she), đặt Does lên đầu và đưa works về nguyên mẫu work: Does she work in a bank?',
+    ['present-simple-questions', 'subject-pronouns', 'articles', 'prepositions-of-place']),
+  typed('transform', 's1-t1-w3', 15, 'Dịch sang tiếng Anh: Cô ấy không uống cà phê. (drink, coffee)', "She doesn't drink coffee.",
+    "Cô ấy = she nên phủ định dùng doesn't, rồi drink giữ nguyên mẫu: She doesn't drink coffee. Tiếng Việt chỉ thêm \"không\", tiếng Anh phải mượn does.",
+    ['present-simple-negative', 'subject-pronouns']),
+  typed('transform', 's1-t1-w3', 16, 'Dịch sang tiếng Anh: Anh ấy sống ở đâu? (where, live)', 'Where does he live?',
+    'Câu hỏi Wh-: Where + does (vì he) + he + live (nguyên mẫu)? Tiếng Việt để "ở đâu" cuối câu, tiếng Anh đặt Where lên đầu.',
+    ['present-simple-questions', 'wh-questions', 'subject-pronouns']),
 
   // ── Tuần 4: ôn lại · âm cuối, đuôi -s ──
   {

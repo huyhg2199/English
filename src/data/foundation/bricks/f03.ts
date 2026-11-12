@@ -9,10 +9,10 @@ export const F03_CONTENT: Pick<Brick, 'screens' | 'ruleCards' | 'themeWordIds'> 
     {
       kind: 'explain',
       textVi:
-        'Chữ viết tiếng Anh không cho biết cách đọc: sea và see viết khác nhau mà đọc giống nhau. ' +
-        'Vì vậy từ điển ghi cách đọc trong hai dấu gạch chéo, theo bảng ký hiệu IPA, ví dụ /siː/. ' +
-        'Mười ký hiệu đọc gần như chữ Việt: /b/, /h/, /k/, /l/, /m/, /n/, /t/ như chữ cùng tên; /d/ như đ, /f/ như ph, /s/ như x. ' +
-        'Dấu ː sau một nguyên âm nghĩa là đọc kéo dài âm đó.',
+        'Chữ viết tiếng Anh không cho biết cách đọc (sea, see đọc giống nhau), nên từ điển ghi cách đọc giữa hai ' +
+        'dấu gạch chéo bằng IPA: /siː/. Mười ký hiệu gần chữ Việt: /b/, /h/, /l/, /m/, /n/ như chữ cùng tên; /t/ ' +
+        'và /k/ gần t, c Việt nhưng đầu từ bật một luồng hơi (để tay trước miệng: two, cat); /d/ như đ, /f/ như ' +
+        'ph, /s/ như x. Dấu ː: kéo dài nguyên âm.',
     },
     {
       kind: 'contrast',

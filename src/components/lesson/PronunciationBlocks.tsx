@@ -16,6 +16,7 @@ import { youglishPhraseFromUrl } from '@/lib/youglish'
 import { cn } from '@/lib/utils'
 
 import { SpeakPractice } from './SpeakPractice'
+import { GlossaryText } from './TermChip'
 import { useNgslLookup, type NgslLookup } from './use-ngsl'
 
 type Block<K extends PronunciationBlock['kind']> = Extract<PronunciationBlock, { kind: K }>
@@ -416,6 +417,62 @@ function OverviewBlock({ block }: { block: Block<'overview'> }) {
   )
 }
 
+const TENSE_TABLE_LINES = [
+  { key: 'affirmative', mark: '+', label: 'Khẳng định' },
+  { key: 'negative', mark: '−', label: 'Phủ định' },
+  { key: 'question', mark: '?', label: 'Câu hỏi' },
+] as const
+
+/**
+ * Bảng "mỗi thì một dòng" + luật chung trợ động từ (story 39, ôn tổng s1-t4-w4): mỗi dòng là tên thì (link về đoạn Ngữ pháp
+ * của bài), chip trợ động từ và 3 câu + / − / ? có nút nghe. Luật chung có chip thuật ngữ.
+ */
+function TenseTableBlock({ block }: { block: Block<'tense-table'> }) {
+  return (
+    <BlockShell title={block.title} note={block.note}>
+      <ol className="flex flex-col gap-2">
+        {block.rows.map((row) => (
+          <li key={row.tenseId} className="flex flex-col gap-1.5 rounded-lg border p-2 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                to={sectionHref(row.lessonId, 'grammar')}
+                className="font-semibold break-words text-primary underline-offset-4 hover:underline"
+              >
+                {row.name}
+              </Link>
+              <span lang="en" className="rounded-full border px-2 py-0.5 text-xs break-words">
+                {row.aux}
+              </span>
+            </div>
+            <ul className="flex flex-col gap-1">
+              {TENSE_TABLE_LINES.map((line) => (
+                <li key={line.key} className="flex items-center gap-2">
+                  <span className="w-4 shrink-0 text-center font-semibold text-muted-foreground" aria-hidden="true">
+                    {line.mark}
+                  </span>
+                  <span className="sr-only">{line.label}:</span>
+                  <span lang="en" className="min-w-0 flex-1 break-words">
+                    {row[line.key]}
+                  </span>
+                  <ListenButton text={row[line.key]} label={`Nghe: ${row[line.key]}`} size="sm" />
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+      <h4 className="mt-2 font-semibold">Luật chung của trợ động từ</h4>
+      <ol className="list-decimal space-y-1 pl-5 text-sm">
+        {block.auxRules.map((r) => (
+          <li key={r} className="break-words">
+            <GlossaryText text={r} />
+          </li>
+        ))}
+      </ol>
+    </BlockShell>
+  )
+}
+
 /** Các khối phát âm mới (story 10), vẽ theo `kind`. */
 export function PronunciationBlockView({ block }: { block: PronunciationBlock }) {
   switch (block.kind) {
@@ -437,5 +494,7 @@ export function PronunciationBlockView({ block }: { block: PronunciationBlock })
       return <SelfReadBlock block={block} />
     case 'overview':
       return <OverviewBlock block={block} />
+    case 'tense-table':
+      return <TenseTableBlock block={block} />
   }
 }

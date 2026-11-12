@@ -199,7 +199,9 @@ export function Lesson() {
               {done ? 'Bỏ đánh dấu' : 'Đánh dấu đã học xong'}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Nút tạm: sau này buổi học sẽ tự ghi tiến độ khi bạn học xong.
+              {quiz
+                ? "Buổi 30' có kiểm tra cuối Bài chính: đạt từ 70% thì app mời đánh dấu xong. Nút này bấm lúc nào cũng được."
+                : 'Nút này bấm lúc nào cũng được.'}
             </p>
           </div>
         </SplitRail>

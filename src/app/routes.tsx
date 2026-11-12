@@ -21,6 +21,7 @@ import { Quiz } from '@/pages/Quiz'
 import { Roadmap } from '@/pages/Roadmap'
 import { Session } from '@/pages/Session'
 import { SortingHat } from '@/pages/SortingHat'
+import { TenseMap } from '@/pages/TenseMap'
 import { Today } from '@/pages/Today'
 import { TrophyRoom } from '@/pages/TrophyRoom'
 import { Welcome } from '@/pages/Welcome'
@@ -64,6 +65,8 @@ export const routes: RouteObject[] = [
       { path: 'practice/mistakes', element: <Mistakes /> },
       // Kỳ thi O.W.L. 1 (story 14); tab Luyện tập vẫn sáng.
       { path: 'practice/owl', element: <Owl /> },
+      // Bản đồ thì (story 42): mức nắm chắc từng thì Năm 1; tab Luyện tập vẫn sáng. `wide`: từ 1024px lưới 2 cột, mỗi tháng một ô.
+      { path: 'practice/tense-map', element: <TenseMap />, handle: { layout: 'wide' } satisfies RouteHandle },
       // Sao lưu / khôi phục file JSON; tab Luyện tập vẫn sáng (`alsoActiveFor`).
       { path: 'backup', element: <Backup /> },
       // Owl Post & sao lưu: Gist tự động, giờ nhắc, lịch .ics, Telegram (story 13); tab Luyện tập vẫn sáng.

@@ -5,15 +5,18 @@ import { ListenButton } from '@/components/ListenButton'
 import { SourceSectionLink, TagBadge } from '@/components/quiz/QuestionCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { isTypedQuestion, MISTAKES_HREF, type Question } from '@/data/questions'
-import { lessonHref, STAGES } from '@/data/roadmap'
+import { isTypedQuestion, MISTAKES_HREF, OWL_TOPICS, type Question } from '@/data/questions'
+import { lessonHref, sectionHref, STAGES } from '@/data/roadmap'
 import {
   OWL_PART_LABELS,
   OWL_PARTS,
   OWL_SELF_NO,
+  owlTopicNames,
   partPassed,
   partPercent,
+  topicReviewLessonId,
   type OwlScores,
+  type OwlTopicScores,
   type OwlWord,
   type ReviewPlan,
 } from '@/lib/owl'
@@ -26,6 +29,8 @@ type Props = {
   /** Có câu phát âm tự chấm. */
   selfGraded: boolean
   scores: OwlScores
+  /** Điểm từng chủ điểm thì (story 40); rỗng (lần thi không có câu kho O.W.L.) thì không hiện mục "Điểm từng thì". */
+  topics: OwlTopicScores
   passed: boolean
   plan: ReviewPlan | null
   words: readonly OwlWord[]
@@ -36,8 +41,15 @@ type Props = {
 
 const STAGE_2_FIRST_LESSON = STAGES[1].months[0].lessons[0].id
 
-/** Kết quả O.W.L. 1: điểm từng phần; qua thì Lumos + Dumbledore + mời sang chặng 2; trượt thì kế hoạch ôn 2 tuần. */
-export function OwlResult({ selfGraded, scores, passed, plan, words, questions, answers, onRetry }: Props) {
+/**
+ * Kết quả O.W.L. 1: điểm từng phần, điểm từng thì (story 40); qua thì Lumos + Dumbledore + mời sang chặng 2; trượt (hoặc qua
+ * mà còn thì dưới 70%) thì kế hoạch ôn 2 tuần.
+ */
+export function OwlResult({ selfGraded, scores, topics, passed, plan, words, questions, answers, onRetry }: Props) {
+  const topicRows = OWL_TOPICS.flatMap((t) => {
+    const score = topics[t.id]
+    return score && score.total > 0 ? [{ topic: t, score, ok: partPassed(score) }] : []
+  })
   const byWord = new Map(words.map((w) => [w.id, w]))
   const byQuestion = new Map(questions.map((q) => [q.id, q]))
   const wrong = answers.filter((a) => !a.correct)
@@ -125,13 +137,49 @@ export function OwlResult({ selfGraded, scores, passed, plan, words, questions, 
         </CardContent>
       </Card>
 
+      {topicRows.length > 0 && (
+        <section className="flex flex-col gap-2" aria-labelledby="owl-topics-title">
+          <h2 id="owl-topics-title" className="text-lg font-semibold">
+            Điểm từng thì
+          </h2>
+          <ul className="flex flex-col gap-2">
+            {topicRows.map(({ topic, score, ok }) => (
+              <li
+                key={topic.id}
+                className={cn(
+                  'flex items-center justify-between gap-2 rounded-lg border p-2 text-sm',
+                  ok ? 'border-primary/40' : 'border-destructive/60',
+                )}
+              >
+                <span className="min-w-0 break-words">{topic.name}</span>
+                <span className="flex shrink-0 items-center gap-2">
+                  <span className="tabular-nums">
+                    {score.score}/{score.total} · {partPercent(score)}%
+                  </span>
+                  <span className={cn('text-xs', ok ? 'text-primary' : 'text-destructive')}>{ok ? 'đạt' : 'dưới 70%'}</span>
+                  {!ok && (
+                    <Button asChild size="sm" variant="outline" className="h-9">
+                      <Link to={sectionHref(topicReviewLessonId(topic.id, answers), 'grammar')} aria-label={`Ôn ${topic.name}`}>
+                        Ôn
+                      </Link>
+                    </Button>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {plan && (
         <section className="flex flex-col gap-2" aria-labelledby="owl-plan-title">
           <h2 id="owl-plan-title" className="text-lg font-semibold">
             Kế hoạch ôn 2 tuần
           </h2>
           <p className="text-sm text-muted-foreground">
-            Mỗi ngày một đoạn bài và ôn Sổ lỗi. Kế hoạch hiện ở trang Hôm nay tới khi bạn qua hoặc hết 14 ngày.
+            {passed
+              ? `Bạn đã qua. Các thì dưới 70% (${owlTopicNames(plan.weakTopics ?? [])}) có kế hoạch ôn nhẹ 2 tuần trên trang Hôm nay, bỏ qua cũng được.`
+              : 'Mỗi ngày một đoạn bài và ôn Sổ lỗi. Kế hoạch hiện ở trang Hôm nay tới khi bạn qua hoặc hết 14 ngày.'}
           </p>
           <ReviewPlanList plan={plan} todayIndex={0} />
         </section>

@@ -1,3 +1,4 @@
+import { DAYS_T2_W1, DAYS_T2_W2, DAYS_T2_W3, DAYS_T2_W4, DAYS_T3_W1, DAYS_T3_W2, DAYS_T3_W3, DAYS_T4_W1 } from './grammar-days'
 import { GRAMMAR_W1, GRAMMAR_W2, GRAMMAR_W3, GRAMMAR_W4 } from './t1-grammar'
 import {
   PARTS_W1,
@@ -33,17 +34,30 @@ import {
   PRONUNCIATION_T4_W3,
   PRONUNCIATION_T4_W4,
 } from './t2-t4-pronunciation'
-import type { LessonContent, Tense, TenseRuleCard } from './types'
+import type { GrammarDay, GrammarView, LessonContent, PronunciationView, Tense, TenseChoice, TenseRuleCard } from './types'
 
 export * from './types'
 export { getSpell, SPELLS } from './spells'
-export { IRREGULAR_VERBS } from './irregular-verbs'
+export { IRREGULAR_VERB_CARDS, IRREGULAR_VERB_GROUPS, IRREGULAR_VERBS } from './irregular-verbs'
+export {
+  DONT_TRANSLATE,
+  HAVE_TO_COULD_WOULD_LIKE,
+  QUESTION_WORDS,
+  SIMPLE_VS_CONTINUOUS,
+  SUBJECT_QUESTIONS,
+  WILL_VS_GOING_TO,
+} from './tense-choices'
+
+/** Bài có bảng động từ bất quy tắc; thẻ ôn V2 · V3 mở khi Huy tới bài này (story 38). */
+export const IRREGULAR_VERBS_LESSON_ID = 's1-t2-w3'
 
 const rp = (vi: string, topicEn: string, scenario: string) => ({ roleplay: { vi, topicEn, scenario } })
 
 /**
  * Nội dung học của các bài đã soạn: chặng 1, T1 (story 6) và T2–T4 (story 10).
  * Tuần Tết chỉ có lời nhắc chạy ngày lười; tuần O.W.L. 1 chỉ có phần ôn tổng (bài thi ở story 14).
+ * Bài T1 W1–W3 chia đoạn Phát âm thành phần (`parts`, story 28); 8 bài một thì T2–T4 chia đoạn Ngữ pháp theo ngày
+ * (`grammarDays`, story 47).
  */
 export const LESSON_CONTENTS: readonly LessonContent[] = [
   {
@@ -77,42 +91,49 @@ export const LESSON_CONTENTS: readonly LessonContent[] = [
     lessonId: 's1-t2-w1',
     pronunciation: PRONUNCIATION_T2_W1,
     grammar: GRAMMAR_T2_W1,
+    grammarDays: DAYS_T2_W1,
     ...rp('Gọi điện: bạn đang làm gì?', 'What are you doing now?', 'You call me on the phone. Ask me what I am doing right now and what the people around me are doing.'),
   },
   {
     lessonId: 's1-t2-w2',
     pronunciation: PRONUNCIATION_T2_W2,
     grammar: GRAMMAR_T2_W2,
+    grammarDays: DAYS_T2_W2,
     ...rp('Kể việc hôm qua', 'Yesterday', 'Ask me what I did yesterday. Ask follow-up questions about each thing I did.'),
   },
   {
     lessonId: 's1-t2-w3',
     pronunciation: PRONUNCIATION_T2_W3,
     grammar: GRAMMAR_T2_W3,
+    grammarDays: DAYS_T2_W3,
     ...rp('Kể chuyện cuối tuần trước', 'Last weekend', 'Ask me about last weekend: where I went, what I ate, who I met and what I bought.'),
   },
   {
     lessonId: 's1-t2-w4',
     pronunciation: PRONUNCIATION_T2_W4,
     grammar: GRAMMAR_T2_W4,
+    grammarDays: DAYS_T2_W4,
     ...rp('Tháng vừa qua', 'Last month', 'Ask me about last month: my English study and one interesting thing that happened.'),
   },
   {
     lessonId: 's1-t3-w1',
     pronunciation: PRONUNCIATION_T3_W1,
     grammar: GRAMMAR_T3_W1,
+    grammarDays: DAYS_T3_W1,
     ...rp('Dự đoán và lời hứa', 'Predictions and promises', 'Ask me about my predictions for next year. Then ask me for small favors so I can make promises with "I\'ll".'),
   },
   {
     lessonId: 's1-t3-w2',
     pronunciation: PRONUNCIATION_T3_W2,
     grammar: GRAMMAR_T3_W2,
+    grammarDays: DAYS_T3_W2,
     ...rp('Kế hoạch Tết', 'Plans for Tet', 'Ask me about my plans for Tet (Vietnamese Lunar New Year): where I am going, who I am going to visit and what I am going to eat.'),
   },
   {
     lessonId: 's1-t3-w3',
     pronunciation: PRONUNCIATION_T3_W3,
     grammar: GRAMMAR_T3_W3,
+    grammarDays: DAYS_T3_W3,
     ...rp('Trải nghiệm đã từng', 'Life experiences', 'Ask me about my experiences: places I have visited, foods I have tried and things I have never done.'),
   },
   {
@@ -125,6 +146,7 @@ export const LESSON_CONTENTS: readonly LessonContent[] = [
     lessonId: 's1-t4-w1',
     pronunciation: PRONUNCIATION_T4_W1,
     grammar: GRAMMAR_T4_W1,
+    grammarDays: DAYS_T4_W1,
     ...rp('Xin lời khuyên', 'Giving advice', 'I am visiting your city for the first time. Give me advice about what I can, should and must do there, and let me ask you for advice too.'),
   },
   {
@@ -152,16 +174,70 @@ export function getLessonContent(lessonId: string): LessonContent | undefined {
 }
 
 const NO_PARTS: readonly string[] = []
-const partIdsByLesson = new Map(LESSON_CONTENTS.map((c) => [c.lessonId, c.parts?.map((p) => p.id) ?? NO_PARTS]))
+const partIdsByLesson = new Map(
+  LESSON_CONTENTS.map((c) => [c.lessonId, c.parts?.map((p) => p.id) ?? c.grammarDays?.map((d) => d.id) ?? NO_PARTS]),
+)
 
-/** Id các phần của đoạn Phát âm (story 28), theo thứ tự; bài không chia (hoặc id lạ) → `[]`. */
+/**
+ * Id các phần của bài, theo thứ tự: phần của đoạn Phát âm (bài T1, story 28) hoặc ngày của đoạn Ngữ pháp (story 47); bài
+ * không chia (hoặc id lạ) → `[]`. Buổi 30' học phần chưa xem đầu tiên; id lưu chung ở `progress.lessons[id].partsSeen`.
+ */
 export function lessonPartIds(lessonId: string): readonly string[] {
   return partIdsByLesson.get(lessonId) ?? NO_PARTS
+}
+
+/** Phần `partId` của bài là phần Phát âm (`parts`) hay ngày Ngữ pháp (`grammarDays`); không thuộc bài → null (story 47). */
+export function lessonPartKind(lessonId: string, partId: string): 'pronunciation' | 'grammar' | null {
+  const content = byId.get(lessonId)
+  if (!content) return null
+  if (content.parts?.some((p) => p.id === partId)) return 'pronunciation'
+  if (content.grammarDays?.some((d) => d.id === partId)) return 'grammar'
+  return null
+}
+
+/**
+ * View của đoạn Phát âm và Ngữ pháp trong bước Bài chính của buổi 30' (story 28, 47): `partId` là phần Phát âm → đoạn Phát
+ * âm chỉ hiện phần đó; là ngày Ngữ pháp → đoạn Ngữ pháp chỉ hiện ngày đó; không có (buổi ôn cả tuần, bài không chia) hay
+ * không thuộc bài → cả đoạn. Đoạn Ngữ pháp trong buổi không bao giờ có danh sách "5 ngày của tuần" (chỉ ở trang bài).
+ */
+export function sessionSectionViews(
+  lessonId: string,
+  partId: string | null | undefined,
+): { pronunciation: PronunciationView; grammar: GrammarView } {
+  const kind = partId ? lessonPartKind(lessonId, partId) : null
+  return {
+    pronunciation: partId && kind === 'pronunciation' ? { kind: 'part', partId } : { kind: 'all' },
+    grammar: partId && kind === 'grammar' ? { kind: 'day', dayId: partId } : { kind: 'week' },
+  }
+}
+
+/** Ngày Ngữ pháp `dayId` của bài (story 47); không có → undefined. */
+export function getGrammarDay(lessonId: string, dayId: string): GrammarDay | undefined {
+  return byId.get(lessonId)?.grammarDays?.find((d) => d.id === dayId)
 }
 
 /** Mọi thì đã soạn, theo thứ tự bài. */
 export function allTenses(): Tense[] {
   return LESSON_CONTENTS.flatMap((c) => c.grammar?.tenses ?? [])
+}
+
+export type TenseEntry = { lessonId: string; tense: Tense }
+
+const TENSE_ENTRIES: readonly TenseEntry[] = LESSON_CONTENTS.flatMap((c) =>
+  (c.grammar?.tenses ?? []).map((tense) => ({ lessonId: c.lessonId, tense })),
+)
+
+/**
+ * Mọi thì đã soạn kèm bài chứa nó (Bản đồ thì, story 42): theo thứ tự `LESSON_CONTENTS` (thứ tự bài) rồi thứ tự thì trong
+ * bài. Dựng một lần lúc nạp module. Khối "Chọn thì" không phải thì nên không có ở đây.
+ */
+export function tenseEntries(): readonly TenseEntry[] {
+  return TENSE_ENTRIES
+}
+
+/** Mọi khối "Chọn thì" (story 39), theo thứ tự bài. */
+export function allTenseChoices(): TenseChoice[] {
+  return LESSON_CONTENTS.flatMap((c) => c.grammar?.choices ?? [])
 }
 
 const NO_RULE_CARDS: readonly TenseRuleCard[] = []

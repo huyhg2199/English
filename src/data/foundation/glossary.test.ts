@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getLessonContent, LESSON_CONTENTS } from '@/data/lessons'
+import { allTenseChoices, getLessonContent, LESSON_CONTENTS } from '@/data/lessons'
 import { TO_BE } from '@/data/lessons/t1-grammar'
 
 import { BRICKS, isBrickId } from './catalog'
@@ -59,10 +59,26 @@ function t1Texts(): string[] {
   return out
 }
 
+/** Lời tiếng Việt có chip của khối "Chọn thì" (story 39): `use`, "Dùng khi", ghi chú cặp câu, quy tắc, "khi nào" của chữ Việt. */
+function choiceTexts(): string[] {
+  return allTenseChoices().flatMap((c) => [
+    c.use,
+    ...(c.sides ?? []).map((s) => s.whenVi),
+    ...c.pairs.map((p) => p.noteVi),
+    ...c.rules,
+    ...(c.viWords ?? []).flatMap((w) => w.options.map((o) => o.whenVi)),
+  ])
+}
+
+/** Luật chung trợ động từ của bảng "Mỗi thì một dòng" (story 39). */
+function auxRules(): string[] {
+  return (getLessonContent('s1-t4-w4')?.pronunciation?.blocks ?? []).flatMap((b) => (b.kind === 'tense-table' ? b.auxRules : []))
+}
+
 describe('bảng thuật ngữ (story 26)', () => {
-  it('30–34 mục; id, mẫu không trùng; viên thuộc danh mục; định nghĩa ≤ 25 chữ', () => {
+  it('30–38 mục (story 39 thêm 4 mục F17); id, mẫu không trùng; viên thuộc danh mục; định nghĩa ≤ 25 chữ', () => {
     expect(GLOSSARY.length).toBeGreaterThanOrEqual(30)
-    expect(GLOSSARY.length).toBeLessThanOrEqual(34)
+    expect(GLOSSARY.length).toBeLessThanOrEqual(38)
     const ids = GLOSSARY.map((t) => t.id)
     expect(new Set(ids).size).toBe(ids.length)
     const patterns = GLOSSARY.flatMap((t) => t.patterns.map((p) => p.toLowerCase()))
@@ -148,9 +164,28 @@ describe('bảng thuật ngữ (story 26)', () => {
       expect(splitGlossaryText('Xin chào')).toEqual([{ text: 'Xin chào' }])
     })
 
-    it('ghép lại đúng chuỗi gốc với mọi lời tiếng Việt của bài và viên', () => {
-      const texts = [...t1Texts(), ...BRICKS.flatMap((b) => vietnameseTexts(getBrick(b.id)!))]
+    it('ghép lại đúng chuỗi gốc với mọi lời tiếng Việt của bài và viên, khối "Chọn thì" và luật trợ động từ (story 39)', () => {
+      const texts = [
+        ...t1Texts(),
+        ...BRICKS.flatMap((b) => vietnameseTexts(getBrick(b.id)!)),
+        ...choiceTexts(),
+        ...auxRules(),
+      ]
+      expect(choiceTexts().length).toBeGreaterThan(0)
+      expect(auxRules()).toHaveLength(3)
       for (const t of texts) expect(joined(splitGlossaryText(t))).toBe(t)
+    })
+
+    it('tên gọi tắt V-ing / V2 / V3 và "trợ động từ" (story 39) → chip trỏ F17; mỗi chuỗi chỉ chip lần đầu', () => {
+      expect(chipsOf('S + am / is / are + V-ing')).toEqual([
+        { text: 'S', id: 'subject', brickId: 'F08' },
+        { text: 'V-ing', id: 'v-ing', brickId: 'F17' },
+      ])
+      expect(chipsOf('have / has + V3, không dùng V2').map((c) => c.id)).toEqual(['v3', 'v2'])
+      expect(chipsOf('Câu đã có trợ động từ (am / is / are)')).toEqual([{ text: 'trợ động từ', id: 'auxiliary', brickId: 'F17' }])
+      expect(chipsOf('V2 rồi lại V2').map((c) => c.text)).toEqual(['V2'])
+      // "V1" không phải mục; "V2" không khớp bên trong chữ khác.
+      expect(chipsOf('V1, V21, AV2')).toEqual([])
     })
   })
 
