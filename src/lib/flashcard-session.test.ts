@@ -656,6 +656,68 @@ describe('thẻ quy tắc của thì trong bài (story 33, dữ liệu story 38)
   })
 })
 
+describe('thẻ quy tắc quá khứ tiếp diễn ở s1-t2-w4 (story 46)', () => {
+  const PC_RULES = Array.from({ length: 4 }, (_, i) => `rule:past-continuous-${i + 1}`)
+  const UP_TO_W3 = lessonIds((id) => /^s1-t1-/.test(id) || ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3'].includes(id))
+  /** Bỏ qua Sân ga, xong mọi bài tới s1-t2-w4. */
+  const doneW4 = () => completeLessons(skipFoundation(empty(), day(3)), [...UP_TO_W3, 's1-t2-w4'])
+  const tenseRuleIds = (store: Store) =>
+    ruleStudyWords(store, ruleCardsOf, { now: NOW, heavyReview: false })
+      .map((r) => r.id)
+      .filter((id) => !id.startsWith('rule:irregular-'))
+  const dueCard = (at: Date): SrsCard => {
+    const iso = at.toISOString()
+    return { due: iso, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: iso, known: false, updatedAt: iso }
+  }
+  const withCards = (store: Store, extra: Record<string, SrsCard>): Store => ({
+    ...store,
+    data: { ...store.data, srs: { cards: { ...(readSrs(store).cards as Record<string, SrsCard>), ...extra } } },
+  })
+
+  it('bỏ qua Sân ga, xong tới s1-t2-w4 → rule:past-continuous-1 … -4 (lessonId s1-t2-w4) đứng ngay sau thẻ past-simple-irregular', () => {
+    const rules = ruleStudyWords(doneW4(), ruleCardsOf, { now: NOW, heavyReview: false })
+    const ids = tenseRuleIds(doneW4())
+    const at = ids.indexOf('rule:past-continuous-1')
+    expect(ids.slice(at, at + 4)).toEqual(PC_RULES)
+    expect(ids[at - 1]).toBe('rule:past-simple-irregular-4')
+    for (const id of PC_RULES) expect(rules.find((r) => r.id === id)?.lessonId, id).toBe('s1-t2-w4')
+    expect(rules.find((r) => r.id === 'rule:past-continuous-1')).toMatchObject({
+      word: 'were driving',
+      cloze: 'At 6 p.m. yesterday, my parents ___ (drive) home.',
+      answer: 'were driving',
+    })
+    expect(fullSession(doneW4()).queue.filter((i) => PC_RULES.includes(i.word.id)).map((i) => i.kind)).toEqual(['new', 'new', 'new', 'new'])
+  })
+
+  it('s1-t2-w4 chưa đánh dấu, hoặc bị Mũ Phân Loại xếp bắt đầu từ s1-t3-w1 → không có rule:past-continuous-*', () => {
+    const notDone = completeLessons(skipFoundation(empty(), day(3)), UP_TO_W3)
+    expect(tenseRuleIds(notDone).some((id) => id.startsWith('rule:past-continuous-'))).toBe(false)
+    const { store: placed } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's1-t3-w1')
+    expect(fullSession(placed).queue.some((i) => i.word.id.startsWith('rule:past-continuous-'))).toBe(false)
+  })
+
+  it('bỏ đánh dấu s1-t2-w4 → thẻ không vào phiên, không đếm tồn ôn; mục srs.cards giữ nguyên', () => {
+    const due = dueCard(day(9))
+    const store = withCards(doneW4(), Object.fromEntries(PC_RULES.map((id) => [id, due])))
+    expect(fullSession(store).queue.filter((i) => PC_RULES.includes(i.word.id)).map((i) => i.kind)).toEqual(['review', 'review', 'review', 'review'])
+    const unmarked = setLessonCompleted(store, 's1-t2-w4', false, day(10))
+    expect(tenseRuleIds(unmarked).some((id) => PC_RULES.includes(id))).toBe(false)
+    const s = fullSession(unmarked)
+    expect(s.queue.some((i) => PC_RULES.includes(i.word.id))).toBe(false)
+    expect(s.dueCount).toBe(fullSession(store).dueCount - 4)
+    for (const id of PC_RULES) expect(readSrs(unmarked).cards[id], id).toEqual(due)
+  })
+
+  it('thẻ mồ côi rule:past-continuous-9 không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const base = doneW4()
+    const store = withCards(base, { 'rule:past-continuous-9': dueCard(day(9)) })
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:past-continuous-9')).toBe(false)
+    expect(s.dueCount).toBe(fullSession(base).dueCount)
+    expect(readSrs(store).cards['rule:past-continuous-9']).toBeDefined()
+  })
+})
+
 describe('thẻ động từ bất quy tắc (story 38)', () => {
   const T1_AND_W1 = lessonIds((id) => id.startsWith('s1-t1-') || id === 's1-t2-w1')
   /** Bỏ qua Sân ga, xong T1 + s1-t2-w1, -w2: bài hiện tại s1-t2-w3. */

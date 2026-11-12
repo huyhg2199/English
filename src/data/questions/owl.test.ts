@@ -58,7 +58,10 @@ describe('kho câu O.W.L. 1 (story 40)', () => {
     const table = getLessonContent('s1-t4-w4')!.pronunciation!.blocks!.find((b) => b.kind === 'tense-table')
     if (!table || table.kind !== 'tense-table') throw new Error('thiếu bảng')
     // Bảng story 39 dùng present-simple-questions cho dòng hiện tại đơn: coi là present-simple.
-    const rows = table.rows.map((r) => (r.tenseId === 'present-simple-questions' ? 'present-simple' : r.tenseId))
+    // Story 46: dòng quá khứ tiếp diễn chưa có chủ điểm O.W.L. (deferred-work), nên bỏ khỏi phép so.
+    const rows = table.rows
+      .filter((r) => r.tenseId !== 'past-continuous')
+      .map((r) => (r.tenseId === 'present-simple-questions' ? 'present-simple' : r.tenseId))
     expect(OWL_TOPICS.map((t) => t.id)).toEqual(rows)
     expect(OWL_TOPICS.map((t) => [t.id, t.name, t.lessonIds])).toEqual([
       ['to-be', 'to be hiện tại', ['s1-t1-w1']],

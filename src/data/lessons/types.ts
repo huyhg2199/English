@@ -166,6 +166,7 @@ export type DialogueLine = VoaLine | YouglishLine
  * Story 10: `progress` (đang diễn ra quanh lúc nói), `past-point` (một lúc đã xong trong quá khứ),
  * `future-point` (một lúc trong tương lai), `plan` (kế hoạch đã định từ bây giờ tới tương lai),
  * `past-to-now` (từ quá khứ kéo tới bây giờ), `perfect-vs-past` (so hoàn thành với quá khứ đơn).
+ * Story 46: `past-progress` (việc đang diễn ra ở một lúc trong quá khứ, có việc ngắn chen vào).
  */
 export type TimelineKind =
   | 'state'
@@ -173,6 +174,7 @@ export type TimelineKind =
   | 'habit-question'
   | 'progress'
   | 'past-point'
+  | 'past-progress'
   | 'future-point'
   | 'plan'
   | 'past-to-now'

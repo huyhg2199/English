@@ -97,14 +97,15 @@ describe('ngân hàng câu hỏi', () => {
     }
   })
 
-  it('T2–T4: 162 câu, s1-t2-w1 / s1-t2-w3 / s1-t3-w1…w4 / s1-t4-w1 có 14 câu, s1-t2-w2 / s1-t4-w3 có 26 câu, s1-t2-w4 / s1-t4-w4 đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
+  it('T2–T4: 174 câu, s1-t2-w1 / s1-t2-w3 / s1-t3-w1…w4 / s1-t4-w1 có 14 câu, s1-t2-w2 / s1-t4-w3 có 26 câu, s1-t2-w4 có 18 câu (story 46), s1-t4-w4 đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
     const later = QUESTION_BANK.filter((q) => !T1.includes(q.lessonId))
-    expect(later).toHaveLength(162)
-    expect(QUESTION_BANK).toHaveLength(204)
+    expect(later).toHaveLength(174)
+    expect(QUESTION_BANK).toHaveLength(216)
     const sizes: Record<string, number> = {
       's1-t2-w1': 14,
       's1-t2-w2': 26,
       's1-t2-w3': 14,
+      's1-t2-w4': 18,
       's1-t3-w1': 14,
       's1-t3-w2': 14,
       's1-t3-w3': 14,
@@ -482,7 +483,7 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
   const ids = (lessonId: string, ns: readonly number[]) => ns.map((n) => `q-${lessonId}-${String(n).padStart(2, '0')}`)
   const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
   /** Thì → bài và 12 id câu nhãn thì (bảng "Số câu và id"); `fresh` là câu mới của story 36. */
-  const TENSE_QUESTIONS: Record<T1T2ScopeId, { lessonId: string; old: number[]; fresh: number[] }> = {
+  const TENSE_QUESTIONS: Record<Exclude<T1T2ScopeId, 'past-continuous'>, { lessonId: string; old: number[]; fresh: number[] }> = {
     'present-simple': { lessonId: 's1-t1-w2', old: [1, 2, 3], fresh: range(8, 16) },
     'present-simple-questions': { lessonId: 's1-t1-w3', old: [1, 2, 3], fresh: range(8, 16) },
     'present-continuous': { lessonId: 's1-t2-w1', old: [...range(1, 4), ...range(7, 10)], fresh: range(11, 14) },
@@ -490,12 +491,13 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
     'past-simple': { lessonId: 's1-t2-w2', old: [...range(1, 4), 12], fresh: range(20, 26) },
     'past-simple-irregular': { lessonId: 's1-t2-w3', old: range(1, 4), fresh: range(7, 14) },
   }
-  const TENSES = Object.keys(TENSE_QUESTIONS) as T1T2ScopeId[]
-  const allOf = (t: T1T2ScopeId) => {
+  type StoryTense = keyof typeof TENSE_QUESTIONS
+  const TENSES = Object.keys(TENSE_QUESTIONS) as StoryTense[]
+  const allOf = (t: StoryTense) => {
     const { lessonId, old, fresh } = TENSE_QUESTIONS[t]
     return ids(lessonId, [...old, ...fresh]).map((id) => getQuestion(id)!)
   }
-  const freshOf = (t: T1T2ScopeId) => {
+  const freshOf = (t: StoryTense) => {
     const { lessonId, fresh } = TENSE_QUESTIONS[t]
     return ids(lessonId, fresh).map((id) => getQuestion(id) as TypedQuestion)
   }
@@ -592,7 +594,9 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
   it('không câu mới nào mang id đã bỏ hay id ngoài bảng (câu gõ của bài T1–T2)', () => {
     const DROPPED = ['q-s1-t1-w2-06', 'q-s1-t1-w3-05', 'q-s1-t1-w4-03', 'q-s1-t1-w4-06']
     for (const id of DROPPED) expect(getQuestion(id), id).toBeUndefined()
-    const table = new Set(TENSES.flatMap((t) => allOf(t).map((q) => q.id)))
+    // Story 46: 8 câu gõ quá khứ tiếp diễn q-s1-t2-w4-11 … -18 nằm ngoài bảng story 36 (describe story 46 kiểm riêng).
+    const pastContinuousTyped = range(11, 18).map((n) => `q-s1-t2-w4-${String(n).padStart(2, '0')}`)
+    const table = new Set([...TENSES.flatMap((t) => allOf(t).map((q) => q.id)), ...pastContinuousTyped])
     const t1t2Typed = typedQuestions.filter((q) => [...T1, ...T2].includes(q.lessonId))
     expect(t1t2Typed.length).toBeGreaterThan(0)
     for (const q of t1t2Typed) expect(table.has(q.id), q.id).toBe(true)
@@ -693,6 +697,119 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
   it('đề O.W.L. (story 40) không chứa câu nào của ngân hàng, kể cả câu mới', () => {
     const fresh = new Set(ALL_FRESH.map((q) => q.id))
     for (const seed of ['a', 'b', 'c']) for (const q of pickOwlTenses(OWL_QUESTIONS, seed)) expect(fresh.has(q.id), q.id).toBe(false)
+  })
+})
+
+describe('câu quá khứ tiếp diễn (story 46)', () => {
+  const id = (n: number) => `q-s1-t2-w4-${String(n).padStart(2, '0')}`
+  const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
+  const NEW = range(7, 18).map((n) => getQuestion(id(n))!)
+  const typed = NEW.filter(isTypedQuestion)
+  const CHANGE_RE = /^Đổi [^:]+: [^:]+[.?!]$/
+  const TRANSLATE_RE = /^Dịch sang tiếng Anh: .+ \([^)]+\)$/
+  /** Chuỗi tiếng Anh của câu: đề (phần tiếng Anh), lựa chọn, đáp án, accept; câu chọn / gõ thêm câu đã điền đáp án. */
+  const englishOf = (q: Question): string[] => [
+    promptEnglish(q.prompt),
+    ...optionsOf(q),
+    q.answer,
+    ...(isTypedQuestion(q) ? (q.accept ?? []) : []),
+    ...(q.prompt.includes('___') ? [q.prompt.replace(/___(?: \([^)]*\))?/, q.answer)] : []),
+  ]
+
+  it('12 câu -07 … -18: tag thì, đoạn grammar, requires hợp lệ', () => {
+    expect(NEW).toHaveLength(12)
+    for (const q of NEW) {
+      expect(q, 'thiếu câu').toBeDefined()
+      expect(q.tag, q.id).toBe('thì')
+      expect(q.sectionId, q.id).toBe('grammar')
+      expect(q.lessonId, q.id).toBe('s1-t2-w4')
+      expect(q.requires?.length ?? 0, q.id).toBeGreaterThan(0)
+      expect(requiresViolations(q), q.id).toEqual([])
+    }
+  })
+
+  it('4 câu chọn (4 lựa chọn khác nhau, đáp án đứng đầu); 4 type, 2 "Đổi …:", 2 "Dịch …"', () => {
+    const choices = NEW.filter((q): q is ChoiceQuestion => !isTypedQuestion(q))
+    expect(choices.map((q) => q.id)).toEqual(range(7, 10).map(id))
+    for (const q of choices) {
+      expect(q.kind, q.id).toBe('choice')
+      expect(new Set(q.options).size, q.id).toBe(4)
+      expect(q.options[0], q.id).toBe(q.answer)
+    }
+    expect(typed.filter((q) => q.kind === 'type').map((q) => q.id)).toEqual(range(11, 14).map(id))
+    const transforms = typed.filter((q) => q.kind === 'transform')
+    expect(transforms.filter((q) => CHANGE_RE.test(q.prompt)).map((q) => q.id)).toEqual([id(15), id(16)])
+    expect(transforms.filter((q) => TRANSLATE_RE.test(q.prompt)).map((q) => q.id)).toEqual([id(17), id(18)])
+    for (const q of typed.filter((x) => x.kind === 'type')) {
+      expect(q.prompt.split('___'), q.id).toHaveLength(2)
+      expect(q.prompt.replace(/___ \([^)]+\)/, '___'), q.id).not.toContain('(')
+    }
+  })
+
+  it('chữ tiếng Anh nằm trong phạm vi past-continuous; đáp án / accept không dấu tiếng Việt', () => {
+    for (const q of NEW) for (const text of englishOf(q)) expect(outOfScopeWords('past-continuous', text), `${q.id}: ${text}`).toEqual([])
+    for (const q of typed) for (const a of [q.answer, ...(q.accept ?? [])]) expect(hasVietnameseMarks(a), `${q.id}: ${a}`).toBe(false)
+  })
+
+  it('câu dịch / biến đổi không hỏi có trạng ngữ cuối → accept đặt trạng ngữ lên đầu; câu dịch when / while → accept đảo mệnh đề', () => {
+    for (const q of typed.filter((x) => x.kind === 'transform' && !x.answer.trim().endsWith('?'))) {
+      const fronted = frontedTimeTail(normalizeTyped(q.answer))
+      if (fronted) expect((q.accept ?? []).map(normalizeTyped), q.id).toContain(fronted)
+    }
+    let swapped = 0
+    for (const q of typed.filter((x) => TRANSLATE_RE.test(x.prompt) && / (when|while) /i.test(x.answer.replace(/^(When|While) /, ' $1 ')))) {
+      const [a, b] = normalizeTyped(q.answer).split(/ (?=when |while )/)
+      if (!b) continue
+      swapped++
+      expect((q.accept ?? []).map(normalizeTyped), q.id).toContain(`${b} ${a}`)
+    }
+    expect(swapped).toBe(1)
+  })
+
+  it('golden matchesTyped: -12, -15, -18', () => {
+    const q = (n: number) => getQuestion(id(n)) as TypedQuestion
+    expect(matchesTyped(q(12).answer, "weren't watching", q(12).accept)).toBe(true)
+    expect(matchesTyped(q(12).answer, 'were not watching', q(12).accept)).toBe(true)
+    expect(matchesTyped(q(12).answer, "didn't watch", q(12).accept)).toBe(false)
+    expect(matchesTyped(q(15).answer, "she wasn't sleeping at 10 p.m.", q(15).accept)).toBe(true)
+    expect(matchesTyped(q(15).answer, "She didn't sleep at 10 p.m.", q(15).accept)).toBe(false)
+    // Review story 46: trạng ngữ giờ đặt lên đầu cũng đúng.
+    expect(matchesTyped(q(15).answer, "At 10 p.m., she wasn't sleeping.", q(15).accept)).toBe(true)
+    expect(matchesTyped(q(18).answer, 'My father was reading the newspaper when my mother came home', q(18).accept)).toBe(true)
+    expect(matchesTyped(q(18).answer, 'When my mother came home, my father was reading the newspaper.', q(18).accept)).toBe(true)
+    expect(matchesTyped(q(18).answer, 'My father read the newspaper when my mother came home.', q(18).accept)).toBe(false)
+  })
+
+  it('review story 46: có câu chọn liên từ when / while (TOEIC Part 5); câu dịch -18 có gợi ý my father / my mother', () => {
+    const q10 = getQuestion(id(10)) as ChoiceQuestion
+    expect(q10.options).toEqual(['when', 'while', 'during', 'so'])
+    expect(q10.requires).toContain('conjunctions')
+    expect(getQuestion(id(18))!.prompt).toContain('(my father, read the newspaper, when, my mother, come home)')
+  })
+
+  it('đáp án không trùng nguyên câu ví dụ của TenseCard', () => {
+    const examples = getLessonContent('s1-t2-w4')!.grammar!.tenses.flatMap((t) => t.examples.map((e) => normalizeTyped(e.en)))
+    expect(examples.length).toBeGreaterThan(0)
+    for (const q of NEW) {
+      const filled = q.prompt.includes('___') ? q.prompt.replace(/___(?: \([^)]*\))?/, q.answer) : q.answer
+      for (const a of [filled, ...(isTypedQuestion(q) ? (q.accept ?? []) : [])]) expect(examples, `${q.id}: ${a}`).not.toContain(normalizeTyped(a))
+    }
+  })
+
+  it('6 câu cũ -01 … -06 không đổi chữ, không có requires', () => {
+    const OLD: Record<number, [string, string]> = {
+      1: ['Right now, my brother ___ a shower.', 'is taking'],
+      2: ['Last night I ___ very tired.', 'was'],
+      3: ['He ___ his homework yesterday.', "didn't do"],
+      4: ['Where ___ you go last weekend?', 'did'],
+      5: ['Chọn từ có trọng âm khác ba từ còn lại.', 'hotel'],
+      6: ['Nghe và chọn câu bạn vừa nghe.', 'My family visited the village last weekend.'],
+    }
+    for (const [n, [prompt, answer]] of Object.entries(OLD)) {
+      const q = getQuestion(id(Number(n)))!
+      expect([q.prompt, q.answer], q.id).toEqual([prompt, answer])
+      expect(q.requires, q.id).toBeUndefined()
+    }
   })
 })
 

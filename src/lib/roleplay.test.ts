@@ -70,6 +70,12 @@ describe('buildRoleplayPrompt', () => {
     expect(p).not.toMatch(/going to/)
   })
 
+  it('story 46: ở bài s1-t2-w4, chưa mở thần chú nào → prompt cho phép quá khứ tiếp diễn (thì của bài)', () => {
+    const p = buildRoleplayPrompt(lessonOf('s1-t2-w4'), [])
+    expect(p).toMatch(/past continuous/)
+    expect(p).not.toMatch(/going to/)
+  })
+
   it('chưa mở thần chú nào, bài không có thì riêng → câu đơn giản với to be và hiện tại đơn', () => {
     const p = buildRoleplayPrompt(lessonOf('s1-t4-w2'), [])
     expect(p).toMatch(/Only use this grammar: the verb "to be" \(am \/ is \/ are\); the present simple/)

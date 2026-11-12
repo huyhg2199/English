@@ -91,7 +91,7 @@ export const QUIZZES: readonly QuizDef[] = [
   {
     id: 'mini-t2',
     title: 'Mini test tháng T2',
-    description: '10 câu ôn cả 4 tuần T2: hiện tại tiếp diễn, quá khứ đơn, động từ bất quy tắc, trọng âm, đuôi -ed.',
+    description: '10 câu ôn cả 4 tuần T2: hiện tại tiếp diễn, quá khứ đơn, động từ bất quy tắc, quá khứ tiếp diễn, trọng âm, đuôi -ed.',
     lessonIds: ['s1-t2-w1', 's1-t2-w2', 's1-t2-w3', 's1-t2-w4'],
     size: 10,
     minPerLesson: 2,

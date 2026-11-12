@@ -3,11 +3,13 @@ import type { ChoiceQuestion, ChoiceQuestionKind, MistakeTag, Question, TypedQue
 import type { SectionId } from '@/data/roadmap/types'
 
 /**
- * 162 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10. Tự soạn theo khuôn ETS,
+ * 174 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10. Tự soạn theo khuôn ETS,
  * không chép đề. Các bài có thêm câu (đều có `requires`):
  * - `s1-t2-w1` có 14 câu: 4 câu gõ `type` / `transform` của story 35 và 4 câu gõ của story 36;
  * - `s1-t2-w2` có 26 câu: 6 câu was / were và Wh + did (story 33), 14 câu gõ của story 36 (7 câu was / were, 7 câu -ed);
  * - `s1-t2-w3` có 14 câu: 8 câu gõ bất quy tắc của story 36;
+ * - `s1-t2-w4` có 18 câu: 6 câu ôn + 12 câu quá khứ tiếp diễn của story 46 (`-07` … `-18`: 4 câu chọn, 4 câu gõ, 2 biến
+ *   đổi, 2 dịch);
  * - `s1-t3-w1`, `s1-t3-w2`, `s1-t3-w3`, `s1-t3-w4`, `s1-t4-w1` có 14 câu: 8 câu gõ của story 37 (`-07` … `-14`);
  * - `s1-t4-w3` có 26 câu: 10 câu gõ so sánh (`-07` … `-16`, nhãn `từ loại`) và 10 câu gõ bị động (`-17` … `-26`) của story 37.
  * Story 36 nâng mỗi thì T1–T2 lên 12 câu nhãn `thì`, story 37 nâng mỗi chủ điểm T3–T4 lên 12 câu đoạn Ngữ pháp (gõ dạng đúng,
@@ -317,6 +319,48 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'My family visited the village last week.',
     'My family visited the valley last weekend.',
   ], 'Nghe đuôi -ed /ɪd/ của visited và cụm last weekend.'),
+
+  // Quá khứ tiếp diễn (story 46): was / were + V-ing, when + quá khứ đơn, while; phạm vi chữ `past-continuous`, không V3,
+  // will, modal, bị động. `requires` chỉ dùng khái niệm viên gạch (khái niệm bài T2 là việc của story 47).
+  t2w4.grammar(7, "When you called, I ___ a shower, so I didn't answer.", ['was taking', 'took', 'am taking', 'were taking'],
+    'Lúc bạn gọi, việc tắm đang diễn ra (việc dài) → was taking (I đi với was); took nghĩa là gọi xong mới đi tắm, không khớp “nên tôi không nghe máy”. am taking là hiện tại.',
+    'thì', ['subject-pronouns', 'articles', 'conjunctions', 'verb-forms', 'tenses-overview']),
+  t2w4.grammar(8, 'They ___ football when I saw them.', ['were playing', 'was playing', 'are playing', 'were play'],
+    'Lúc tôi thấy (việc ngắn, saw), việc chơi bóng đang diễn ra → was / were + V-ing. they đi với were; sau were phải là V-ing (không nói were play).',
+    'thì', ['subject-pronouns', 'object-pronouns', 'verb-forms']),
+  t2w4.grammar(9, '___ your parents working when you left home?', ['Were', 'Did', 'Was', 'Are'],
+    'Hỏi việc đang diễn ra trong quá khứ: Were + you / we / they / chủ ngữ số nhiều + V-ing. Không mượn Did với V-ing. your parents = they nên dùng Were, không dùng Was.',
+    'thì', ['be-questions', 'subject-pronouns', 'possessive-adjectives', 'plurals', 'verb-forms']),
+  t2w4.grammar(10, 'She was writing an email ___ her friend came into the room.', ['when', 'while', 'during', 'so'],
+    'Viết email là việc dài (was writing); bạn bước vào (came) là việc ngắn chen vào → nối bằng when. while thường đi với việc dài đang diễn ra (while + was / were + V-ing); during đi với danh từ (during the meeting); so nghĩa là “nên”, không hợp nghĩa.',
+    'thì', ['subject-pronouns', 'possessive-adjectives', 'articles', 'conjunctions', 'verb-forms']),
+  t2w4.type(11, 'My grandmother ___ (sit) in the garden at 7 a.m. yesterday.', 'was sitting',
+    'Lúc 7 giờ sáng hôm qua việc ngồi đang diễn ra → was / were + V-ing. my grandmother = she → was. sit một âm tiết, tận cùng 1 nguyên âm + 1 phụ âm nên gấp đôi t: sitting.',
+    ['possessive-adjectives', 'articles', 'prepositions-of-place', 'prepositions-of-time', 'clock-time', 'verb-forms']),
+  t2w4.type(12, 'We ___ (not / watch) TV at that time.', "weren't watching",
+    "Lúc đó (quá khứ) không xem → weren't + V-ing (we đi với were); không nói didn't watching.",
+    ['subject-pronouns', 'be-negative', 'verb-forms']),
+  t2w4.type(13, 'Lan ___ (run) to the bus stop when she fell.', 'was running',
+    'Chạy là việc dài đang diễn ra, ngã (fell) là việc ngắn chen vào → was running (Lan = she → was). run gấp đôi n: running.',
+    ['subject-pronouns', 'articles', 'verb-forms']),
+  t2w4.type(14, 'While I ___ (drive), my son was sleeping in the car.', 'was driving',
+    'while đi với việc dài đang diễn ra → was / were + V-ing (I đi với was). drive tận cùng e câm nên bỏ e: driving.',
+    ['subject-pronouns', 'possessive-adjectives', 'articles', 'prepositions-of-place', 'verb-forms']),
+  t2w4.transform(15, 'Đổi sang phủ định: She was sleeping at 10 p.m.', "She wasn't sleeping at 10 p.m.",
+    "Phủ định quá khứ tiếp diễn: thêm not ngay sau was (wasn't), sleeping giữ nguyên. Không mượn didn't.",
+    ['be-negative', 'subject-pronouns', 'prepositions-of-time', 'clock-time', 'verb-forms'], ["At 10 p.m., she wasn't sleeping."]),
+  t2w4.transform(16, 'Đổi sang câu hỏi: They were waiting for the bus.', 'Were they waiting for the bus?',
+    'Câu hỏi quá khứ tiếp diễn: đưa were lên trước they, waiting giữ nguyên. Không mượn Did (không nói Did they waiting…?).',
+    ['be-questions', 'subject-pronouns', 'articles', 'verb-forms']),
+  t2w4.transform(17, 'Dịch sang tiếng Anh: Lúc đó các bạn của bạn đang làm gì? (what, your friends, do, at that time)',
+    'What were your friends doing at that time?',
+    'Hỏi Wh- về việc đang diễn ra trong quá khứ: What + were + chủ ngữ + V-ing? your friends là số nhiều → were; do thêm -ing: doing.',
+    ['wh-questions', 'be-questions', 'possessive-adjectives', 'plurals', 'verb-forms']),
+  t2w4.transform(18, 'Dịch sang tiếng Anh: Bố tôi đang đọc báo thì mẹ tôi về nhà. (my father, read the newspaper, when, my mother, come home)',
+    'My father was reading the newspaper when my mother came home.',
+    'Đọc báo là việc dài → was reading (my father = he). Mẹ về nhà là việc ngắn chen vào, đứng sau when → quá khứ đơn came. Đưa vế when lên đầu (có dấu phẩy) cũng đúng.',
+    ['possessive-adjectives', 'articles', 'verb-forms', 'tenses-overview'],
+    ['When my mother came home, my father was reading the newspaper.']),
 
   // ── T3 tuần 1: will · dạng yếu ──
   t3w1.grammar(1, "It's cold. I ___ close the window.", ['will', 'am', 'going', 'do'],

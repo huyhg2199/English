@@ -7,11 +7,11 @@ const NOW_X = W / 2
 /** Vị trí các lần lặp của thói quen (trải cả quá khứ – hiện tại – tương lai). */
 const HABIT_XS = [42, 78, 114, 150, 186, 222, 258]
 
-function Cross({ x, faded }: { x: number; faded?: boolean }) {
+function Cross({ x, y = AXIS_Y, faded }: { x: number; y?: number; faded?: boolean }) {
   return (
     <g stroke="var(--primary)" strokeWidth={2.5} strokeLinecap="round" opacity={faded ? 0.45 : 1}>
-      <line x1={x - 5} y1={AXIS_Y - 5} x2={x + 5} y2={AXIS_Y + 5} />
-      <line x1={x - 5} y1={AXIS_Y + 5} x2={x + 5} y2={AXIS_Y - 5} />
+      <line x1={x - 5} y1={y - 5} x2={x + 5} y2={y + 5} />
+      <line x1={x - 5} y1={y + 5} x2={x + 5} y2={y - 5} />
     </g>
   )
 }
@@ -21,6 +21,8 @@ function Cross({ x, faded }: { x: number; faded?: boolean }) {
  * `state`: một dải trạng thái phủ quanh "bây giờ". `habit`: các dấu × lặp lại đều đặn.
  * `habit-question`: các dấu × mờ kèm dấu "?" ở hiện tại (hỏi / phủ định thói quen).
  * `progress`: đường sóng quanh "bây giờ" (đang diễn ra). `past-point` / `future-point`: một dấu × trước / sau "bây giờ".
+ * `past-progress` (story 46): đường sóng nằm trong phần quá khứ (việc dài đang diễn ra), có một dấu × chen vào (việc ngắn):
+ *   dấu × đặt phía trên đường sóng, nét đứt chỉ xuống chỗ nó cắt ngang, để không lẫn vào đường sóng cùng màu.
  * `plan`: từ "bây giờ" có mũi tên nét đứt tới dấu × ở tương lai (kế hoạch đã định).
  * `past-to-now`: dải từ quá khứ chạy tới "bây giờ". `perfect-vs-past`: × mờ (V2, đã xong) so với dải kéo tới bây giờ.
  */
@@ -73,6 +75,27 @@ export function TenseTimeline({ kind, label }: { kind: TimelineKind; label: stri
           />
         )}
         {kind === 'past-point' && <Cross x={70} />}
+        {kind === 'past-progress' && (
+          <>
+            <path
+              d={`M 30 ${AXIS_Y} q 6.25 -10 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0 t 12.5 0`}
+              fill="none"
+              stroke="var(--primary)"
+              strokeWidth={3}
+              strokeLinecap="round"
+            />
+            <line
+              x1={92.5}
+              y1={AXIS_Y - 11}
+              x2={92.5}
+              y2={AXIS_Y + 6}
+              stroke="var(--muted-foreground)"
+              strokeWidth={1.5}
+              strokeDasharray="2 2"
+            />
+            <Cross x={92.5} y={AXIS_Y - 18} />
+          </>
+        )}
         {kind === 'future-point' && <Cross x={230} />}
         {kind === 'plan' && (
           <>

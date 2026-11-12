@@ -203,6 +203,7 @@ describe('nội dung bài T1', () => {
       'past-to-be',
       'past-simple',
       'past-simple-irregular',
+      'past-continuous',
       'will',
       'going-to',
       'present-perfect',
@@ -242,9 +243,9 @@ describe('nội dung bài T1', () => {
     expect(g.review!.quizId).toBe('mini-t1')
   })
 
-  it('T2 tuần 4 ôn tập: link mini test T2, không thì mới', () => {
+  it('T2 tuần 4 ôn tập: link mini test T2; thì duy nhất là quá khứ tiếp diễn (story 46)', () => {
     const g = content('s1-t2-w4').grammar!
-    expect(g.tenses).toHaveLength(0)
+    expect(g.tenses.map((t) => t.id)).toEqual(['past-continuous'])
     expect(g.review!.quizId).toBe('mini-t2')
     expect(g.review!.note).toMatch(/Mini test 10 câu/)
   })
@@ -395,6 +396,7 @@ describe('thần chú', () => {
       ['accio', 'present-continuous', 's1-t2-w1'],
       ['obliviate', 'past-simple', 's1-t2-w2'],
       ['reparo', 'past-simple-irregular', 's1-t2-w3'],
+      ['impedimenta', 'past-continuous', 's1-t2-w4'],
       ['protego', 'will', 's1-t3-w1'],
       ['wingardium-leviosa', 'going-to', 's1-t3-w2'],
       ['expecto-patronum', 'present-perfect', 's1-t3-w3'],
@@ -573,17 +575,23 @@ describe('to be quá khứ và Wh + did (story 33)', () => {
   it('lessonRuleCards: thẻ của mọi thì trong bài theo thứ tự; bài không có thẻ → []', () => {
     const n = (id: string, count: number) => Array.from({ length: count }, (_, i) => `${id}-rule-${i + 1}`)
     expect(lessonRuleCards('s1-t2-w2').map((r) => r.id)).toEqual([...n('past-to-be', 4), ...n('past-simple', 5)])
-    // Story 38: mọi thì (trừ to be) có thẻ; bài không có thì (ôn tập) và s1-t1-w1 (to be) → [].
+    // Story 38: mọi thì (trừ to be) có thẻ; bài không có thì (ôn tập s1-t1-w4) và s1-t1-w1 (to be) → [].
     expect(lessonRuleCards('s1-t2-w1').map((r) => r.id)).toEqual(n('present-continuous', 5))
     expect(lessonRuleCards('s1-t1-w1')).toEqual([])
-    expect(lessonRuleCards('s1-t2-w4')).toEqual([])
+    expect(content('s1-t1-w4').grammar!.tenses).toHaveLength(0)
+    expect(lessonRuleCards('s1-t1-w4')).toEqual([])
+    // Story 46: s1-t2-w4 có quá khứ tiếp diễn (4 thẻ).
+    expect(lessonRuleCards('s1-t2-w4').map((r) => r.id)).toEqual(n('past-continuous', 4))
     expect(lessonRuleCards('nope')).toEqual([])
   })
 
-  it('ôn T2-W4 có dòng was / were và "Did you be" trong dòng Không trộn', () => {
+  it('ôn T2-W4 có dòng was / were, dòng quá khứ tiếp diễn (story 46) và "Did you be", "I was cook" trong dòng Không trộn', () => {
     const summary = content('s1-t2-w4').grammar!.review!.summary
     expect(summary.some((l) => l.startsWith('Quá khứ của to be: was / were'))).toBe(true)
+    const irregular = summary.findIndex((l) => l.startsWith('Quá khứ đơn bất quy tắc'))
+    expect(summary[irregular + 1].startsWith('Quá khứ tiếp diễn: was / were + V-ing')).toBe(true)
     expect(summary.find((l) => l.startsWith('Không trộn'))).toContain('Did you be')
+    expect(summary.find((l) => l.startsWith('Không trộn'))).toContain('I was cook')
   })
 })
 
@@ -682,7 +690,7 @@ describe('luyện có bậc (story 35)', () => {
     }
   })
 
-  it('đúng 13 thì có practice theo thứ tự lộ trình (6 thì T1–T2 của story 36, 7 chủ điểm T3–T4 của story 37), mọi Tense trừ to-be', () => {
+  it('đúng 14 thì có practice theo thứ tự lộ trình (6 thì T1–T2 của story 36, past-continuous của story 46, 7 chủ điểm T3–T4 của story 37), mọi Tense trừ to-be', () => {
     expect(withPractice.map((t) => t.id)).toEqual([...TENSE_SCOPE_IDS])
     expect(allTenses().filter((t) => !hasPractice(t)).map((t) => t.id)).toEqual(['to-be'])
   })
@@ -695,7 +703,15 @@ describe('phần luyện T1–T2 (story 36)', () => {
     return t
   }
   const NEW = ['present-simple', 'present-simple-questions', 'past-to-be', 'past-simple', 'past-simple-irregular']
-  const ALL = ['present-simple', 'present-simple-questions', 'present-continuous', 'past-to-be', 'past-simple', 'past-simple-irregular']
+  const ALL = [
+    'present-simple',
+    'present-simple-questions',
+    'present-continuous',
+    'past-to-be',
+    'past-simple',
+    'past-simple-irregular',
+    'past-continuous',
+  ]
   const CHANGE_RE = /^Đổi [^:]+: [^:]+[.?!]$/
   const TRANSLATE_RE = /^Dịch sang tiếng Anh: .+ \([^)]+\)$/
   const typedItems = (t: PracticeTense) =>
@@ -710,6 +726,8 @@ describe('phần luyện T1–T2 (story 36)', () => {
     'past-to-be': { lessonId: 's1-t2-w2', ns: [...range(7, 11), ...range(13, 19)] },
     'past-simple': { lessonId: 's1-t2-w2', ns: [...range(1, 4), 12, ...range(20, 26)] },
     'past-simple-irregular': { lessonId: 's1-t2-w3', ns: [...range(1, 4), ...range(7, 14)] },
+    // Story 46: 12 câu quá khứ tiếp diễn của s1-t2-w4.
+    'past-continuous': { lessonId: 's1-t2-w4', ns: range(7, 18) },
   }
   const quizOf = (id: string) => {
     const { lessonId, ns } = QUIZ[id]
@@ -904,6 +922,112 @@ describe('phần luyện T1–T2 (story 36)', () => {
       return (answer.toLowerCase().match(/[a-z]+/g) ?? []).some((w) => cues.includes(v2ToV1.get(w) ?? '#'))
     })
     expect(v1ToV2.length).toBeGreaterThanOrEqual(2)
+  })
+
+  describe('quá khứ tiếp diễn (story 46)', () => {
+    const pcTense = () => tense('past-continuous')
+    const item = (id: string) => {
+      const i = [...pcTense().practice.check.items, ...pcTense().practice.check.easier].find((x) => x.id === id)
+      if (!i) throw new Error(`thiếu ${id}`)
+      return i
+    }
+
+    it('GRAMMAR_T2_W4 chỉ có past-continuous; timeline và worked.timeline kind past-progress; spell impedimenta', () => {
+      const g = content('s1-t2-w4').grammar!
+      expect(g.tenses.map((t) => t.id)).toEqual(['past-continuous'])
+      const t = pcTense()
+      expect(t.name).toBe('Quá khứ tiếp diễn (was / were + V-ing)')
+      expect(t.timeline?.kind).toBe('past-progress')
+      expect(t.practice.worked.timeline?.kind).toBe('past-progress')
+      expect(t.spellId).toBe('impedimenta')
+      expect(g.review!.quizId).toBe('mini-t2')
+    })
+
+    it('4 nhãn công thức: Khẳng định / Phủ định / Câu hỏi / when · while', () => {
+      expect(pcTense().formulas.map((f) => f.label)).toEqual(['Khẳng định', 'Phủ định', 'Câu hỏi', 'when · while'])
+    })
+
+    it('lỗi hay mắc có "I was cook dinner.", "I cooking when you called.", "Did you sleeping at 10 p.m.?"', () => {
+      const wrong = pcTense().mistakes.map((m) => m.wrong)
+      for (const w of ['I was cook dinner.', 'I cooking when you called.', 'Did you sleeping at 10 p.m.?']) expect(wrong).toContain(w)
+    })
+
+    it('review story 46: luật when / while nói "thường"; thẻ câu hỏi không lộ đáp án ở câu trả lời ngắn', () => {
+      expect(pcTense().rules[1]).toMatch(/when thường đi với việc ngắn.*while thường đi với việc dài/)
+      const card = pcTense().ruleCards!.find((c) => c.id === 'past-continuous-rule-3')!
+      expect(card.cloze.replace('___', '').toLowerCase()).not.toMatch(/\b(was|were)\b/)
+    })
+
+    it('phủ đủ bảng "Phải phủ" (quiz + phần luyện, kiểm bằng chuỗi đáp án)', () => {
+      for (const re of [
+        /\bwas [a-z]+ing\b/,
+        /\bwere [a-z]+ing\b/,
+        /\bwasn't [a-z]+ing\b/,
+        /\bweren't [a-z]+ing\b/,
+        /^(Was|Were) /,
+        /No, (she|he|I) wasn't\./,
+        /^What (was|were) /,
+        /^While /,
+        / when [a-z ]+ (met|came|fell|got|left|saw|called|started)\b/,
+        /\b(driving|writing)\b/,
+        /\b(swimming|running|sitting)\b/,
+      ]) {
+        expect(has('past-continuous', re), `past-continuous ${re}`).toBe(true)
+      }
+    })
+
+    it('golden chấm của bảng I/O (-c2, -c3, -c4, -c5)', () => {
+      const c2 = item('past-continuous-c2')
+      if (c2.kind !== 'choice') throw new Error('c2 phải là choice')
+      expect(c2.prompt).toBe('Tom was walking to school when he ___ his teacher.')
+      expect(isCorrect(c2, { kind: 'choice', choice: c2.options.indexOf('met') })).toBe(true)
+      expect(isCorrect(c2, { kind: 'choice', choice: c2.options.indexOf('was meeting') })).toBe(false)
+      expect(c2.explanationVi).toMatch(/[Gg]ặp là việc ngắn chen vào → quá khứ đơn met/)
+
+      const c3 = item('past-continuous-c3')
+      expect(c3.kind === 'type' && c3.prompt).toBe('They ___ (not / play) football at that time.')
+      for (const text of ["weren't playing", 'were not playing', 'werent playing']) expect(isCorrect(c3, { kind: 'type', text }), text).toBe(true)
+      expect(isCorrect(c3, { kind: 'type', text: "didn't play" })).toBe(false)
+      expect(c3.explanationVi).toMatch(/[Đđ]ang \(lúc đó\) → weren't \+ V-ing, không mượn didn't/)
+
+      const c4 = item('past-continuous-c4')
+      expect(c4.kind === 'type' && c4.prompt).toBe('Đổi sang câu hỏi: He was working at that time.')
+      expect(isCorrect(c4, { kind: 'type', text: 'was he working at that time' })).toBe(true)
+      expect(isCorrect(c4, { kind: 'type', text: 'Did he working at that time?' })).toBe(false)
+      expect(c4.explanationVi).toContain('đưa was lên trước he, không mượn did')
+
+      const c5 = item('past-continuous-c5')
+      for (const text of [
+        'while my mother was cooking i was cleaning my room',
+        'I was cleaning my room while my mother was cooking',
+        'My mother was cooking while I was cleaning my room.',
+        'While I was cleaning my room, my mother was cooking.',
+      ]) {
+        expect(isCorrect(c5, { kind: 'type', text }), text).toBe(true)
+      }
+      expect(isCorrect(c5, { kind: 'type', text: 'While my mother cooked, I cleaned my room.' })).toBe(false)
+
+      const e1 = item('past-continuous-e1')
+      expect(e1.explanationVi).toContain('một lúc đã qua (at that time = lúc đó)')
+    })
+
+    it('ví dụ mẫu và màn điền đúng Design Notes', () => {
+      const p = pcTense().practice
+      expect(p.worked.en).toBe('We were having dinner when my father came home.')
+      expect(p.faded.en).toBe('At 9 p.m. last night, the children ___ (watch) a movie.')
+      expect(p.faded.answer).toBe('were watching')
+      expect(p.apply.speak?.map((x) => x.text)).toEqual(['I was working at 8 p.m. yesterday.', 'My son was doing his homework when I got home.'])
+    })
+
+    it('chữ tiếng Anh của Tense (ví dụ, lỗi đã sửa, thẻ đã điền) nằm trong phạm vi chữ past-continuous', () => {
+      const t = pcTense()
+      const texts = [
+        ...t.examples.map((e) => e.en),
+        ...t.mistakes.map((m) => m.right),
+        ...(t.ruleCards ?? []).map((r) => r.cloze.replace(/___(?: \([^)]*\))?/, r.answer)),
+      ]
+      for (const text of texts) expect(outOfScopeWords('past-continuous', text), text).toEqual([])
+    })
   })
 })
 
@@ -1222,6 +1346,7 @@ describe('thẻ ôn thì và động từ (story 38)', () => {
     'past-to-be': ['were', 'Were', "weren't", 'were'],
     'past-simple': ['did', 'stopped', "didn't call", 'Did', 'called'],
     'past-simple-irregular': ['bought', 'go', 'eat', 'went'],
+    'past-continuous': ['were driving', "wasn't listening", 'Were', 'saw'],
     will: ['will call', "won't be", 'Will', "won't"],
     'going-to': ['are going to visit', "isn't going to buy", 'are', 'is going to fall'],
     'present-perfect': ['have visited', "hasn't finished", 'Have', 'seen', 'gone'],
@@ -1237,6 +1362,7 @@ describe('thẻ ôn thì và động từ (story 38)', () => {
     'past-to-be',
     'past-simple',
     'past-simple-irregular',
+    'past-continuous',
     'will',
     'going-to',
     'present-perfect',
@@ -1249,7 +1375,7 @@ describe('thẻ ôn thì và động từ (story 38)', () => {
     )
   const lessonIndex = (id: string) => allLessons().findIndex((l) => l.id === id)
 
-  it('đúng 13 thì có thẻ (mọi thì trừ to-be), số thẻ và đáp án theo bảng; tổng 58 thẻ (story 44 thêm 2, story 45 thêm 1)', () => {
+  it('đúng 14 thì có thẻ (mọi thì trừ to-be), số thẻ và đáp án theo bảng; tổng 62 thẻ (story 44 thêm 2, story 45 thêm 1, story 46 thêm 4)', () => {
     const withCards = allTenses().filter((t) => (t.ruleCards ?? []).length > 0)
     expect(withCards.map((t) => t.id)).toEqual(Object.keys(CARDS))
     expect(allTenses().filter((t) => !t.ruleCards).map((t) => t.id)).toEqual(['to-be'])
@@ -1259,7 +1385,7 @@ describe('thẻ ôn thì và động từ (story 38)', () => {
       expect(t.ruleCards!.length, t.id).toBeGreaterThanOrEqual(4)
       expect(t.ruleCards!.length, t.id).toBeLessThanOrEqual(5)
     }
-    expect(cardsOf()).toHaveLength(58)
+    expect(cardsOf()).toHaveLength(62)
   })
 
   it('3 thẻ của story 33 giữ đúng chữ', () => {
@@ -1303,7 +1429,7 @@ describe('thẻ ôn thì và động từ (story 38)', () => {
     }
   })
 
-  it('mọi thẻ (T1–T4, 58 thẻ) nằm trong phạm vi chữ của thì (outOfScopeWords, story 37 thêm T3–T4)', () => {
+  it('mọi thẻ (T1–T4, 62 thẻ) nằm trong phạm vi chữ của thì (outOfScopeWords, story 37 thêm T3–T4)', () => {
     let checked = 0
     for (const { tense, card } of cardsOf()) {
       expect(isTenseScopeId(tense.id), tense.id).toBe(true)
@@ -1312,7 +1438,7 @@ describe('thẻ ôn thì và động từ (story 38)', () => {
       expect(outOfScopeWords(tense.id, text), `${card.id}: ${text}`).toEqual([])
       checked++
     }
-    expect(checked).toBe(58)
+    expect(checked).toBe(62)
   })
 
   it('thẻ T3–T4 không chứa dấu hiệu của bài dạy sau nó (bảng "Dấu hiệu theo bài")', () => {
@@ -1455,6 +1581,7 @@ describe('chọn thì, từ tín hiệu, bảng trợ động từ (story 39)', 
     'past-to-be': ['yesterday', 'last night', 'last Monday', 'in 2020'],
     'past-simple': ['yesterday', 'last night', 'last week', 'last year', 'ago'],
     'past-simple-irregular': ['yesterday', 'last night', 'last week', 'last weekend'],
+    'past-continuous': ['at that time', 'at 8 p.m. yesterday', 'when', 'while'],
     will: ['tomorrow', 'tonight'],
     'going-to': ['this weekend', 'next month', 'Look!'],
     'present-perfect': ['ever', 'never', 'just', 'already', 'yet', 'before', 'twice'],
@@ -1725,7 +1852,7 @@ describe('chọn thì, từ tín hiệu, bảng trợ động từ (story 39)', 
     expect(goingTo, answers.join(' | ')).toBeLessThanOrEqual(4)
   })
 
-  it('bảng "Mỗi thì một dòng" (s1-t4-w4): 10 dòng đúng thứ tự, link về bài chứa thì, + / − / ?, 3 luật trợ động từ', () => {
+  it('bảng "Mỗi thì một dòng" (s1-t4-w4): 11 dòng đúng thứ tự (story 46 thêm quá khứ tiếp diễn), link về bài chứa thì, + / − / ?, 3 luật trợ động từ', () => {
     const c = content('s1-t4-w4')
     expect(c.grammar).toBeUndefined()
     const blocks = c.pronunciation!.blocks!
@@ -1739,6 +1866,7 @@ describe('chọn thì, từ tín hiệu, bảng trợ động từ (story 39)', 
       'present-continuous',
       'past-to-be',
       'past-simple',
+      'past-continuous',
       'will',
       'going-to',
       'present-perfect',

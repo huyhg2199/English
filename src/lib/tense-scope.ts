@@ -10,13 +10,15 @@ import { IRREGULAR_VERBS } from '@/data/lessons/irregular-verbs'
  * story 37). Nhóm modal mở từ s1-t4-w1 (chủ điểm `modals`) là "can / could / should / must, have to, would like" (story 45:
  * could / couldn't, have / has to kể cả don't / doesn't have to và Do / Does … have to, would like / 'd like / Would … like).
  * Nhóm "luôn bị báo" (may / might / shall / ought, would và 'd ngoài would like, wouldn't, had to / having to / used to,
- * have got to / gotta, had + V3, quá khứ tiếp diễn, bị động quá khứ, "Don't + V") chưa dạy ở Chặng 1.
+ * have got to / gotta, had + V3, bị động quá khứ, "Don't + V") chưa dạy ở Chặng 1.
+ * Story 46: quá khứ tiếp diễn (was / were + V-ing, when, while) dạy ở s1-t2-w4 (`past-continuous`, đứng sau
+ * `past-simple-irregular`), mở từ `past-continuous` trở đi, kể cả 7 chủ điểm T3–T4; 6 thì đứng trước vẫn bị báo.
  * Lượng từ (F15, story 43) và liên từ (F16, story 44) dạy ở Sân ga nên mọi thì dùng được.
  *
  * Hàm thuần, chỉ test dữ liệu dùng (app không import).
  */
 
-/** 6 thì T1–T2 (story 36). */
+/** 7 thì T1–T2 (story 36; story 46 thêm quá khứ tiếp diễn ở s1-t2-w4). */
 export const T1_T2_SCOPE_IDS = [
   'present-simple',
   'present-simple-questions',
@@ -24,6 +26,7 @@ export const T1_T2_SCOPE_IDS = [
   'past-to-be',
   'past-simple',
   'past-simple-irregular',
+  'past-continuous',
 ] as const
 /** 7 chủ điểm T3–T4 theo thứ tự lộ trình (story 37). */
 export const T3_T4_SCOPE_IDS = [
@@ -35,7 +38,7 @@ export const T3_T4_SCOPE_IDS = [
   'comparatives',
   'passive-present',
 ] as const
-/** 13 thì / chủ điểm có bảng phạm vi: 6 thì T1–T2 rồi 7 chủ điểm T3–T4. */
+/** 14 thì / chủ điểm có bảng phạm vi: 7 thì T1–T2 rồi 7 chủ điểm T3–T4. */
 export const TENSE_SCOPE_IDS = [...T1_T2_SCOPE_IDS, ...T3_T4_SCOPE_IDS] as const
 export type TenseScopeId = (typeof TENSE_SCOPE_IDS)[number]
 export type T1T2ScopeId = (typeof T1_T2_SCOPE_IDS)[number]
@@ -183,6 +186,8 @@ type Scope = {
   ed: boolean
   dont: boolean
   progressive: boolean
+  /** was / were (+ not / chủ ngữ / trạng từ) + V-ing: quá khứ tiếp diễn (story 46, mở từ `past-continuous`). */
+  pastProgressive: boolean
   /** will, won't, 'll. */
   will: boolean
   /** going to + V, gonna. */
@@ -199,9 +204,9 @@ type Scope = {
   passive: boolean
 }
 
-const T1_T2_BASE = { will: false, goingTo: false, perfect: false, since: false, modal: false, comparative: false, passive: false }
+const T1_T2_BASE = { pastProgressive: false, will: false, goingTo: false, perfect: false, since: false, modal: false, comparative: false, passive: false }
 /** Nền của mọi chủ điểm T3–T4: mọi nhóm của T1–T2 (cột `past-simple-irregular`). */
-const T3_T4_BASE = { irregularV2: true, pastBe: true, did: true, ed: true, dont: true, progressive: true }
+const T3_T4_BASE = { irregularV2: true, pastBe: true, did: true, ed: true, dont: true, progressive: true, pastProgressive: true }
 
 const SCOPES: Record<TenseScopeId, Scope> = {
   'present-simple': { ...T1_T2_BASE, irregularV2: false, pastBe: false, did: false, ed: false, dont: false, progressive: false },
@@ -210,6 +215,16 @@ const SCOPES: Record<TenseScopeId, Scope> = {
   'past-to-be': { ...T1_T2_BASE, irregularV2: false, pastBe: true, did: false, ed: false, dont: true, progressive: true },
   'past-simple': { ...T1_T2_BASE, irregularV2: false, pastBe: true, did: true, ed: true, dont: true, progressive: true },
   'past-simple-irregular': { ...T1_T2_BASE, irregularV2: true, pastBe: true, did: true, ed: true, dont: true, progressive: true },
+  'past-continuous': {
+    ...T1_T2_BASE,
+    irregularV2: true,
+    pastBe: true,
+    did: true,
+    ed: true,
+    dont: true,
+    progressive: true,
+    pastProgressive: true,
+  },
   will: { ...T3_T4_BASE, will: true, goingTo: false, perfect: false, since: false, modal: false, comparative: false, passive: false },
   'going-to': { ...T3_T4_BASE, will: true, goingTo: true, perfect: false, since: false, modal: false, comparative: false, passive: false },
   'present-perfect': { ...T3_T4_BASE, will: true, goingTo: true, perfect: true, since: false, modal: false, comparative: false, passive: false },
@@ -229,8 +244,16 @@ export function isTenseScopeId(id: string): id is TenseScopeId {
  */
 const PROGRESSIVE_RE = /\b(?:am|is|are|isn't|aren't|isnt|arent|[a-z]+'(?:m|re|s))(?: not)? ([a-z]+ing)\b/g
 const PROGRESSIVE_QUESTION_RE = /\b(?:am|is|are) (?:[a-z']+ ){1,2}?([a-z]+ing)\b/g
-/** Quá khứ tiếp diễn was / were (+ not / chủ ngữ / trạng từ) + V-ing: dạy ở s1-t2-w4 (story 46), luôn bị báo. */
+/**
+ * Quá khứ tiếp diễn was / were (+ not / chủ ngữ / trạng từ) + V-ing: dạy ở s1-t2-w4 (story 46), chỉ bị báo ở thì đứng trước
+ * `past-continuous` (`scope.pastProgressive` false).
+ */
 const PAST_PROGRESSIVE_RE = /\b(?:was|were|wasn't|weren't|wasnt|werent)(?: [a-z']+){0,2}? ([a-z]+ing)\b/g
+/**
+ * Bị động quá khứ tiếp diễn was / were (+ not / chủ ngữ) + being + V3 / -ed ("The room was being cleaned."): luôn bị báo, kể cả
+ * khi quá khứ tiếp diễn đã mở (`PAST_PASSIVE_RE` chỉ xét từ ngay sau was / were).
+ */
+const PAST_PASSIVE_PROGRESSIVE_RE = /\b(?:was|were|wasn't|weren't|wasnt|werent)(?: [a-z']+){0,2}? being ([a-z]+)\b/g
 /** Thì hoàn thành: have / has / 've (+ not / ever / never / just / already) + từ kế (xét bằng `isPerfectForm`). */
 const PERFECT_RE =
   /\b(?:have|has|haven't|hasn't|havent|hasnt|[a-z]+'ve)(?: not)?(?: (?:ever|never|just|already))? ([a-z]+)\b/g
@@ -371,11 +394,16 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
       if (hit) out.push(`${m[0].trim()} (${hit})`)
     }
   }
-  // Luôn bị báo: quá khứ tiếp diễn, quá khứ hoàn thành, bị động quá khứ, had to / used to / got to, "Don't + V"
-  // (have / has to mở cùng modal, story 45).
-  for (const m of text.matchAll(PAST_PROGRESSIVE_RE)) if (!NOT_PROGRESSIVE.has(m[1])) out.push(m[0])
+  // Quá khứ tiếp diễn dạy ở s1-t2-w4, mở từ `past-continuous` (story 46).
+  if (!scope.pastProgressive) {
+    for (const m of text.matchAll(PAST_PROGRESSIVE_RE)) if (!NOT_PROGRESSIVE.has(m[1])) out.push(m[0])
+  }
+  // Luôn bị báo: quá khứ hoàn thành, bị động quá khứ (cả was / were being + V3: ở thì chưa mở quá khứ tiếp diễn thì
+  // PAST_PROGRESSIVE_RE đã báo "was being"), had to / used to / got to, "Don't + V" (have / has to mở cùng modal,
+  // story 45).
   for (const m of text.matchAll(PAST_PERFECT_RE)) if (isPerfectForm(m[1])) out.push(m[0])
   for (const m of text.matchAll(PAST_PASSIVE_RE)) if (isPassiveForm(m[1])) out.push(m[0])
+  if (scope.pastProgressive) for (const m of text.matchAll(PAST_PASSIVE_PROGRESSIVE_RE)) if (isPassiveForm(m[1])) out.push(m[0])
   for (const m of text.matchAll(PAST_PASSIVE_QUESTION_RE)) {
     const hit = questionHits(m[1], isPassiveForm)
     if (hit) out.push(`${m[0].trim()} (${hit})`)

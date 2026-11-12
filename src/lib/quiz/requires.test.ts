@@ -153,8 +153,9 @@ describe('planQuiz', () => {
   })
 
   it('quiz T2–T4 không có câu khai báo requires thì không lọc gì kể cả khi chưa học viên nào', () => {
-    // s1-t2-w3 (story 36) và s1-t3-w1 (story 37) có câu gõ có requires, nên dùng s1-t2-w4 và s1-t4-w4 (chưa câu nào khai báo).
-    for (const id of ['lesson-s1-t2-w4', 'lesson-s1-t4-w4']) {
+    // s1-t2-w3 (story 36), s1-t3-w1 (story 37) và s1-t2-w4 (story 46) có câu có requires, nên chỉ còn s1-t4-w4 (chưa câu
+    // nào khai báo).
+    for (const id of ['lesson-s1-t4-w4']) {
       for (const seed of SEEDS) {
         expect(planQuiz(QUESTION_BANK, quiz(id), seed, { canSpeak: true }, none)).toEqual({
           status: 'run',
@@ -283,22 +284,23 @@ describe('planQuiz', () => {
     }
   })
 
-  it('story 33 + 35 + 36: chưa học viên nào → mini-t2 bỏ 36 câu mới (6 câu W2 story 33, 4 câu gõ W1 story 35, 26 câu gõ story 36), vẫn 10 câu, mỗi bài T2 ≥ 2 câu, không trùng', () => {
+  it('story 33 + 35 + 36 + 46: chưa học viên nào → mini-t2 bỏ 48 câu mới (6 câu W2 story 33, 4 câu gõ W1 story 35, 26 câu gõ story 36, 12 câu quá khứ tiếp diễn story 46), vẫn 10 câu, mỗi bài T2 ≥ 2 câu, không trùng', () => {
     const story36 = new Set(
       QUESTION_BANK.filter(
         (q) =>
           (q.lessonId === 's1-t2-w1' && Number(q.id.slice(-2)) >= 11) ||
           (q.lessonId === 's1-t2-w2' && Number(q.id.slice(-2)) >= 13) ||
-          (q.lessonId === 's1-t2-w3' && Number(q.id.slice(-2)) >= 7),
+          (q.lessonId === 's1-t2-w3' && Number(q.id.slice(-2)) >= 7) ||
+          (q.lessonId === 's1-t2-w4' && Number(q.id.slice(-2)) >= 7),
       ).map((q) => q.id),
     )
-    expect(story36.size).toBe(26)
+    expect(story36.size).toBe(38)
     for (const seed of SEEDS) {
       for (const opts of OPTS) {
         const plan = planQuiz(QUESTION_BANK, quiz('mini-t2'), seed, opts, none)
         expect(plan.status).toBe('run')
         if (plan.status !== 'run') continue
-        expect(plan.skipped).toBe(36)
+        expect(plan.skipped).toBe(48)
         for (const q of plan.questions) expect(story36.has(q.id), q.id).toBe(false)
         expect(plan.questions).toHaveLength(10)
         expect(new Set(plan.questions.map((q) => q.id)).size).toBe(10)
@@ -306,6 +308,25 @@ describe('planQuiz', () => {
         for (const lessonId of quiz('mini-t2').lessonIds) {
           expect(plan.questions.filter((q) => q.lessonId === lessonId).length, `${lessonId} ${seed}`).toBeGreaterThanOrEqual(2)
         }
+      }
+    }
+  })
+
+  it('story 46: quiz s1-t2-w4 chưa học viên nào → 5 câu từ 6 câu cũ (không câu nào có requires), skipped 12; mọi viên đã dạy → skipped 0', () => {
+    for (const seed of SEEDS) {
+      for (const opts of OPTS) {
+        const plan = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w4'), seed, opts, none)
+        expect(plan.status, seed).toBe('run')
+        if (plan.status !== 'run') continue
+        expect(plan.skipped).toBe(12)
+        expect(plan.questions).toHaveLength(5)
+        expect(new Set(plan.questions.map((q) => q.id)).size).toBe(5)
+        for (const q of plan.questions) {
+          expect(q.requires, q.id).toBeUndefined()
+          expect(Number(q.id.slice(-2)), q.id).toBeLessThanOrEqual(6)
+        }
+        const full = planQuiz(QUESTION_BANK, quiz('lesson-s1-t2-w4'), seed, opts, all)
+        expect(full).toMatchObject({ status: 'run', skipped: 0, missingBrickIds: [] })
       }
     }
   })

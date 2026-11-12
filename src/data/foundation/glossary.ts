@@ -118,7 +118,7 @@ export const GLOSSARY: readonly GlossaryTerm[] = [
     ['trợ động từ'],
     'Từ nhận not và đổi lên đầu câu hỏi: am / is / are, was / were, do / does / did, will, have / has, can.',
   ),
-  term('v-ing', 'V-ing', 'F17', ['V-ing'], 'Động từ thêm -ing (going, working), dùng sau am / is / are trong thì tiếp diễn.'),
+  term('v-ing', 'V-ing', 'F17', ['V-ing'], 'Động từ thêm -ing (going, working), dùng sau am / is / are trong thì tiếp diễn, sau was / were trong quá khứ tiếp diễn.'),
   term(
     'v2',
     'V2 (quá khứ)',

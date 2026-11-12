@@ -27,7 +27,17 @@ describe('unlockedSpells', () => {
     let s = empty
     for (const id of ['s1-t1-w3', 's1-t1-w1', 's1-t1-w2']) s = setLessonCompleted(s, id, true, NOW)
     expect(unlockedSpells(s).map((x) => x.name)).toEqual(['Lumos', 'Alohomora', 'Revelio'])
-    expect(SPELLS).toHaveLength(12)
+    expect(SPELLS).toHaveLength(13)
+  })
+
+  it('story 46: xong s1-t2-w4 → Impedimenta mở (sau Reparo theo thứ tự SPELLS); bỏ đánh dấu → khoá lại', () => {
+    const w4 = setLessonCompleted(empty, 's1-t2-w4', true, NOW)
+    expect(unlockedSpells(w4).map((x) => x.id)).toEqual(['impedimenta'])
+    expect(isSpellUnlocked(w4, 'impedimenta')).toBe(true)
+    const both = setLessonCompleted(w4, 's1-t2-w3', true, NOW)
+    expect(unlockedSpells(both).map((x) => x.id)).toEqual(['reparo', 'impedimenta'])
+    const undone = setLessonCompleted(w4, 's1-t2-w4', false, new Date(NOW.getTime() + 1000))
+    expect(isSpellUnlocked(undone, 'impedimenta')).toBe(false)
   })
 
   it('progress sai dạng → không crash, không mở gì', () => {

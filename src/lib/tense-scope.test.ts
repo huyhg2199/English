@@ -17,7 +17,7 @@ import {
 const flagged = (...args: Parameters<typeof outOfScopeWords>) => outOfScopeWords(...args).length > 0
 
 describe('outOfScopeWords (story 36)', () => {
-  it('13 id: 6 thì T1–T2 rồi 7 chủ điểm T3–T4 theo thứ tự lộ trình (story 37)', () => {
+  it('14 id: 7 thì T1–T2 (story 46 thêm past-continuous cuối) rồi 7 chủ điểm T3–T4 theo thứ tự lộ trình (story 37)', () => {
     expect(T1_T2_SCOPE_IDS).toEqual([
       'present-simple',
       'present-simple-questions',
@@ -25,7 +25,9 @@ describe('outOfScopeWords (story 36)', () => {
       'past-to-be',
       'past-simple',
       'past-simple-irregular',
+      'past-continuous',
     ])
+    expect(TENSE_SCOPE_IDS).toHaveLength(14)
     expect(T3_T4_SCOPE_IDS).toEqual([
       'will',
       'going-to',
@@ -105,9 +107,19 @@ describe('outOfScopeWords (story 36)', () => {
     }
   })
 
-  it('review story 36: quá khứ tiếp diễn, hoàn thành (V3 = V2 / -ed), may / might / shall / ought, \'d, than bị báo ở mọi thì T1–T2', () => {
+  it('review story 36: quá khứ tiếp diễn bị báo ở 6 thì đứng trước past-continuous (story 46); hoàn thành (V3 = V2 / -ed), may / might / shall / ought, \'d, than bị báo ở mọi thì T1–T2', () => {
+    const beforePastContinuous = T1_T2_SCOPE_IDS.filter((id) => id !== 'past-continuous')
+    expect(beforePastContinuous).toHaveLength(6)
+    for (const id of beforePastContinuous) {
+      for (const text of ['She was cooking.', 'Were you sleeping?', "They weren't working."]) {
+        expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+      }
+    }
+    for (const text of ['She was cooking.', 'Were you sleeping?', "They weren't working."]) {
+      expect(outOfScopeWords('past-continuous', text), text).toEqual([])
+    }
     for (const id of T1_T2_SCOPE_IDS) {
-      for (const text of ['She was cooking.', 'Were you sleeping?', "They weren't working.", 'She has worked here.', 'I have made a cake.', 'He had bought it.', 'may', 'might', 'shall', 'ought', "I'd like tea.", 'She is taller than me.']) {
+      for (const text of ['She has worked here.', 'I have made a cake.', 'He had bought it.', 'may', 'might', 'shall', 'ought', "I'd like tea.", 'She is taller than me.']) {
         expect(flagged(id, text), `${id}: ${text}`).toBe(true)
       }
     }
@@ -163,6 +175,19 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
       samples: ['She is taller than me.', 'It is the best day.', 'He is the tallest boy.', 'the most useful app', 'the worst day'],
     },
     {
+      group: 'quá khứ tiếp diễn (was / were + V-ing, when, while)',
+      from: 'past-continuous',
+      // Story 46: dòng "Phạm vi chữ mở" của bảng I/O.
+      samples: [
+        'She was cooking.',
+        'Were you sleeping?',
+        "They weren't working.",
+        'What were you doing at 8 p.m.?',
+        'While I was cooking, he was watching TV.',
+        'I was walking home when it started to rain.',
+      ],
+    },
+    {
       group: 'bị động hiện tại',
       from: 'passive-present',
       samples: [
@@ -212,17 +237,19 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     expect(outOfScopeWords('past-simple', 'The room was cleaned.')).toEqual(['was cleaned'])
   })
 
-  it('nhóm "luôn bị báo" bị báo ở cả 13 thì', () => {
+  it('nhóm "luôn bị báo" bị báo ở cả 14 thì', () => {
     const ALWAYS = [
       'would', 'may', 'might', 'shall', 'ought', 'I would go.', "I'd go home.", "wouldn't", 'He had to wait.',
-      'I used to swim.', 'He had bought it.', "She hadn't finished.", 'She was cooking.', 'The cake was made yesterday.',
+      'I used to swim.', 'He had bought it.', "She hadn't finished.", 'The cake was made yesterday.',
       "They weren't invited.", 'Was the room cleaned?', "Don't worry.",
       "Stop! Don't touch it.", 'I have got to go.', "I've got to go.", 'I gotta go.', 'Were these old cups made in Japan?',
+      // Review story 46: bị động quá khứ tiếp diễn vẫn bị báo khi quá khứ tiếp diễn đã mở.
+      'The room was being cleaned.', 'Were they being helped?',
     ]
     for (const id of TENSE_SCOPE_IDS) for (const text of ALWAYS) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
   })
 
-  it('lượng từ (F15, story 43), liên từ (F16, story 44) không bị báo ở cả 13 thì', () => {
+  it('lượng từ (F15, story 43), liên từ (F16, story 44) không bị báo ở cả 14 thì', () => {
     const LINKERS = new Set(['some', 'any', 'many', 'much', 'lot', 'because', 'so', 'but', 'or', 'and'])
     const texts = [
       'some / many / much / a lot / because / so',
@@ -245,9 +272,9 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     for (const id of TENSE_SCOPE_IDS.filter((x) => x !== 'present-simple')) {
       expect(outOfScopeWords(id, 'How many books do you have?'), id).toEqual([])
     }
-    // Vẫn bị báo: might, had to, "Don't + V", quá khứ tiếp diễn.
+    // Vẫn bị báo: might, had to, "Don't + V" (quá khứ tiếp diễn mở từ past-continuous, story 46).
     for (const id of TENSE_SCOPE_IDS) {
-      for (const text of ['might', 'He had to wait.', "Don't worry.", 'She was cooking.']) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+      for (const text of ['might', 'He had to wait.', "Don't worry."]) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
     }
   })
 
@@ -375,5 +402,30 @@ describe("sContraction (luật 's, story 37)", () => {
     expect(sContraction('He has two brothers.')).toBeUndefined()
     expect(sContraction('We have finished.')).toBeUndefined()
     expect(sContraction('They are going to sell their house.')).toBeUndefined()
+  })
+})
+
+describe('outOfScopeWords past-continuous (story 46)', () => {
+  const OPEN = [
+    'She was cooking.',
+    'Were you sleeping?',
+    "They weren't working.",
+    'What were you doing at 8 p.m.?',
+    'While I was cooking, he was watching TV.',
+    'I was walking home when it started to rain.',
+  ]
+
+  it('6 câu mở của bảng I/O → []', () => {
+    for (const text of OPEN) expect(outOfScopeWords('past-continuous', text), text).toEqual([])
+  })
+
+  it('vẫn báo will, going to, hoàn thành, can, since, than, bị động quá khứ, had to', () => {
+    for (const text of ['I will call you.', 'It is going to rain.', 'She has seen it.', 'I can swim.', 'since Monday', 'She is taller than me.', 'The cake was made yesterday.', 'He had to wait.']) {
+      expect(flagged('past-continuous', text), text).toBe(true)
+    }
+  })
+
+  it('thì đứng trước (past-simple-irregular) vẫn báo quá khứ tiếp diễn', () => {
+    expect(outOfScopeWords('past-simple-irregular', 'She was cooking.')).toEqual(['was cooking'])
   })
 })

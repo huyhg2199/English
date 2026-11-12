@@ -688,6 +688,197 @@ export const PAST_SIMPLE_IRREGULAR: Tense = {
   },
 }
 
+export const PAST_CONTINUOUS: Tense = {
+  id: 'past-continuous',
+  name: 'Quá khứ tiếp diễn (was / were + V-ing)',
+  use: 'Nói việc đang diễn ra ở một lúc trong quá khứ (at 8 p.m. yesterday, at that time), việc đang diễn ra thì có việc ngắn chen vào (when …), hoặc hai việc cùng diễn ra (while …).',
+  timeline: { kind: 'past-progress', label: 'Đang diễn ra ở một lúc trong quá khứ, có việc ngắn chen vào' },
+  signalWords: ['at that time', 'at 8 p.m. yesterday', 'when', 'while'],
+  formulas: [
+    { label: 'Khẳng định', text: 'I / he / she / it was · you / we / they were + V-ing: I was cooking at 8 p.m. yesterday.' },
+    { label: 'Phủ định', text: "S + wasn't / weren't + V-ing: We weren't sleeping at that time." },
+    { label: 'Câu hỏi', text: "Was / Were + S + V-ing …?  → Yes, I was. / No, they weren't.  What were you doing?" },
+    {
+      label: 'when · while',
+      text: 'Việc dài (was / were + V-ing) + when + việc ngắn (V2 / V-ed): She was reading when I called. · While + việc dài, việc khác: While he was driving, I was sleeping.',
+    },
+  ],
+  rules: [
+    "was / were + V-ing: I / he / she / it was working; you / we / they were working. Đuôi -ing viết như hiện tại tiếp diễn (write → writing, run → running). Phủ định và câu hỏi dùng chính was / were, không mượn did: She wasn't working. Were you working?",
+    'Hai việc trong quá khứ: việc dài, đang diễn ra dùng was / were + V-ing; việc ngắn chen vào giữa dùng quá khứ đơn (V2 / V-ed). when thường đi với việc ngắn, nên động từ ngay sau when thường ở quá khứ đơn (I was cooking when my friend called); while thường đi với việc dài (While I was cooking, my son was watching TV).',
+    'Tiếng Việt chỉ thêm “đang”, “lúc đó”; tiếng Anh phải đủ was / were + V-ing (không nói I cooking, I was cook). Việc đã xong, kể lần lượt thì vẫn dùng quá khứ đơn: I cooked dinner and watched TV.',
+  ],
+  examples: [
+    { en: 'I was cooking dinner at 7 p.m. yesterday.', vi: 'Lúc 7 giờ tối qua tôi đang nấu bữa tối.' },
+    { en: "They weren't working at that time.", vi: 'Lúc đó họ đang không làm việc.' },
+    { en: 'Were you sleeping when I called? — Yes, I was.', vi: 'Lúc tôi gọi bạn đang ngủ à? — Ừ.' },
+    { en: 'What were you doing at 9 p.m. last night?', vi: 'Lúc 9 giờ tối qua bạn đang làm gì?' },
+    { en: 'My mother was watching TV when I got home.', vi: 'Lúc tôi về đến nhà, mẹ tôi đang xem TV.' },
+    { en: 'While I was reading, my brother was playing games.', vi: 'Trong lúc tôi đọc sách, em trai tôi đang chơi điện tử.' },
+  ],
+  mistakes: [
+    { wrong: 'I was cook dinner.', right: 'I was cooking dinner.', why: 'Sau was / were là V-ing, không dùng động từ nguyên mẫu.' },
+    {
+      wrong: 'I cooking when you called.',
+      right: 'I was cooking when you called.',
+      why: 'Tiếng Việt chỉ cần “đang”; tiếng Anh phải có was / were trước V-ing.',
+    },
+    {
+      wrong: 'Did you sleeping at 10 p.m.?',
+      right: 'Were you sleeping at 10 p.m.?',
+      why: 'Câu hỏi đưa was / were lên trước chủ ngữ, không mượn did.',
+    },
+    {
+      wrong: 'I was watching TV when she was arriving.',
+      right: 'I was watching TV when she arrived.',
+      why: 'Muốn nói cô ấy đến (việc ngắn) chen vào lúc tôi đang xem TV thì dùng quá khứ đơn arrived; was / were + V-ing dành cho việc dài, đang diễn ra.',
+    },
+    { wrong: 'They was playing football.', right: 'They were playing football.', why: 'you / we / they và danh từ số nhiều đi với were.' },
+  ],
+  dialogues: [yg('what were you doing'), yg('i was sleeping when')],
+  spellId: 'impedimenta',
+  ruleCards: [
+    {
+      id: 'past-continuous-rule-1',
+      cloze: 'At 6 p.m. yesterday, my parents ___ (drive) home.',
+      answer: 'were driving',
+      vi: 'Việc đang diễn ra ở một lúc trong quá khứ: was / were + V-ing (my parents = they → were; drive bỏ e → driving).',
+    },
+    {
+      id: 'past-continuous-rule-2',
+      cloze: 'Lan ___ (not / listen) to the teacher. She was looking at her phone.',
+      answer: "wasn't listening",
+      vi: "Phủ định: wasn't / weren't + V-ing, không mượn didn't.",
+    },
+    {
+      id: 'past-continuous-rule-3',
+      cloze: '___ your children sleeping when you got home?',
+      answer: 'Were',
+      vi: 'Hỏi: Was / Were + S + V-ing …? Không mượn Did (không nói Did they sleeping…?).',
+    },
+    {
+      id: 'past-continuous-rule-4',
+      cloze: 'We were walking in the park when we ___ (see) our teacher.',
+      answer: 'saw',
+      vi: 'Việc dài: was / were + V-ing; việc ngắn chen vào (sau when): quá khứ đơn (see – saw).',
+    },
+  ],
+  // Phần luyện có bậc (story 46): phạm vi chữ `past-continuous` (Sân ga, hiện tại đơn / tiếp diễn, quá khứ đơn với was / were,
+  // -ed, did, V2 của bảng 50 động từ và was / were + V-ing; không V3, will, modal, bị động; xem `src/lib/tense-scope.ts`);
+  // đề không trùng đề quiz s1-t2-w4.
+  practice: {
+    worked: {
+      en: 'We were having dinner when my father came home.',
+      vi: 'Lúc bố tôi về nhà, chúng tôi đang ăn tối.',
+      noteVi:
+        'Ăn tối là việc dài, đang diễn ra → were having (we đi với were). Bố về nhà là việc ngắn chen vào → quá khứ đơn came.',
+      timeline: { kind: 'past-progress', label: 'Đang ăn tối thì bố về' },
+    },
+    faded: {
+      en: 'At 9 p.m. last night, the children ___ (watch) a movie.',
+      answer: 'were watching',
+      vi: 'Lúc 9 giờ tối qua bọn trẻ đang xem phim.',
+      hintVi: 'the children là số nhiều → were; thêm -ing vào watch.',
+    },
+    check: {
+      items: [
+        {
+          id: 'past-continuous-c1',
+          kind: 'type',
+          prompt: 'My sister ___ (study) at 11 p.m. last night.',
+          answer: 'was studying',
+          hintVi: 'my sister = she → was; study thêm -ing (giữ y).',
+          explanationVi:
+            'Lúc 11 giờ tối qua việc học đang diễn ra → was / were + V-ing. my sister = she nên dùng was; study thêm -ing thành studying (không đổi y).',
+        },
+        {
+          id: 'past-continuous-c2',
+          kind: 'choice',
+          prompt: 'Tom was walking to school when he ___ his teacher.',
+          options: ['met', 'was meeting', 'meet'],
+          answer: 0,
+          hintVi: 'Đi bộ là việc dài; gặp thầy là việc dài hay ngắn?',
+          explanationVi:
+            'Đi bộ là việc dài (was walking). Gặp là việc ngắn chen vào → quá khứ đơn met (meet – met), không dùng was meeting. meet là hiện tại, không hợp với câu quá khứ.',
+        },
+        {
+          id: 'past-continuous-c3',
+          kind: 'type',
+          prompt: 'They ___ (not / play) football at that time.',
+          answer: "weren't playing",
+          hintVi: "they → were; phủ định thêm not: weren't + V-ing.",
+          explanationVi:
+            "Đang (lúc đó) → weren't + V-ing, không mượn didn't: They weren't (were not) playing. they đi với were.",
+        },
+        {
+          id: 'past-continuous-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: He was working at that time.',
+          answer: 'Was he working at that time?',
+          hintVi: 'Chỉ cần đưa was lên trước he, working giữ nguyên.',
+          explanationVi:
+            'Câu hỏi quá khứ tiếp diễn: đưa was lên trước he, không mượn did: Was he working at that time? (không nói Did he working…?).',
+        },
+        {
+          id: 'past-continuous-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Trong lúc mẹ tôi đang nấu ăn, tôi đang dọn phòng. (my mother, while, cook, clean my room)',
+          answer: 'While my mother was cooking, I was cleaning my room.',
+          accept: [
+            'I was cleaning my room while my mother was cooking.',
+            'My mother was cooking while I was cleaning my room.',
+            'While I was cleaning my room, my mother was cooking.',
+          ],
+          hintVi: 'Hai việc dài cùng diễn ra: cả hai đều was + V-ing; while đứng trước một việc.',
+          explanationVi:
+            'Hai việc cùng diễn ra trong quá khứ: cả hai dùng was / were + V-ing (my mother → was, I → was). while đặt trước một việc (việc nào cũng được, vì cả hai đều đang diễn ra); đảo hai vế cũng đúng. "While my mother cooked, I cleaned my room" là kể hai việc đã xong, thiếu nghĩa "đang".',
+        },
+        {
+          id: 'past-continuous-c6',
+          kind: 'type',
+          prompt: 'Was Lan swimming when you saw her? — No, she ___.',
+          answer: "wasn't",
+          hintVi: 'Hỏi bằng Was thì trả lời ngắn cũng dùng was.',
+          explanationVi: "Trả lời ngắn dùng lại was (vì she) + not, không lặp lại swimming: No, she wasn't. Không trả lời bằng didn't.",
+        },
+      ],
+      easier: [
+        {
+          id: 'past-continuous-e1',
+          kind: 'choice',
+          prompt: 'We ___ lunch at that time.',
+          options: ['were having', 'was having', 'are having'],
+          answer: 0,
+          hintVi: 'we đi với was hay were? at that time là lúc nào?',
+          explanationVi:
+            'Câu này nói về một lúc đã qua (at that time = lúc đó) nên không dùng are having. we đi với were: We were having lunch. was dùng cho I / he / she / it.',
+        },
+        {
+          id: 'past-continuous-e2',
+          kind: 'choice',
+          prompt: 'He ___ TV when I called.',
+          options: ['was watching', 'were watching', 'watching'],
+          answer: 0,
+          hintVi: 'he đi với was; cần đủ was + V-ing.',
+          explanationVi: 'Xem TV là việc dài đang diễn ra lúc tôi gọi → was watching (he đi với was). Thiếu was ("watching") là sai.',
+        },
+      ],
+    },
+    apply: {
+      promptVi: 'Nói hoặc viết 3 câu: lúc 8 giờ tối qua bạn đang làm gì, người nhà bạn đang làm gì, và một việc chen vào (… when …).',
+      sampleEn: 'At 8 p.m. yesterday I was reading a book. My parents were watching TV. I was reading when my friend called.',
+      speak: [
+        { id: 'past-continuous-say-1', text: 'I was working at 8 p.m. yesterday.', vi: 'Lúc 8 giờ tối qua tôi đang làm việc.' },
+        {
+          id: 'past-continuous-say-2',
+          text: 'My son was doing his homework when I got home.',
+          vi: 'Lúc tôi về đến nhà, con trai tôi đang làm bài tập.',
+        },
+      ],
+    },
+  },
+}
+
 // ---------------------------------------------------------------- T3
 
 export const WILL: Tense = {
@@ -1837,14 +2028,16 @@ export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS], cho
 export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE], choices: [SUBJECT_QUESTIONS] }
 export const GRAMMAR_T2_W3: GrammarContent = { tenses: [PAST_SIMPLE_IRREGULAR], irregularVerbs: IRREGULAR_VERBS }
 export const GRAMMAR_T2_W4: GrammarContent = {
-  tenses: [],
+  // Story 46: quá khứ tiếp diễn đưa vào Chặng 1 (quyết định ngày 2026-11-11), đứng trước phần ôn tập T2.
+  tenses: [PAST_CONTINUOUS],
   review: {
     summary: [
       'Hiện tại tiếp diễn: am / is / are + V-ing cho việc đang diễn ra (I am working now).',
       "Quá khứ của to be: was / were; hỏi và phủ định không mượn did (Were you…? I wasn't…).",
       "Quá khứ đơn có quy tắc: V-ed cho mọi chủ ngữ; hỏi / phủ định dùng did / didn't + nguyên mẫu.",
       'Quá khứ đơn bất quy tắc: học thuộc V2 (went, saw, bought); sau did vẫn là V1.',
-      'Không trộn: không nói "I am work", "I didn\'t went", "Did you watched", "Did you be".',
+      'Quá khứ tiếp diễn: was / were + V-ing cho việc đang diễn ra ở một lúc trong quá khứ; việc ngắn chen vào dùng quá khứ đơn (I was cooking when you called).',
+      'Không trộn: không nói "I am work", "I didn\'t went", "Did you watched", "Did you be", "I was cook".',
     ],
     note: 'Mini test 10 câu ôn cả 4 tuần T2. Câu sai tự vào Sổ lỗi sai, làm lại bao nhiêu lần cũng được.',
     quizId: 'mini-t2',

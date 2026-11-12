@@ -277,6 +277,11 @@ const STAGE_1_OVERVIEW_TENSES: PronunciationBlock = {
     { text: 'Hiện tại tiếp diễn: am / is / are + V-ing.', lessonId: 's1-t2-w1', sectionId: 'grammar' },
     { text: "Quá khứ đơn: was / were; động từ có quy tắc V-ed, did / didn't, Wh + did.", lessonId: 's1-t2-w2', sectionId: 'grammar' },
     { text: 'Động từ bất quy tắc: went, saw, bought (bảng 50 động từ).', lessonId: 's1-t2-w3', sectionId: 'grammar' },
+    {
+      text: 'Quá khứ tiếp diễn: was / were + V-ing; việc dài + when + việc ngắn (V2 / V-ed), while + việc dài.',
+      lessonId: 's1-t2-w4',
+      sectionId: 'grammar',
+    },
     { text: "Tương lai will: will / won't + nguyên mẫu.", lessonId: 's1-t3-w1', sectionId: 'grammar' },
     { text: 'be going to (gonna) cho kế hoạch.', lessonId: 's1-t3-w2', sectionId: 'grammar' },
     { text: 'Hiện tại hoàn thành: have / has + V3, ever / never.', lessonId: 's1-t3-w3', sectionId: 'grammar' },
@@ -287,8 +292,8 @@ const STAGE_1_OVERVIEW_TENSES: PronunciationBlock = {
 }
 
 /**
- * Bảng "mỗi thì một dòng" + luật chung trợ động từ (story 39). Chỉ thì của Chặng 1 đã có (không quá khứ tiếp diễn); mỗi
- * dòng link về đoạn Ngữ pháp của bài chứa thì. Đặt trong đoạn Ôn tổng vì s1-t4-w4 không có đoạn Ngữ pháp.
+ * Bảng "mỗi thì một dòng" + luật chung trợ động từ (story 39). Chỉ thì của Chặng 1 đã có (story 46 thêm quá khứ tiếp diễn
+ * ở s1-t2-w4); mỗi dòng link về đoạn Ngữ pháp của bài chứa thì. Đặt trong đoạn Ôn tổng vì s1-t4-w4 không có đoạn Ngữ pháp.
  */
 const STAGE_1_TENSE_TABLE: PronunciationBlock = {
   kind: 'tense-table',
@@ -300,6 +305,7 @@ const STAGE_1_TENSE_TABLE: PronunciationBlock = {
     { tenseId: 'present-continuous', name: 'Hiện tại tiếp diễn', aux: 'am / is / are', affirmative: 'He is cooking.', negative: "He isn't cooking.", question: 'Is he cooking?', lessonId: 's1-t2-w1' },
     { tenseId: 'past-to-be', name: 'to be quá khứ', aux: 'was / were', affirmative: 'It was cold.', negative: "It wasn't cold.", question: 'Was it cold?', lessonId: 's1-t2-w2' },
     { tenseId: 'past-simple', name: 'Quá khứ đơn', aux: 'did (mượn)', affirmative: 'They watched TV.', negative: "They didn't watch TV.", question: 'Did they watch TV?', lessonId: 's1-t2-w2' },
+    { tenseId: 'past-continuous', name: 'Quá khứ tiếp diễn', aux: 'was / were', affirmative: 'She was cooking.', negative: "She wasn't cooking.", question: 'Was she cooking?', lessonId: 's1-t2-w4' },
     { tenseId: 'will', name: 'Tương lai will', aux: 'will', affirmative: 'He will call you.', negative: "He won't call you.", question: 'Will he call you?', lessonId: 's1-t3-w1' },
     { tenseId: 'going-to', name: 'be going to', aux: 'am / is / are', affirmative: 'She is going to travel.', negative: "She isn't going to travel.", question: 'Is she going to travel?', lessonId: 's1-t3-w2' },
     { tenseId: 'present-perfect', name: 'Hiện tại hoàn thành', aux: 'have / has', affirmative: 'They have eaten.', negative: "They haven't eaten.", question: 'Have they eaten?', lessonId: 's1-t3-w3' },

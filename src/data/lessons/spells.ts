@@ -55,6 +55,15 @@ export const SPELLS: readonly Spell[] = [
     grammarEn: 'the past simple with common irregular verbs (went, saw, had, bought)',
   },
   {
+    id: 'impedimenta',
+    name: 'Impedimenta',
+    description:
+      'Chặn ngang một việc đang diễn ra: was / were + V-ing cho việc dài, quá khứ đơn cho việc ngắn chen vào (when), while cho hai việc cùng lúc.',
+    tenseId: 'past-continuous',
+    lessonId: 's1-t2-w4',
+    grammarEn: 'the past continuous (was / were + -ing, with when and while)',
+  },
+  {
     id: 'protego',
     name: 'Protego',
     description: 'Tấm khiên cho lời hứa và dự đoán: will + động từ nguyên mẫu.',

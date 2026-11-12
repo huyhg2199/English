@@ -31,6 +31,13 @@ describe('nguồn thẻ quy tắc (story 24, 33, 38)', () => {
     })
   })
 
+  it('thẻ quá khứ tiếp diễn (story 46): nhãn "T2 tuần 4", link "Xem lại bài" về Ngữ pháp s1-t2-w4', () => {
+    expect(ruleSource({ lessonId: 's1-t2-w4' })).toEqual({
+      label: 'T2 tuần 4',
+      link: { to: '/roadmap/lesson/s1-t2-w4/grammar', text: 'Xem lại bài' },
+    })
+  })
+
   it('thẻ động từ bất quy tắc (story 38): nhãn "Động từ bất quy tắc", link "Xem lại bảng động từ" về Ngữ pháp s1-t2-w3', () => {
     expect(ruleSource({ lessonId: 's1-t2-w3', verbGroup: 'Rất thông dụng, mỗi từ một kiểu: học thuộc' })).toEqual({
       label: 'Động từ bất quy tắc',

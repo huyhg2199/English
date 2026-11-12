@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { MistakeTag } from '@/data/questions'
+import { getQuestion, type MistakeTag } from '@/data/questions'
 import { CURRENT_VERSION, type Store } from '@/lib/storage'
 
 import {
@@ -12,7 +12,7 @@ import {
   mergeLessonInvites,
   readLessonInvites,
 } from './lesson-invite'
-import { recordMistake, type MistakeSource } from './mistakes'
+import { readMistakes, recordMistake, type MistakeSource } from './mistakes'
 import { recordAttempt } from './quiz'
 
 const DAY = 24 * 60 * 60 * 1000
@@ -147,6 +147,21 @@ describe('lessonReviewInvite — I/O Matrix (story 41)', () => {
     expect(lessonReviewInvite(u, NOW)?.lessonId).toBe('s1-t3-w1')
     // "Để sau" bài đứng đầu → mời bài kế.
     expect(lessonReviewInvite(dismissLessonInvite(s, 's1-t3-w1', NOW), NOW)?.lessonId).toBe('s1-t2-w1')
+  })
+
+  it('story 46 (AC 4): câu gõ quá khứ tiếp diễn q-s1-t2-w4-12 sai vào Sổ lỗi và tính vào lời mời vì nhãn thì', () => {
+    const q12 = getQuestion('q-s1-t2-w4-12')!
+    const q07 = getQuestion('q-s1-t2-w4-07')!
+    expect(q12.tag).toBe('thì')
+    let s = recordMistake(empty(), q12, "didn't watch", ago(2))
+    expect(readMistakes(s)['q-s1-t2-w4-12']).toMatchObject({ tag: 'thì', lessonId: 's1-t2-w4', sectionId: 'grammar' })
+    expect(lessonReviewInvite(s, NOW)).toBeNull()
+    s = recordMistake(s, q07, 'took', ago(1))
+    expect(lessonReviewInvite(s, NOW)).toEqual({
+      lessonId: 's1-t2-w4',
+      questionIds: ['q-s1-t2-w4-07', 'q-s1-t2-w4-12'],
+      sectionId: 'grammar',
+    })
   })
 })
 
