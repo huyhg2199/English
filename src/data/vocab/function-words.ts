@@ -32,7 +32,7 @@ const WALL_WORDS = [
   'of', 'to', 'for', 'with', 'as', 'by', 'about', 'into', 'over', 'after', 'before', 'through', 'around', 'during',
   'without', 'against', 'until', 'within',
   // từ hạn định
-  'all', 'which', 'some', 'no', 'any', 'many', 'such', 'both', 'another', 'each', 'few', 'enough',
+  'all', 'which', 'no', 'such', 'both', 'another', 'each', 'few', 'enough',
   // liên từ
   'and', 'but', 'or', 'if', 'because', 'while', 'though', 'whether', 'although',
   // còn lại
@@ -64,12 +64,15 @@ export const FUNCTION_WORD_GATES: Readonly<Record<string, FunctionWordGate>> = O
   'ngsl-how': brick('F14', ['how']),
   'ngsl-from': brick('F14', ['from']),
   'ngsl-much': brick('F14', ['much']),
-  // F15 There is/are + giới từ nơi chốn
+  // F15 There is/are, lượng từ + giới từ nơi chốn (some, any, many dời từ tường về F15 ở story 43)
   'ngsl-there': brick('F15', ['there']),
   'ngsl-in': brick('F15', ['in']),
   'ngsl-on': brick('F15', ['on']),
   'ngsl-under': brick('F15', ['under']),
   'ngsl-between': brick('F15', ['between']),
+  'ngsl-some': brick('F15', ['some']),
+  'ngsl-any': brick('F15', ['any']),
+  'ngsl-many': brick('F15', ['many']),
   // F16 have/has
   'ngsl-have': brick('F16', ['have', 'has', 'had']),
   // F18 at + trạng từ tần suất

@@ -25,9 +25,9 @@ const withRequires = (base: Question, requires: readonly string[]): Question => 
 })
 
 describe('requires: khai báo của ngân hàng câu', () => {
-  it('42 câu T1 (24 câu cũ + 18 câu gõ story 36) và 42 câu Sân ga đều khai báo requires hợp lệ', () => {
+  it('42 câu T1 (24 câu cũ + 18 câu gõ story 36) và 44 câu Sân ga (story 43) đều khai báo requires hợp lệ', () => {
     expect(T1_QUESTIONS).toHaveLength(42)
-    expect(FOUNDATION_QUESTIONS).toHaveLength(42)
+    expect(FOUNDATION_QUESTIONS).toHaveLength(44)
     for (const question of [...T1_QUESTIONS, ...FOUNDATION_QUESTIONS]) {
       expect(question.requires, question.id).toBeDefined()
       expect(requiresViolations(question), question.id).toEqual([])

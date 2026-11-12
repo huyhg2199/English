@@ -900,7 +900,8 @@ describe('hàng C–D có nội dung (story 26, getBrick thật)', () => {
     expect(sessionPlan(store, hasBrickContent)).toMatchObject({ mode: 'foundation', brickId: 'F13', review: false })
   })
 
-  it('xong lần lượt F13, F14, F15, F16, F18 → khoá 75 → 74 → 67 → 62 → 61 → 56; xong thêm F17 thì qua tường, còn khoá 15', () => {
+  // F15 mở 8 hư từ từ story 43 (thêm some, any, many vốn là cổng tường).
+  it('xong lần lượt F13, F14, F15, F16, F18 → khoá 75 → 74 → 67 → 59 → 58 → 53; xong thêm F17 thì qua tường, còn khoá 15', () => {
     let store = doneAll(ROW_AB)
     const sizes = [lockedNewWordIds(store).size]
     for (const [i, id] of (['F13', 'F14', 'F15', 'F16', 'F18'] as const).entries()) {
@@ -909,7 +910,7 @@ describe('hàng C–D có nội dung (story 26, getBrick thật)', () => {
       // Từ chủ đề của viên vừa học lên đầu từ mới.
       expect(preferredNewWordIds(store, themeWordIdsOf).slice(0, 5), id).toEqual([...themeWordIdsOf(id)])
     }
-    expect(sizes).toEqual([75, 74, 67, 62, 61, 56])
+    expect(sizes).toEqual([75, 74, 67, 59, 58, 53])
     expect(readFoundationCompletedAt(store)).toBeNull()
 
     store = completeBrick(store, 'F17', day(10))
@@ -998,5 +999,69 @@ describe('thẻ quy tắc F06: số, thứ, tháng (story 34)', () => {
     for (let i = 9; i < 50; i++) many[`rule:f06-${i}`] = c
     const heavy: Store = { ...base, data: { ...base.data, srs: { cards: many } } }
     expect(newPerDayFor(heavy, NOW, ruleCardsOf)).toEqual({ count: NEW_WORDS_FOUNDATION, heavyReview: false })
+  })
+})
+
+describe('F15 lượng từ, There is phủ định / câu hỏi (story 43)', () => {
+  const UP_TO_F14: BrickId[] = [
+    'F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12', 'F13', 'F14',
+  ]
+  const F15_RULES = Array.from({ length: 6 }, (_, i) => `rule:f15-${i + 1}`)
+  const QUANTIFIER_IDS = ['ngsl-some', 'ngsl-any', 'ngsl-many']
+  const learned = (list: readonly BrickId[], at: Date = day(9)) => list.reduce((s, id) => completeBrick(s, id, at), empty())
+
+  it('xong F01–F15 → rule:f15-1 … -6 theo thứ tự, đứng cuối; some / any / many hết khoá', () => {
+    const store = learned([...UP_TO_F14, 'F15'])
+    const rules = ruleStudyWords(store, ruleCardsOf).map((r) => r.id)
+    expect(rules.filter((id) => id.startsWith('rule:f15-'))).toEqual(F15_RULES)
+    expect(rules.slice(-6)).toEqual(F15_RULES)
+    const locked = lockedNewWordIds(store)
+    for (const id of QUANTIFIER_IDS) expect(locked.has(id), id).toBe(false)
+    expect(locked.has('ngsl-much')).toBe(false)
+    // F15 xong hôm nay: 6 thẻ mới đứng sau từ mới, không chiếm quota.
+    const queue = fullSession(learned([...UP_TO_F14, 'F15'], day(10, 8))).queue
+    const f15 = queue.filter((i) => i.word.id.startsWith('rule:f15-'))
+    expect(f15.map((i) => [i.word.id, i.kind])).toEqual(F15_RULES.map((id) => [id, 'new']))
+    expect(queue.filter((i) => !i.word.id.startsWith('rule:') && i.kind === 'new')).toHaveLength(NEW_WORDS_FOUNDATION)
+  })
+
+  it('mới xong F01–F14 → some / any / many vẫn khoá (much đã mở từ F14)', () => {
+    const locked = lockedNewWordIds(learned(UP_TO_F14))
+    for (const id of QUANTIFIER_IDS) expect(locked.has(id), id).toBe(true)
+    expect(locked.has('ngsl-much')).toBe(false)
+  })
+
+  it('hàng C qua kiểm tra hoặc bỏ qua Sân ga, chưa học F15 → some / any / many mở, không có thẻ rule:f15-*', () => {
+    for (const store of [markRowTested(empty(), 'C', 7, 8, day(9)), skipFoundation(empty(), day(9))]) {
+      const locked = lockedNewWordIds(store)
+      for (const id of QUANTIFIER_IDS) expect(locked.has(id), id).toBe(false)
+      expect(ruleStudyWords(store, ruleCardsOf).some((r) => r.id.startsWith('rule:f15-'))).toBe(false)
+    }
+  })
+
+  it('đã có rule:f15-1, -2 (trước story 43) → thêm 4 thẻ mới 3–6, thẻ 1–2 giữ lịch cũ', () => {
+    const base = learned([...UP_TO_F14, 'F15'], day(1))
+    const others = ruleStudyWords(base, ruleCardsOf).map((r) => r.id).filter((id) => !id.startsWith('rule:f15-'))
+    const store = withFutureCards(base, [...others, 'rule:f15-1', 'rule:f15-2', ...getBrick('F01')!.themeWordIds])
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const f15 = queue.filter((i) => i.word.id.startsWith('rule:f15-'))
+    expect(f15.map((i) => [i.word.id, i.kind])).toEqual(F15_RULES.slice(2).map((id) => [id, 'new']))
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of ['rule:f15-1', 'rule:f15-2']) expect(cards[id], id).toEqual(before[id])
+    for (const id of F15_RULES.slice(2)) expect(cards[id], id).toBeDefined()
+  })
+
+  it('thẻ mồ côi rule:f15-7 (F15 đã học) không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const due = day(9).toISOString()
+    const c = { due, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: due, known: false, updatedAt: due }
+    const base = learned([...UP_TO_F14, 'F15'])
+    const store: Store = { ...base, data: { ...base.data, srs: { cards: { 'rule:f15-7': c } } } }
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:f15-7')).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(Object.keys(readSrs(store).cards)).toEqual(['rule:f15-7'])
   })
 })

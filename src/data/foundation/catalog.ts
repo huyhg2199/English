@@ -136,9 +136,11 @@ export const BRICKS: readonly BrickMeta[] = [
     id: 'F15',
     row: 'C',
     title: 'There is/are + giới từ nơi chốn',
-    minutes: 10,
-    goalVi: 'Tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1)',
-    teaches: ['there-is-are', 'prepositions-of-place'],
+    minutes: 13,
+    goalVi:
+      'There is/are đủ 3 dạng (There isn\'t…, Is there…? Yes, there is), some/any, many/much/a lot of, ' +
+      'How many/How much; tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1)',
+    teaches: ['there-is-are', 'prepositions-of-place', 'there-negative-questions', 'quantifiers'],
     uses: ['be-affirmative', 'plurals', 'articles', 'countable-uncountable'],
   },
   {

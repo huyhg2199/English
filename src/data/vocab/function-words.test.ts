@@ -14,12 +14,15 @@ const entries = Object.entries(FUNCTION_WORD_GATES)
 const FUNCTION_POS = new Set(['pronoun', 'preposition', 'conjunction', 'determiner'])
 
 describe('FUNCTION_WORD_GATES — cổng hư từ', () => {
-  it('tổng 86: 30 cổng viên, 15 cổng bài, 41 cổng tường', () => {
+  it('tổng 86: 33 cổng viên, 15 cổng bài, 38 cổng tường (some / any / many dời về F15, story 43)', () => {
     expect(entries).toHaveLength(86)
     const kinds = entries.map(([, g]) => (g.opensAfter === 'wall' ? 'wall' : 'brick' in g.opensAfter ? 'brick' : 'lesson'))
-    expect(kinds.filter((k) => k === 'brick')).toHaveLength(30)
+    expect(kinds.filter((k) => k === 'brick')).toHaveLength(33)
     expect(kinds.filter((k) => k === 'lesson')).toHaveLength(15)
-    expect(kinds.filter((k) => k === 'wall')).toHaveLength(41)
+    expect(kinds.filter((k) => k === 'wall')).toHaveLength(38)
+    for (const id of ['ngsl-some', 'ngsl-any', 'ngsl-many']) expect(functionWordGate(id)?.opensAfter, id).toEqual({ brick: 'F15' })
+    // much giữ cổng F14 (How much hỏi giá): dời ra sau sẽ đóng một cổng đã mở.
+    expect(functionWordGate('ngsl-much')?.opensAfter).toEqual({ brick: 'F14' })
   })
 
   it('mỗi id có trong words.json, thuộc NGSL hạng ≤ 300 và có dữ liệu AI', () => {

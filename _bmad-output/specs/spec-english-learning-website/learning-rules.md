@@ -26,7 +26,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 | F12 this/that + 's | B | 6 | this/that/these/those, "Huy's phone"; tránh "this books" |
 | F13 to be khẳng định | C · Câu đầu tiên | 10 | am/is/are + danh từ/tính từ/nơi chốn; giới thiệu bản thân bằng 3 câu |
 | F14 to be phủ định, hỏi + từ để hỏi | C | 10 | isn't/aren't, câu hỏi, trả lời ngắn, what/where/who/how old/how much |
-| F15 There is/are + giới từ nơi chốn | C | 10 | Tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1) |
+| F15 There is/are + giới từ nơi chốn | C | 13 | There is/are đủ 3 dạng (There isn't…, Is there…? Yes, there is), some/any, many/much/a lot of, How many/How much; tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1) |
 | F16 have/has | C | 6 | Nói sở hữu, has với he/she/it, "I am 25" |
 | F17 Thì là gì | D · Cầu sang Năm 1 | 8 | Nhận ra go/goes/going/went/gone trên trục thời gian; chỉ cần nhận ra |
 | F18 at/in/on + trạng từ tần suất | D | 8 | at + giờ, on + thứ, in + tháng; always/usually… đứng đâu; kể lịch một ngày |

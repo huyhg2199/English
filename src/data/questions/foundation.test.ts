@@ -65,7 +65,7 @@ const rowCdForbiddenIn = (text: string) =>
 /** Hàng C chỉ dùng F01–F16: không giới từ thời gian / trạng từ tần suất của F18, không going / gone của F17. */
 const ROW_C_LATER = new Set(['at', 'every', 'always', 'never', 'often', 'going', 'gone'])
 
-const ROW_C_IDS = ['q-f13-01', 'q-f13-02', 'q-f13-03', 'q-f14-01', 'q-f14-02', 'q-f15-01', 'q-f15-02', 'q-f15-03', 'q-f16-01', 'q-f16-02']
+const ROW_C_IDS = ['q-f13-01', 'q-f13-02', 'q-f13-03', 'q-f14-01', 'q-f14-02', 'q-f15-01', 'q-f15-02', 'q-f15-03', 'q-f15-04', 'q-f15-05', 'q-f16-01', 'q-f16-02']
 const ROW_D_IDS = ['q-f17-01', 'q-f17-02', 'q-f17-03', 'q-f17-04', 'q-f17-05', 'q-f18-01', 'q-f18-02', 'q-f18-03', 'q-f18-04', 'q-f18-05']
 
 const ROW_B_IDS = ['q-f07-01', 'q-f07-02', 'q-f08-01', 'q-f08-02', 'q-f09-01', 'q-f10-01', 'q-f10-02', 'q-f11-01', 'q-f11-02', 'q-f12-01']
@@ -75,8 +75,8 @@ function rowOf(lessonId: string): RowId | undefined {
 }
 
 describe('ngân hàng câu Sân ga', () => {
-  it('42 câu, id duy nhất (cả với QUESTION_BANK), dạng q-fNN-NN khớp lessonId', () => {
-    expect(FOUNDATION_QUESTIONS).toHaveLength(42)
+  it('44 câu, id duy nhất (cả với QUESTION_BANK), dạng q-fNN-NN khớp lessonId', () => {
+    expect(FOUNDATION_QUESTIONS).toHaveLength(44)
     const ids = [...QUESTION_BANK, ...FOUNDATION_QUESTIONS].map((q) => q.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const q of FOUNDATION_QUESTIONS) {
@@ -130,8 +130,8 @@ describe('ngân hàng câu Sân ga', () => {
       expect(quiz.size).toBe(8)
     })
 
-    it('hàng A 12 câu (story 34), B–D 10 câu; ≤ 2 câu nghe, mỗi viên ≥ minPerLesson câu không phải câu nghe', () => {
-      expect(of).toHaveLength(row === 'A' ? 12 : 10)
+    it('hàng A 12 câu (story 34), C 12 câu (story 43), B, D 10 câu; ≤ 2 câu nghe, mỗi viên ≥ minPerLesson câu không phải câu nghe', () => {
+      expect(of).toHaveLength(row === 'A' || row === 'C' ? 12 : 10)
       expect(of.filter((q) => q.kind === 'listening').length).toBeLessThanOrEqual(2)
       for (const id of quiz.lessonIds) {
         const n = of.filter((q) => q.lessonId === id && q.kind !== 'listening').length
@@ -186,19 +186,19 @@ describe('ngân hàng câu Sân ga', () => {
     expect(getQuestion('q-f12-01')?.answer).toBe('these')
   })
 
-  it('hàng C–D giữ đủ 20 id (Sổ lỗi tham chiếu theo id), đúng thứ tự, getQuestion tra được', () => {
+  it('hàng C–D giữ đủ 22 id (Sổ lỗi tham chiếu theo id), đúng thứ tự, getQuestion tra được', () => {
     expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'C').map((q) => q.id)).toEqual(ROW_C_IDS)
     expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'D').map((q) => q.id)).toEqual(ROW_D_IDS)
     for (const id of [...ROW_C_IDS, ...ROW_D_IDS]) expect(getQuestion(id)?.id, id).toBe(id)
   })
 
-  it('hàng C: F13 3, F14 2, F15 3, F16 2; hàng D: F17 5, F18 5; mỗi hàng đúng 2 câu nghe', () => {
+  it('hàng C: F13 3, F14 2, F15 5, F16 2; hàng D: F17 5, F18 5; mỗi hàng đúng 2 câu nghe', () => {
     const count = (row: RowId) => {
       const out: Record<string, number> = {}
       for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === row)) out[q.lessonId] = (out[q.lessonId] ?? 0) + 1
       return out
     }
-    expect(count('C')).toEqual({ f13: 3, f14: 2, f15: 3, f16: 2 })
+    expect(count('C')).toEqual({ f13: 3, f14: 2, f15: 5, f16: 2 })
     expect(count('D')).toEqual({ f17: 5, f18: 5 })
     for (const row of ['C', 'D'] as const) {
       expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === row && q.kind === 'listening'), row).toHaveLength(2)
@@ -262,6 +262,32 @@ describe('ngân hàng câu Sân ga', () => {
     expect(q2.prompt).toBe('Ngày mùng 2 trong tháng (2nd) đọc là gì?')
     expect(q2.answer).toBe('second')
     expect(q2.options).toEqual(['second', 'two', 'twoth', 'twice'])
+  })
+
+  it('hàng C: F15 có q-f15-01 … -05; 01–03 giữ nguyên (Sổ lỗi), 04 / 05 tag từ loại, khai báo quantifiers (story 43)', () => {
+    const f15 = FOUNDATION_QUESTIONS.filter((q) => q.lessonId === 'f15')
+    expect(f15.map((q) => q.id)).toEqual(['q-f15-01', 'q-f15-02', 'q-f15-03', 'q-f15-04', 'q-f15-05'])
+    const q1 = getQuestion('q-f15-01') as ChoiceQuestion
+    expect([q1.prompt, q1.answer]).toEqual(['There ___ two chairs in the room.', 'are'])
+    expect(q1.options).toEqual(['are', 'is', 'am', 'be'])
+    const q2 = getQuestion('q-f15-02') as ChoiceQuestion
+    expect([q2.prompt, q2.answer]).toEqual(['The book is ___ the bag. (Quyển sách ở trong túi.)', 'in'])
+    expect(q2.options).toEqual(['in', 'on', 'under', 'between'])
+    const q3 = getQuestion('q-f15-03') as ChoiceQuestion
+    expect([q3.kind, q3.audioText, q3.answer]).toEqual([
+      'listening',
+      'There is a cat under the chair.',
+      'There is a cat under the chair.',
+    ])
+    for (const id of ['q-f15-04', 'q-f15-05']) {
+      const q = getQuestion(id) as ChoiceQuestion
+      expect(q.kind, id).toBe('choice')
+      expect(q.tag, id).toBe('từ loại')
+      expect(q.sectionId, id).toBe('grammar')
+      expect(q.requires, id).toContain('quantifiers')
+    }
+    expect(getQuestion('q-f15-04')!.answer).toBe('any')
+    expect(getQuestion('q-f15-05')!.answer).toBe('much')
   })
 
   it('getQuestion tra được câu Sân ga và câu cũ', () => {

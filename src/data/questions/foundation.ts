@@ -4,8 +4,9 @@ import type { QuizDef } from './index'
 import type { ChoiceQuestion } from './types'
 
 /**
- * Ngân hàng câu Sân ga 9¾ (story 20): 42 câu cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng (`quiz-f-a` … `quiz-f-d`,
- * 8 câu mỗi lần). Hàng A 12 câu (F06 có 4: số, thứ tự, thứ, ngày tháng, story 34), hàng B–D 10 câu. Tự soạn, không chép đề.
+ * Ngân hàng câu Sân ga 9¾ (story 20): 44 câu cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng (`quiz-f-a` … `quiz-f-d`,
+ * 8 câu mỗi lần). Hàng A 12 câu (F06 có 4: số, thứ tự, thứ, ngày tháng, story 34), hàng C 12 câu (F15 có 5: thêm any và
+ * How much, story 43), hàng B, D 10 câu. Tự soạn, không chép đề.
  *
  * Cố ý **không** nằm trong `QUESTION_BANK` / `QUIZZES`: app không sinh `lesson-fNN`, câu Sân ga không vào mini test,
  * O.W.L., test quay lại và không chạy ở `/practice/quiz/…`. `getQuestion` vẫn tra được (để Sổ lỗi hiện câu).
@@ -401,6 +402,33 @@ const ROW_C: readonly ChoiceQuestion[] = [
     requires: ['there-is-are', 'prepositions-of-place', 'articles'],
   },
   {
+    id: 'q-f15-04',
+    lessonId: 'f15',
+    sectionId: 'grammar',
+    tag: 'từ loại',
+    kind: 'choice',
+    prompt: "There aren't ___ cups on the table. (không có cái nào)",
+    options: ['any', 'some', 'a', 'much'],
+    answer: 'any',
+    explanation:
+      "Câu phủ định dùng any: There aren't any cups. some dùng ở câu khẳng định; cups số nhiều nên không dùng a; " +
+      'much đi với danh từ không đếm được.',
+    requires: ['there-negative-questions', 'quantifiers', 'countable-uncountable', 'plurals', 'prepositions-of-place', 'articles'],
+  },
+  {
+    id: 'q-f15-05',
+    lessonId: 'f15',
+    sectionId: 'grammar',
+    tag: 'từ loại',
+    kind: 'choice',
+    prompt: 'How ___ water is there in the glass?',
+    options: ['much', 'many', 'any', 'some'],
+    answer: 'much',
+    explanation:
+      'water không đếm được nên hỏi lượng bằng How much. How many đi với danh từ đếm được số nhiều: How many glasses…?',
+    requires: ['quantifiers', 'there-negative-questions', 'wh-questions', 'countable-uncountable', 'prepositions-of-place', 'articles'],
+  },
+  {
     id: 'q-f16-01',
     lessonId: 'f16',
     sectionId: 'grammar',
@@ -552,7 +580,7 @@ const ROW_D: readonly ChoiceQuestion[] = [
   },
 ]
 
-/** 42 câu Sân ga (hàng A 12 câu, B–D 10 câu), theo thứ tự hàng A → D. */
+/** 44 câu Sân ga (hàng A, C 12 câu, B, D 10 câu), theo thứ tự hàng A → D. */
 export const FOUNDATION_QUESTIONS: readonly ChoiceQuestion[] = [...ROW_A, ...ROW_B, ...ROW_C, ...ROW_D]
 
 /** Id bài kiểm tra của từng hàng. */
