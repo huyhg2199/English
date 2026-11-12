@@ -65,7 +65,7 @@ const rowCdForbiddenIn = (text: string) =>
 /** Hàng C chỉ dùng F01–F16: không giới từ thời gian / trạng từ tần suất của F18, không going / gone của F17. */
 const ROW_C_LATER = new Set(['at', 'every', 'always', 'never', 'often', 'going', 'gone'])
 
-const ROW_C_IDS = ['q-f13-01', 'q-f13-02', 'q-f13-03', 'q-f14-01', 'q-f14-02', 'q-f15-01', 'q-f15-02', 'q-f15-03', 'q-f15-04', 'q-f15-05', 'q-f16-01', 'q-f16-02']
+const ROW_C_IDS = ['q-f13-01', 'q-f13-02', 'q-f13-03', 'q-f14-01', 'q-f14-02', 'q-f15-01', 'q-f15-02', 'q-f15-03', 'q-f15-04', 'q-f15-05', 'q-f16-01', 'q-f16-02', 'q-f16-03', 'q-f16-04']
 const ROW_D_IDS = ['q-f17-01', 'q-f17-02', 'q-f17-03', 'q-f17-04', 'q-f17-05', 'q-f18-01', 'q-f18-02', 'q-f18-03', 'q-f18-04', 'q-f18-05']
 
 const ROW_B_IDS = ['q-f07-01', 'q-f07-02', 'q-f08-01', 'q-f08-02', 'q-f09-01', 'q-f10-01', 'q-f10-02', 'q-f11-01', 'q-f11-02', 'q-f12-01']
@@ -75,8 +75,8 @@ function rowOf(lessonId: string): RowId | undefined {
 }
 
 describe('ngân hàng câu Sân ga', () => {
-  it('44 câu, id duy nhất (cả với QUESTION_BANK), dạng q-fNN-NN khớp lessonId', () => {
-    expect(FOUNDATION_QUESTIONS).toHaveLength(44)
+  it('46 câu, id duy nhất (cả với QUESTION_BANK), dạng q-fNN-NN khớp lessonId', () => {
+    expect(FOUNDATION_QUESTIONS).toHaveLength(46)
     const ids = [...QUESTION_BANK, ...FOUNDATION_QUESTIONS].map((q) => q.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const q of FOUNDATION_QUESTIONS) {
@@ -130,8 +130,8 @@ describe('ngân hàng câu Sân ga', () => {
       expect(quiz.size).toBe(8)
     })
 
-    it('hàng A 12 câu (story 34), C 12 câu (story 43), B, D 10 câu; ≤ 2 câu nghe, mỗi viên ≥ minPerLesson câu không phải câu nghe', () => {
-      expect(of).toHaveLength(row === 'A' || row === 'C' ? 12 : 10)
+    it('hàng A 12 câu (story 34), C 14 câu (story 43, 44), B, D 10 câu; ≤ 2 câu nghe, mỗi viên ≥ minPerLesson câu không phải câu nghe', () => {
+      expect(of).toHaveLength(row === 'A' ? 12 : row === 'C' ? 14 : 10)
       expect(of.filter((q) => q.kind === 'listening').length).toBeLessThanOrEqual(2)
       for (const id of quiz.lessonIds) {
         const n = of.filter((q) => q.lessonId === id && q.kind !== 'listening').length
@@ -186,19 +186,19 @@ describe('ngân hàng câu Sân ga', () => {
     expect(getQuestion('q-f12-01')?.answer).toBe('these')
   })
 
-  it('hàng C–D giữ đủ 22 id (Sổ lỗi tham chiếu theo id), đúng thứ tự, getQuestion tra được', () => {
+  it('hàng C–D giữ đủ 24 id (Sổ lỗi tham chiếu theo id), đúng thứ tự, getQuestion tra được', () => {
     expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'C').map((q) => q.id)).toEqual(ROW_C_IDS)
     expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === 'D').map((q) => q.id)).toEqual(ROW_D_IDS)
     for (const id of [...ROW_C_IDS, ...ROW_D_IDS]) expect(getQuestion(id)?.id, id).toBe(id)
   })
 
-  it('hàng C: F13 3, F14 2, F15 5, F16 2; hàng D: F17 5, F18 5; mỗi hàng đúng 2 câu nghe', () => {
+  it('hàng C: F13 3, F14 2, F15 5, F16 4; hàng D: F17 5, F18 5; mỗi hàng đúng 2 câu nghe', () => {
     const count = (row: RowId) => {
       const out: Record<string, number> = {}
       for (const q of FOUNDATION_QUESTIONS.filter((x) => rowOf(x.lessonId) === row)) out[q.lessonId] = (out[q.lessonId] ?? 0) + 1
       return out
     }
-    expect(count('C')).toEqual({ f13: 3, f14: 2, f15: 5, f16: 2 })
+    expect(count('C')).toEqual({ f13: 3, f14: 2, f15: 5, f16: 4 })
     expect(count('D')).toEqual({ f17: 5, f18: 5 })
     for (const row of ['C', 'D'] as const) {
       expect(FOUNDATION_QUESTIONS.filter((q) => rowOf(q.lessonId) === row && q.kind === 'listening'), row).toHaveLength(2)
@@ -241,6 +241,24 @@ describe('ngân hàng câu Sân ga', () => {
     expect((getQuestion('q-f14-02') as ChoiceQuestion).options).not.toContain("don't")
     expect(getQuestion('q-f14-02')!.prompt).not.toMatch(/\bat\b/)
     expect((getQuestion('q-f16-01') as ChoiceQuestion).options).toEqual(['has', 'have', 'is', 'haves'])
+  })
+
+  it('F16 (story 44): q-f16-01, -02 giữ nguyên; q-f16-03, -04 là câu nối câu tag từ loại, requires có conjunctions', () => {
+    const q1 = getQuestion('q-f16-01') as ChoiceQuestion
+    expect([q1.prompt, q1.answer]).toEqual(['She ___ two brothers.', 'has'])
+    const q2 = getQuestion('q-f16-02') as ChoiceQuestion
+    expect([q2.prompt, q2.answer]).toEqual(['Câu nào đúng cho “Anh ấy 30 tuổi”?', 'He is 30.'])
+    expect(q2.options).toEqual(['He is 30.', 'He has 30.', 'He has 30 years.', 'He are 30.'])
+    for (const id of ['q-f16-03', 'q-f16-04']) {
+      const q = getQuestion(id) as ChoiceQuestion
+      expect(q.lessonId, id).toBe('f16')
+      expect(q.sectionId, id).toBe('grammar')
+      expect(q.tag, id).toBe('từ loại')
+      expect(q.kind, id).toBe('choice')
+      expect(q.requires, id).toContain('conjunctions')
+    }
+    expect(getQuestion('q-f16-03')!.answer).toBe('so')
+    expect(getQuestion('q-f16-04')!.answer).toBe('The room is small, so it is hot.')
   })
 
   it('hàng A: F06 đúng 4 câu q-f06-01 … -04 theo thứ tự; 03 / 04 khai báo days-months; 01 / 02 giữ nguyên (story 34)', () => {

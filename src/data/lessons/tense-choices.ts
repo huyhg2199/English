@@ -1,13 +1,244 @@
 import type { TenseChoice } from './types'
 
 /**
- * Khối "Chọn thì" (story 39): đặt hai thì cạnh nhau, hoặc chỉ cách nói tiếng Anh của chữ Việt đã / sẽ / chưa. Tự soạn.
+ * Khối "Chọn thì" (story 39, 44): 5 khối. Đặt hai thì cạnh nhau (s1-t2-w1, s1-t3-w2), hoặc chỉ cách nói tiếng Anh của chữ
+ * Việt: tại sao · bao lâu một lần · bao nhiêu (s1-t1-w3), ai · cái gì (s1-t2-w2), đã · sẽ · chưa (s1-t3-w4). Tự soạn.
  * Phần luyện chạy bằng trình phát của thì (`TensePractice`): sai thì giải thích và làm lại, không ghi Sổ lỗi.
  * Chỉ import kiểu (không import file thì, tránh vòng); side trỏ thì bằng `tenseId`, `choiceSides` tra Tense lúc vẽ.
- * Chữ tiếng Anh chỉ dùng kiến thức đã dạy tới bài chứa khối: không some / any / many / much / because / so, không
- * "Don't + V"; khối s1-t2-w1 nằm trong phạm vi hiện tại tiếp diễn (`outOfScopeWords`), khối s1-t3-w2 / s1-t3-w4 không có
- * dấu hiệu của bài dạy sau nó (hoàn thành, since / how long, modal, so sánh, bị động).
+ * Chữ tiếng Anh chỉ dùng kiến thức đã dạy tới bài chứa khối, trong phạm vi chữ của thì cuối bài (`outOfScopeWords`).
+ * Lượng từ (some / any / many / much / a lot of, viên F15) và liên từ (and / but / or / because / so, viên F16) đã dạy ở
+ * Sân ga nên dùng được; vẫn không "Don't + V". Khối s1-t3-w2 / s1-t3-w4 không có dấu hiệu của bài dạy sau nó (hoàn
+ * thành, since / how long, modal, so sánh, bị động).
  */
+
+// ---------------------------------------------------------------- s1-t1-w3
+
+/**
+ * Từ để hỏi why / how often / how many / how much với do / does (story 44). Không `sides` (như `dont-translate`): bảng chữ
+ * Việt tại sao · bao lâu một lần · bao nhiêu. Phạm vi chữ của `present-simple-questions`: không quá khứ, không be + V-ing.
+ */
+export const QUESTION_WORDS: TenseChoice = {
+  id: 'question-words',
+  name: 'Hỏi tại sao, bao lâu một lần, bao nhiêu',
+  use:
+    'Tiếng Việt để “tại sao” ở đầu câu, còn “bao lâu một lần”, “bao nhiêu” thường ở giữa hoặc cuối câu; tiếng Anh luôn ' +
+    'đưa từ để hỏi lên đầu, rồi do / does (hoặc am / is / are) + chủ ngữ.',
+  viWords: [
+    {
+      vi: 'tại sao',
+      options: [
+        {
+          en: 'Why + do / does + S + V …?',
+          whenVi: 'Hỏi lý do; trả lời bằng Because + câu đầy đủ',
+          example: {
+            en: 'Why do you study English? — Because I need it for my job.',
+            vi: 'Tại sao bạn học tiếng Anh? — Vì tôi cần nó cho công việc.',
+          },
+        },
+        {
+          en: 'Why + am / is / are + S …?',
+          whenVi: 'Câu có tính từ, nơi chốn (to be): không mượn do / does',
+          example: { en: 'Why is she sad? — Because her cat is sick.', vi: 'Tại sao cô ấy buồn? — Vì con mèo của cô ấy bị ốm.' },
+        },
+      ],
+    },
+    {
+      vi: 'bao lâu một lần',
+      options: [
+        {
+          en: 'How often + do / does + S + V …?',
+          whenVi:
+            'Hỏi tần suất; trả lời bằng every day, every Sunday hay trạng từ tần suất của viên F18 (always, usually, ' +
+            'sometimes, never)',
+          example: {
+            en: 'How often do you go to the gym? — Every Sunday.',
+            vi: 'Bạn đi tập gym bao lâu một lần? — Chủ nhật nào cũng đi.',
+          },
+        },
+        {
+          en: 'How often + am / is / are + S …?',
+          whenVi: 'Câu có to be',
+          example: { en: 'How often is he late? — Never.', vi: 'Anh ấy đi trễ bao lâu một lần? — Không bao giờ.' },
+        },
+      ],
+    },
+    {
+      vi: 'bao nhiêu',
+      options: [
+        {
+          en: 'How many + danh từ số nhiều + do / does + S + V …?',
+          whenVi: 'Hỏi số lượng thứ đếm được',
+          example: { en: 'How many brothers do you have? — Two.', vi: 'Bạn có bao nhiêu anh em trai? — Hai.' },
+        },
+        {
+          en: 'How much + danh từ không đếm được + do / does + S + V …?',
+          whenVi: 'Hỏi lượng thứ không đếm được (water, money)',
+          example: { en: 'How much water do you drink every day?', vi: 'Mỗi ngày bạn uống bao nhiêu nước?' },
+        },
+        {
+          en: 'How much is / are …?',
+          whenVi: 'Hỏi giá (viên F14)',
+          example: { en: 'How much is this bag?', vi: 'Cái túi này giá bao nhiêu?' },
+        },
+      ],
+    },
+  ],
+  pairs: [
+    {
+      a: { en: 'How often do you play tennis? — Every Saturday.', vi: 'Bạn chơi quần vợt bao lâu một lần? — Thứ Bảy nào cũng chơi.' },
+      b: { en: 'When do you play tennis? — On Saturdays.', vi: 'Bạn chơi quần vợt khi nào? — Vào các ngày thứ Bảy.' },
+      noteVi: 'How often hỏi bao lâu một lần; When hỏi lúc nào.',
+    },
+    {
+      a: { en: 'How many books do you have?', vi: 'Bạn có bao nhiêu quyển sách?' },
+      b: { en: 'How much money do you have?', vi: 'Bạn có bao nhiêu tiền?' },
+      noteVi: 'books đếm được, số nhiều → many; money không đếm được → much.',
+    },
+    {
+      a: { en: 'Why are you tired? — Because I work late.', vi: 'Tại sao bạn mệt? — Vì tôi làm việc muộn.' },
+      b: { en: 'Why do you work late? — Because I have a lot of work.', vi: 'Tại sao bạn làm muộn? — Vì tôi có nhiều việc.' },
+      noteVi: 'Có tính từ (tired) thì Why are you…?; có động từ thường (work) thì Why do you…?',
+    },
+  ],
+  formulas: [
+    { label: 'Why', text: 'Why + do / does + S + V …?  → Because + S + V.' },
+    { label: 'How often', text: 'How often + do / does + S + V …?  → Every day. / Every week. / Sometimes. / Never.' },
+    {
+      label: 'How many / How much',
+      text: 'How many + danh từ số nhiều / How much + danh từ không đếm được + do / does + S + V …?',
+    },
+  ],
+  rules: [
+    'Từ để hỏi đứng đầu câu, rồi do / does + chủ ngữ + động từ nguyên mẫu: Why do you…? How often does she…? Câu có am / is / are thì đảo to be: Why is she sad?',
+    'Why hỏi lý do, trả lời bằng Because + câu đầy đủ (Because I need it.); câu trả lời ngắn khi nói thì Because… đứng một mình được, còn trong một câu dài thì Because…, rồi câu kết quả, như viên F16. How often hỏi bao lâu một lần, trả lời bằng every day, every Sunday, usually, sometimes, never.',
+    'How many + danh từ số nhiều (books, brothers); How much + danh từ không đếm được (water, money). How much is it? là hỏi giá.',
+  ],
+  // Phần luyện (story 44): 7 câu; chỉ Sân ga (gồm lượng từ F15, liên từ F16) và hiện tại đơn (`present-simple-questions`).
+  practice: {
+    worked: {
+      en: 'Why do you study English? — Because I need it for my job.',
+      vi: 'Tại sao bạn học tiếng Anh? — Vì tôi cần nó cho công việc.',
+      noteVi: 'Why đứng đầu, rồi do + you + study (nguyên mẫu). Trả lời lý do bằng Because + câu đầy đủ, không chỉ nói Because.',
+    },
+    faded: {
+      en: 'How ___ do you cook? — Every day.',
+      answer: 'often',
+      vi: 'Bạn nấu ăn bao lâu một lần? — Ngày nào cũng nấu.',
+      hintVi: 'Hỏi bao lâu một lần.',
+    },
+    check: {
+      items: [
+        {
+          id: 'question-words-c1',
+          kind: 'choice',
+          prompt: 'Why ___ your sister tired? — Because she has a lot of work.',
+          options: ['is', 'does', 'do'],
+          answer: 0,
+          hintVi: 'tired là tính từ: câu có to be.',
+          explanationVi:
+            'tired là tính từ nên câu dùng to be, đảo is lên trước chủ ngữ: Why is your sister tired? Không mượn does: ' +
+            '“Why does your sister tired?” là sai. do đi với I / you / we / they.',
+        },
+        {
+          id: 'question-words-c2',
+          kind: 'type',
+          prompt: 'How often ___ your father play football? — Every Sunday.',
+          answer: 'does',
+          hintVi: 'your father = he; play ở dạng nguyên mẫu.',
+          explanationVi:
+            'Sau How often là do / does + chủ ngữ + động từ nguyên mẫu. your father = he nên mượn does: How often does ' +
+            'your father play football?',
+        },
+        {
+          id: 'question-words-c3',
+          kind: 'choice',
+          prompt: 'How ___ friends does your brother have? — Ten.',
+          options: ['many', 'much', 'often'],
+          answer: 0,
+          hintVi: 'friends đếm được, số nhiều.',
+          explanationVi:
+            'friends là danh từ đếm được số nhiều nên dùng How many. How much đi với danh từ không đếm được (water, ' +
+            'money); How often hỏi bao lâu một lần.',
+        },
+        {
+          id: 'question-words-c4',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Tại sao bạn thích tiếng Anh? (why, like, English)',
+          answer: 'Why do you like English?',
+          hintVi: 'Why đứng đầu, rồi do + you + like.',
+          explanationVi:
+            'Why + do + you + like (nguyên mẫu): Why do you like English? “Why you like English?” thiếu do / does: câu hỏi ' +
+            'với động từ thường phải mượn do / does.',
+        },
+        {
+          id: 'question-words-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Bạn đọc sách bao lâu một lần? (how often, read books)',
+          answer: 'How often do you read books?',
+          hintVi: '“bao lâu một lần” = How often, đứng đầu câu.',
+          explanationVi:
+            'How often đứng đầu, rồi do + you + read: How often do you read books? “How often you read books?” thiếu ' +
+            'do / does nên sai.',
+        },
+        {
+          id: 'question-words-c6',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi với How many: She has three cats.',
+          answer: 'How many cats does she have?',
+          hintVi: 'she → does; có does thì has trở về have.',
+          explanationVi:
+            'How many + cats đứng đầu, rồi does + she + have (nguyên mẫu): How many cats does she have? Có does thì has ' +
+            'đổi về have.',
+        },
+        {
+          id: 'question-words-c7',
+          kind: 'choice',
+          prompt: '“Vì trời lạnh nên tôi ở nhà.” nói thế nào?',
+          options: ['It is cold, so I am at home.', 'Because it is cold, so I am at home.', 'It is cold, because I am at home.'],
+          answer: 0,
+          hintVi: 'Tiếng Anh chỉ dùng một từ nối: because hoặc so.',
+          explanationVi:
+            'so đứng trước kết quả: It is cold, so I am at home. Không dùng cả because và so trong một câu (viên F16). ' +
+            'Câu thứ ba sai nghĩa: trời lạnh vì tôi ở nhà.',
+        },
+      ],
+      easier: [
+        {
+          id: 'question-words-e1',
+          kind: 'choice',
+          prompt: 'Why nghĩa là gì?',
+          options: ['tại sao', 'bao lâu một lần', 'bao nhiêu'],
+          answer: 0,
+          hintVi: 'Câu trả lời của nó mở đầu bằng Because.',
+          explanationVi: 'Why = tại sao (hỏi lý do); How often = bao lâu một lần; How many / How much = bao nhiêu.',
+        },
+        {
+          id: 'question-words-e2',
+          kind: 'choice',
+          prompt: 'How ___ milk does your son drink every day?',
+          options: ['much', 'many', 'often'],
+          answer: 0,
+          hintVi: 'milk không đếm được.',
+          explanationVi: 'milk là danh từ không đếm được nên dùng How much. many đi với danh từ số nhiều (books, cats).',
+        },
+      ],
+    },
+    apply: {
+      promptVi:
+        'Hỏi một người bạn 3 câu: một câu Why, một câu How often, một câu How many. Rồi tự trả lời một câu Why bằng Because.',
+      sampleEn:
+        'Why do you study English? How often do you play sports? How many brothers do you have? I study English because I need it for my job.',
+      speak: [
+        { id: 'question-words-say-1', text: 'How often do you play football?', vi: 'Bạn chơi bóng đá bao lâu một lần?' },
+        {
+          id: 'question-words-say-2',
+          text: 'I study English because I need it for my job.',
+          vi: 'Tôi học tiếng Anh vì tôi cần nó cho công việc.',
+        },
+      ],
+    },
+  },
+}
 
 // ---------------------------------------------------------------- s1-t2-w1
 
@@ -170,6 +401,212 @@ export const SIMPLE_VS_CONTINUOUS: TenseChoice = {
           text: 'She works every day. Now she is resting.',
           vi: 'Ngày nào cô ấy cũng làm việc. Bây giờ cô ấy đang nghỉ.',
         },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------- s1-t2-w2
+
+/**
+ * Câu hỏi chủ ngữ Who / What + V-ed so với Who / What + did + S + V (story 44). Không `sides`: bảng chữ Việt ai · cái gì.
+ * Phạm vi chữ của `past-simple`: chỉ động từ có quy tắc (call, happen, cook, help, open, clean, visit…), không V2 bất quy tắc.
+ */
+export const SUBJECT_QUESTIONS: TenseChoice = {
+  id: 'subject-questions',
+  name: 'Câu hỏi chủ ngữ: Who called? hay Who did you call?',
+  use:
+    'Tiếng Việt đổi chỗ chữ “ai” (Ai gọi bạn? / Bạn gọi ai?); tiếng Anh xem Who / What là chủ ngữ hay là người, vật ' +
+    'nhận việc đó (người được gọi, món được nấu), rồi mới quyết định có mượn did hay không.',
+  viWords: [
+    {
+      vi: 'ai',
+      options: [
+        {
+          en: 'Who + V-ed …?',
+          whenVi: '“Ai” là người làm việc đó (chủ ngữ): không mượn did, động từ ở quá khứ',
+          example: { en: 'Who called you last night? — My mother.', vi: 'Tối qua ai gọi cho bạn? — Mẹ tôi.' },
+        },
+        {
+          en: 'Who + did + S + V …?',
+          whenVi: '“Ai” là người nhận việc đó (bạn gọi ai, bạn giúp ai): mượn did, động từ nguyên mẫu',
+          example: { en: 'Who did you call last night? — My mother.', vi: 'Tối qua bạn gọi cho ai? — Mẹ tôi.' },
+        },
+      ],
+    },
+    {
+      vi: 'cái gì',
+      options: [
+        {
+          en: 'What + V-ed …?',
+          whenVi: '“Chuyện gì, cái gì” là chủ ngữ: What happened?',
+          example: {
+            en: 'What happened yesterday? — The bus was late.',
+            vi: 'Hôm qua đã xảy ra chuyện gì? — Xe buýt đến muộn.',
+          },
+        },
+        {
+          en: 'What + did + S + V …?',
+          whenVi: 'Hỏi người ta đã làm gì: mượn did',
+          example: { en: 'What did you cook yesterday? — Fish.', vi: 'Hôm qua bạn nấu món gì? — Cá.' },
+        },
+      ],
+    },
+  ],
+  pairs: [
+    {
+      a: { en: 'Who called you?', vi: 'Ai đã gọi cho bạn?' },
+      b: { en: 'Who did you call?', vi: 'Bạn đã gọi cho ai?' },
+      noteVi: 'Who called you? hỏi người gọi (Who là chủ ngữ). Who did you call? hỏi người được gọi (you là chủ ngữ).',
+    },
+    {
+      a: { en: 'Who cooked dinner? — My father.', vi: 'Ai nấu bữa tối? — Bố tôi.' },
+      b: { en: 'What did your father cook? — Fish.', vi: 'Bố bạn đã nấu món gì? — Cá.' },
+      noteVi: 'Hỏi người nấu thì Who + V-ed. Hỏi món được nấu thì What + did + S + V.',
+    },
+    {
+      a: { en: 'What happened? — I missed the bus.', vi: 'Đã xảy ra chuyện gì? — Tôi bị lỡ xe buýt.' },
+      b: { en: 'What did you do? — I stayed at home.', vi: 'Bạn đã làm gì? — Tôi ở nhà.' },
+      noteVi: 'What happened hỏi chuyện xảy ra (What là chủ ngữ). What did you do hỏi bạn đã làm gì.',
+    },
+    {
+      a: { en: 'Who lives here? — My sister.', vi: 'Ai sống ở đây? — Chị tôi.' },
+      b: { en: 'Who do you live with? — My sister.', vi: 'Bạn sống với ai? — Chị tôi.' },
+      noteVi:
+        'Hiện tại cũng vậy: Who + V-s (như he / she) khi Who là chủ ngữ; Who do you … with? khi you là chủ ngữ.',
+    },
+  ],
+  formulas: [
+    { label: 'Hỏi chủ ngữ', text: 'Who / What + V-ed …?  Who called you? What happened?' },
+    { label: 'Hỏi tân ngữ', text: 'Who / What + did + S + V nguyên mẫu …?  Who did you call?' },
+  ],
+  rules: [
+    'Who / What là chủ ngữ (hỏi ai làm, chuyện gì xảy ra): giữ trật tự câu khẳng định, không mượn did: Who called you? What happened?',
+    'Who / What là người, vật nhận việc đó (bạn gọi ai, bạn nấu gì): mượn did + chủ ngữ + động từ nguyên mẫu như câu hỏi Wh- thường: Who did you call? What did you cook?',
+    'Hiện tại cũng vậy: Who lives here? (Who + V-s, như he / she) so với Who do you live with?',
+  ],
+  // Phần luyện (story 44): 7 câu trộn hai chiều; chỉ Sân ga, hiện tại, was / were, -ed và did (`past-simple`).
+  practice: {
+    worked: {
+      en: 'Who called you last night? — My boss.',
+      vi: 'Tối qua ai gọi cho bạn? — Sếp tôi.',
+      noteVi: 'Hỏi người gọi nên Who là chủ ngữ: Who + called, không có did. Câu trả lời My boss là người gọi.',
+    },
+    faded: {
+      en: 'Who ___ (help) you yesterday? — My brother.',
+      answer: 'helped',
+      vi: 'Hôm qua ai giúp bạn? — Anh trai tôi.',
+      hintVi: 'Who là người giúp (chủ ngữ): không mượn did.',
+    },
+    check: {
+      items: [
+        {
+          id: 'subject-questions-c1',
+          kind: 'choice',
+          prompt: 'Who ___ the window? — Lan.',
+          options: ['opened', 'did open', 'did you open'],
+          answer: 0,
+          hintVi: 'Lan là người mở cửa sổ: Who là chủ ngữ.',
+          explanationVi:
+            'Hỏi người mở (Lan) nên Who là chủ ngữ: Who opened the window? Who là chủ ngữ thì không mượn did, nên ' +
+            '“did open” sai; “Who did you open the window?” thừa you, không phải câu đúng.',
+        },
+        {
+          id: 'subject-questions-c2',
+          kind: 'choice',
+          prompt: 'Who ___ you call last night? — My sister.',
+          options: ['did', 'was', 'do'],
+          answer: 0,
+          hintVi: 'you là người gọi; call ở dạng nguyên mẫu; last night là quá khứ.',
+          explanationVi:
+            'you là người gọi, Who là người được gọi nên mượn did: Who did you call last night? was không đi với động từ ' +
+            'thường nguyên mẫu; do là hiện tại.',
+        },
+        {
+          id: 'subject-questions-c3',
+          kind: 'type',
+          prompt: 'What ___ (happen) at the office yesterday?',
+          answer: 'happened',
+          hintVi: 'What (chuyện gì) là chủ ngữ: không mượn did.',
+          explanationVi:
+            'What là chủ ngữ (chuyện gì xảy ra) nên giữ trật tự câu khẳng định, động từ ở quá khứ: What happened at the ' +
+            'office yesterday? Không mượn did.',
+        },
+        {
+          id: 'subject-questions-c4',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi với Who, hỏi ai đã dọn: My mother cleaned the kitchen.',
+          answer: 'Who cleaned the kitchen?',
+          hintVi: 'Who thay chỗ My mother (người dọn), giữ cleaned.',
+          explanationVi:
+            'Hỏi người dọn thì Who thay chỗ My mother, giữ nguyên cleaned the kitchen: Who cleaned the kitchen? Who là ' +
+            'chủ ngữ nên không mượn did.',
+        },
+        {
+          id: 'subject-questions-c5',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Ai đã gọi cho bạn? (who, call)',
+          answer: 'Who called you?',
+          hintVi: '“Ai” là người gọi (chủ ngữ): Who + V-ed.',
+          explanationVi:
+            '“Ai” là người gọi nên Who là chủ ngữ: Who called you? Who là chủ ngữ thì không mượn did, nên “Who did call ' +
+            'you?” là sai.',
+        },
+        {
+          id: 'subject-questions-c6',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Bạn đã gọi cho ai? (who, call)',
+          answer: 'Who did you call?',
+          hintVi: '“Bạn” là người gọi, “ai” là người được gọi: mượn did.',
+          explanationVi:
+            'you là người gọi, “ai” là người được gọi nên mượn did + you + call (nguyên mẫu): Who did you call? ' +
+            '“Who called you?” lại là hỏi ai gọi cho bạn.',
+        },
+        {
+          id: 'subject-questions-c7',
+          kind: 'choice',
+          prompt: '“Bạn đã nấu món gì?” nói thế nào?',
+          options: ['What did you cook?', 'What cooked you?', 'What you cooked?'],
+          answer: 0,
+          hintVi: 'you là người nấu, “món gì” là thứ được nấu.',
+          explanationVi:
+            '“món gì” là thứ được nấu, you là chủ ngữ, nên mượn did: What did you cook? “What you cooked?” thiếu did; ' +
+            '“What cooked you?” nghĩa là cái gì đã nấu bạn.',
+        },
+      ],
+      easier: [
+        {
+          id: 'subject-questions-e1',
+          kind: 'choice',
+          prompt: '“Ai đã giúp bạn?” nói thế nào?',
+          options: ['Who helped you?', 'Who did help you?', 'Who you helped?'],
+          answer: 0,
+          hintVi: '“Ai” là người giúp (chủ ngữ).',
+          explanationVi:
+            '“Ai” là người giúp nên Who + helped: Who helped you? Who là chủ ngữ thì không mượn did, nên “Who did help ' +
+            'you?” sai.',
+        },
+        {
+          id: 'subject-questions-e2',
+          kind: 'choice',
+          prompt: '“Bạn đã giúp ai?” nói thế nào?',
+          options: ['Who did you help?', 'Who helped you?', 'Who you helped?'],
+          answer: 0,
+          hintVi: '“Bạn” là người giúp, “ai” là người được giúp.',
+          explanationVi:
+            'you là người giúp, “ai” là người được giúp nên mượn did: Who did you help? “Who helped you?” là hỏi ai giúp ' +
+            'bạn; “Who you helped?” thiếu did.',
+        },
+      ],
+    },
+    apply: {
+      promptVi:
+        'Hỏi một người bạn 2 câu về hôm qua: một câu hỏi ai đã làm gì (Who + V-ed), một câu hỏi bạn ấy đã làm gì ' +
+        '(What did you…?).',
+      sampleEn: 'Who called you yesterday? What did you cook for dinner?',
+      speak: [
+        { id: 'subject-questions-say-1', text: 'What happened?', vi: 'Đã xảy ra chuyện gì?' },
+        { id: 'subject-questions-say-2', text: 'Who did you call yesterday?', vi: 'Hôm qua bạn đã gọi cho ai?' },
       ],
     },
   },

@@ -180,3 +180,6 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/43-quantifiers-there-negative-questions.md`
   summary: Test khai báo khái niệm của story 43 (`quantifiers` / `there-negative-questions`) bỏ qua mọi câu chưa có `requires`, nên 3 câu T2–T4 có lượng từ (`t2-t4.ts` "any money", "some water", "many countries") chưa bị kiểm; khi thêm `requires` cho câu T2–T4 cũ, các câu này phải có `quantifiers`.
   evidence: Review story 43 (blind). Thiếu `requires` ở câu T2–T4 có từ trước story 43; spec story 43 giao việc thêm `requires` cho story 47. Story 47 nên chạy lại `quantifierConcepts` (foundation.test.ts) trên mọi câu sau khi thêm `requires`, hoặc dùng danh sách ngoại lệ chốt đúng 3 id này cho tới lúc đó.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/44-conjunctions-question-words-subject-questions.md`
+  summary: Thẻ hư từ `ngsl-because` dùng ví dụ "I am late because of the rain." (`words.json:63`), mà F16 chỉ dạy because + mệnh đề; từ story 44 thẻ này mở ngay sau F16, tức là ngay trong Sân ga.
+  evidence: Review story 44 (edge, độ tin thấp). Story 44 cấm đổi `words.json` / `example-overrides.json` (Never). Lần rà ví dụ tới nên thêm override cho `ngsl-because`, ví dụ "I am happy because I have a new job.", rồi chạy lại test ví dụ hư từ.

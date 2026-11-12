@@ -146,10 +146,10 @@ export const BRICKS: readonly BrickMeta[] = [
   {
     id: 'F16',
     row: 'C',
-    title: 'have/has',
-    minutes: 6,
-    goalVi: 'Nói sở hữu, has với he/she/it, "I am 25"',
-    teaches: ['have-has'],
+    title: 'have/has + nối câu',
+    minutes: 10,
+    goalVi: 'Nói sở hữu, has với he/she/it, "I am 25"; nối 2 câu bằng and/but/or/because/so, không nói "Because…, so…"',
+    teaches: ['have-has', 'conjunctions'],
     uses: ['subject-pronouns', 'be-affirmative', 'numbers', 'articles'],
   },
   {

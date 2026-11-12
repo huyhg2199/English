@@ -34,7 +34,7 @@ const WALL_WORDS = [
   // từ hạn định
   'all', 'which', 'no', 'such', 'both', 'another', 'each', 'few', 'enough',
   // liên từ
-  'and', 'but', 'or', 'if', 'because', 'while', 'though', 'whether', 'although',
+  'and', 'if', 'while', 'though', 'whether', 'although',
   // còn lại
   'something', 'why',
 ] as const
@@ -73,8 +73,11 @@ export const FUNCTION_WORD_GATES: Readonly<Record<string, FunctionWordGate>> = O
   'ngsl-some': brick('F15', ['some']),
   'ngsl-any': brick('F15', ['any']),
   'ngsl-many': brick('F15', ['many']),
-  // F16 have/has
+  // F16 have/has + liên từ (but, or, because dời từ tường ở story 44; and, why giữ tường)
   'ngsl-have': brick('F16', ['have', 'has', 'had']),
+  'ngsl-but': brick('F16', ['but']),
+  'ngsl-or': brick('F16', ['or']),
+  'ngsl-because': brick('F16', ['because']),
   // F18 at + trạng từ tần suất
   'ngsl-at': brick('F18', ['at']),
   'ngsl-every': brick('F18', ['every']),

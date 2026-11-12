@@ -4,9 +4,9 @@ import type { QuizDef } from './index'
 import type { ChoiceQuestion } from './types'
 
 /**
- * Ngân hàng câu Sân ga 9¾ (story 20): 44 câu cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng (`quiz-f-a` … `quiz-f-d`,
- * 8 câu mỗi lần). Hàng A 12 câu (F06 có 4: số, thứ tự, thứ, ngày tháng, story 34), hàng C 12 câu (F15 có 5: thêm any và
- * How much, story 43), hàng B, D 10 câu. Tự soạn, không chép đề.
+ * Ngân hàng câu Sân ga 9¾ (story 20): 46 câu cho Soát vé, "Tôi biết rồi" và kiểm tra cuối hàng (`quiz-f-a` … `quiz-f-d`,
+ * 8 câu mỗi lần). Hàng A 12 câu (F06 có 4: số, thứ tự, thứ, ngày tháng, story 34), hàng C 14 câu (F15 có 5: thêm any và
+ * How much, story 43; F16 có 4: thêm so và “Vì… nên…”, story 44), hàng B, D 10 câu. Tự soạn, không chép đề.
  *
  * Cố ý **không** nằm trong `QUESTION_BANK` / `QUIZZES`: app không sinh `lesson-fNN`, câu Sân ga không vào mini test,
  * O.W.L., test quay lại và không chạy ở `/practice/quiz/…`. `getQuestion` vẫn tra được (để Sổ lỗi hiện câu).
@@ -452,6 +452,47 @@ const ROW_C: readonly ChoiceQuestion[] = [
     explanation: 'Nói tuổi dùng to be, không dùng have / has: He is 30 (years old).',
     requires: ['have-has', 'be-affirmative', 'subject-pronouns', 'numbers'],
   },
+  {
+    id: 'q-f16-03',
+    lessonId: 'f16',
+    sectionId: 'grammar',
+    tag: 'từ loại',
+    kind: 'choice',
+    prompt: 'My mother has a new bag, ___ she is very happy.',
+    options: ['so', 'because', 'but', 'or'],
+    answer: 'so',
+    explanation:
+      'Vế sau là kết quả (có túi mới nên vui) nên dùng so. because đứng trước lý do; but nối hai ý trái nhau; ' +
+      'or là “hoặc”.',
+    requires: [
+      'conjunctions',
+      'have-has',
+      'be-affirmative',
+      'subject-pronouns',
+      'possessive-adjectives',
+      'adjective-before-noun',
+      'articles',
+    ],
+  },
+  {
+    id: 'q-f16-04',
+    lessonId: 'f16',
+    sectionId: 'grammar',
+    tag: 'từ loại',
+    kind: 'choice',
+    prompt: 'Câu nào đúng cho “Vì căn phòng nhỏ nên nó nóng.”?',
+    options: [
+      'The room is small, so it is hot.',
+      'Because the room is small, so it is hot.',
+      'The room is small, because it is hot.',
+      'So the room is small, it is hot.',
+    ],
+    answer: 'The room is small, so it is hot.',
+    explanation:
+      'Tiếng Anh chỉ dùng một từ nối: The room is small, so it is hot. (hoặc Because the room is small, it is hot.). ' +
+      'Không dùng cả because và so; because đứng trước lý do. so đứng trước kết quả, không đứng đầu câu lý do.',
+    requires: ['conjunctions', 'be-affirmative', 'subject-pronouns', 'articles'],
+  },
 ]
 
 const ROW_D: readonly ChoiceQuestion[] = [
@@ -580,7 +621,7 @@ const ROW_D: readonly ChoiceQuestion[] = [
   },
 ]
 
-/** 44 câu Sân ga (hàng A, C 12 câu, B, D 10 câu), theo thứ tự hàng A → D. */
+/** 46 câu Sân ga (hàng A 12 câu, C 14 câu: F15 5, F16 4, story 43, 44; B, D 10 câu), theo thứ tự hàng A → D. */
 export const FOUNDATION_QUESTIONS: readonly ChoiceQuestion[] = [...ROW_A, ...ROW_B, ...ROW_C, ...ROW_D]
 
 /** Id bài kiểm tra của từng hàng. */

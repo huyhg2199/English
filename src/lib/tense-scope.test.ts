@@ -42,8 +42,8 @@ describe('outOfScopeWords (story 36)', () => {
     for (const w of ['need', 'red', 'bed', 'speed', 'tired', 'bored', 'excited', 'interested', 'married']) expect(NOT_PAST.has(w)).toBe(true)
   })
 
-  it('present-simple: không quá khứ, không be + V-ing, không do / does, không modal / some', () => {
-    for (const text of ['She is cooking', 'went', "doesn't", 'Do you like tea?', 'will', 'some', 'worked', 'Are you listening?', "She's reading", 'He does not work.', 'Where does he live?', 'was']) {
+  it('present-simple: không quá khứ, không be + V-ing, không do / does, không modal', () => {
+    for (const text of ['She is cooking', 'went', "doesn't", 'Do you like tea?', 'will', 'worked', 'Are you listening?', "She's reading", 'He does not work.', 'Where does he live?', 'was']) {
       expect(flagged('present-simple', text), text).toBe(true)
     }
     for (const text of ['She watches TV every evening.', 'I am tired.', 'The book is interesting.', 'She does her homework.', 'It is morning.', "Huy's phone"]) {
@@ -85,9 +85,9 @@ describe('outOfScopeWords (story 36)', () => {
     for (const text of ['gone', 'eaten', 'been']) expect(outOfScopeWords('past-simple-irregular', text), text).toEqual([text])
   })
 
-  it('mọi thì T1–T2: going to, gonna, can, \'ll, because, so, many đều bị báo', () => {
+  it('mọi thì T1–T2: going to, gonna, can, \'ll đều bị báo', () => {
     for (const id of T1_T2_SCOPE_IDS) {
-      for (const text of ['going to', 'gonna', 'can', "I'll", 'because', 'so', 'many']) {
+      for (const text of ['going to', 'gonna', 'can', "I'll"]) {
         expect(flagged(id, text), `${id}: ${text}`).toBe(true)
       }
       expect(flagged(id, 'I can’t go.'), id).toBe(true)
@@ -201,10 +201,39 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     const ALWAYS = [
       'could', 'would', 'may', 'might', 'shall', 'ought', "I'd like tea.", 'I have to go.', 'She has to work.', 'He had to wait.',
       'I used to swim.', 'He had bought it.', "She hadn't finished.", 'She was cooking.', 'The cake was made yesterday.',
-      "They weren't invited.", 'Was the room cleaned?', 'some', 'any', 'many', 'much', 'lot', 'because', 'so', "Don't worry.",
+      "They weren't invited.", 'Was the room cleaned?', "Don't worry.",
       "Stop! Don't touch it.", 'I have got to go.', "I've got to go.", 'I gotta go.', 'Were these old cups made in Japan?',
     ]
     for (const id of TENSE_SCOPE_IDS) for (const text of ALWAYS) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+  })
+
+  it('lượng từ (F15, story 43), liên từ (F16, story 44) không bị báo ở cả 13 thì', () => {
+    const LINKERS = new Set(['some', 'any', 'many', 'much', 'lot', 'because', 'so', 'but', 'or', 'and'])
+    const texts = [
+      'some / many / much / a lot / because / so',
+      'There are some eggs.',
+      'How many books do you have?',
+      'How much water do you drink?',
+      'There are a lot of people in the bank.',
+      'I am happy because I have a new job.',
+      'I have a new job, so I am happy.',
+      'My house is small, but it is nice.',
+    ]
+    for (const id of TENSE_SCOPE_IDS) {
+      for (const text of texts) {
+        const hits = outOfScopeWords(id, text)
+        expect(hits.filter((w) => LINKERS.has(w)), `${id}: ${text}`).toEqual([])
+        // Câu không có do / does: rỗng hẳn ở mọi thì (câu hỏi với do / does vẫn ngoài phạm vi của present-simple).
+        if (!/\bdo\b/.test(text)) expect(hits, `${id}: ${text}`).toEqual([])
+      }
+    }
+    for (const id of TENSE_SCOPE_IDS.filter((x) => x !== 'present-simple')) {
+      expect(outOfScopeWords(id, 'How many books do you have?'), id).toEqual([])
+    }
+    // Vẫn bị báo: could, have to, "Don't + V", quá khứ tiếp diễn.
+    for (const id of TENSE_SCOPE_IDS) {
+      for (const text of ['could', 'I have to go.', "Don't worry.", 'She was cooking.']) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+    }
   })
 
   it('không báo nhầm: tính từ -ed, going to + nơi chốn, the rest, have + danh từ, \'s + tính từ, lựa chọn "don\'t eat"', () => {

@@ -1,5 +1,5 @@
 import { IRREGULAR_VERBS } from './irregular-verbs'
-import { DONT_TRANSLATE, SIMPLE_VS_CONTINUOUS, WILL_VS_GOING_TO } from './tense-choices'
+import { DONT_TRANSLATE, SIMPLE_VS_CONTINUOUS, SUBJECT_QUESTIONS, WILL_VS_GOING_TO } from './tense-choices'
 import type { DialogueLine, GrammarContent, Tense } from './types'
 
 /**
@@ -410,6 +410,12 @@ export const PAST_SIMPLE: Tense = {
       cloze: '___ you clean your room last weekend? — Yes, I did.',
       answer: 'Did',
       vi: "Câu hỏi: Did + chủ ngữ + V nguyên mẫu …? Trả lời ngắn: Yes, I did. / No, I didn't.",
+    },
+    {
+      id: 'past-simple-rule-5',
+      cloze: 'Who ___ (call) you last night? — My sister.',
+      answer: 'called',
+      vi: 'Who là người làm (chủ ngữ): Who + V-ed, không mượn did (không nói Who did call you?). Hỏi người được gọi thì mượn did: Who did you call?',
     },
   ],
   // Phần luyện có bậc (story 36): Sân ga, hiện tại đơn / tiếp diễn, was / were, -ed và did; không V2 bất quy tắc (xem
@@ -1799,7 +1805,7 @@ export const PASSIVE_PRESENT: Tense = {
 // ---------------------------------------------------------------- Nội dung đoạn Ngữ pháp từng tuần
 
 export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS], choices: [SIMPLE_VS_CONTINUOUS] }
-export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE] }
+export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE], choices: [SUBJECT_QUESTIONS] }
 export const GRAMMAR_T2_W3: GrammarContent = { tenses: [PAST_SIMPLE_IRREGULAR], irregularVerbs: IRREGULAR_VERBS }
 export const GRAMMAR_T2_W4: GrammarContent = {
   tenses: [],

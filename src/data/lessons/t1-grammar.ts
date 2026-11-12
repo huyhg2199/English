@@ -1,3 +1,4 @@
+import { QUESTION_WORDS } from './tense-choices'
 import type { GrammarContent, Tense } from './types'
 
 /**
@@ -291,6 +292,12 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
       answer: 'Is',
       vi: 'Với am / is / are thì không mượn do / does (không phải Does she be busy?).',
     },
+    {
+      id: 'present-simple-questions-rule-5',
+      cloze: 'How ___ do you play football? — Every Sunday.',
+      answer: 'often',
+      vi: 'How often + do / does + S + V…? hỏi bao lâu một lần; trả lời bằng every day, every Sunday, usually, sometimes, never.',
+    },
   ],
   // Phần luyện có bậc (story 36): chỉ Sân ga F01–F18 và hiện tại đơn (khẳng định, phủ định, câu hỏi); không quá khứ, không
   // be + V-ing (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t1-w3.
@@ -395,7 +402,7 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
 
 export const GRAMMAR_W1: GrammarContent = { tenses: [TO_BE] }
 export const GRAMMAR_W2: GrammarContent = { tenses: [PRESENT_SIMPLE] }
-export const GRAMMAR_W3: GrammarContent = { tenses: [PRESENT_SIMPLE_QUESTIONS] }
+export const GRAMMAR_W3: GrammarContent = { tenses: [PRESENT_SIMPLE_QUESTIONS], choices: [QUESTION_WORDS] }
 export const GRAMMAR_W4: GrammarContent = {
   tenses: [],
   review: {

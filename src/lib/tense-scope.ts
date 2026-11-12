@@ -8,7 +8,8 @@ import { IRREGULAR_VERBS } from '@/data/lessons/irregular-verbs'
  * Story 37 thêm 7 chủ điểm T3–T4: mỗi chủ điểm dùng được mọi nhóm của T1–T2, các nhóm will → going to → hoàn thành →
  * since / how long → can / should / must → so sánh → bị động hiện tại mở dần theo bài (bảng "Phạm vi chữ theo thì", Design
  * Notes story 37). Nhóm "luôn bị báo" (could / would…, have to, used to, had + V3, quá khứ tiếp diễn, bị động quá khứ,
- * lượng từ / liên từ, "Don't + V") chưa dạy ở Chặng 1.
+ * "Don't + V") chưa dạy ở Chặng 1.
+ * Lượng từ (F15, story 43) và liên từ (F16, story 44) dạy ở Sân ga nên mọi thì dùng được.
  *
  * Hàm thuần, chỉ test dữ liệu dùng (app không import).
  */
@@ -169,9 +170,6 @@ const OTHER_MODALS: ReadonlySet<string> = new Set([
   'shall',
   'ought',
 ])
-/** Lượng từ, liên từ (story 43, 44). Luôn bị báo. */
-const QUANTIFIERS_LINKERS: ReadonlySet<string> = new Set(['some', 'any', 'many', 'much', 'lot', 'because', 'so'])
-
 /** Thì nào được dùng nhóm nào (bảng "Phạm vi chữ theo thì", Design Notes story 36 và 37). */
 type Scope = {
   irregularV2: boolean
@@ -306,7 +304,7 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
     else if (!scope.modal && MODALS.has(w)) out.push(w)
     else if (!scope.since && w === 'since') out.push(w)
     else if (!scope.comparative && w === 'than') out.push(w)
-    else if (OTHER_MODALS.has(w) || /^[a-z]+'d$/.test(w) || QUANTIFIERS_LINKERS.has(w)) out.push(w)
+    else if (OTHER_MODALS.has(w) || /^[a-z]+'d$/.test(w)) out.push(w)
     else if (!scope.ed && isEd(w)) out.push(w)
     // V-ing đứng một mình (lựa chọn sai "drinking", "living"…): chưa dạy trước s1-t2-w1.
     else if (!scope.progressive && /^[a-z]{2,}ing$/.test(w) && !NOT_PROGRESSIVE.has(w)) out.push(w)

@@ -81,6 +81,8 @@ export const CONCEPT_IDS = [
   'quantifiers',
   // F16
   'have-has',
+  // F16, story 44: and / but / or / because / so
+  'conjunctions',
   // F17
   'tenses-overview',
   'verb-forms',
@@ -112,7 +114,7 @@ export type Screen =
       kind: 'explain'
       /** Giải thích tiếng Việt, 40–80 chữ. */
       textVi: string
-      /** Bảng tra (story 34, tuỳ chọn): hiện dưới đoạn giải thích, mỗi bảng đóng sẵn. Hiện F06 và F15 có. */
+      /** Bảng tra (story 34, tuỳ chọn): hiện dưới đoạn giải thích, mỗi bảng đóng sẵn. Hiện F06, F15 và F16 có. */
       tables?: readonly BrickTable[]
     }
   | {

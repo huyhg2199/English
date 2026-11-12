@@ -14,13 +14,16 @@ const entries = Object.entries(FUNCTION_WORD_GATES)
 const FUNCTION_POS = new Set(['pronoun', 'preposition', 'conjunction', 'determiner'])
 
 describe('FUNCTION_WORD_GATES — cổng hư từ', () => {
-  it('tổng 86: 33 cổng viên, 15 cổng bài, 38 cổng tường (some / any / many dời về F15, story 43)', () => {
+  it('tổng 86: 36 cổng viên, 15 cổng bài, 35 cổng tường (some / any / many dời về F15, story 43; but / or / because về F16, story 44)', () => {
     expect(entries).toHaveLength(86)
     const kinds = entries.map(([, g]) => (g.opensAfter === 'wall' ? 'wall' : 'brick' in g.opensAfter ? 'brick' : 'lesson'))
-    expect(kinds.filter((k) => k === 'brick')).toHaveLength(33)
+    expect(kinds.filter((k) => k === 'brick')).toHaveLength(36)
     expect(kinds.filter((k) => k === 'lesson')).toHaveLength(15)
-    expect(kinds.filter((k) => k === 'wall')).toHaveLength(38)
+    expect(kinds.filter((k) => k === 'wall')).toHaveLength(35)
     for (const id of ['ngsl-some', 'ngsl-any', 'ngsl-many']) expect(functionWordGate(id)?.opensAfter, id).toEqual({ brick: 'F15' })
+    for (const id of ['ngsl-but', 'ngsl-or', 'ngsl-because']) expect(functionWordGate(id)?.opensAfter, id).toEqual({ brick: 'F16' })
+    // and, why giữ cổng tường: F10, F11, F15 đã dùng and; why đã mở ở s1-t1-w3 sau tường.
+    for (const id of ['ngsl-and', 'ngsl-why']) expect(functionWordGate(id)?.opensAfter, id).toBe('wall')
     // much giữ cổng F14 (How much hỏi giá): dời ra sau sẽ đóng một cổng đã mở.
     expect(functionWordGate('ngsl-much')?.opensAfter).toEqual({ brick: 'F14' })
   })
