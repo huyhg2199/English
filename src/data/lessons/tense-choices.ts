@@ -1,14 +1,16 @@
 import type { TenseChoice } from './types'
 
 /**
- * Khối "Chọn thì" (story 39, 44): 5 khối. Đặt hai thì cạnh nhau (s1-t2-w1, s1-t3-w2), hoặc chỉ cách nói tiếng Anh của chữ
- * Việt: tại sao · bao lâu một lần · bao nhiêu (s1-t1-w3), ai · cái gì (s1-t2-w2), đã · sẽ · chưa (s1-t3-w4). Tự soạn.
+ * Khối "Chọn thì" (story 39, 44, 45): 6 khối. Đặt hai thì cạnh nhau (s1-t2-w1, s1-t3-w2), hoặc chỉ cách nói tiếng Anh
+ * của chữ Việt: tại sao · bao lâu một lần · bao nhiêu (s1-t1-w3), ai · cái gì (s1-t2-w2), đã · sẽ · chưa (s1-t3-w4),
+ * phải · không cần · làm được · … được không? · muốn (s1-t4-w1). Tự soạn.
  * Phần luyện chạy bằng trình phát của thì (`TensePractice`): sai thì giải thích và làm lại, không ghi Sổ lỗi.
  * Chỉ import kiểu (không import file thì, tránh vòng); side trỏ thì bằng `tenseId`, `choiceSides` tra Tense lúc vẽ.
  * Chữ tiếng Anh chỉ dùng kiến thức đã dạy tới bài chứa khối, trong phạm vi chữ của thì cuối bài (`outOfScopeWords`).
  * Lượng từ (some / any / many / much / a lot of, viên F15) và liên từ (and / but / or / because / so, viên F16) đã dạy ở
  * Sân ga nên dùng được; vẫn không "Don't + V". Khối s1-t3-w2 / s1-t3-w4 không có dấu hiệu của bài dạy sau nó (hoàn
- * thành, since / how long, modal, so sánh, bị động).
+ * thành, since / how long, modal, so sánh, bị động). Khối s1-t4-w1 dùng phạm vi chữ của `modals` (đã mở could / have to /
+ * would like, story 45), không so sánh, bị động, may / might.
  */
 
 // ---------------------------------------------------------------- s1-t1-w3
@@ -942,6 +944,278 @@ export const DONT_TRANSLATE: TenseChoice = {
       speak: [
         { id: 'dont-translate-say-1', text: 'I watched a movie yesterday.', vi: 'Hôm qua tôi xem một bộ phim.' },
         { id: 'dont-translate-say-2', text: 'I have never been to Japan.', vi: 'Tôi chưa bao giờ đến Nhật Bản.' },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------- s1-t4-w1
+
+/**
+ * have to, could, would like (story 45). Không `sides` (như `dont-translate`): bảng chữ Việt phải · không cần · làm được ·
+ * … được không? · muốn. Phạm vi chữ của `modals` (đã mở could / have to / would like); không may, might, than, so sánh,
+ * bị động, không be + tính từ -ed.
+ */
+export const HAVE_TO_COULD_WOULD_LIKE: TenseChoice = {
+  id: 'have-to-could-would-like',
+  name: 'Phải, không cần, được không, muốn: have to, could, would like',
+  use:
+    'Tiếng Việt dùng “phải”, “được”, “muốn” cho mọi trường hợp; tiếng Anh chọn từ theo nghĩa: luật hay hoàn cảnh ' +
+    '(must / have to), cấm hay không cần (mustn\'t / don\'t have to), bây giờ hay ngày trước (can / could), nói thẳng ' +
+    'hay lịch sự (want / would like).',
+  viWords: [
+    {
+      vi: 'phải',
+      options: [
+        {
+          en: 'must',
+          whenVi: 'Luật, biển báo, hoặc chính mình thấy rất cần',
+          example: { en: 'You must stop at a red light.', vi: 'Đèn đỏ thì bạn phải dừng lại.' },
+        },
+        {
+          en: 'have to / has to',
+          whenVi: 'Việc bắt buộc do hoàn cảnh: công việc, lịch học, giờ tàu xe',
+          example: { en: 'My sister has to take the bus to work.', vi: 'Chị tôi phải đi xe buýt đi làm.' },
+        },
+      ],
+    },
+    {
+      vi: 'không cần',
+      options: [
+        {
+          en: "I don't have to · She doesn't have to",
+          whenVi: 'Không cần làm; muốn làm vẫn được',
+          example: {
+            en: "You don't have to bring food. We have a lot.",
+            vi: 'Bạn không cần mang đồ ăn. Chúng tôi có nhiều rồi.',
+          },
+        },
+        {
+          en: "mustn't",
+          whenVi: 'Không được làm (cấm); đừng nhầm với không cần',
+          example: { en: "You mustn't take photos in the museum.", vi: 'Bạn không được chụp ảnh trong bảo tàng.' },
+        },
+      ],
+    },
+    {
+      vi: 'làm được',
+      options: [
+        {
+          en: "can / can't",
+          whenVi: 'Bây giờ, hoặc nói chung (không phải quá khứ)',
+          example: { en: 'My son can swim now.', vi: 'Bây giờ con trai tôi bơi được.' },
+        },
+        {
+          en: "could / couldn't",
+          whenVi:
+            "Ngày trước, trong quá khứ (năm năm trước, hồi nhỏ). Một lần cụ thể (hôm qua) thì chỉ dùng couldn't; làm " +
+            'được một lần thì dùng V2: I finished the report.',
+          example: { en: "I couldn't swim five years ago.", vi: 'Năm năm trước tôi không bơi được.' },
+        },
+      ],
+    },
+    {
+      vi: '… được không?',
+      options: [
+        {
+          en: 'Can I …? / Can you …?',
+          whenVi: 'Với bạn bè, người nhà',
+          example: { en: 'Can you pass me the salt?', vi: 'Đưa mình lọ muối được không?' },
+        },
+        {
+          en: 'Could I …? / Could you …?',
+          whenVi: 'Lịch sự hơn: với người lạ, sếp, khách',
+          example: { en: 'Could you help me with my bag, please?', vi: 'Anh giúp tôi xách cái túi được không ạ?' },
+        },
+      ],
+    },
+    {
+      vi: 'muốn',
+      options: [
+        {
+          en: 'want',
+          whenVi: 'Nói thẳng, với người thân',
+          example: { en: 'I want a new phone.', vi: 'Tôi muốn một cái điện thoại mới.' },
+        },
+        {
+          en: "would like ('d like)",
+          whenVi: 'Lịch sự: gọi món, mua hàng; mời: Would you like …?',
+          example: { en: "I'd like a table for two, please.", vi: 'Cho tôi một bàn hai người.' },
+        },
+      ],
+    },
+  ],
+  pairs: [
+    {
+      a: { en: "You mustn't come to the meeting.", vi: 'Bạn không được đến buổi họp.' },
+      b: { en: "You don't have to come to the meeting.", vi: 'Bạn không cần đến buổi họp.' },
+      noteVi: "mustn't: cấm, không được đến. don't have to: không cần đến, muốn đến vẫn được.",
+    },
+    {
+      a: { en: "I can't find my keys.", vi: 'Tôi không tìm thấy chìa khoá.' },
+      b: { en: "I couldn't find my keys yesterday.", vi: 'Hôm qua tôi không tìm thấy chìa khoá.' },
+      noteVi: "can't nói bây giờ; couldn't nói trong quá khứ (yesterday).",
+    },
+    {
+      a: { en: 'Can you open the door?', vi: 'Mở cửa giúp mình được không?' },
+      b: { en: 'Could you open the door, please?', vi: 'Anh mở cửa giúp tôi được không ạ?' },
+      noteVi: 'Cả hai đều là nhờ; Could you …, please? lịch sự hơn, hợp với người lạ, sếp.',
+    },
+    {
+      a: { en: 'I want a sandwich.', vi: 'Tôi muốn một cái bánh mì kẹp.' },
+      b: { en: "I'd like a sandwich, please.", vi: 'Cho tôi một cái bánh mì kẹp.' },
+      noteVi: "Cùng nghĩa muốn; gọi món thì I'd like … lịch sự hơn, I want … nghe hơi cộc.",
+    },
+  ],
+  formulas: [
+    {
+      label: 'have to',
+      text:
+        "I / you / we / they have to + V · he / she / it has to + V. Phủ định: don't / doesn't have to + V. Câu hỏi: " +
+        'Do / Does + S + have to + V …?',
+    },
+    {
+      label: 'could',
+      text: "could / couldn't + V nguyên mẫu: I couldn't find my keys yesterday. Nhờ lịch sự: Could you + V …, please?",
+    },
+    {
+      label: 'would like',
+      text: "would like ('d like) + danh từ / to + V: I'd like a coffee. I'd like to go home. Mời: Would you like …? — Yes, please.",
+    },
+  ],
+  rules: [
+    'have to là động từ thường: he / she / it dùng has to; phủ định và câu hỏi mượn do / does: She doesn\'t have to work. ' +
+      'Do you have to work? (không nói Has she to…?, She hasn\'t to…).',
+    "mustn't = cấm, không được làm. don't have to = không cần làm, muốn làm vẫn được. Biển báo, luật dùng mustn't; việc " +
+      "không bắt buộc dùng don't have to.",
+    "could là quá khứ của can (I couldn't swim five years ago) và là cách nhờ, xin phép lịch sự hơn can (Could you…? " +
+      'Could I…?). Làm được một lần cụ thể trong quá khứ thì dùng V2 (Yesterday I finished the report), không dùng could. ' +
+      "would like = want nhưng lịch sự (I'd like…); mời thì hỏi Would you like…?, trả lời Yes, please. / No, thank you.",
+  ],
+  // Phần luyện (story 45): 7 câu trộn have to / don't have to, could / couldn't, would like; phạm vi chữ của `modals`.
+  // Không chuỗi nào (kể cả đáp án điền, lựa chọn) mở đầu bằng don't: chỗ trống gồm cả chủ ngữ (We don't have to, You…).
+  practice: {
+    worked: {
+      en: "I have to work on Saturday, so I can't come to your party.",
+      vi: 'Thứ Bảy tôi phải đi làm, nên tôi không đến bữa tiệc của bạn được.',
+      noteVi:
+        'Việc bắt buộc do công việc → have to + V nguyên mẫu (have to work). Chủ ngữ I nên dùng have, không phải has.',
+    },
+    faded: {
+      en: '___ (we / not / have to) wear a uniform at school.',
+      answer: "We don't have to",
+      vi: 'Ở trường chúng tôi không cần mặc đồng phục.',
+      hintVi: "Không cần → don't have to (mượn do, không nói haven't to).",
+    },
+    check: {
+      items: [
+        {
+          id: 'have-to-could-would-like-c1',
+          kind: 'type',
+          prompt: 'My mother ___ (have to) get up at five every day.',
+          answer: 'has to',
+          hintVi: 'my mother là một người (như she).',
+          explanationVi:
+            'my mother = she → has to: My mother has to get up at five every day. have to là động từ thường, nên he / ' +
+            'she / it dùng has to (như have → has).',
+        },
+        {
+          id: 'have-to-could-would-like-c2',
+          kind: 'choice',
+          prompt: 'We have a lot of food. ___ bring any.',
+          options: ["You don't have to", "You mustn't", "You doesn't have to"],
+          answer: 0,
+          hintVi: 'Đồ ăn có nhiều rồi: không cần mang, mang thêm cũng không sao.',
+          explanationVi:
+            "mustn't là cấm; không cần thì dùng don't have to: You don't have to bring any. Chủ ngữ you nên dùng don't, " +
+            "không phải doesn't.",
+        },
+        {
+          id: 'have-to-could-would-like-c3',
+          kind: 'type',
+          prompt: 'Đổi sang câu hỏi: He has to work on Sunday.',
+          answer: 'Does he have to work on Sunday?',
+          hintVi: 'Mượn Does đầu câu, has to trở về have to.',
+          explanationVi:
+            'have to mượn does khi hỏi: Does he have to work on Sunday? Có Does rồi thì has về have. Không nói ' +
+            '“Has he to work on Sunday?”.',
+        },
+        {
+          id: 'have-to-could-would-like-c4',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Tối qua tôi không ngủ được. (sleep, last night)',
+          answer: "I couldn't sleep last night.",
+          accept: ["Last night I couldn't sleep."],
+          hintVi: '“không … được” trong quá khứ (tối qua).',
+          explanationVi:
+            "Tối qua đã qua → quá khứ → couldn't + V nguyên mẫu: I couldn't (could not) sleep last night. “I can't sleep " +
+            'last night” dùng can\'t là bây giờ, không hợp với last night.',
+        },
+        {
+          id: 'have-to-could-would-like-c5',
+          kind: 'choice',
+          prompt: 'Excuse me. ___ you tell me the way to the station, please?',
+          options: ['Could', 'Do', 'Are'],
+          answer: 0,
+          hintVi: 'Nhờ người lạ chỉ đường, có please: cách nhờ lịch sự.',
+          explanationVi:
+            'Nhờ người lạ thường dùng Could you + V nguyên mẫu …, please? (lịch sự hơn Can you …): Could you tell me the ' +
+            'way to the station? ' +
+            '“Do you tell me…” là hỏi thói quen; Are không đi với động từ nguyên mẫu tell.',
+        },
+        {
+          id: 'have-to-could-would-like-c6',
+          kind: 'type',
+          prompt: 'Dịch sang tiếng Anh: Cho tôi một cốc trà. (would like, a cup of tea, please)',
+          answer: 'I would like a cup of tea, please.',
+          accept: ["I'd like a cup of tea, please."],
+          hintVi: 'Gọi món lịch sự: I would like (I\'d like) + danh từ.',
+          explanationVi:
+            "“I want a cup of tea” cùng nghĩa, nhưng đề yêu cầu would like (lịch sự): I would like (I'd like) a cup of " +
+            'tea, please. Gọi món mà nói I want … nghe hơi cộc.',
+        },
+        {
+          id: 'have-to-could-would-like-c7',
+          kind: 'type',
+          prompt: 'Two years ago, my son ___ (can / not / read).',
+          answer: "couldn't read",
+          hintVi: 'Two years ago là quá khứ: quá khứ của can.',
+          explanationVi:
+            "Two years ago là quá khứ, nên can't đổi thành couldn't (could not) + V nguyên mẫu: my son couldn't read. " +
+            "Không thêm -ed cho read, không mượn didn't.",
+        },
+      ],
+      easier: [
+        {
+          id: 'have-to-could-would-like-e1',
+          kind: 'choice',
+          prompt: 'She ___ wear a uniform at work.',
+          options: ['has to', 'have to', 'must to'],
+          answer: 0,
+          hintVi: 'Chủ ngữ she.',
+          explanationVi: 'she → has to + V nguyên mẫu: She has to wear a uniform. must không đi với to (must wear).',
+        },
+        {
+          id: 'have-to-could-would-like-e2',
+          kind: 'choice',
+          prompt: '___ some tea? — Yes, please.',
+          options: ['Would you like', 'Do you like', 'Are you like'],
+          answer: 0,
+          hintVi: 'Câu trả lời Yes, please. là nhận lời mời.',
+          explanationVi:
+            'Do you like tea? hỏi sở thích; mời thì Would you like…?: Would you like some tea? — Yes, please. “Are you ' +
+            'like” sai vì are không đi với động từ like.',
+        },
+      ],
+    },
+    apply: {
+      promptVi:
+        "Nói 2 câu: một việc bạn phải làm mỗi tuần (have to / has to) và gọi một đồ uống thật lịch sự (I'd like …, please).",
+      sampleEn: "I have to clean my room every Saturday. I'd like a glass of orange juice, please.",
+      speak: [
+        { id: 'have-to-could-would-like-say-1', text: 'I have to get up early tomorrow.', vi: 'Mai tôi phải dậy sớm.' },
+        { id: 'have-to-could-would-like-say-2', text: 'Could you help me, please?', vi: 'Bạn giúp tôi được không ạ?' },
+        { id: 'have-to-could-would-like-say-3', text: "I'd like two tickets, please.", vi: 'Cho tôi hai vé.' },
       ],
     },
   },

@@ -11,8 +11,10 @@ import type { BrickId } from '@/data/foundation'
  *
  * `opensAfter`:
  * - `{ brick }`: viên gạch dạy nó đã dạy (`isBrickTaught`: xong viên, hàng qua kiểm tra, hoặc đã bỏ qua Sân ga).
- * - `{ lesson }`: bài Chặng 1 đầu tiên dạy nó đã xong, hoặc bị bỏ qua khi Mũ Phân Loại xếp lớp. 7 động từ khuyết thiếu
- *   gắn `s1-t4-w1` vì đó là bài dạy khái niệm "động từ khuyết thiếu"; can/could… dạy rời rạc trước đó không đủ nền.
+ * - `{ lesson }`: bài đầu tiên dạy nó đã xong, hoặc bị bỏ qua khi Mũ Phân Loại xếp lớp (thường là bài Chặng 1). Modal ở
+ *   `s1-t4-w1` (bài dạy khái niệm "động từ khuyết thiếu") gồm can, could, should, must, would (would like); can/could…
+ *   dạy rời rạc trước đó không đủ nền. may (May I…?, `s2-t7-w3`) và might (câu điều kiện, `s2-t7-w4`) chưa dạy ở Chặng 1
+ *   nên gắn bài Chặng 2 dạy chúng (story 45).
  *   than, more, most, less gắn `s1-t4-w3` (bài so sánh hơn/nhất): câu tự nhiên nào chứa chúng cũng là câu so sánh.
  * - `'wall'`: không viên hay bài nào dạy riêng, mở khi qua hoặc bỏ qua Sân ga.
  *
@@ -84,7 +86,7 @@ export const FUNCTION_WORD_GATES: Readonly<Record<string, FunctionWordGate>> = O
   'ngsl-always': brick('F18', ['always']),
   'ngsl-never': brick('F18', ['never']),
   'ngsl-often': brick('F18', ['often']),
-  // Bài Chặng 1 đầu tiên dạy nó
+  // Bài đầu tiên dạy nó (Chặng 1; may, might ở Chặng 2: story 45)
   'ngsl-do': lesson('s1-t1-w3', ['do', 'does', 'did']),
   'ngsl-when': lesson('s1-t1-w3', ['when']),
   'ngsl-will': lesson('s1-t3-w1', ['will']),
@@ -93,8 +95,8 @@ export const FUNCTION_WORD_GATES: Readonly<Record<string, FunctionWordGate>> = O
   'ngsl-could': lesson('s1-t4-w1', ['could']),
   'ngsl-would': lesson('s1-t4-w1', ['would']),
   'ngsl-should': lesson('s1-t4-w1', ['should']),
-  'ngsl-may': lesson('s1-t4-w1', ['may']),
-  'ngsl-might': lesson('s1-t4-w1', ['might']),
+  'ngsl-may': lesson('s2-t7-w3', ['may']),
+  'ngsl-might': lesson('s2-t7-w4', ['might']),
   'ngsl-must': lesson('s1-t4-w1', ['must']),
   'ngsl-than': lesson('s1-t4-w3', ['than']),
   'ngsl-more': lesson('s1-t4-w3', ['more']),

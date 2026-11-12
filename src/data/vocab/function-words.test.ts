@@ -26,6 +26,12 @@ describe('FUNCTION_WORD_GATES — cổng hư từ', () => {
     for (const id of ['ngsl-and', 'ngsl-why']) expect(functionWordGate(id)?.opensAfter, id).toBe('wall')
     // much giữ cổng F14 (How much hỏi giá): dời ra sau sẽ đóng một cổng đã mở.
     expect(functionWordGate('ngsl-much')?.opensAfter).toEqual({ brick: 'F14' })
+    // Story 45: modal dạy ở s1-t4-w1 (could, would dưới dạng would like); may, might dời sang bài Chặng 2 dạy chúng.
+    for (const w of ['can', 'could', 'would', 'should', 'must']) {
+      expect(functionWordGate(`ngsl-${w}`)?.opensAfter, w).toEqual({ lesson: 's1-t4-w1' })
+    }
+    expect(functionWordGate('ngsl-may')?.opensAfter).toEqual({ lesson: 's2-t7-w3' })
+    expect(functionWordGate('ngsl-might')?.opensAfter).toEqual({ lesson: 's2-t7-w4' })
   })
 
   it('mỗi id có trong words.json, thuộc NGSL hạng ≤ 300 và có dữ liệu AI', () => {
@@ -44,12 +50,24 @@ describe('FUNCTION_WORD_GATES — cổng hư từ', () => {
     for (const id of expected) expect(Object.hasOwn(FUNCTION_WORD_GATES, id), id).toBe(true)
   })
 
-  it('cổng viên là BrickId hợp lệ; cổng bài là bài thuộc Chặng 1', () => {
+  it('cổng viên là BrickId hợp lệ; cổng bài là bài có thật thuộc Chặng 1, trừ đúng may / might ở Chặng 2 (story 45)', () => {
+    const STAGE_2: Record<string, string> = { 'ngsl-may': 's2-t7-w3', 'ngsl-might': 's2-t7-w4' }
+    const stage2Seen: string[] = []
     for (const [id, { opensAfter }] of entries) {
       if (opensAfter === 'wall') continue
-      if ('brick' in opensAfter) expect(isBrickId(opensAfter.brick), id).toBe(true)
-      else expect(getLesson(opensAfter.lesson)?.stageId, id).toBe(STAGES[0].id)
+      if ('brick' in opensAfter) {
+        expect(isBrickId(opensAfter.brick), id).toBe(true)
+        continue
+      }
+      const lesson = getLesson(opensAfter.lesson)
+      expect(lesson, id).toBeDefined()
+      if (id in STAGE_2) {
+        expect(opensAfter.lesson, id).toBe(STAGE_2[id])
+        expect(lesson?.stageId, id).toBe(STAGES[1].id)
+        stage2Seen.push(id)
+      } else expect(lesson?.stageId, id).toBe(STAGES[0].id)
     }
+    expect(stage2Seen.sort()).toEqual(['ngsl-may', 'ngsl-might'])
   })
 
   it('forms khác rỗng, chữ thường, có chính từ đó', () => {

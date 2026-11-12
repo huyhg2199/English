@@ -1,5 +1,11 @@
 import { IRREGULAR_VERBS } from './irregular-verbs'
-import { DONT_TRANSLATE, SIMPLE_VS_CONTINUOUS, SUBJECT_QUESTIONS, WILL_VS_GOING_TO } from './tense-choices'
+import {
+  DONT_TRANSLATE,
+  HAVE_TO_COULD_WOULD_LIKE,
+  SIMPLE_VS_CONTINUOUS,
+  SUBJECT_QUESTIONS,
+  WILL_VS_GOING_TO,
+} from './tense-choices'
 import type { DialogueLine, GrammarContent, Tense } from './types'
 
 /**
@@ -1345,12 +1351,18 @@ export const PERFECT_VS_PAST: Tense = {
 
 export const MODALS: Tense = {
   id: 'modals',
-  name: 'Động từ khuyết thiếu: can / should / must',
-  use: 'can: có thể, xin phép · should: lời khuyên · must: bắt buộc, rất cần thiết.',
+  name: 'Động từ khuyết thiếu: can / should / must, have to, could, would like',
+  use:
+    'can: có thể, xin phép · should: lời khuyên · must: bắt buộc, rất cần thiết · have to: phải (do hoàn cảnh) · ' +
+    'could: làm được (ngày trước), nhờ lịch sự · would like: muốn (lịch sự).',
   formulas: [
     { label: 'Khẳng định', text: 'S + can / should / must + động từ nguyên mẫu: You should rest.' },
     { label: 'Phủ định', text: "can't (cannot) · shouldn't · mustn't (cấm) + động từ nguyên mẫu" },
     { label: 'Câu hỏi', text: 'Can / Should + S + động từ nguyên mẫu …?  Can I sit here?' },
+    {
+      label: 'have to · could · would like',
+      text: "have / has to + V (don't / doesn't have to, Do you have to…?) · could + V · would like + danh từ / to + V: I'd like a coffee.",
+    },
   ],
   rules: [
     'Sau can / should / must là động từ nguyên mẫu, không có to, không thêm -s: She can swim (không phải can swims / can to swim).',
@@ -1369,6 +1381,16 @@ export const MODALS: Tense = {
     { wrong: 'He can speaks English.', right: 'He can speak English.', why: 'Sau can là động từ nguyên mẫu, không thêm -s.' },
     { wrong: 'You should to rest.', right: 'You should rest.', why: 'Không có to sau should / can / must.' },
     { wrong: 'Do you can help me?', right: 'Can you help me?', why: 'Câu hỏi đảo can lên đầu, không mượn do.' },
+    {
+      wrong: 'My boss have to travel a lot.',
+      right: 'My boss has to travel a lot.',
+      why: 'have to là động từ thường: he / she / it (my boss) dùng has to.',
+    },
+    {
+      wrong: "Yesterday I can't go to work.",
+      right: "Yesterday I couldn't go to work.",
+      why: "Quá khứ của can là could: couldn't + động từ nguyên mẫu.",
+    },
   ],
   dialogues: [yg('you should try'), yg('can I ask you')],
   spellId: 'expelliarmus',
@@ -1397,9 +1419,16 @@ export const MODALS: Tense = {
       answer: 'should',
       vi: 'should = lời khuyên (nên). must = bắt buộc, mạnh hơn nhiều.',
     },
+    {
+      id: 'modals-rule-5',
+      cloze: 'My father ___ (have to) work on Saturdays.',
+      answer: 'has to',
+      vi: "have to là động từ thường: he / she / it → has to + V. Phủ định, câu hỏi mượn do / does: doesn't have to, Does he have to…?",
+    },
   ],
-  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T3 và can / should / must; không so sánh, bị động, have to, could
-  // (xem `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t4-w1.
+  // Phần luyện có bậc (story 37): Sân ga, mọi thì T1–T3 và can / should / must; không so sánh, bị động (xem
+  // `src/lib/tense-scope.ts`); đề không trùng đề quiz s1-t4-w1. Câu luyện của thì giữ can / should / must; have to, could,
+  // would like luyện ở khối `have-to-could-would-like` (story 45).
   practice: {
     worked: {
       en: "You should wear a coat. It's cold outside.",
@@ -1839,5 +1868,5 @@ export const GRAMMAR_T3_W4: GrammarContent = {
     quizId: 'mini-t3',
   },
 }
-export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS] }
+export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS], choices: [HAVE_TO_COULD_WOULD_LIKE] }
 export const GRAMMAR_T4_W3: GrammarContent = { tenses: [COMPARATIVES, PASSIVE_PRESENT] }

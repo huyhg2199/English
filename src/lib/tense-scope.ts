@@ -6,9 +6,11 @@ import { IRREGULAR_VERBS } from '@/data/lessons/irregular-verbs'
  * be + V-ing; bài was / were không có -ed hay V2 khác; bài will chưa có going to; bài hoàn thành chưa có since / modal.
  *
  * Story 37 thêm 7 chủ điểm T3–T4: mỗi chủ điểm dùng được mọi nhóm của T1–T2, các nhóm will → going to → hoàn thành →
- * since / how long → can / should / must → so sánh → bị động hiện tại mở dần theo bài (bảng "Phạm vi chữ theo thì", Design
- * Notes story 37). Nhóm "luôn bị báo" (could / would…, have to, used to, had + V3, quá khứ tiếp diễn, bị động quá khứ,
- * "Don't + V") chưa dạy ở Chặng 1.
+ * since / how long → modal → so sánh → bị động hiện tại mở dần theo bài (bảng "Phạm vi chữ theo thì", Design Notes
+ * story 37). Nhóm modal mở từ s1-t4-w1 (chủ điểm `modals`) là "can / could / should / must, have to, would like" (story 45:
+ * could / couldn't, have / has to kể cả don't / doesn't have to và Do / Does … have to, would like / 'd like / Would … like).
+ * Nhóm "luôn bị báo" (may / might / shall / ought, would và 'd ngoài would like, wouldn't, had to / having to / used to,
+ * have got to / gotta, had + V3, quá khứ tiếp diễn, bị động quá khứ, "Don't + V") chưa dạy ở Chặng 1.
  * Lượng từ (F15, story 43) và liên từ (F16, story 44) dạy ở Sân ga nên mọi thì dùng được.
  *
  * Hàm thuần, chỉ test dữ liệu dùng (app không import).
@@ -144,12 +146,15 @@ const DID: ReadonlySet<string> = new Set(["didn't", 'didnt'])
 const DONT: ReadonlySet<string> = new Set(["don't", "doesn't", 'dont', 'doesnt'])
 /** will, won't (story 37: mở từ bài will); 'll bắt riêng. */
 const WILL: ReadonlySet<string> = new Set(['will', "won't", 'wont'])
-/** can / should / must (mở từ bài modal, s1-t4-w1). */
+/** can / could / should / must (mở từ bài modal, s1-t4-w1; could thêm ở story 45). have to, would like xét riêng. */
 const MODALS: ReadonlySet<string> = new Set([
   'can',
   "can't",
   'cant',
   'cannot',
+  'could',
+  "couldn't",
+  'couldnt',
   'should',
   "shouldn't",
   'shouldnt',
@@ -157,11 +162,11 @@ const MODALS: ReadonlySet<string> = new Set([
   "mustn't",
   'mustnt',
 ])
-/** Modal chưa dạy ở Chặng 1 (could / would: story 45); 'd bắt riêng. Luôn bị báo. */
+/**
+ * Modal chưa dạy ở Chặng 1: may, might, shall, ought, wouldn't, và would ngoài would like ('d bắt riêng). Luôn bị báo, trừ
+ * would / 'd của would like khi thì đã mở modal (story 45, `isWouldLike`).
+ */
 const OTHER_MODALS: ReadonlySet<string> = new Set([
-  'could',
-  "couldn't",
-  'couldnt',
   'would',
   "wouldn't",
   'wouldnt',
@@ -186,7 +191,7 @@ type Scope = {
   perfect: boolean
   /** since, how long. */
   since: boolean
-  /** can / should / must. */
+  /** can / could / should / must, have / has to, would like ('d like, Would … like). */
   modal: boolean
   /** than; the best / worst / most; the + -est. */
   comparative: boolean
@@ -261,8 +266,30 @@ const DO_QUESTION_RES = [
  */
 const GOING_TO_RE =
   /\b[Gg]oing to\b(?! (?:[A-Z]|(?:the|a|an|my|your|his|her|its|our|their|school|work|bed|class|church)\b))/
-/** have to / has to / had to, used to, have got to / 've got to, gotta (story 45): luôn bị báo. */
+/**
+ * have to / has to / had to, having to, used to, have got to / 've got to, gotta. have to / has to (không got) mở cùng modal
+ * (story 45, `HAVE_HAS_TO_RE`); các dạng còn lại luôn bị báo.
+ */
 const HAVE_TO_RE = /\b(?:have|has|had|having|used)(?: got)? to\b|\b[a-z]+'(?:ve|s|d) got to\b|\bgotta\b/g
+/** have to / has to đúng nghĩa "phải" (cả trong don't / doesn't have to, Do / Does … have to): mở từ `modals`. */
+const HAVE_HAS_TO_RE = /^ha(?:ve|s) to$/
+
+/** Chủ ngữ được đứng giữa would và like: đại từ ("Would you like"), hoặc từ hạn định + 1 danh từ ("Would your son like"). */
+const WOULD_LIKE_PRONOUNS: ReadonlySet<string> = new Set(['i', 'you', 'he', 'she', 'it', 'we', 'they'])
+const WOULD_LIKE_DETERMINERS: ReadonlySet<string> = new Set(['my', 'your', 'his', 'her', 'our', 'their', 'the'])
+/**
+ * would / 'd của would like: từ kế là like ("would like", "I'd like"); hoặc would + chủ ngữ + like, chủ ngữ là một đại từ
+ * ("Would you like") hay từ hạn định + 1 danh từ ("Would your son like", "What would your parents like?"). Mọi dạng khác
+ * vẫn bị báo: would + động từ ("It would look like rain"), "would not like" (phủ định chưa dạy, như wouldn't), 'd + từ
+ * khác ("You'd better like it").
+ */
+function isWouldLike(tokens: readonly string[], i: number): boolean {
+  const next = tokens[i + 1]
+  if (next === 'like') return true
+  if (tokens[i] !== 'would' || next === undefined) return false
+  if (WOULD_LIKE_PRONOUNS.has(next)) return tokens[i + 2] === 'like'
+  return WOULD_LIKE_DETERMINERS.has(next) && tokens[i + 3] === 'like'
+}
 /**
  * "Don't + V" mở đầu câu (đầu chuỗi hoặc sau . ! ? —): câu mệnh lệnh phủ định chưa dạy. Luôn bị báo. Xét trên chữ giữ hoa
  * thường (D hoa), để lựa chọn "don't eat" của câu chọn đáp án (mảnh câu, viết thường) không bị tính.
@@ -290,9 +317,8 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
   const out: string[] = []
   const didAllowed = scope.did || (tenseId === 'past-to-be' && opts?.wrongOption === true)
 
-  for (const raw of tokens) {
-    const w = raw.replace(/^'+|'+$/g, '')
-    if (w === '') continue
+  const words = tokens.map((raw) => raw.replace(/^'+|'+$/g, '')).filter((w) => w !== '')
+  for (const [i, w] of words.entries()) {
     if (!scope.perfect && IRREGULAR_V3_ONLY.has(w)) out.push(w)
     else if (!scope.irregularV2 && IRREGULAR_V2.has(w)) out.push(w)
     else if (!scope.pastBe && PAST_BE.has(w)) out.push(w)
@@ -304,7 +330,10 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
     else if (!scope.modal && MODALS.has(w)) out.push(w)
     else if (!scope.since && w === 'since') out.push(w)
     else if (!scope.comparative && w === 'than') out.push(w)
-    else if (OTHER_MODALS.has(w) || /^[a-z]+'d$/.test(w)) out.push(w)
+    else if (OTHER_MODALS.has(w) || /^[a-z]+'d$/.test(w)) {
+      // would like / 'd like / Would … like mở cùng modal (story 45); would / 'd ngoài dạng đó vẫn bị báo.
+      if (!(scope.modal && (w === 'would' || /^[a-z]+'d$/.test(w)) && isWouldLike(words, i))) out.push(w)
+    }
     else if (!scope.ed && isEd(w)) out.push(w)
     // V-ing đứng một mình (lựa chọn sai "drinking", "living"…): chưa dạy trước s1-t2-w1.
     else if (!scope.progressive && /^[a-z]{2,}ing$/.test(w) && !NOT_PROGRESSIVE.has(w)) out.push(w)
@@ -342,7 +371,8 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
       if (hit) out.push(`${m[0].trim()} (${hit})`)
     }
   }
-  // Luôn bị báo: quá khứ tiếp diễn, quá khứ hoàn thành, bị động quá khứ, have to / used to, "Don't + V".
+  // Luôn bị báo: quá khứ tiếp diễn, quá khứ hoàn thành, bị động quá khứ, had to / used to / got to, "Don't + V"
+  // (have / has to mở cùng modal, story 45).
   for (const m of text.matchAll(PAST_PROGRESSIVE_RE)) if (!NOT_PROGRESSIVE.has(m[1])) out.push(m[0])
   for (const m of text.matchAll(PAST_PERFECT_RE)) if (isPerfectForm(m[1])) out.push(m[0])
   for (const m of text.matchAll(PAST_PASSIVE_RE)) if (isPassiveForm(m[1])) out.push(m[0])
@@ -350,7 +380,7 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
     const hit = questionHits(m[1], isPassiveForm)
     if (hit) out.push(`${m[0].trim()} (${hit})`)
   }
-  for (const m of text.matchAll(HAVE_TO_RE)) out.push(m[0])
+  for (const m of text.matchAll(HAVE_TO_RE)) if (!(scope.modal && HAVE_HAS_TO_RE.test(m[0]))) out.push(m[0])
   for (const m of cased.matchAll(DONT_IMPERATIVE_RE)) out.push(m[1].toLowerCase())
   return out
 }

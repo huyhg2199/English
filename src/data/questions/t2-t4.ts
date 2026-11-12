@@ -492,7 +492,7 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
   t4w1.listen(6, ["I'd like some water, please.", 'I like some water, please.', "I'd like some coffee, please.", "You'd like some water, please."],
     "I'd like (= I would like) có âm /d/ rất nhẹ giữa I và like: nghe kỹ để phân biệt với I like."),
   // Câu gõ can / should / must (story 37): gợi ý ghi modal khi nghĩa không tự chốt; câu dịch có "nên", "không được";
-  // không so sánh, không bị động, không have to / could.
+  // không so sánh, không bị động, không have to / could (have to / could / would like luyện ở khối của story 45).
   t4w1.type(7, 'You ___ (should / not / watch) TV late at night.', "shouldn't watch",
     "Lời khuyên không nên: should + not (shouldn't) + động từ nguyên mẫu. Không có to sau shouldn't, không mượn don't.",
     ['subject-pronouns', 'prepositions-of-time', 'verb-forms']),
@@ -503,7 +503,7 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'Luật bắt buộc dùng must + nguyên mẫu: must wear. Không thêm to (must to wear) và không thêm -s.',
     ['subject-pronouns', 'articles', 'be-affirmative', 'verb-forms']),
   t4w1.type(10, '___ (can) I sit here? — Sure.', 'Can',
-    'Xin phép: Can I + nguyên mẫu …? Đảo can lên đầu, không mượn do (không phải Do I can sit here?). (May I / Could I cũng là xin phép nhưng chưa học ở Chặng 1, nên đề cho sẵn can.)',
+    'Xin phép: Can I + nguyên mẫu …? Đảo can lên đầu, không mượn do (không phải Do I can sit here?). (Could I…? cũng là xin phép, lịch sự hơn: xem khối have to, could, would like ở bài “Động từ khuyết thiếu · dạng rút gọn” (s1-t4-w1). Đề cho sẵn can.)',
     ['subject-pronouns', 'verb-forms']),
   t4w1.transform(11, 'Đổi sang câu phủ định: My grandfather can swim.', "My grandfather can't swim.",
     "Phủ định của can: can + not = can't (cannot), viết liền. Không mượn doesn't: My grandfather can't swim (không phải doesn't can swim).",

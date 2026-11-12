@@ -81,10 +81,11 @@ export const SPELLS: readonly Spell[] = [
   {
     id: 'expelliarmus',
     name: 'Expelliarmus',
-    description: 'Ra lệnh, khuyên, xin phép: can / should / must + động từ nguyên mẫu.',
+    description:
+      'Khuyên, bắt buộc, xin phép, nhờ: can / could / should / must / have to + động từ nguyên mẫu; would like để nói muốn một cách lịch sự.',
     tenseId: 'modals',
     lessonId: 's1-t4-w1',
-    grammarEn: 'the modal verbs can, should and must',
+    grammarEn: 'the modal verbs can, could, should and must, plus have to and would like',
   },
   {
     id: 'riddikulus',

@@ -38,7 +38,14 @@ import type { LessonContent, Tense, TenseChoice, TenseRuleCard } from './types'
 export * from './types'
 export { getSpell, SPELLS } from './spells'
 export { IRREGULAR_VERB_CARDS, IRREGULAR_VERB_GROUPS, IRREGULAR_VERBS } from './irregular-verbs'
-export { DONT_TRANSLATE, QUESTION_WORDS, SIMPLE_VS_CONTINUOUS, SUBJECT_QUESTIONS, WILL_VS_GOING_TO } from './tense-choices'
+export {
+  DONT_TRANSLATE,
+  HAVE_TO_COULD_WOULD_LIKE,
+  QUESTION_WORDS,
+  SIMPLE_VS_CONTINUOUS,
+  SUBJECT_QUESTIONS,
+  WILL_VS_GOING_TO,
+} from './tense-choices'
 
 /** Bài có bảng động từ bất quy tắc; thẻ ôn V2 · V3 mở khi Huy tới bài này (story 38). */
 export const IRREGULAR_VERBS_LESSON_ID = 's1-t2-w3'

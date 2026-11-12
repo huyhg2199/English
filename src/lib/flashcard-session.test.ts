@@ -1149,3 +1149,108 @@ describe('F16 nối câu, thẻ từ để hỏi và câu hỏi chủ ngữ (sto
     expect(cards['rule:present-simple-questions-5']).toBeDefined()
   })
 })
+
+describe('modal mở rộng: have to, could, would like; may / might dời sang Chặng 2 (story 45)', () => {
+  const n = (tenseId: string, count: number) => Array.from({ length: count }, (_, i) => `rule:${tenseId}-${i + 1}`)
+  const MODAL_RULES = n('modals', 5)
+  const OPEN = ['ngsl-can', 'ngsl-could', 'ngsl-would', 'ngsl-should', 'ngsl-must']
+  const dueCard = (at: Date): SrsCard => {
+    const iso = at.toISOString()
+    return { due: iso, interval: 3, ease: 2.5, reps: 2, lapses: 0, learning: false, introducedAt: iso, known: false, updatedAt: iso }
+  }
+  const withCards = (store: Store, extra: Record<string, SrsCard>): Store => ({
+    ...store,
+    data: { ...store.data, srs: { cards: { ...(readSrs(store).cards as Record<string, SrsCard>), ...extra } } },
+  })
+  /** Bỏ qua Sân ga và đánh dấu xong s1-t4-w1. */
+  const doneModals = () => completeLessons(skipFoundation(empty(), day(3)), ['s1-t4-w1'])
+
+  it('bỏ qua Sân ga + xong s1-t4-w1 → can, could, would, should, must mở; may, might vẫn khoá', () => {
+    const locked = lockedNewWordIds(doneModals())
+    for (const id of OPEN) expect(locked.has(id), id).toBe(false)
+    for (const id of ['ngsl-may', 'ngsl-might']) expect(locked.has(id), id).toBe(true)
+  })
+
+  it('thêm s2-t7-w3 → may mở, might khoá; thêm s2-t7-w4 → might mở', () => {
+    const w3 = completeLessons(doneModals(), ['s2-t7-w3'])
+    expect(lockedNewWordIds(w3).has('ngsl-may')).toBe(false)
+    expect(lockedNewWordIds(w3).has('ngsl-might')).toBe(true)
+    const w4 = completeLessons(w3, ['s2-t7-w4'])
+    expect(lockedNewWordIds(w4).has('ngsl-might')).toBe(false)
+  })
+
+  it('Mũ xếp bắt đầu s2-t8-w1 → may, might mở (bài bị xếp qua)', () => {
+    const { store } = recordAttempt(skipFoundation(empty(), day(3)), { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0 }, day(4), 's2-t8-w1')
+    const locked = lockedNewWordIds(store)
+    for (const id of [...OPEN, 'ngsl-may', 'ngsl-might']) expect(locked.has(id), id).toBe(false)
+  })
+
+  it('đã xong s1-t4-w1, chưa tới s2-t7-w3: phiên nhiều ngày không bao giờ giới thiệu may hay might', () => {
+    let store = doneModals()
+    const introduced: string[] = []
+    for (let d = 10; d <= 30; d++) {
+      const at = new Date(2026, 10, d, 9)
+      for (const item of fullSession(store, at).queue) {
+        if (item.kind === 'new') {
+          introduced.push(item.word.id)
+          expect(['ngsl-may', 'ngsl-might'], item.word.id).not.toContain(item.word.id)
+        }
+        store = gradeCard(store, item.word.id, 'good', at)
+      }
+    }
+    // Tự kiểm: phiên đã đi qua hạng của may (97) và might (159), và giới thiệu could, would.
+    const rankOf = new Map(words.map((w) => [w.id, w.rank]))
+    expect(Math.max(...introduced.filter((id) => id.startsWith('ngsl-')).map((id) => rankOf.get(id) ?? 0))).toBeGreaterThan(159)
+    for (const id of ['ngsl-could', 'ngsl-would']) expect(introduced, id).toContain(id)
+    // Thẻ hư từ could hiện dạng điền chỗ trống (AC story 45).
+    const could = functionWordCloze(words.find((w) => w.id === 'ngsl-could')!)
+    expect(could && clozeText(could)).toBe('___ you open the window?')
+    expect(could?.answer).toBe('Could')
+  })
+
+  it('có thẻ ngsl-may từ trước, chưa xong s2-t7-w3 → thẻ vẫn là thẻ ôn khi tới hạn, không bị xoá', () => {
+    const store = withCards(doneModals(), { 'ngsl-may': dueCard(day(9)) })
+    expect(lockedNewWordIds(store).has('ngsl-may')).toBe(true)
+    expect(fullSession(store).queue.find((i) => i.word.id === 'ngsl-may')).toMatchObject({ kind: 'review' })
+    expect(readSrs(store).cards['ngsl-may']).toEqual(dueCard(day(9)))
+  })
+
+  it('xong s1-t4-w1 → ruleStudyWords có rule:modals-1 … -5 đúng thứ tự, lessonId s1-t4-w1; thẻ 5 lật ra has to', () => {
+    const rules = ruleStudyWords(doneModals(), ruleCardsOf, { now: NOW, heavyReview: false })
+    expect(rules.map((r) => r.id)).toEqual(MODAL_RULES)
+    for (const r of rules) expect('lessonId' in r && r.lessonId, r.id).toBe('s1-t4-w1')
+    expect(rules[4]).toMatchObject({ cloze: 'My father ___ (have to) work on Saturdays.', answer: 'has to' })
+  })
+
+  it('bỏ đánh dấu s1-t4-w1 → could, would để dành lại; thẻ đã có giữ nguyên; rule:modals-* không vào phiên', () => {
+    const withCard = gradeCard(doneModals(), 'ngsl-could', 'good', day(9))
+    const undone = setLessonCompleted(withCard, 's1-t4-w1', false, day(9, 10))
+    for (const id of ['ngsl-could', 'ngsl-would']) expect(lockedNewWordIds(undone).has(id), id).toBe(true)
+    expect(readSrs(undone).cards['ngsl-could']).toEqual(readSrs(withCard).cards['ngsl-could'])
+    expect(ruleStudyWords(undone, ruleCardsOf, { now: NOW, heavyReview: false }).some((r) => r.id.startsWith('rule:modals-'))).toBe(false)
+  })
+
+  it('store có rule:modals-1 … -4 (bài xong trước story 45) → phiên thêm đúng -5, thẻ cũ giữ lịch', () => {
+    const OLD = MODAL_RULES.slice(0, 4)
+    const store = withFutureCards(doneModals(), OLD)
+    const before = readSrs(store).cards as Record<string, SrsCard>
+    const queue = fullSession(store).queue
+    const fresh = queue.filter((i) => i.word.id.startsWith('rule:'))
+    expect(fresh.map((i) => [i.word.id, i.kind])).toEqual([['rule:modals-5', 'new']])
+    let after = store
+    for (const item of queue) after = gradeCard(after, item.word.id, 'good', NOW)
+    const cards = readSrs(after).cards as Record<string, SrsCard>
+    for (const id of OLD) expect(cards[id], id).toEqual(before[id])
+    expect(cards['rule:modals-5']).toBeDefined()
+  })
+
+  it('thẻ mồ côi rule:modals-6 không hiện, không đếm tồn ôn, vẫn nằm trong store', () => {
+    const base = doneModals()
+    const store: Store = { ...base, data: { ...base.data, srs: { cards: { 'rule:modals-6': dueCard(day(9)) } } } }
+    const s = fullSession(store)
+    expect(s.queue.some((i) => i.word.id === 'rule:modals-6')).toBe(false)
+    expect(s.dueCount).toBe(0)
+    expect(newPerDayFor(store, NOW, ruleCardsOf).heavyReview).toBe(false)
+    expect(Object.keys(readSrs(store).cards)).toEqual(['rule:modals-6'])
+  })
+})

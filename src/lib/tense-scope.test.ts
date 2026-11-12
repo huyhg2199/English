@@ -138,9 +138,24 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     },
     { group: 'since, how long', from: 'present-perfect-vs-past', samples: ['since Monday', 'How long is the movie?'] },
     {
-      group: 'can / should / must',
+      group: 'can / could / should / must, have to, would like',
       from: 'modals',
-      samples: ['You should rest.', "I can't swim.", 'We must go.', "You mustn't park here.", 'Can I sit here?', 'He cannot come.'],
+      samples: [
+        'You should rest.',
+        "I can't swim.",
+        'We must go.',
+        "You mustn't park here.",
+        'Can I sit here?',
+        'He cannot come.',
+        // Story 45: dòng "Phạm vi chữ mở" của bảng I/O.
+        "I couldn't sleep.",
+        'Could you help me?',
+        'She has to work.',
+        'Does he have to work?',
+        "We don't have to go.",
+        "I'd like a coffee.",
+        'Would you like some tea?',
+      ],
     },
     {
       group: 'than, the best / worst / most, the + -est',
@@ -180,7 +195,7 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     expect(outOfScopeWords('present-perfect-vs-past', 'I can swim.')).toEqual(['can'])
     expect(outOfScopeWords('modals', 'He is taller than me.')).toEqual(['than'])
     expect(outOfScopeWords('comparatives', 'This bread is made every day.')).toEqual(['is made'])
-    expect(outOfScopeWords('passive-present', 'It could rain.')).toEqual(['could'])
+    expect(outOfScopeWords('passive-present', 'It might rain.')).toEqual(['might'])
     expect(outOfScopeWords('passive-present', 'The cake was made yesterday.')).toEqual(['was made'])
     expect(outOfScopeWords('will', 'I have finished.')).toEqual(['have finished'])
     expect(outOfScopeWords('present-perfect-vs-past', 'How long have you lived here?')).toEqual([])
@@ -199,7 +214,7 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
 
   it('nhóm "luôn bị báo" bị báo ở cả 13 thì', () => {
     const ALWAYS = [
-      'could', 'would', 'may', 'might', 'shall', 'ought', "I'd like tea.", 'I have to go.', 'She has to work.', 'He had to wait.',
+      'would', 'may', 'might', 'shall', 'ought', 'I would go.', "I'd go home.", "wouldn't", 'He had to wait.',
       'I used to swim.', 'He had bought it.', "She hadn't finished.", 'She was cooking.', 'The cake was made yesterday.',
       "They weren't invited.", 'Was the room cleaned?', "Don't worry.",
       "Stop! Don't touch it.", 'I have got to go.', "I've got to go.", 'I gotta go.', 'Were these old cups made in Japan?',
@@ -230,10 +245,57 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     for (const id of TENSE_SCOPE_IDS.filter((x) => x !== 'present-simple')) {
       expect(outOfScopeWords(id, 'How many books do you have?'), id).toEqual([])
     }
-    // Vẫn bị báo: could, have to, "Don't + V", quá khứ tiếp diễn.
+    // Vẫn bị báo: might, had to, "Don't + V", quá khứ tiếp diễn.
     for (const id of TENSE_SCOPE_IDS) {
-      for (const text of ['could', 'I have to go.', "Don't worry.", 'She was cooking.']) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+      for (const text of ['might', 'He had to wait.', "Don't worry.", 'She was cooking.']) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
     }
+  })
+
+  it("could, have to, would like không bị báo từ `modals`; would / 'd ngoài like vẫn bị báo (story 45)", () => {
+    const OPEN = [
+      "I couldn't sleep.",
+      'Could you help me?',
+      'She has to work.',
+      'Does he have to work?',
+      "We don't have to go.",
+      "I'd like a coffee.",
+      'Would you like some tea?',
+    ]
+    for (const id of ['modals', 'comparatives', 'passive-present'] as const) {
+      for (const text of OPEN) expect(outOfScopeWords(id, text), `${id}: ${text}`).toEqual([])
+      for (const text of ['I would go.', "I'd go home.", "She'd visit us.", "I wouldn't like it."]) {
+        expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+      }
+    }
+    expect(outOfScopeWords('modals', "I'd go home.")).toEqual(["i'd"])
+    expect(outOfScopeWords('modals', "I wouldn't like it.")).toEqual(["wouldn't"])
+    expect(outOfScopeWords('modals', 'I would not like it.')).toEqual(['would'])
+    expect(outOfScopeWords('modals', 'He had to wait. I have got to go.')).toContain('had to')
+    expect(flagged('present-perfect-vs-past', "I couldn't sleep.")).toBe(true)
+    expect(outOfScopeWords('present-perfect-vs-past', 'She has to work.')).toEqual(['has to'])
+    // Review story 45: phạm vi còn khoá báo đúng từ.
+    expect(outOfScopeWords('will', "I'd like a coffee.")).toEqual(["i'd"])
+    expect(outOfScopeWords('present-perfect-vs-past', "I'd like a coffee.")).toEqual(["i'd"])
+    expect(outOfScopeWords('present-perfect-vs-past', 'Would you like some tea?')).toEqual(['would'])
+  })
+
+  it("would + chủ ngữ + like chỉ nhận đại từ hoặc từ hạn định + 1 danh từ; would + động từ … like vẫn bị báo (review story 45)", () => {
+    for (const id of ['modals', 'comparatives', 'passive-present'] as const) {
+      for (const text of ['Would your son like some tea?', 'What would your parents like?', 'Would she like a sandwich?']) {
+        expect(outOfScopeWords(id, text), `${id}: ${text}`).toEqual([])
+      }
+      for (const text of ['It would look like rain.', 'I would feel like a king.', "He'd sound like his dad.", 'He would go like that.', "I'd go like this.", "You'd better like it."]) {
+        expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+      }
+    }
+    expect(outOfScopeWords('modals', 'It would look like rain.')).toEqual(['would'])
+    expect(outOfScopeWords('modals', "You'd better like it.")).toEqual(["you'd"])
+  })
+
+  it('giới hạn đã biết: máy dò không tách nghĩa của could, nên "It could rain." không bị báo từ `modals` (review story 45, deferred-work)', () => {
+    // Story 45 chỉ dạy could = quá khứ của can và nhờ lịch sự; could chỉ khả năng / gợi ý phải do người soạn tự tránh.
+    expect(outOfScopeWords('modals', 'It could rain.')).toEqual([])
+    expect(outOfScopeWords('present-perfect-vs-past', 'It could rain.')).toEqual(['could'])
   })
 
   it('không báo nhầm: tính từ -ed, going to + nơi chốn, the rest, have + danh từ, \'s + tính từ, lựa chọn "don\'t eat"', () => {
