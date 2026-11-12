@@ -5,6 +5,7 @@ import { ReadableText } from '@/components/ReadableText'
 import { YouglishWidget } from '@/components/media/YouglishWidget'
 import { getSpell, type DialogueLine, type Tense } from '@/data/lessons'
 
+import { SignalWords } from './SignalWords'
 import { SpellCard } from './SpellCard'
 import { TenseTimeline } from './TenseTimeline'
 import { GlossaryText } from './TermChip'
@@ -49,7 +50,7 @@ function Dialogue({ line }: { line: DialogueLine }) {
 }
 
 /**
- * Một thì / chủ điểm: dòng thời gian (nếu là thì), công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ
+ * Một thì / chủ điểm: dòng thời gian (nếu là thì), chip từ tín hiệu (story 39, thì có `signalWords`), công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ
  * thần chú. Lời tiếng Việt (`use`, nhãn và chữ công thức, quy tắc, `mistakes[].why`) có chip thuật ngữ (story 26); câu
  * tiếng Anh, câu thoại không có chip.
  */
@@ -65,6 +66,7 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
       </header>
 
       {tense.timeline && <TenseTimeline kind={tense.timeline.kind} label={tense.timeline.label} />}
+      {tense.signalWords && tense.signalWords.length > 0 && <SignalWords words={tense.signalWords} />}
 
       <div className="flex flex-col gap-2">
         <h4 className="font-semibold">Công thức</h4>

@@ -109,6 +109,29 @@ export type PronunciationBlock =
       /** Tóm tắt kèm link về đúng đoạn của bài. */
       items: readonly { text: string; lessonId: string; sectionId: 'pronunciation' | 'grammar' }[]
     }
+  | {
+      /**
+       * Bảng "mỗi thì một dòng" + luật chung trợ động từ (story 39, ôn tổng s1-t4-w4): mỗi dòng một thì, trợ động từ, câu
+       * khẳng định / phủ định / câu hỏi và link về đoạn Ngữ pháp của bài chứa thì. `auxRules`: lời Việt (có chip thuật ngữ).
+       */
+      kind: 'tense-table'
+      title: string
+      note?: string
+      rows: readonly TenseTableRow[]
+      auxRules: readonly string[]
+    }
+
+/** Một dòng bảng "mỗi thì một dòng" (story 39): `tenseId` trỏ Tense có thật, `lessonId` là bài chứa Tense đó. */
+export type TenseTableRow = {
+  tenseId: string
+  name: string
+  /** Trợ động từ: từ nhận not và đổi lên đầu câu hỏi. */
+  aux: string
+  affirmative: string
+  negative: string
+  question: string
+  lessonId: string
+}
 
 export type PronunciationContent = {
   intro: string
@@ -173,6 +196,8 @@ export type Tense = {
   dialogues: readonly DialogueLine[]
   /** Thần chú của thì; chủ điểm ôn/so sánh (hiện tại hoàn thành (2)) không có thần chú riêng. */
   spellId?: string
+  /** Từ / cụm tín hiệu của thì, hiện thành chip dưới dòng thời gian (story 39). Chỉ thì có mốc thời gian mới có. */
+  signalWords?: readonly string[]
   /**
    * Thẻ quy tắc của thì (story 33). Bài chứa thì được đánh dấu xong thì thẻ vào phiên ôn SRS (đứng sau thẻ viên gạch),
    * id SRS `rule:<tenseId>-n` (từ id nội dung `<tenseId>-rule-n`). Bài bị bỏ qua khi xếp lớp thì không góp thẻ.
@@ -220,8 +245,48 @@ export type GrammarContent = {
   irregularVerbs?: readonly IrregularVerb[]
   /** Bảng ôn cột V3 đứng trước các thì, che sẵn V3 (story 38, s1-t3-w3). */
   irregularVerbsReview?: readonly IrregularVerb[]
+  /**
+   * Khối "Chọn thì" (story 39), đứng sau các thì của bài, trước bảng động từ và phần ôn tập: so hai thì cạnh nhau
+   * (`sides`) hoặc bảng chữ Việt → cách nói tiếng Anh (`viWords`), cặp câu dễ nhầm và phần luyện như phần luyện của thì.
+   */
+  choices?: readonly TenseChoice[]
   /** Tuần ôn tập: tóm tắt các thì đã học và ghi chú mini test. */
   review?: { summary: readonly string[]; note: string; quizId?: string }
+}
+
+/**
+ * Một bên của khối so sánh hai thì (story 39): `tenseId` trỏ Tense có thật và có `signalWords`. Tên, dòng thời gian và chip
+ * tín hiệu lấy từ chính Tense đó (`choiceSides`).
+ */
+export type TenseChoiceSide = { tenseId: string; whenVi: string; example: { en: string; vi: string } }
+
+/** Cặp câu dễ nhầm: hai câu gần nhau, khác thì vì khác ngữ cảnh (thói quen / lúc này, vừa nghĩ ra / đã định…), kèm ghi chú vì sao (story 39). */
+export type MinimalPair = { a: { en: string; vi: string }; b: { en: string; vi: string }; noteVi: string }
+
+/** Một chữ Việt (đã, sẽ, chưa) và các cách nói tiếng Anh tương ứng, mỗi cách có "khi nào" và câu ví dụ (story 39). */
+export type ViWordChoice = {
+  vi: string
+  options: readonly { en: string; whenVi: string; example: { en: string; vi: string } }[]
+}
+
+/**
+ * Khối "Chọn thì" (story 39). Id không trùng id Tense. Khối so sánh có `sides` (hai thì cạnh nhau), khối "Đừng dịch từng
+ * chữ" có `viWords`. `formulas` + `rules` là phần "Xem lại giải thích" của phần luyện; `practice` chạy bằng chính trình
+ * phát của thì (`TensePractice`), không ghi Sổ lỗi, lần làm quiz, tiến độ hay điểm Nhà (chỉ câu nói ghi điểm nói).
+ */
+export type TenseChoice = {
+  /** Ví dụ `simple-vs-continuous`. */
+  id: string
+  name: string
+  /** Một câu: khối này giúp chọn gì (lời Việt, có chip thuật ngữ). */
+  use: string
+  sides?: readonly [TenseChoiceSide, TenseChoiceSide]
+  viWords?: readonly ViWordChoice[]
+  pairs: readonly MinimalPair[]
+  formulas: Tense['formulas']
+  /** 3 quy tắc chọn. */
+  rules: readonly string[]
+  practice: TensePractice
 }
 
 /**

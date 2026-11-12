@@ -33,11 +33,12 @@ import {
   PRONUNCIATION_T4_W3,
   PRONUNCIATION_T4_W4,
 } from './t2-t4-pronunciation'
-import type { LessonContent, Tense, TenseRuleCard } from './types'
+import type { LessonContent, Tense, TenseChoice, TenseRuleCard } from './types'
 
 export * from './types'
 export { getSpell, SPELLS } from './spells'
 export { IRREGULAR_VERB_CARDS, IRREGULAR_VERB_GROUPS, IRREGULAR_VERBS } from './irregular-verbs'
+export { DONT_TRANSLATE, SIMPLE_VS_CONTINUOUS, WILL_VS_GOING_TO } from './tense-choices'
 
 /** Bài có bảng động từ bất quy tắc; thẻ ôn V2 · V3 mở khi Huy tới bài này (story 38). */
 export const IRREGULAR_VERBS_LESSON_ID = 's1-t2-w3'
@@ -165,6 +166,11 @@ export function lessonPartIds(lessonId: string): readonly string[] {
 /** Mọi thì đã soạn, theo thứ tự bài. */
 export function allTenses(): Tense[] {
   return LESSON_CONTENTS.flatMap((c) => c.grammar?.tenses ?? [])
+}
+
+/** Mọi khối "Chọn thì" (story 39), theo thứ tự bài. */
+export function allTenseChoices(): TenseChoice[] {
+  return LESSON_CONTENTS.flatMap((c) => c.grammar?.choices ?? [])
 }
 
 const NO_RULE_CARDS: readonly TenseRuleCard[] = []

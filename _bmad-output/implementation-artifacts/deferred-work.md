@@ -156,3 +156,12 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/38-tense-rule-cards-irregular-verb-srs.md`
   summary: Phần lý thuyết của bài nói quá hai quy tắc: "So sánh nhất luôn có the" (`COMPARATIVES` rules[2] và mistake "So sánh nhất phải có the", sai với my best friend) và "hỏi When …?" luôn dùng quá khứ đơn (`PERFECT_VS_PAST` rules và mistake "Câu hỏi When … luôn hỏi về một lúc đã xong", sai với When will you…?).
   evidence: Review story 38 (content). Thẻ ôn của story 38 đã sửa `vi` cho đúng, nhưng story 38 cấm sửa `rules`, `mistakes` của Tense; `src/data/lessons/t2-t4-grammar.ts` (~ dòng 879 và 1003, 1016). Story 37 hoặc 39 (đụng nội dung T3–T4) nên sửa chữ.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/39-tense-choice-signal-words-aux-table.md`
+  summary: Bài s1-t3-w2 (dạy nối âm) không còn video nối âm vì mV_CEIroJs8 chuyển sang ôn tổng s1-t4-w4 để giữ luật 1–2 video mỗi bài.
+  evidence: Review story 39 (blind). `PRONUNCIATION_T3_W2.blocks` = [LINKING] nhưng `videos.json` chỉ còn begKNGxcjdk (grammar) + UkBzUmRhs6w (giải trí) ở s1-t3-w2. Intent story 39 chọn vậy và loại việc sắp lại video khác (story 47). Story 47 nên xem lại: chia Ngữ pháp theo ngày có thể cho phép video nối âm quay về bài dạy nối âm.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/39-tense-choice-signal-words-aux-table.md`
+  summary: Tuần will (s1-t3-w1) không còn video nào nói về will; chỉ còn psI7E_J1zPo (phát âm was / were, giải trí).
+  evidence: Review story 39 (blind). begKNGxcjdk (will hay going to) chuyển sang s1-t3-w2 theo Intent; `videosFor('s1-t3-w1')` chỉ còn một video. Story 47 (sắp lại video) nên tìm một video ngắn về will cho tuần này.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/39-tense-choice-signal-words-aux-table.md`
+  summary: Chip tín hiệu của will (tomorrow, tonight) và going to (this weekend, next month) không chốt được thì; story 39 chỉ thêm ghi chú "chỉ để gợi ý" trên thẻ "will hay going to?".
+  evidence: Review story 39 (blind + content). Quy tắc 3 của khối nói tomorrow / next week đi được với cả hai. Không đổi được chip sang "I promise", "I think", "OK, …" vì luật chip là phải có trong chữ của chính Tense, và story 39 cấm sửa dữ liệu Tense. Story 37 (thêm phần luyện T3–T4) có thể đưa các cụm này vào phần luyện của will rồi đổi chip.

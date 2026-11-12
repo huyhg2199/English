@@ -183,6 +183,16 @@ describe('subLessonContext', () => {
     for (const w of ctx.words) expect(w.length).toBeGreaterThanOrEqual(3)
     expect(subLessonContext('khong-co')).toEqual({ tenses: [], words: new Set() })
   })
+
+  it('story 39: s1-t3-w2 có cả thì của khối "will hay going to?", nên cue will cũng được tô', () => {
+    const ctx = subLessonContext('s1-t3-w2')
+    expect(ctx.tenses.map((t) => t.id)).toEqual(['going-to', 'will'])
+    expect(highlightReason(cue(0, 1, 'It will rain.', { highlight: ['will'] }), ctx, new Set())).toBe('Tương lai với will')
+    expect(highlightReason(cue(0, 1, "I'm going to go.", { highlight: ['going-to'] }), ctx, new Set())).toBe('be going to (gonna)')
+    // Bài chỉ có khối không có hai bên (s1-t3-w4) giữ đúng thì của bài; s1-t3-w1 không đổi.
+    expect(subLessonContext('s1-t3-w4').tenses.map((t) => t.id)).toEqual(['present-perfect-vs-past'])
+    expect(subLessonContext('s1-t3-w1').tenses.map((t) => t.id)).toEqual(['will'])
+  })
 })
 
 describe('isSubFile', () => {

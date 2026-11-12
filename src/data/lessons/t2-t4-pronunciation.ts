@@ -286,6 +286,33 @@ const STAGE_1_OVERVIEW_TENSES: PronunciationBlock = {
   ],
 }
 
+/**
+ * Bảng "mỗi thì một dòng" + luật chung trợ động từ (story 39). Chỉ thì của Chặng 1 đã có (không quá khứ tiếp diễn); mỗi
+ * dòng link về đoạn Ngữ pháp của bài chứa thì. Đặt trong đoạn Ôn tổng vì s1-t4-w4 không có đoạn Ngữ pháp.
+ */
+const STAGE_1_TENSE_TABLE: PronunciationBlock = {
+  kind: 'tense-table',
+  title: 'Mỗi thì một dòng',
+  note: 'Chip cạnh tên thì là trợ động từ: từ nhận not và đổi lên đầu câu hỏi. Ba câu mỗi dòng giữ cùng chủ ngữ. Bấm tên thì để về bài.',
+  rows: [
+    { tenseId: 'to-be', name: 'to be hiện tại', aux: 'am / is / are', affirmative: 'She is tired.', negative: "She isn't tired.", question: 'Is she tired?', lessonId: 's1-t1-w1' },
+    { tenseId: 'present-simple-questions', name: 'Hiện tại đơn', aux: 'do / does (mượn)', affirmative: 'She works here.', negative: "She doesn't work here.", question: 'Does she work here?', lessonId: 's1-t1-w3' },
+    { tenseId: 'present-continuous', name: 'Hiện tại tiếp diễn', aux: 'am / is / are', affirmative: 'He is cooking.', negative: "He isn't cooking.", question: 'Is he cooking?', lessonId: 's1-t2-w1' },
+    { tenseId: 'past-to-be', name: 'to be quá khứ', aux: 'was / were', affirmative: 'It was cold.', negative: "It wasn't cold.", question: 'Was it cold?', lessonId: 's1-t2-w2' },
+    { tenseId: 'past-simple', name: 'Quá khứ đơn', aux: 'did (mượn)', affirmative: 'They watched TV.', negative: "They didn't watch TV.", question: 'Did they watch TV?', lessonId: 's1-t2-w2' },
+    { tenseId: 'will', name: 'Tương lai will', aux: 'will', affirmative: 'He will call you.', negative: "He won't call you.", question: 'Will he call you?', lessonId: 's1-t3-w1' },
+    { tenseId: 'going-to', name: 'be going to', aux: 'am / is / are', affirmative: 'She is going to travel.', negative: "She isn't going to travel.", question: 'Is she going to travel?', lessonId: 's1-t3-w2' },
+    { tenseId: 'present-perfect', name: 'Hiện tại hoàn thành', aux: 'have / has', affirmative: 'They have eaten.', negative: "They haven't eaten.", question: 'Have they eaten?', lessonId: 's1-t3-w3' },
+    { tenseId: 'modals', name: 'can / should / must', aux: 'can / should / must', affirmative: 'You can swim.', negative: "You can't swim.", question: 'Can you swim?', lessonId: 's1-t4-w1' },
+    { tenseId: 'passive-present', name: 'Bị động hiện tại', aux: 'am / is / are', affirmative: 'It is made in Vietnam.', negative: "It isn't made in Vietnam.", question: 'Is it made in Vietnam?', lessonId: 's1-t4-w3' },
+  ],
+  auxRules: [
+    "Câu đã có trợ động từ (am / is / are, was / were, will, have / has, can / should / must): phủ định thêm not ngay sau nó (isn't, won't, haven't, can't), câu hỏi đưa nó lên trước chủ ngữ, trả lời ngắn lặp lại nó (Yes, I have.).",
+    "Câu chỉ có động từ thường (hiện tại đơn, quá khứ đơn, trừ to be am / is / are, was / were) thì mượn do / does / did, và động từ chính về nguyên mẫu: She doesn't work. Did you go?",
+    "Mỗi câu chỉ một trợ động từ làm việc này: không nói Do you can…?, Did you be…?, I don't can, She doesn't is.",
+  ],
+}
+
 // ---------------------------------------------------------------- Nội dung đoạn Phát âm từng tuần
 
 export const PRONUNCIATION_T2_W1: PronunciationContent = {
@@ -406,7 +433,7 @@ export const PRONUNCIATION_T4_W3: PronunciationContent = {
 export const PRONUNCIATION_T4_W4: PronunciationContent = {
   intro: 'Tuần ôn tổng trước O.W.L. 1. Đọc lại tóm tắt, bấm vào dòng nào còn yếu để về đúng bài. Bài thi O.W.L. 1 sẽ có ở trang này; trước đó hãy ôn theo danh sách dưới.',
   groups: [],
-  blocks: [STAGE_1_OVERVIEW_SOUNDS, STAGE_1_OVERVIEW_TENSES],
+  blocks: [STAGE_1_OVERVIEW_SOUNDS, STAGE_1_OVERVIEW_TENSES, STAGE_1_TENSE_TABLE],
   sentences: [
     { id: 's1-t4-w4-say-1', text: 'I am learning English every day.', vi: 'Tôi đang học tiếng Anh mỗi ngày.' },
     { id: 's1-t4-w4-say-2', text: 'Yesterday I watched a movie without subtitles.', vi: 'Hôm qua tôi xem phim không phụ đề.' },

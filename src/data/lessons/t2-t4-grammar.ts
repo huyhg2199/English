@@ -1,4 +1,5 @@
 import { IRREGULAR_VERBS } from './irregular-verbs'
+import { DONT_TRANSLATE, SIMPLE_VS_CONTINUOUS, WILL_VS_GOING_TO } from './tense-choices'
 import type { DialogueLine, GrammarContent, Tense } from './types'
 
 /**
@@ -20,6 +21,7 @@ export const PRESENT_CONTINUOUS: Tense = {
   name: 'Hiện tại tiếp diễn',
   use: 'Việc đang diễn ra ngay lúc nói, hoặc quanh khoảng thời gian này (tuần này, dạo này).',
   timeline: { kind: 'progress', label: 'Đang diễn ra quanh lúc nói' },
+  signalWords: ['now', 'right now', 'today', 'this year', 'Look!'],
   formulas: [
     { label: 'Khẳng định', text: 'S + am / is / are + V-ing: I am working. She is cooking.' },
     { label: 'Phủ định', text: "S + am / is / are + not + V-ing: He isn't sleeping." },
@@ -191,6 +193,7 @@ export const PAST_TO_BE: Tense = {
   name: 'Quá khứ đơn: to be (was / were)',
   use: 'Nói ai / cái gì đã là gì, ở đâu, thế nào ở một lúc trong quá khứ (yesterday, last night, in 2020).',
   timeline: { kind: 'past-point', label: 'Trạng thái đúng ở một lúc trong quá khứ' },
+  signalWords: ['yesterday', 'last night', 'last Monday', 'in 2020'],
   formulas: [
     { label: 'Khẳng định', text: 'I / he / she / it was · you / we / they were + danh từ / tính từ / nơi chốn: I was tired. They were at home.' },
     { label: 'Phủ định', text: "S + was / were + not (wasn't, weren't): She wasn't at work." },
@@ -356,6 +359,7 @@ export const PAST_SIMPLE: Tense = {
   name: 'Quá khứ đơn: động từ có quy tắc',
   use: 'Việc đã xảy ra và đã xong ở một lúc trong quá khứ (yesterday, last week, two days ago).',
   timeline: { kind: 'past-point', label: 'Đã xảy ra và kết thúc trong quá khứ' },
+  signalWords: ['yesterday', 'last night', 'last week', 'last year', 'ago'],
   formulas: [
     { label: 'Khẳng định', text: 'S + V-ed (mọi chủ ngữ): I worked. She played.' },
     { label: 'Phủ định', text: "S + did not (didn't) + động từ nguyên mẫu: He didn't call." },
@@ -516,6 +520,7 @@ export const PAST_SIMPLE_IRREGULAR: Tense = {
   name: 'Quá khứ đơn: động từ bất quy tắc',
   use: 'Nhiều động từ thông dụng nhất không thêm -ed mà đổi hẳn dạng: go → went, see → saw.',
   timeline: { kind: 'past-point', label: 'Đã xảy ra và kết thúc trong quá khứ' },
+  signalWords: ['yesterday', 'last night', 'last week', 'last weekend'],
   formulas: [
     { label: 'Khẳng định', text: 'S + V2 (cột 2 của bảng): I went. She bought a phone.' },
     { label: 'Phủ định / câu hỏi', text: "didn't / Did + V1 (nguyên mẫu): I didn't go. Did you see it?" },
@@ -678,6 +683,7 @@ export const WILL: Tense = {
   name: 'Tương lai với will',
   use: 'Quyết định ngay lúc nói, dự đoán, lời hứa và lời đề nghị giúp đỡ.',
   timeline: { kind: 'future-point', label: 'Một lúc trong tương lai' },
+  signalWords: ['tomorrow', 'tonight'],
   formulas: [
     { label: 'Khẳng định', text: "S + will + động từ nguyên mẫu: I will help you. (I'll, you'll, she'll)" },
     { label: 'Phủ định', text: "S + will not (won't) + động từ nguyên mẫu" },
@@ -739,6 +745,7 @@ export const GOING_TO: Tense = {
   name: 'be going to (gonna)',
   use: 'Kế hoạch đã quyết từ trước, hoặc dự đoán khi đã thấy dấu hiệu ngay trước mắt.',
   timeline: { kind: 'plan', label: 'Đã định từ bây giờ, sẽ làm trong tương lai' },
+  signalWords: ['this weekend', 'next month', 'Look!'],
   formulas: [
     { label: 'Khẳng định', text: "S + am / is / are + going to + động từ nguyên mẫu: I'm going to visit my parents." },
     { label: 'Phủ định', text: "S + am / is / are + not + going to + V: She isn't going to come." },
@@ -798,6 +805,7 @@ export const PRESENT_PERFECT: Tense = {
   name: 'Hiện tại hoàn thành (1): trải nghiệm',
   use: 'Nói về trải nghiệm từ trước tới giờ (không nói rõ lúc nào), hoặc việc vừa xong còn liên quan tới bây giờ.',
   timeline: { kind: 'past-to-now', label: 'Từ quá khứ tới bây giờ, không nói rõ lúc nào' },
+  signalWords: ['ever', 'never', 'just', 'already', 'yet', 'before', 'twice'],
   formulas: [
     { label: 'Khẳng định', text: "S + have / has + V3: I have visited Da Lat. She has finished. (I've, she's)" },
     { label: 'Phủ định', text: "S + have / has + not (haven't / hasn't) + V3" },
@@ -866,6 +874,7 @@ export const PERFECT_VS_PAST: Tense = {
   name: 'Hiện tại hoàn thành (2) và so sánh với quá khứ đơn',
   use: 'Hiện tại hoàn thành với for / since (kéo dài tới giờ), và cách chọn giữa nó với quá khứ đơn.',
   timeline: { kind: 'perfect-vs-past', label: 'Quá khứ đơn: một lúc đã xong · Hoàn thành: kéo tới bây giờ' },
+  signalWords: ['since', 'How long', 'so far'],
   formulas: [
     { label: 'Kéo dài tới giờ', text: 'S + have / has + V3 + for + khoảng thời gian / since + mốc bắt đầu' },
     { label: 'Hỏi bao lâu', text: 'How long have you + V3 …?  → For three years. / Since 2023.' },
@@ -1103,7 +1112,7 @@ export const PASSIVE_PRESENT: Tense = {
 
 // ---------------------------------------------------------------- Nội dung đoạn Ngữ pháp từng tuần
 
-export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS] }
+export const GRAMMAR_T2_W1: GrammarContent = { tenses: [PRESENT_CONTINUOUS], choices: [SIMPLE_VS_CONTINUOUS] }
 export const GRAMMAR_T2_W2: GrammarContent = { tenses: [PAST_TO_BE, PAST_SIMPLE] }
 export const GRAMMAR_T2_W3: GrammarContent = { tenses: [PAST_SIMPLE_IRREGULAR], irregularVerbs: IRREGULAR_VERBS }
 export const GRAMMAR_T2_W4: GrammarContent = {
@@ -1121,8 +1130,8 @@ export const GRAMMAR_T2_W4: GrammarContent = {
   },
 }
 export const GRAMMAR_T3_W1: GrammarContent = { tenses: [WILL] }
-export const GRAMMAR_T3_W2: GrammarContent = { tenses: [GOING_TO] }
+export const GRAMMAR_T3_W2: GrammarContent = { tenses: [GOING_TO], choices: [WILL_VS_GOING_TO] }
 export const GRAMMAR_T3_W3: GrammarContent = { tenses: [PRESENT_PERFECT], irregularVerbsReview: IRREGULAR_VERBS }
-export const GRAMMAR_T3_W4: GrammarContent = { tenses: [PERFECT_VS_PAST] }
+export const GRAMMAR_T3_W4: GrammarContent = { tenses: [PERFECT_VS_PAST], choices: [DONT_TRANSLATE] }
 export const GRAMMAR_T4_W1: GrammarContent = { tenses: [MODALS] }
 export const GRAMMAR_T4_W3: GrammarContent = { tenses: [COMPARATIVES, PASSIVE_PRESENT] }

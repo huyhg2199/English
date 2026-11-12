@@ -67,6 +67,7 @@ export const PRESENT_SIMPLE: Tense = {
   name: 'Hiện tại đơn: câu khẳng định',
   use: 'Thói quen, việc lặp đi lặp lại, lịch cố định và sự thật chung.',
   timeline: { kind: 'habit', label: 'Thói quen lặp lại' },
+  signalWords: ['every day', 'every morning', 'always', 'usually', 'often', 'sometimes', 'never', 'on Sundays'],
   formulas: [
     { label: 'I / You / We / They', text: 'S + động từ nguyên mẫu: I work. They live here.' },
     { label: 'He / She / It', text: 'S + động từ thêm -s / -es: She works. He watches.' },
@@ -230,6 +231,7 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
   name: 'Hiện tại đơn: câu hỏi và phủ định',
   use: 'Hỏi về thói quen, sự thật; nói ai đó không làm gì một cách thường xuyên.',
   timeline: { kind: 'habit-question', label: 'Hỏi / phủ định một thói quen' },
+  signalWords: ['every day', 'usually', 'often'],
   formulas: [
     { label: 'Phủ định', text: "S + do not (don't) / does not (doesn't) + động từ nguyên mẫu" },
     { label: 'Câu hỏi Yes/No', text: "Do / Does + S + động từ nguyên mẫu …?  → Yes, I do. / No, she doesn't." },

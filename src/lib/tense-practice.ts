@@ -10,6 +10,12 @@ import { normalizeTyped } from '@/lib/quiz/typed'
 /** Thì có phần luyện. */
 export type PracticeTense = Tense & { practice: TensePractice }
 
+/**
+ * Thứ chạy được phần luyện (story 39): thì có `practice` (`PracticeTense`) hoặc khối "Chọn thì" (`TenseChoice`). Trình phát
+ * chỉ cần id, tên, công thức + quy tắc (phần "Xem lại giải thích") và 4 bước luyện.
+ */
+export type PracticeSubject = Pick<Tense, 'id' | 'name' | 'formulas' | 'rules'> & { practice: TensePractice }
+
 export function hasPractice(tense: Tense): tense is PracticeTense {
   return tense.practice !== undefined
 }

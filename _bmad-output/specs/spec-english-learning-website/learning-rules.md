@@ -115,6 +115,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 - **Phần 10' giải trí (Đợt 1):** khi soạn bài, chọn sẵn 1–2 link ngoài cho mỗi bài.
 - **Ngày lười sau Sân ga:** tin lấy từ nguồn gọi trực tiếp được trong app (Hacker News, Google AI Blog). Bôi đen để lưu 3 từ mới. Khi đang ở Sân ga, ngày lười là ôn 1 viên gạch + 3 từ (mục Buổi học).
 - **Bôi đen lưu sổ tay (Đợt 1):** làm được trong bài đọc và tin trong app.
+- **Từ tín hiệu và chọn thì (story 39):** mỗi thì có mốc thời gian hiện hàng chip từ tín hiệu. Khối "Đơn hay tiếp diễn?" (s1-t2-w1), "will hay going to?" (s1-t3-w2), "Đừng dịch từng chữ: đã · sẽ · chưa" (s1-t3-w4) có dòng thời gian cạnh nhau / bảng chữ Việt, cặp câu dễ nhầm và phần luyện như phần luyện của thì (không ghi Sổ lỗi). Ôn tổng s1-t4-w4 có bảng mỗi thì một dòng và luật chung trợ động từ.
 
 ## Tab Luyện tập (Đợt 1)
 

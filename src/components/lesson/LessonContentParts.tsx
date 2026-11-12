@@ -14,6 +14,7 @@ import { PronunciationBlockView } from './PronunciationBlocks'
 import { SoundTable } from './SoundTable'
 import { SpeakPractice } from './SpeakPractice'
 import { TenseCard } from './TenseCard'
+import { TenseChoiceCard } from './TenseChoiceCard'
 import { TensePractice } from './TensePractice'
 import { GlossaryText } from './TermChip'
 
@@ -215,7 +216,9 @@ function Review({ review }: { review: NonNullable<GrammarContent['review']> }) {
 /**
  * Nội dung đoạn Ngữ pháp: từng thì (dòng thời gian, quy tắc, câu thoại, thần chú) hoặc phần ôn tập. Thì có `practice`
  * (story 35) có khối luyện ngay dưới TenseCard (cả trang bài lẫn bước Bài chính của buổi 30'). Bài có
- * `irregularVerbsReview` (s1-t3-w3, story 38) mở đầu bằng bảng ôn cột V3 che sẵn, trước các thì.
+ * `irregularVerbsReview` (s1-t3-w3, story 38) mở đầu bằng bảng ôn cột V3 che sẵn, trước các thì. Khối "Chọn thì"
+ * (`choices`, story 39) đứng sau các thì, trước bảng động từ và phần ôn tập, mỗi khối có khối luyện riêng; khối luyện
+ * của thì và của khối dùng chung `openPracticeId` (mỗi lúc chỉ mở một).
  */
 export function GrammarSection({ content }: { content: LessonContent }) {
   const unlocked = useSpells()
@@ -237,6 +240,17 @@ export function GrammarSection({ content }: { content: LessonContent }) {
               onClose={() => setOpenPracticeId((id) => (id === t.id ? null : id))}
             />
           )}
+        </Fragment>
+      ))}
+      {content.grammar.choices?.map((c) => (
+        <Fragment key={c.id}>
+          <TenseChoiceCard choice={c} />
+          <TensePractice
+            tense={c}
+            open={openPracticeId === c.id}
+            onOpen={() => setOpenPracticeId(c.id)}
+            onClose={() => setOpenPracticeId((id) => (id === c.id ? null : id))}
+          />
         </Fragment>
       ))}
       {content.grammar.irregularVerbs && <IrregularVerbTable verbs={content.grammar.irregularVerbs} />}
