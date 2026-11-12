@@ -3,12 +3,15 @@ import type { ChoiceQuestion, ChoiceQuestionKind, MistakeTag, Question, TypedQue
 import type { SectionId } from '@/data/roadmap/types'
 
 /**
- * 102 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10. Tự soạn theo khuôn ETS,
+ * 162 câu tháng T2–T4 (6 câu mỗi bài có nội dung, trừ tuần Tết `s1-t4-w2`), bám nội dung story 10. Tự soạn theo khuôn ETS,
  * không chép đề. Các bài có thêm câu (đều có `requires`):
  * - `s1-t2-w1` có 14 câu: 4 câu gõ `type` / `transform` của story 35 và 4 câu gõ của story 36;
  * - `s1-t2-w2` có 26 câu: 6 câu was / were và Wh + did (story 33), 14 câu gõ của story 36 (7 câu was / were, 7 câu -ed);
- * - `s1-t2-w3` có 14 câu: 8 câu gõ bất quy tắc của story 36.
- * Story 36 nâng mỗi thì T1–T2 lên 12 câu nhãn `thì` (gõ dạng đúng, biến đổi "Đổi …:", dịch "Dịch sang tiếng Anh: … (gợi ý)").
+ * - `s1-t2-w3` có 14 câu: 8 câu gõ bất quy tắc của story 36;
+ * - `s1-t3-w1`, `s1-t3-w2`, `s1-t3-w3`, `s1-t3-w4`, `s1-t4-w1` có 14 câu: 8 câu gõ của story 37 (`-07` … `-14`);
+ * - `s1-t4-w3` có 26 câu: 10 câu gõ so sánh (`-07` … `-16`, nhãn `từ loại`) và 10 câu gõ bị động (`-17` … `-26`) của story 37.
+ * Story 36 nâng mỗi thì T1–T2 lên 12 câu nhãn `thì`, story 37 nâng mỗi chủ điểm T3–T4 lên 12 câu đoạn Ngữ pháp (gõ dạng đúng,
+ * biến đổi "Đổi …:", dịch "Dịch sang tiếng Anh: … (gợi ý)").
  * Tuần O.W.L. 1 (`s1-t4-w4`) không có đoạn Ngữ pháp nên mọi câu gắn đoạn Phát âm (nơi có phần ôn tổng).
  */
 
@@ -46,7 +49,10 @@ function make(
   return kind === 'listening' ? { ...q, audioText: options[0] } : q
 }
 
-/** Câu gõ (story 35): tag `thì`, không có lựa chọn; `accept` (nếu có) là cách viết khác cũng đúng. */
+/**
+ * Câu gõ (story 35): không có lựa chọn; `accept` (nếu có) là cách viết khác cũng đúng. Nhãn mặc định `thì`; câu so sánh
+ * (story 37) truyền `từ loại`, như câu so sánh cũ.
+ */
 function makeTyped(
   lessonId: string,
   n: number,
@@ -57,12 +63,13 @@ function makeTyped(
   explanation: string,
   requires: readonly RequiredConcept[],
   accept?: readonly string[],
+  tag: MistakeTag = 'thì',
 ): TypedQuestion {
   return {
     id: questionId(lessonId, n),
     lessonId,
     sectionId,
-    tag: 'thì',
+    tag,
     kind,
     prompt,
     answer,
@@ -75,7 +82,7 @@ function makeTyped(
 /**
  * Bộ dựng câu cho một bài: lựa chọn đầu tiên luôn là đáp án (khi làm bài, lựa chọn được xáo). `requires` (không bắt
  * buộc, story 33) gắn khái niệm câu cần; quiz bỏ câu khi viên gạch dạy khái niệm đó chưa dạy. `type` / `transform`
- * (story 35) dựng câu gõ gắn đoạn Ngữ pháp, bắt buộc có `requires`.
+ * (story 35) dựng câu gõ gắn đoạn Ngữ pháp, bắt buộc có `requires`, nhãn mặc định `thì` (tham số cuối đổi được nhãn).
  */
 function lesson(lessonId: string, grammarSection: SectionId = 'grammar') {
   const typed =
@@ -87,8 +94,9 @@ function lesson(lessonId: string, grammarSection: SectionId = 'grammar') {
       explanation: string,
       requires: readonly RequiredConcept[],
       accept?: readonly string[],
+      tag?: MistakeTag,
     ) =>
-      makeTyped(lessonId, n, grammarSection, kind, prompt, answer, explanation, requires, accept)
+      makeTyped(lessonId, n, grammarSection, kind, prompt, answer, explanation, requires, accept, tag)
   return {
     grammar: (
       n: number,
@@ -323,6 +331,31 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'to là từ chức năng nên đọc dạng yếu /tə/ (gần "tờ"); chỉ đọc /tuː/ khi đứng một mình hoặc cuối câu.'),
   t3w1.listen(6, ["I'll help you tomorrow.", "I won't help you tomorrow.", "I'll help you today.", 'I want to help you tomorrow.'],
     "I'll đọc liền một tiếng /aɪl/. won't /woʊnt/ đọc rõ và được nhấn; want /wɑːnt/ khác won't ở nguyên âm, và to sau want đọc yếu /tə/. Nghe kỹ cả từ cuối: tomorrow hay today."),
+  // Câu gõ will (story 37): lời hứa, đề nghị / quyết định ngay lúc nói, nhờ, từ chối; không going to, không hoàn thành.
+  t3w1.type(7, 'I promise I ___ (call) you tonight.', 'will call',
+    'I promise (tôi hứa) là lời hứa, nên dùng will + động từ nguyên mẫu: will call. Sau will không thêm -s, không có to. Gõ gọn "\'ll call" (I\'ll call) cũng đúng.',
+    ['subject-pronouns', 'object-pronouns', 'verb-forms'], ["'ll call"]),
+  t3w1.type(8, 'The box is very heavy. — OK, I ___ (help) you.', 'will help',
+    'Nghe bạn nói hộp nặng mới quyết định giúp, ngay lúc nói, nên dùng will + nguyên mẫu: I will (I\'ll) help you. Trước đó chưa có kế hoạch.',
+    ['articles', 'be-affirmative', 'subject-pronouns', 'object-pronouns', 'verb-forms'], ["'ll help"]),
+  t3w1.type(9, 'Will you come to my party? — No, I ___. I am very busy.', "won't",
+    "Hỏi bằng Will thì trả lời ngắn cũng dùng will: Yes, I will. / No, I won't (will not). Không trả lời bằng don't, và không lặp lại come.",
+    ['possessive-adjectives', 'subject-pronouns', 'be-affirmative', 'verb-forms']),
+  t3w1.type(10, 'Anna promises she ___ (send) me the photos tonight.', 'will send',
+    'promises (hứa) báo lời hứa, nên dùng will. will đi với mọi chủ ngữ và không đổi: she will send (không phải will sends). Gõ "\'ll send" (she\'ll send) cũng đúng.',
+    ['subject-pronouns', 'object-pronouns', 'articles', 'plurals', 'verb-forms'], ["'ll send"]),
+  t3w1.transform(11, 'Đổi sang câu phủ định: My brother will come to the party tonight.', "My brother won't come to the party tonight.",
+    "Phủ định của will: thêm not ngay sau will, will not viết gọn là won't. Động từ sau won't vẫn nguyên mẫu (come), không mượn doesn't. tonight đặt cuối hoặc đầu câu đều được.",
+    ['possessive-adjectives', 'articles', 'verb-forms'], ["Tonight my brother won't come to the party."]),
+  t3w1.transform(12, 'Đổi sang câu hỏi: You will open the window.', 'Will you open the window?',
+    'Câu hỏi với will: đảo will lên trước chủ ngữ, động từ giữ nguyên mẫu: Will you open…? Không thêm Do. Will you…? cũng là cách nhờ ai làm gì.',
+    ['subject-pronouns', 'articles', 'verb-forms']),
+  t3w1.transform(13, 'Dịch sang tiếng Anh: Tôi hứa sẽ không về nhà muộn. (promise, not / come home, late)', "I promise I won't come home late.",
+    "Lời hứa dùng will; \"sẽ không\" là won't (will not) + nguyên mẫu: I won't come home. Chú ý won't /woʊnt/ (sẽ không) khác want /wɑːnt/ (muốn).",
+    ['subject-pronouns', 'verb-forms'], ['I promise not to come home late.']),
+  t3w1.transform(14, 'Dịch sang tiếng Anh: Tôi khát. Tôi sẽ mua một chai nước. (thirsty, buy, a bottle of water)', 'I am thirsty. I will buy a bottle of water.',
+    'Câu đầu là to be: I am thirsty (tiếng Việt không có "là", tiếng Anh bắt buộc có am). Thấy khát mới quyết định mua, ngay lúc nói, nên dùng will + nguyên mẫu: I will (I\'ll) buy.',
+    ['subject-pronouns', 'be-affirmative', 'articles', 'verb-forms']),
 
   // ── T3 tuần 2: be going to · nối âm ──
   t3w2.grammar(1, 'Look at those clouds! It ___ rain.', ['is going to', 'going to', 'will to', 'goes to'],
@@ -337,6 +370,33 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'going to + động từ nói nhanh thành gonna. wanna = want to, gotta = have got to.'),
   t3w2.listen(6, ['Turn off the light.', 'Turn on the light.', 'Turn off the lights.', 'Turn off the night.'],
     'turn off nối thành "tur-noff"; nghe kỹ âm /f/ ở cuối off để phân biệt với on.'),
+  // Câu gõ be going to (story 37): kế hoạch đã định hoặc dấu hiệu trước mắt; đáp án luôn có am / is / are; không hoàn thành.
+  t3w2.type(7, 'I ___ (visit) my grandmother on Sunday. I told her yesterday.', 'am going to visit',
+    'Đã báo bà từ hôm qua = kế hoạch đã định, nên dùng be going to: I + am + going to + visit (nguyên mẫu). Thiếu am ("I going to") là sai. Gõ "\'m going to visit" (I\'m) cũng đúng. Lịch đã hẹn với người khác cũng nói được bằng hiện tại tiếp diễn: am visiting.',
+    ['subject-pronouns', 'possessive-adjectives', 'object-pronouns', 'days-months', 'prepositions-of-time', 'be-affirmative', 'verb-forms'],
+    ["'m going to visit", 'am visiting', "'m visiting"]),
+  t3w2.type(8, 'My sister ___ (start) a new job next month. She decided last week.', 'is going to start',
+    'Đã quyết định từ tuần trước = kế hoạch có trước lúc nói, nên dùng going to. My sister là she nên dùng is: is going to start. Việc đã sắp xếp xong cũng nói được bằng hiện tại tiếp diễn: is starting.',
+    ['possessive-adjectives', 'articles', 'adjective-before-noun', 'be-affirmative', 'verb-forms'], ['is starting']),
+  t3w2.type(9, 'Watch out! You ___ (drop) the cups.', 'are going to drop',
+    'Watch out! (cẩn thận!) là thấy dấu hiệu ngay trước mắt (cốc sắp rơi), nên dùng be going to. you đi với are: are going to drop. Gõ "\'re going to drop" cũng đúng.',
+    ['imperatives', 'subject-pronouns', 'articles', 'plurals', 'be-affirmative', 'verb-forms'], ["'re going to drop"]),
+  t3w2.type(10, 'Are you going to watch the game tonight? — Yes, I ___.', 'am',
+    'Hỏi bằng Are you going to…? thì trả lời ngắn bằng to be: Yes, I am. / No, I\'m not. Không trả lời Yes, I do, và không lặp lại going to watch.',
+    ['be-questions', 'subject-pronouns', 'articles', 'verb-forms']),
+  t3w2.transform(11, 'Đổi sang câu phủ định: They are going to sell their house.', "They aren't going to sell their house.",
+    "Phủ định be going to: thêm not ngay sau are: are not (aren't) going to sell. Không dùng don't, không bỏ are.",
+    ['subject-pronouns', 'possessive-adjectives', 'be-negative', 'verb-forms']),
+  t3w2.transform(12, 'Đổi sang câu hỏi: She is going to cook dinner tonight.', 'Is she going to cook dinner tonight?',
+    'Câu hỏi be going to: đảo is lên trước chủ ngữ, phần going to + nguyên mẫu giữ nguyên: Is she going to cook…? Không thêm Does.',
+    ['be-questions', 'subject-pronouns', 'verb-forms']),
+  t3w2.transform(13, 'Dịch sang tiếng Anh: Cuối tuần này anh ấy định đi đâu? (where, go, this weekend)', 'Where is he going to go this weekend?',
+    '"định" = kế hoạch đã có, nên dùng be going to. Câu hỏi Wh-: Where + is + he + going to + go? (he đi với is). Không nói "Where he is going to go?". Nói gọn "Where is he going this weekend?" (hiện tại tiếp diễn cho lịch đã định) cũng đúng.',
+    ['wh-questions', 'be-questions', 'subject-pronouns', 'verb-forms'], ['Where is he going this weekend?']),
+  t3w2.transform(14, 'Dịch sang tiếng Anh: Năm sau chúng tôi định chuyển tới Đà Nẵng. (move to Da Nang, next year)', 'We are going to move to Da Nang next year.',
+    '"định" = kế hoạch đã quyết từ trước, nên dùng we are (we\'re) going to move. next year đặt cuối hoặc đầu câu đều được. Kế hoạch đã sắp xếp cũng nói được bằng hiện tại tiếp diễn: We are moving to Da Nang next year.',
+    ['subject-pronouns', 'be-affirmative', 'verb-forms'],
+    ['Next year we are going to move to Da Nang.', 'We are moving to Da Nang next year.', 'Next year we are moving to Da Nang.']),
 
   // ── T3 tuần 3: hiện tại hoàn thành (1) · trọng âm câu ──
   t3w3.grammar(1, 'I have ___ that movie three times.', ['seen', 'saw', 'see', 'seeing'],
@@ -351,6 +411,32 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'to là từ chức năng nên đọc nhẹ /tə/. want, buy, phone là từ nội dung nên được nhấn.'),
   t3w3.listen(6, ['She has visited Japan twice.', 'She visited Japan twice.', 'She has visited Japan once.', 'He has visited Japan twice.'],
     "has thường đọc nhẹ /həz/; vẫn phải nghe ra nó để phân biệt với quá khứ đơn."),
+  // Câu gõ hiện tại hoàn thành (1) (story 37): have / has + V3, haven't / hasn't … yet, ever / never, been to / gone to;
+  // không since / how long, không modal.
+  t3w3.type(7, 'Oh no! I have ___ (break) my glasses.', 'broken',
+    'Sau have / has dùng V3. break là bất quy tắc: break – broke – broken, nên have broken (không phải have broke, have breaked).',
+    ['subject-pronouns', 'possessive-adjectives', 'plurals', 'verb-forms']),
+  t3w3.type(8, 'My sister ___ (has / not / clean) her room yet.', "hasn't cleaned",
+    "Phủ định hiện tại hoàn thành: has + not (hasn't) + V3. clean là động từ có quy tắc nên V3 thêm -ed: cleaned. yet (vẫn chưa) đứng cuối câu phủ định.",
+    ['possessive-adjectives', 'verb-forms']),
+  t3w3.type(9, 'Has your father ever been to Hanoi? — No, he ___.', "hasn't",
+    "Hỏi bằng Has thì trả lời ngắn cũng dùng has: Yes, he has. / No, he hasn't (has not). Không trả lời bằng didn't hay doesn't.",
+    ['possessive-adjectives', 'subject-pronouns', 'frequency-adverbs', 'verb-forms']),
+  t3w3.type(10, 'They ___ (have / visit) Ha Long Bay three times.', 'have visited',
+    'Kể trải nghiệm tới giờ (ba lần), không nói lúc nào, nên dùng have + V3. they đi với have; visit có quy tắc nên V3 là visited. Gõ "\'ve visited" (they\'ve) cũng đúng.',
+    ['subject-pronouns', 'numbers', 'verb-forms'], ["'ve visited"]),
+  t3w3.transform(11, 'Đổi sang câu phủ định: I have seen this movie.', "I haven't seen this movie.",
+    "Phủ định: thêm not ngay sau have: have not (haven't) seen. seen giữ nguyên V3, không mượn don't.",
+    ['subject-pronouns', 'demonstratives', 'verb-forms']),
+  t3w3.transform(12, 'Đổi sang câu hỏi: Your sister has finished her homework.', 'Has your sister finished her homework?',
+    'Câu hỏi hiện tại hoàn thành: đảo has lên trước chủ ngữ, V3 giữ nguyên: Has your sister finished…? Không thêm Does, không đổi finished.',
+    ['possessive-adjectives', 'subject-pronouns', 'verb-forms']),
+  t3w3.transform(13, 'Dịch sang tiếng Anh: Bố tôi chưa bao giờ lái xe ô tô. (father, never, drive, a car)', 'My father has never driven a car.',
+    '"chưa bao giờ" = never, kể trải nghiệm tính tới giờ nên dùng has (vì my father = he) + never + V3. drive là bất quy tắc: drive – drove – driven, nên has never driven (không phải has never drove). Viết gọn My father\'s never driven cũng đúng.',
+    ['possessive-adjectives', 'articles', 'frequency-adverbs', 'verb-forms'], ["My father's never driven a car."]),
+  t3w3.transform(14, 'Dịch sang tiếng Anh: Chị tôi đi Đà Lạt rồi, chưa về. (sister, go to Da Lat)', 'My sister has gone to Da Lat.',
+    'Đã đi và giờ vẫn đang ở đó (chưa về) là has gone to. been to là đã từng tới rồi về. My sister = she nên dùng has; go – went – gone. Viết gọn My sister\'s gone cũng đúng.',
+    ['possessive-adjectives', 'verb-forms'], ["My sister's gone to Da Lat."]),
 
   // ── T3 tuần 4: hiện tại hoàn thành (2) và quá khứ đơn · shadowing ──
   t3w4.grammar(1, 'I ___ in Hanoi since 2020.', ['have lived', 'live', 'lived', 'am living'],
@@ -365,6 +451,32 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'for là từ chức năng nên đọc dạng yếu /fɚ/; chỉ đọc /fɔːr/ khi nhấn mạnh.'),
   t3w4.listen(6, ["I've known him since 2020.", 'I know him since 2020.', "I've known him for 20 years.", "I've known her since 2020."],
     "I've đọc liền /aɪv/, nghe âm /v/ rất nhẹ; since đi với mốc (2020), for đi với khoảng (20 years)."),
+  // Câu gõ hoàn thành (2) và quá khứ đơn (story 37): dấu hiệu chốt thì (since / for kéo tới giờ / How long → hoàn thành;
+  // last / ago / in + năm / When → quá khứ đơn); không modal, không so sánh, không bị động.
+  t3w4.type(7, 'My uncle ___ (work) in this hospital for ten years. He still works there.', 'has worked',
+    'He still works there (giờ vẫn làm) = việc kéo dài từ quá khứ tới bây giờ, nên dùng hiện tại hoàn thành: has (vì my uncle = he) + worked. Nếu đã nghỉ thì mới dùng worked.',
+    ['possessive-adjectives', 'demonstratives', 'numbers', 'verb-forms']),
+  t3w4.type(8, 'I ___ (not / see) Nam since Monday.', "haven't seen",
+    "since Monday = từ thứ Hai tới giờ, nên dùng hiện tại hoàn thành. Phủ định: have not (haven't) + V3; see – saw – seen.",
+    ['subject-pronouns', 'days-months', 'verb-forms']),
+  t3w4.type(9, 'She ___ (leave) the office ten minutes ago.', 'left',
+    'ago (… trước) là mốc đã xong, nên dùng quá khứ đơn, không dùng has left. leave là bất quy tắc: leave – left – left.',
+    ['subject-pronouns', 'articles', 'numbers', 'verb-forms']),
+  t3w4.type(10, 'How long ___ you had this phone?', 'have',
+    'Hỏi bao lâu tính tới giờ: How long + have / has + chủ ngữ + V3? you đi với have; had ở đây là V3 của have (có). Không dùng do hay did.',
+    ['wh-questions', 'subject-pronouns', 'demonstratives', 'have-has', 'verb-forms']),
+  t3w4.transform(11, 'Đổi sang hiện tại hoàn thành (since 2019): My parents live in Da Nang.', 'My parents have lived in Da Nang since 2019.',
+    'since + mốc bắt đầu (2019) và việc vẫn còn tới giờ thì dùng hiện tại hoàn thành, không dùng hiện tại đơn ("live here since" là sai). My parents là số nhiều nên dùng have; live → lived (V3).',
+    ['possessive-adjectives', 'plurals', 'numbers', 'verb-forms']),
+  t3w4.transform(12, 'Đổi sang quá khứ (in 2020): My brother works in Japan.', 'My brother worked in Japan in 2020.',
+    'in 2020 là mốc đã xong nên dùng quá khứ đơn: works → worked (V2 cho mọi chủ ngữ, bỏ -s). Không dùng has worked với mốc đã xong. in 2020 đặt cuối hoặc đầu câu đều được.',
+    ['possessive-adjectives', 'numbers', 'prepositions-of-time', 'verb-forms'], ['In 2020 my brother worked in Japan.']),
+  t3w4.transform(13, 'Dịch sang tiếng Anh: Chúng tôi chuyển tới Hà Nội ba năm trước. (move, Hanoi, three years ago)', 'We moved to Hanoi three years ago.',
+    'Câu Việt không có "đã" nhưng có "ba năm trước" (three years ago) là mốc đã xong, nên dùng quá khứ đơn: move → moved, không dùng have moved. three years ago đặt cuối hoặc đầu câu đều được.',
+    ['subject-pronouns', 'numbers', 'verb-forms'], ['Three years ago we moved to Hanoi.']),
+  t3w4.transform(14, 'Dịch sang tiếng Anh: Tôi học tiếng Anh được hai năm rồi. (study English, for two years)', 'I have studied English for two years.',
+    '"được … rồi" = kéo dài tới giờ (vẫn đang học), nên dùng have + V3 + for + khoảng thời gian. study → studied (phụ âm + y đổi thành -ied). "I studied English for two years" là đã học xong, giờ không còn học.',
+    ['subject-pronouns', 'numbers', 'verb-forms']),
 
   // ── T4 tuần 1: can / should / must · dạng rút gọn ──
   t4w1.grammar(1, 'He can ___ three languages.', ['speak', 'speaks', 'to speak', 'speaking'],
@@ -379,6 +491,33 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'want to nói nhanh thành wanna. gotta = have got to; "I gonna" thiếu am.'),
   t4w1.listen(6, ["I'd like some water, please.", 'I like some water, please.', "I'd like some coffee, please.", "You'd like some water, please."],
     "I'd like (= I would like) có âm /d/ rất nhẹ giữa I và like: nghe kỹ để phân biệt với I like."),
+  // Câu gõ can / should / must (story 37): gợi ý ghi modal khi nghĩa không tự chốt; câu dịch có "nên", "không được";
+  // không so sánh, không bị động, không have to / could.
+  t4w1.type(7, 'You ___ (should / not / watch) TV late at night.', "shouldn't watch",
+    "Lời khuyên không nên: should + not (shouldn't) + động từ nguyên mẫu. Không có to sau shouldn't, không mượn don't.",
+    ['subject-pronouns', 'prepositions-of-time', 'verb-forms']),
+  t4w1.type(8, 'My little brother is only three. He ___ (can / not / read).', "can't read",
+    "Chưa làm được (khả năng): can't (cannot) + nguyên mẫu. can không đổi theo chủ ngữ và không mượn doesn't: He can't read (không phải He doesn't can read).",
+    ['possessive-adjectives', 'adjective-before-noun', 'be-affirmative', 'numbers', 'subject-pronouns', 'verb-forms']),
+  t4w1.type(9, "You ___ (must / wear) a helmet on a motorbike. It's the law.", 'must wear',
+    'Luật bắt buộc dùng must + nguyên mẫu: must wear. Không thêm to (must to wear) và không thêm -s.',
+    ['subject-pronouns', 'articles', 'be-affirmative', 'verb-forms']),
+  t4w1.type(10, '___ (can) I sit here? — Sure.', 'Can',
+    'Xin phép: Can I + nguyên mẫu …? Đảo can lên đầu, không mượn do (không phải Do I can sit here?). (May I / Could I cũng là xin phép nhưng chưa học ở Chặng 1, nên đề cho sẵn can.)',
+    ['subject-pronouns', 'verb-forms']),
+  t4w1.transform(11, 'Đổi sang câu phủ định: My grandfather can swim.', "My grandfather can't swim.",
+    "Phủ định của can: can + not = can't (cannot), viết liền. Không mượn doesn't: My grandfather can't swim (không phải doesn't can swim).",
+    ['possessive-adjectives', 'subject-verb']),
+  t4w1.transform(12, 'Đổi sang câu hỏi: She can speak Japanese.', 'Can she speak Japanese?',
+    'Câu hỏi với can: đảo can lên trước chủ ngữ, động từ giữ nguyên mẫu: Can she speak…? Không thêm Does, không thêm -s.',
+    ['subject-pronouns', 'verb-forms']),
+  t4w1.transform(13, 'Dịch sang tiếng Anh: Hôm nay bạn nên đi khám bác sĩ. (see a doctor, today)', 'You should see a doctor today.',
+    '"nên" là lời khuyên: should + nguyên mẫu. Không có to sau should. today đặt cuối hoặc đầu câu đều được; "go to the doctor" cũng đúng.',
+    ['subject-pronouns', 'articles', 'verb-forms'],
+    ['Today you should see a doctor.', 'You should go to the doctor today.', 'Today you should go to the doctor.']),
+  t4w1.transform(14, 'Dịch sang tiếng Anh: Bạn không được hút thuốc trong bệnh viện. (smoke, in the hospital)', "You mustn't smoke in the hospital.",
+    "\"không được\" theo luật = cấm: mustn't + nguyên mẫu. can't (không được phép) cũng đúng, và người Mỹ nói can't nhiều hơn mustn't. shouldn't chỉ là lời khuyên, nhẹ hơn; don't have to là không cần làm, nghĩa khác hẳn.",
+    ['subject-pronouns', 'articles', 'prepositions-of-place', 'verb-forms'], ["You can't smoke in the hospital."]),
 
   // ── T4 tuần 3: so sánh · bị động hiện tại · chép chính tả ──
   t4w3.grammar(1, 'My new phone is ___ than my old one.', ['cheaper', 'more cheap', 'cheapest', 'more cheaper'],
@@ -393,6 +532,70 @@ export const T2_T4_QUESTIONS: readonly Question[] = [
     'important nhấn âm 2: im-POR-tant. beautiful, family, hospital nhấn âm 1.'),
   t4w3.listen(6, ['My brother is taller than me.', 'My brother is smaller than me.', 'My mother is taller than me.', 'My brother is the tallest.'],
     'Nghe đuôi -er và than đọc nhẹ /ðən/.'),
+  // Câu gõ so sánh (story 37, nhãn từ loại như câu so sánh cũ): -er, gấp đôi, -ier, more, better / worse, the -est,
+  // the most, the best; không bị động.
+  t4w3.type(7, 'This bag is ___ (heavy) than that one.', 'heavier',
+    'Có than nên dùng so sánh hơn. heavy tận cùng phụ âm + y nên đổi y thành -ier: heavier (không phải more heavy, heavyer).',
+    ['demonstratives', 'be-affirmative', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.type(8, 'The train is ___ (cheap) than the plane.', 'cheaper',
+    'cheap là tính từ ngắn (một âm tiết): thêm -er + than: cheaper than. Không thêm more (more cheaper là sai).',
+    ['articles', 'be-affirmative', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.type(9, 'Their house is ___ (big) than our house.', 'bigger',
+    'big tận cùng 1 chữ nguyên âm + 1 chữ phụ âm (i + g) nên gấp đôi g rồi thêm -er: bigger than.',
+    ['possessive-adjectives', 'be-affirmative', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.type(10, 'This is ___ (beautiful) beach in Vietnam.', 'the most beautiful',
+    'Chọn ra một bãi biển đứng đầu cả nước (in Vietnam) là so sánh nhất. beautiful là tính từ dài (3 âm tiết) nên dùng the most + tính từ: the most beautiful.',
+    ['demonstratives', 'be-affirmative', 'articles', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.transform(11, 'Đổi sang so sánh hơn (than my sister): I am tall.', 'I am taller than my sister.',
+    'tall là tính từ ngắn: tall → taller + than. Không thêm more (more taller là sai).',
+    ['subject-pronouns', 'possessive-adjectives', 'be-affirmative', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.transform(12, 'Đổi sang so sánh nhất (in my family): My father is old.', 'My father is the oldest in my family.',
+    'So sánh nhất của tính từ ngắn: the + adj-est: the oldest. Cần the vì chưa có my / your / his đứng trước. "the oldest person in my family" cũng đúng.',
+    ['possessive-adjectives', 'be-affirmative', 'articles', 'parts-of-speech'], ['My father is the oldest person in my family.'], 'từ loại'),
+  t4w3.transform(13, 'Đổi sang so sánh hơn (than this one): That phone is expensive.', 'That phone is more expensive than this one.',
+    'expensive là tính từ dài (3 âm tiết) nên dùng more + tính từ + than: more expensive than. Không nói expensiver.',
+    ['demonstratives', 'be-affirmative', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.transform(14, 'Dịch sang tiếng Anh: Tiếng Anh của bạn tốt hơn tiếng Anh của tôi. (your English, good, mine)', 'Your English is better than mine.',
+    'good là bất quy tắc: good → better → the best (không có gooder, không có more good). mine = tiếng Anh của tôi. Tiếng Việt không có "là", tiếng Anh cần is.',
+    ['possessive-adjectives', 'be-affirmative', 'parts-of-speech'], ['Your English is better than my English.'], 'từ loại'),
+  t4w3.transform(15, 'Dịch sang tiếng Anh: Hôm nay là ngày nóng nhất trong tuần. (today, hot, day, of the week)', 'Today is the hottest day of the week.',
+    '"nhất" = so sánh nhất: the + adj-est. hot tận cùng o + t (1 nguyên âm + 1 phụ âm) nên gấp đôi t: the hottest.',
+    ['be-affirmative', 'articles', 'parts-of-speech'], undefined, 'từ loại'),
+  t4w3.transform(16, 'Dịch sang tiếng Anh: Con mèo của tôi béo hơn con mèo của bạn. (my cat, fat, yours)', 'My cat is fatter than yours.',
+    '"hơn" = so sánh hơn: adj-er + than. fat tận cùng a + t nên gấp đôi t: fatter. yours = con mèo của bạn, không lặp lại cat.',
+    ['possessive-adjectives', 'be-affirmative', 'parts-of-speech'], ['My cat is fatter than your cat.'], 'từ loại'),
+
+  // Câu gõ bị động hiện tại (story 37): am / is / are (+ not) + V3, câu hỏi Is / Are, by; V3 bất quy tắc trong bảng 50 động từ.
+  t4w3.type(17, 'This soup ___ (make) with fish and rice.', 'is made',
+    'Món súp không tự làm: nó "được làm", nên dùng bị động is + V3. This soup là số ít nên is; make – made – made.',
+    ['demonstratives', 'be-affirmative', 'countable-uncountable', 'verb-forms']),
+  t4w3.type(18, 'Two languages ___ (speak) in this town.', 'are spoken',
+    'Ngôn ngữ "được nói" nên dùng bị động: are + V3. two languages là số nhiều nên are; speak – spoke – spoken (không phải are spoke).',
+    ['numbers', 'plurals', 'demonstratives', 'be-affirmative', 'verb-forms']),
+  t4w3.type(19, 'Cars ___ (not / allow) on this street.', "aren't allowed",
+    "Phủ định bị động: are + not (aren't) + V3. allow có quy tắc nên V3 là allowed. Không mượn don't.",
+    ['plurals', 'demonstratives', 'be-negative', 'verb-forms']),
+  t4w3.type(20, '___ these cakes made by your mother?', 'Are',
+    'Câu hỏi bị động: đảo am / is / are lên trước chủ ngữ, rồi V3: Are these cakes made…? these cakes số nhiều nên Are; không dùng Do. by + người làm khi cần nói rõ ai làm.',
+    ['demonstratives', 'plurals', 'possessive-adjectives', 'be-questions', 'verb-forms']),
+  t4w3.transform(21, 'Đổi sang bị động: People speak French in Canada.', 'French is spoken in Canada.',
+    'Thứ chịu tác động (French) lên làm chủ ngữ; to be chia theo chủ ngữ mới (French số ít → is) + V3 (spoken). Người làm (people) không cần nói nên bỏ.',
+    ['be-affirmative', 'verb-forms', 'prepositions-of-place']),
+  t4w3.transform(22, 'Đổi sang câu phủ định: The tickets are sold online.', "The tickets aren't sold online.",
+    "Phủ định bị động: thêm not ngay sau are: are not (aren't) sold. sold giữ nguyên V3; không dùng don't.",
+    ['articles', 'plurals', 'be-negative', 'verb-forms']),
+  t4w3.transform(23, 'Đổi sang câu hỏi: The emails are checked every day.', 'Are the emails checked every day?',
+    'Câu hỏi bị động: đảo are lên trước chủ ngữ, V3 giữ nguyên: Are the emails checked…? Không thêm Do.',
+    ['articles', 'plurals', 'be-questions', 'verb-forms']),
+  t4w3.transform(24, 'Dịch sang tiếng Anh: Bữa tối được nấu bởi bố tôi. (dinner, cook, by my father)', 'Dinner is cooked by my father.',
+    '"được … bởi" là bị động có người làm: is + V3 + by. Dinner số ít nên is; cook có quy tắc nên V3 là cooked.',
+    ['be-affirmative', 'possessive-adjectives', 'verb-forms']),
+  t4w3.transform(25, 'Dịch sang tiếng Anh: Những chiếc xe này không được bán ở Việt Nam. (these cars, not / sell, in Vietnam)', "These cars aren't sold in Vietnam.",
+    "\"không được bán\" ở đây là phủ định bị động (không ai bán), không phải \"cấm\" (mustn't): are not (aren't) + V3. these cars số nhiều nên are; sell – sold – sold.",
+    ['demonstratives', 'plurals', 'be-negative', 'verb-forms']),
+  t4w3.transform(26, 'Dịch sang tiếng Anh: Căn phòng này được dọn mỗi ngày. (this room, clean, every day)', 'This room is cleaned every day.',
+    '"được dọn" là bị động nên cần V3: is cleaned. "is clean" là "sạch" (clean là tính từ), không phải "được dọn". every day đặt cuối hoặc đầu câu đều được.',
+    ['demonstratives', 'be-affirmative', 'verb-forms'], ['Every day this room is cleaned.']),
 
   // ── T4 tuần 4: ôn tổng chặng 1 (gắn đoạn Phát âm vì bài không có đoạn Ngữ pháp) ──
   t4w4.grammar(1, "I ___ my keys. I can't find them now.", ['have lost', 'lose', 'am losing', 'has lost'],

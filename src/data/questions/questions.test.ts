@@ -2,12 +2,20 @@ import { describe, expect, it } from 'vitest'
 
 import { getLesson, getSection } from '@/data/roadmap'
 
-import { getLessonContent, IRREGULAR_VERBS, lessonRuleCards } from '@/data/lessons'
-import { owlTensePool } from '@/lib/owl'
+import { allTenseChoices, allTenses, getLessonContent, IRREGULAR_VERBS, lessonRuleCards } from '@/data/lessons'
+import { owlTensePool, pickOwlTenses } from '@/lib/owl'
 import { hasVietnameseMarks, matchesTyped, normalizeTyped, pickQuiz } from '@/lib/quiz'
-import { frontedTimeTail, outOfScopeWords, promptEnglish, type TenseScopeId } from '@/lib/tense-scope'
+import { hasPractice, practiceEnglishTexts } from '@/lib/tense-practice'
+import {
+  frontedTimeTail,
+  outOfScopeWords,
+  promptEnglish,
+  sContraction,
+  T3_T4_SCOPE_IDS,
+  type T1T2ScopeId,
+} from '@/lib/tense-scope'
 
-import { requiresViolations } from './concepts'
+import { conceptSource, requiresViolations } from './concepts'
 
 import {
   getQuestion,
@@ -88,11 +96,21 @@ describe('ngân hàng câu hỏi', () => {
     }
   })
 
-  it('T2–T4: 102 câu, s1-t2-w1 có 14 câu, s1-t2-w2 có 26 câu, s1-t2-w3 có 14 câu, mỗi bài khác có nội dung đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
+  it('T2–T4: 162 câu, s1-t2-w1 / s1-t2-w3 / s1-t3-w1…w4 / s1-t4-w1 có 14 câu, s1-t2-w2 / s1-t4-w3 có 26 câu, s1-t2-w4 / s1-t4-w4 đủ 6 câu (≥ 2 câu không phải câu nghe); tuần Tết không có câu', () => {
     const later = QUESTION_BANK.filter((q) => !T1.includes(q.lessonId))
-    expect(later).toHaveLength(102)
-    expect(QUESTION_BANK).toHaveLength(144)
-    const sizes: Record<string, number> = { 's1-t2-w1': 14, 's1-t2-w2': 26, 's1-t2-w3': 14 }
+    expect(later).toHaveLength(162)
+    expect(QUESTION_BANK).toHaveLength(204)
+    const sizes: Record<string, number> = {
+      's1-t2-w1': 14,
+      's1-t2-w2': 26,
+      's1-t2-w3': 14,
+      's1-t3-w1': 14,
+      's1-t3-w2': 14,
+      's1-t3-w3': 14,
+      's1-t3-w4': 14,
+      's1-t4-w1': 14,
+      's1-t4-w3': 26,
+    }
     for (const id of T2_T4) {
       const of = later.filter((q) => q.lessonId === id)
       expect(of, id).toHaveLength(sizes[id] ?? 6)
@@ -372,7 +390,7 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
   const ids = (lessonId: string, ns: readonly number[]) => ns.map((n) => `q-${lessonId}-${String(n).padStart(2, '0')}`)
   const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
   /** Thì → bài và 12 id câu nhãn thì (bảng "Số câu và id"); `fresh` là câu mới của story 36. */
-  const TENSE_QUESTIONS: Record<TenseScopeId, { lessonId: string; old: number[]; fresh: number[] }> = {
+  const TENSE_QUESTIONS: Record<T1T2ScopeId, { lessonId: string; old: number[]; fresh: number[] }> = {
     'present-simple': { lessonId: 's1-t1-w2', old: [1, 2, 3], fresh: range(8, 16) },
     'present-simple-questions': { lessonId: 's1-t1-w3', old: [1, 2, 3], fresh: range(8, 16) },
     'present-continuous': { lessonId: 's1-t2-w1', old: [...range(1, 4), ...range(7, 10)], fresh: range(11, 14) },
@@ -380,12 +398,12 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
     'past-simple': { lessonId: 's1-t2-w2', old: [...range(1, 4), 12], fresh: range(20, 26) },
     'past-simple-irregular': { lessonId: 's1-t2-w3', old: range(1, 4), fresh: range(7, 14) },
   }
-  const TENSES = Object.keys(TENSE_QUESTIONS) as TenseScopeId[]
-  const allOf = (t: TenseScopeId) => {
+  const TENSES = Object.keys(TENSE_QUESTIONS) as T1T2ScopeId[]
+  const allOf = (t: T1T2ScopeId) => {
     const { lessonId, old, fresh } = TENSE_QUESTIONS[t]
     return ids(lessonId, [...old, ...fresh]).map((id) => getQuestion(id)!)
   }
-  const freshOf = (t: TenseScopeId) => {
+  const freshOf = (t: T1T2ScopeId) => {
     const { lessonId, fresh } = TENSE_QUESTIONS[t]
     return ids(lessonId, fresh).map((id) => getQuestion(id) as TypedQuestion)
   }
@@ -479,11 +497,13 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
     }
   })
 
-  it('không câu mới nào mang id đã bỏ hay id ngoài bảng', () => {
+  it('không câu mới nào mang id đã bỏ hay id ngoài bảng (câu gõ của bài T1–T2)', () => {
     const DROPPED = ['q-s1-t1-w2-06', 'q-s1-t1-w3-05', 'q-s1-t1-w4-03', 'q-s1-t1-w4-06']
     for (const id of DROPPED) expect(getQuestion(id), id).toBeUndefined()
     const table = new Set(TENSES.flatMap((t) => allOf(t).map((q) => q.id)))
-    for (const q of typedQuestions) expect(table.has(q.id), q.id).toBe(true)
+    const t1t2Typed = typedQuestions.filter((q) => [...T1, ...T2].includes(q.lessonId))
+    expect(t1t2Typed.length).toBeGreaterThan(0)
+    for (const q of t1t2Typed) expect(table.has(q.id), q.id).toBe(true)
   })
 
   it('golden: đề, đáp án, accept, requires đúng Design Notes', () => {
@@ -583,5 +603,357 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
     expect(pool).toHaveLength(57)
     const fresh = new Set(ALL_FRESH.map((q) => q.id))
     for (const q of pool) expect(fresh.has(q.id), q.id).toBe(false)
+  })
+})
+
+describe('câu luyện chủ điểm T3–T4 (story 37)', () => {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
+  type T3T4 = (typeof T3_T4_SCOPE_IDS)[number]
+  /** Chủ điểm → bài, id câu cũ, id câu mới theo dạng (bảng "Số câu và id", Design Notes story 37). */
+  const TOPIC_QUESTIONS: Record<T3T4, { lessonId: string; old: number[]; type: number[]; change: number[]; translate: number[] }> = {
+    will: { lessonId: 's1-t3-w1', old: range(1, 4), type: range(7, 10), change: range(11, 12), translate: range(13, 14) },
+    'going-to': { lessonId: 's1-t3-w2', old: range(1, 4), type: range(7, 10), change: range(11, 12), translate: range(13, 14) },
+    'present-perfect': { lessonId: 's1-t3-w3', old: range(1, 4), type: range(7, 10), change: range(11, 12), translate: range(13, 14) },
+    'present-perfect-vs-past': { lessonId: 's1-t3-w4', old: range(1, 4), type: range(7, 10), change: range(11, 12), translate: range(13, 14) },
+    modals: { lessonId: 's1-t4-w1', old: range(1, 4), type: range(7, 10), change: range(11, 12), translate: range(13, 14) },
+    comparatives: { lessonId: 's1-t4-w3', old: [1, 2], type: range(7, 10), change: range(11, 13), translate: range(14, 16) },
+    'passive-present': { lessonId: 's1-t4-w3', old: [3, 4], type: range(17, 20), change: range(21, 23), translate: range(24, 26) },
+  }
+  const TOPICS = [...T3_T4_SCOPE_IDS]
+  const q = (lessonId: string, n: number) => getQuestion(`q-${lessonId}-${pad(n)}`)!
+  const freshNs = (t: T3T4) => [...TOPIC_QUESTIONS[t].type, ...TOPIC_QUESTIONS[t].change, ...TOPIC_QUESTIONS[t].translate]
+  const allOf = (t: T3T4) => [...TOPIC_QUESTIONS[t].old, ...freshNs(t)].map((n) => q(TOPIC_QUESTIONS[t].lessonId, n))
+  const freshOf = (t: T3T4) => freshNs(t).map((n) => q(TOPIC_QUESTIONS[t].lessonId, n) as TypedQuestion)
+  const ALL_FRESH = TOPICS.flatMap(freshOf)
+  const CHANGE_RE = /^Đổi [^:]+: [^:]+[.?!]$/
+  const TRANSLATE_RE = /^Dịch sang tiếng Anh: .+ \([^)]+\)$/
+  const fill = (prompt: string, answer: string) => prompt.replace(/___( \([^)]*\))?/, answer)
+  /** Chuỗi đáp án của câu gõ: đề đã điền (type) hoặc chính đáp án (transform). */
+  const answerText = (x: TypedQuestion) => (x.kind === 'type' ? fill(x.prompt, x.answer) : x.answer)
+  /** Đề của phần luyện (thì + khối "Chọn thì" cùng bài), so sau chuẩn hoá, bỏ gợi ý trong ngoặc. */
+  const key = (text: string) => normalizeTyped(text.replace(/\([^)]*\)/g, ' '))
+  const practicePrompts = (lessonId: string): Set<string> => {
+    const grammar = getLessonContent(lessonId)?.grammar
+    const subjects = [...(grammar?.tenses ?? []), ...(grammar?.choices ?? [])]
+    return new Set(
+      subjects
+        .flatMap((x) => {
+          const p = x.practice
+          if (!p) return []
+          return [p.worked.en, p.faded.en, ...[...p.check.items, ...p.check.easier].map((i) => ('prompt' in i ? (i.prompt ?? '') : ''))]
+        })
+        .map(key)
+        .filter((x) => x !== ''),
+    )
+  }
+
+  it('mỗi chủ điểm đúng 12 câu, đoạn Ngữ pháp, đúng bài; câu đoạn Ngữ pháp (choice + gõ) của 6 bài khớp đúng bảng', () => {
+    for (const t of TOPICS) {
+      const qs = allOf(t)
+      expect(qs, t).toHaveLength(12)
+      for (const x of qs) {
+        expect(x, t).toBeDefined()
+        expect(x.sectionId, x.id).toBe('grammar')
+        expect(x.lessonId, x.id).toBe(TOPIC_QUESTIONS[t].lessonId)
+      }
+    }
+    for (const lessonId of new Set(TOPICS.map((t) => TOPIC_QUESTIONS[t].lessonId))) {
+      const inTable = TOPICS.filter((t) => TOPIC_QUESTIONS[t].lessonId === lessonId).flatMap((t) => allOf(t).map((x) => x.id))
+      const grammar = QUESTION_BANK.filter((x) => x.lessonId === lessonId && x.sectionId === 'grammar').map((x) => x.id)
+      expect(new Set(grammar), lessonId).toEqual(new Set(inTable))
+    }
+    // Câu cũ giữ nhãn: for / since là giới từ, so sánh là từ loại.
+    expect(q('s1-t3-w4', 3).tag).toBe('giới từ')
+    for (const n of [1, 2]) expect(q('s1-t4-w3', n).tag).toBe('từ loại')
+  })
+
+  it('60 câu mới đều là câu gõ type / transform; nhãn so sánh là từ loại, còn lại thì; requires hợp lệ, có ≥ 1 khái niệm viên gạch', () => {
+    expect(ALL_FRESH).toHaveLength(60)
+    for (const t of TOPICS) {
+      for (const x of freshOf(t)) {
+        expect(['type', 'transform'], x.id).toContain(x.kind)
+        expect(x.tag, x.id).toBe(t === 'comparatives' ? 'từ loại' : 'thì')
+        expect(x.requires?.length ?? 0, x.id).toBeGreaterThan(0)
+        expect(requiresViolations(x), x.id).toEqual([])
+        expect(x.requires!.some((c) => 'brick' in (conceptSource(c) ?? {})), x.id).toBe(true)
+        // Tên thứ / tháng → days-months; số, năm → numbers.
+        const text = [x.prompt, x.answer].join(' ')
+        if (/\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|January|February|March|April|May|June|July|August|September|October|November|December)\b/.test(text)) {
+          expect(x.requires, x.id).toContain('days-months')
+        }
+        if (/\d|\b(two|three|four|five|six|seven|eight|nine|ten)\b/i.test(promptEnglish(x.prompt) + ' ' + x.answer)) {
+          expect(x.requires, x.id).toContain('numbers')
+        }
+      }
+    }
+  })
+
+  it('số câu gõ dạng đúng / biến đổi / dịch đúng bảng; đề transform khớp đúng một trong hai mẫu; type có đúng một ___ và gợi ý ngay sau', () => {
+    for (const t of TOPICS) {
+      const { lessonId, type, change, translate } = TOPIC_QUESTIONS[t]
+      for (const n of type) {
+        const x = q(lessonId, n)
+        expect(x.kind, x.id).toBe('type')
+        expect(x.prompt.split('___'), x.id).toHaveLength(2)
+        if (x.prompt.includes('(')) expect(x.prompt, x.id).toMatch(/___ \([^)]+\)/)
+      }
+      for (const n of change) {
+        const x = q(lessonId, n)
+        expect(x.kind, x.id).toBe('transform')
+        expect(CHANGE_RE.test(x.prompt) && !TRANSLATE_RE.test(x.prompt), x.id).toBe(true)
+        expect(hasVietnameseMarks(x.prompt.replace(/^[^:]+: /, '')), x.id).toBe(false)
+      }
+      for (const n of translate) {
+        const x = q(lessonId, n)
+        expect(x.kind, x.id).toBe('transform')
+        expect(TRANSLATE_RE.test(x.prompt) && !CHANGE_RE.test(x.prompt), x.id).toBe(true)
+        expect(hasVietnameseMarks(x.prompt.replace(/ \([^)]+\)$/, '')), x.id).toBe(true)
+        expect(hasVietnameseMarks(promptEnglish(x.prompt)), x.id).toBe(false)
+      }
+      expect([type.length, change.length, translate.length], t).toEqual(t === 'comparatives' || t === 'passive-present' ? [4, 3, 3] : [4, 2, 2])
+    }
+  })
+
+  it('answer / accept không có dấu tiếng Việt, không trùng nhau sau chuẩn hoá', () => {
+    for (const x of ALL_FRESH) {
+      const all = [x.answer, ...(x.accept ?? [])]
+      for (const a of all) expect(hasVietnameseMarks(a), `${x.id}: ${a}`).toBe(false)
+      expect(new Set(all.map(normalizeTyped)).size, x.id).toBe(all.length)
+    }
+  })
+
+  it("luật 's: đáp án có 's thì accept có dạng đầy đủ; he / she / it + is, chủ ngữ số ít + has + V3 thì accept có dạng 's", () => {
+    let contracted = 0
+    for (const x of ALL_FRESH) {
+      const accepts = (x.accept ?? []).map(normalizeTyped)
+      if (/[a-z]'s\b/i.test(x.answer)) {
+        const full = [x.answer.replace(/'s\b/, ' is'), x.answer.replace(/'s\b/, ' has')].map(normalizeTyped)
+        expect(full.some((f) => accepts.includes(f)), x.id).toBe(true)
+      }
+      const s = sContraction(x.answer)
+      if (s) {
+        contracted++
+        expect(accepts, x.id).toContain(normalizeTyped(s))
+      }
+    }
+    expect(contracted).toBeGreaterThanOrEqual(2)
+  })
+
+  it('câu không phải câu hỏi có đáp án kết thúc bằng trạng ngữ (kể cả … ago, in + năm) thì accept có bản đặt trạng ngữ lên đầu', () => {
+    let checked = 0
+    for (const x of ALL_FRESH.filter((y) => y.kind === 'transform' && !y.answer.trim().endsWith('?'))) {
+      const fronted = frontedTimeTail(normalizeTyped(x.answer))
+      if (!fronted) continue
+      checked++
+      expect((x.accept ?? []).map(normalizeTyped), x.id).toContain(fronted)
+    }
+    expect(checked).toBeGreaterThanOrEqual(6)
+  })
+
+  it('chữ tiếng Anh (đề qua promptEnglish, answer, accept) nằm trong phạm vi chữ của chủ điểm; câu so sánh không dùng bị động', () => {
+    for (const t of TOPICS) {
+      for (const x of freshOf(t)) {
+        for (const text of [promptEnglish(x.prompt), x.answer, ...(x.accept ?? []), answerText(x)]) {
+          expect(outOfScopeWords(t, text), `${x.id}: ${text}`).toEqual([])
+        }
+      }
+    }
+  })
+
+  it('V2 / V3 bất quy tắc trong đề và đáp án (quiz mới và phần luyện) đều thuộc 50 động từ của IRREGULAR_VERBS', () => {
+    // V2 / V3 bất quy tắc thông dụng (A1–B1) không có trong bảng 50 động từ; dạng trùng V1 (hurt, cut, let…) không tính.
+    const OUTSIDE = new Set([
+      'grew', 'grown', 'rode', 'ridden', 'flew', 'flown', 'wore', 'worn', 'threw', 'thrown', 'shown', 'drew', 'drawn', 'held',
+      'won', 'stood', 'led', 'fed', 'bit', 'bitten', 'hid', 'hidden', 'shook', 'shaken', 'woke', 'woken', 'rose', 'risen', 'stole',
+      'stolen', 'lent', 'fought', 'hung', 'swept', 'lit', 'blew', 'blown', 'rang', 'rung', 'sank', 'sunk', 'froze', 'frozen',
+      'taught', 'sold', 'told', 'brought', 'thought', 'caught', 'bought', 'sent', 'spent', 'met', 'kept', 'built', 'slept', 'felt',
+      'lost', 'beaten', 'bent', 'dealt', 'dug', 'fled', 'forgave', 'forgiven', 'laid', 'lain', 'shot', 'slid', 'sought', 'sped',
+      'spun', 'stuck', 'stung', 'struck', 'swore', 'sworn', 'swung', 'tore', 'torn', 'wept', 'mistook', 'mistaken', 'overslept',
+      'withdrew', 'withdrawn', 'arose', 'arisen', 'borne', 'dreamt', 'leapt', 'spelt', 'burnt',
+    ].filter((w) => !IRREGULAR_VERBS.some((v) => [...v.v2.split(' / '), ...v.v3.split(' / ')].includes(w))))
+    expect(OUTSIDE.has('grown')).toBe(true)
+    expect(OUTSIDE.has('sold')).toBe(false)
+    expect(OUTSIDE.has('sent')).toBe(false)
+    const outside = (text: string) => (text.toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) ?? []).filter((w) => OUTSIDE.has(w))
+    for (const x of ALL_FRESH) {
+      for (const text of [promptEnglish(x.prompt), answerText(x), ...(x.accept ?? [])]) {
+        expect(outside(text), `${x.id}: ${text}`).toEqual([])
+      }
+    }
+    // Phần luyện theo cùng luật đáp án như câu quiz (Boundaries story 37).
+    let practiced = 0
+    for (const t of allTenses().filter((y) => (T3_T4_SCOPE_IDS as readonly string[]).includes(y.id))) {
+      if (!hasPractice(t)) continue
+      practiced++
+      for (const text of practiceEnglishTexts(t.practice).map(promptEnglish)) expect(outside(text), `${t.id}: ${text}`).toEqual([])
+    }
+    expect(practiced).toBe(T3_T4_SCOPE_IDS.length)
+  })
+
+  it('đáp án không trùng câu ví dụ của TenseCard cùng bài; đề không trùng đề phần luyện của thì và khối "Chọn thì" cùng bài', () => {
+    for (const x of ALL_FRESH) {
+      const examples = (getLessonContent(x.lessonId)?.grammar?.tenses ?? []).flatMap((t) => t.examples.map((e) => normalizeTyped(e.en)))
+      expect(examples.length, x.lessonId).toBeGreaterThan(0)
+      for (const a of [answerText(x), ...(x.accept ?? [])]) expect(examples, `${x.id}: ${a}`).not.toContain(normalizeTyped(a))
+      const prompts = practicePrompts(x.lessonId)
+      expect(prompts.size, x.lessonId).toBeGreaterThan(0)
+      expect(prompts.has(key(x.prompt)), `${x.id}: ${x.prompt}`).toBe(false)
+    }
+    // Bài có khối "Chọn thì" thì đề luyện của khối cũng nằm trong tập so.
+    const w2 = allTenseChoices().find((c) => c.id === 'will-vs-going-to')!
+    expect(practicePrompts('s1-t3-w2').has(key(w2.practice.faded.en))).toBe(true)
+  })
+
+  it('golden: đề, đáp án, accept, requires đúng Design Notes', () => {
+    const golden = (id: string) => getQuestion(id) as TypedQuestion
+    expect(golden('q-s1-t3-w1-07')).toMatchObject({
+      kind: 'type',
+      prompt: 'I promise I ___ (call) you tonight.',
+      answer: 'will call',
+      accept: ["'ll call"],
+      requires: ['subject-pronouns', 'object-pronouns', 'verb-forms'],
+    })
+    expect(golden('q-s1-t3-w2-11')).toMatchObject({
+      kind: 'transform',
+      prompt: 'Đổi sang câu phủ định: They are going to sell their house.',
+      answer: "They aren't going to sell their house.",
+      requires: ['subject-pronouns', 'possessive-adjectives', 'be-negative', 'verb-forms'],
+    })
+    expect(golden('q-s1-t3-w3-13')).toMatchObject({
+      kind: 'transform',
+      prompt: 'Dịch sang tiếng Anh: Bố tôi chưa bao giờ lái xe ô tô. (father, never, drive, a car)',
+      answer: 'My father has never driven a car.',
+      accept: ["My father's never driven a car."],
+      requires: ['possessive-adjectives', 'articles', 'frequency-adverbs', 'verb-forms'],
+    })
+    expect(golden('q-s1-t3-w4-11')).toMatchObject({
+      kind: 'transform',
+      prompt: 'Đổi sang hiện tại hoàn thành (since 2019): My parents live in Da Nang.',
+      answer: 'My parents have lived in Da Nang since 2019.',
+      requires: ['possessive-adjectives', 'plurals', 'numbers', 'verb-forms'],
+    })
+    expect(golden('q-s1-t3-w4-13')).toMatchObject({
+      kind: 'transform',
+      prompt: 'Dịch sang tiếng Anh: Chúng tôi chuyển tới Hà Nội ba năm trước. (move, Hanoi, three years ago)',
+      answer: 'We moved to Hanoi three years ago.',
+      accept: ['Three years ago we moved to Hanoi.'],
+      requires: ['subject-pronouns', 'numbers', 'verb-forms'],
+    })
+    expect(golden('q-s1-t4-w1-11')).toMatchObject({
+      kind: 'transform',
+      prompt: 'Đổi sang câu phủ định: My grandfather can swim.',
+      answer: "My grandfather can't swim.",
+      requires: ['possessive-adjectives', 'subject-verb'],
+    })
+    expect(golden('q-s1-t4-w3-07')).toMatchObject({
+      kind: 'type',
+      tag: 'từ loại',
+      prompt: 'This bag is ___ (heavy) than that one.',
+      answer: 'heavier',
+      requires: ['demonstratives', 'be-affirmative', 'parts-of-speech'],
+    })
+    expect(golden('q-s1-t4-w3-21')).toMatchObject({
+      kind: 'transform',
+      prompt: 'Đổi sang bị động: People speak French in Canada.',
+      answer: 'French is spoken in Canada.',
+      requires: ['be-affirmative', 'verb-forms', 'prepositions-of-place'],
+    })
+    for (const id of ['q-s1-t3-w2-11', 'q-s1-t3-w4-11', 'q-s1-t4-w1-11', 'q-s1-t4-w3-07', 'q-s1-t4-w3-21']) {
+      expect(golden(id).accept, id).toBeUndefined()
+    }
+  })
+
+  it('golden chấm bằng matchesTyped đúng như ma trận I/O', () => {
+    const grade = (id: string, typed: string) => {
+      const x = getQuestion(id) as TypedQuestion
+      return matchesTyped(x.answer, typed, x.accept)
+    }
+    // Quiz 's.
+    expect(grade('q-s1-t3-w3-13', "My father's never driven a car")).toBe(true)
+    expect(grade('q-s1-t3-w3-13', 'My father has never drove a car.')).toBe(false)
+    // Trạng ngữ ago lên đầu.
+    expect(grade('q-s1-t3-w4-13', 'Three years ago we moved to Hanoi')).toBe(true)
+    expect(grade('q-s1-t3-w4-13', 'We have moved to Hanoi three years ago.')).toBe(false)
+    // Biến đổi modal.
+    expect(grade('q-s1-t4-w1-11', 'My grandfather can not swim')).toBe(true)
+    expect(grade('q-s1-t4-w1-11', 'My grandfather cannot swim.')).toBe(true)
+    expect(grade('q-s1-t4-w1-11', "My grandfather doesn't can swim.")).toBe(false)
+    // So sánh: chỉ heavier đúng; câu sai vào Sổ lỗi với nhãn từ loại.
+    expect(grade('q-s1-t4-w3-07', 'heavier')).toBe(true)
+    expect(grade('q-s1-t4-w3-07', 'more heavy')).toBe(false)
+    expect(grade('q-s1-t4-w3-07', 'heavyer')).toBe(false)
+    expect(getQuestion('q-s1-t4-w3-07')?.tag).toBe('từ loại')
+    // Bị động.
+    expect(grade('q-s1-t4-w3-21', 'French is spoken in Canada.')).toBe(true)
+    expect(grade('q-s1-t4-w3-21', 'French is speak in Canada.')).toBe(false)
+    // will: 'll = will; sau will là nguyên mẫu.
+    expect(grade('q-s1-t3-w1-07', "'ll call")).toBe(true)
+    expect(grade('q-s1-t3-w1-07', 'will calls')).toBe(false)
+    // Đáp án của mọi câu mới tự khớp, kể cả viết thường, bỏ dấu câu.
+    for (const x of ALL_FRESH) {
+      for (const a of [x.answer, ...(x.accept ?? [])]) {
+        expect(matchesTyped(x.answer, a, x.accept), x.id).toBe(true)
+        expect(matchesTyped(x.answer, a.toLowerCase().replace(/[.?!,]/g, ''), x.accept), x.id).toBe(true)
+      }
+    }
+  })
+
+  it('quiz lesson-s1-t4-w3: 3 lần liên tiếp có TTS (cộng dồn câu đã gặp) ra 15 câu khác nhau; mọi quiz bài T3–T4 bốc đủ 5 câu, có / không TTS', () => {
+    const quiz = getQuiz('lesson-s1-t4-w3')!
+    expect(QUESTION_BANK.filter((x) => x.lessonId === 's1-t4-w3')).toHaveLength(26)
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f']) {
+      const seen = new Set<string>()
+      for (let round = 0; round < 3; round++) {
+        const picked = pickQuiz(QUESTION_BANK, quiz, `${seed}-${round}`, { canSpeak: true, seen })
+        expect(picked, `${seed} ${round}`).toHaveLength(LESSON_QUIZ_SIZE)
+        for (const x of picked) {
+          expect(seen.has(x.id), `${seed} ${round} ${x.id}`).toBe(false)
+          seen.add(x.id)
+        }
+      }
+      expect(seen.size, seed).toBe(15)
+    }
+    for (const id of ['s1-t3-w1', 's1-t3-w2', 's1-t3-w3', 's1-t3-w4', 's1-t4-w1', 's1-t4-w3']) {
+      const lessonQuiz = getQuiz(lessonQuizId(id))!
+      for (const seed of ['a', 'b', 'c', 'd', 'e']) {
+        for (const canSpeak of [true, false]) {
+          const picked = pickQuiz(QUESTION_BANK, lessonQuiz, seed, { canSpeak })
+          expect(picked, `${id} ${seed}`).toHaveLength(LESSON_QUIZ_SIZE)
+          expect(new Set(picked.map((x) => x.id)).size).toBe(LESSON_QUIZ_SIZE)
+          if (!canSpeak) expect(picked.some((x) => x.kind === 'listening')).toBe(false)
+        }
+      }
+    }
+  })
+
+  it('O.W.L.: owlTensePool vẫn đúng 57 câu, không chứa câu mới; pickOwlTenses cùng seed ra cùng đề như baseline', () => {
+    const pool = owlTensePool(QUESTION_BANK)
+    expect(pool).toHaveLength(57)
+    const fresh = new Set(ALL_FRESH.map((x) => x.id))
+    for (const x of pool) expect(fresh.has(x.id), x.id).toBe(false)
+    // Đề của seed "story-37" ở baseline f681c3e (trước story này).
+    expect(pickOwlTenses(QUESTION_BANK, 'story-37').map((x) => x.id)).toEqual([
+      'q-s1-t2-w3-01', 'q-s1-t2-w3-04', 'q-s1-t3-w2-03', 'q-s1-t4-w1-01', 'q-s1-t1-w1-01', 'q-s1-t4-w3-03', 'q-s1-t2-w2-12',
+      'q-s1-t1-w3-03', 'q-s1-t2-w4-03', 'q-s1-t2-w4-01', 'q-s1-t3-w4-02', 'q-s1-t4-w4-01', 'q-s1-t2-w3-03', 'q-s1-t2-w1-02',
+      'q-s1-t3-w3-03', 'q-s1-t2-w2-08', 'q-s1-t2-w1-03', 'q-s1-t2-w2-11', 'q-s1-t3-w1-01', 'q-s1-t1-w2-02',
+    ])
+  })
+
+  it('Sổ lỗi cũ: q-s1-t3-w1-03 và q-s1-t4-w3-02 giữ đúng đề, đáp án, nhãn', () => {
+    expect(getQuestion('q-s1-t3-w1-03')).toMatchObject({
+      kind: 'choice',
+      tag: 'thì',
+      prompt: "Don't worry. I ___ forget.",
+      answer: "won't",
+    })
+    expect(getQuestion('q-s1-t4-w3-02')).toMatchObject({
+      kind: 'choice',
+      tag: 'từ loại',
+      prompt: 'This is ___ restaurant in town.',
+      answer: 'the best',
+    })
+    // Câu cũ của 6 bài T3–T4 vẫn không có requires (requires câu cũ là việc của story 47).
+    for (const t of TOPICS) for (const n of TOPIC_QUESTIONS[t].old) expect(q(TOPIC_QUESTIONS[t].lessonId, n).requires, `${t} ${n}`).toBeUndefined()
   })
 })

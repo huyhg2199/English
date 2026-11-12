@@ -165,3 +165,9 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/39-tense-choice-signal-words-aux-table.md`
   summary: Chip tín hiệu của will (tomorrow, tonight) và going to (this weekend, next month) không chốt được thì; story 39 chỉ thêm ghi chú "chỉ để gợi ý" trên thẻ "will hay going to?".
   evidence: Review story 39 (blind + content). Quy tắc 3 của khối nói tomorrow / next week đi được với cả hai. Không đổi được chip sang "I promise", "I think", "OK, …" vì luật chip là phải có trong chữ của chính Tense, và story 39 cấm sửa dữ liệu Tense. Story 37 (thêm phần luyện T3–T4) có thể đưa các cụm này vào phần luyện của will rồi đổi chip.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/37-t3-t4-tense-practice-data.md`
+  summary: Câu cũ `q-s1-t3-w1-03` ("Don't worry. I ___ forget.") dùng "Don't + V" (mệnh lệnh phủ định), thứ mà bảng phạm vi story 37 xếp vào nhóm "luôn bị báo" vì Chặng 1 chưa dạy (F08 chỉ dạy mệnh lệnh khẳng định và Let's).
+  evidence: Review story 37 (blind). Câu cũ không qua `outOfScopeWords` và spec story 37 cấm sửa câu cũ. Story 47 (requires cho câu cũ) nên chọn: dạy "Don't + V" ở F08 / bài will rồi mở nhóm này, hoặc đổi đề câu cũ (giữ id), hoặc ghi câu này là ngoại lệ.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/37-t3-t4-tense-practice-data.md`
+  summary: AC 1–3 của story 37 chưa kiểm tay trên trình duyệt: hai khối luyện ở s1-t4-w3 (375px, chỉ một khối mở, `scrollWidth` 375, store không đổi), ôn Sổ lỗi câu dịch s1-t3-w3 ("My father's never driven a car" được chấm đúng, "Vì sao sai?" gửi prompt câu gõ), thứ tự khối ở bước Bài chính s1-t3-w2.
+  evidence: Review story 37 (blind). Implementation Notes ghi "Chưa kiểm tay"; component không đổi, khối tự hiện qua `GrammarSection` như story 35, 36, và test dữ liệu đã kiểm chấm câu golden bằng `matchesTyped`. Cần Huy mở các route trên Chrome 375px.
