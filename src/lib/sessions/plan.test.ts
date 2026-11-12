@@ -18,6 +18,7 @@ import {
   recordSession,
   resolveSessionPlan,
   reviewNote,
+  sessionCheckQuizId,
   SESSION_MINUTES,
   sessionLesson,
   sessionPlan,
@@ -452,5 +453,44 @@ describe('phần của buổi bài T1 — I/O Matrix (story 28)', () => {
     expect(sessionPlan(inFoundation, hasContent).mode).toBe('foundation')
     const left = skipFoundation(inFoundation, day(3))
     expect(resolveSessionPlan({}, left, hasContent).search).toEqual({ lesson: W1, part: p(1), step: 'lesson' })
+  })
+})
+
+describe('sessionCheckQuizId — thẻ kiểm tra cuối Bài chính (story 41)', () => {
+  const W1 = 's1-t1-w1'
+  const p = (n: number) => `${W1}-p${n}`
+  const after = (): Store => skipFoundation(empty(), day(1))
+
+  it('Thẻ kiểm tra hiện: buổi s1-t2-w1 (bài không chia phần) → lesson-s1-t2-w1', () => {
+    const { plan } = resolveSessionPlan({ lesson: 's1-t2-w1', step: 'lesson' }, after(), hasContent)
+    expect(sessionCheckQuizId(plan)).toBe('lesson-s1-t2-w1')
+  })
+
+  it('Bài chia phần: p1 → null; p3 (phần cuối) → có; đã xem hết (không part) → có', () => {
+    const s = after()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: W1, part: p(1), step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: W1, part: p(2), step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: W1, part: p(3), step: 'lesson' }, s, hasContent).plan)).toBe(
+      `lesson-${W1}`,
+    )
+    let all = s
+    for (const id of [p(1), p(2), p(3)]) all = markLessonPartSeen(all, W1, id)
+    const review = resolveSessionPlan({ lesson: W1, step: 'lesson' }, all, hasContent).plan
+    expect(review).toMatchObject({ partId: null })
+    expect(sessionCheckQuizId(review)).toBe(`lesson-${W1}`)
+  })
+
+  it('Bài không có quiz: Tết s1-t4-w2, bài chặng 2, hết lộ trình → null', () => {
+    const s = after()
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: 's1-t4-w2', step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    const stage2 = allLessons().find((l: Lesson) => l.id.startsWith('s2-'))!
+    expect(sessionCheckQuizId(resolveSessionPlan({ lesson: stage2.id, step: 'lesson' }, s, hasContent).plan)).toBeNull()
+    expect(sessionCheckQuizId({ mode: 'lesson', lesson: null, partId: null, steps: LESSON_STEPS })).toBeNull()
+  })
+
+  it('buổi Sân ga → null', () => {
+    const { plan } = resolveSessionPlan({ brick: 'F03', step: 'theory' }, done(['F01', 'F02']), hasContent)
+    expect(plan.mode).toBe('foundation')
+    expect(sessionCheckQuizId(plan)).toBeNull()
   })
 })

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { completeBrick, finishPlacement, foundationState, markRowTested, readFoundation, skipFoundation } from '@/lib/foundation'
-import { dismissBrickInvite, recordMistake } from '@/lib/quiz'
+import { dismissBrickInvite, dismissLessonInvite, recordMistake } from '@/lib/quiz'
 import { markLessonPartSeen, readCompletedLessonIds, readSeenPartIds, setLessonCompleted } from '@/lib/roadmap-progress'
 import { readSavedWords, saveWord, savedWordsOn } from '@/lib/saved-words'
 import { computeStreak, readSessionDays, recordSession, todaySession } from '@/lib/sessions'
@@ -706,5 +706,40 @@ describe('phần bài T1 và "Để sau" của lời mời ôn viên (story 28)'
       ),
     ).toEqual({ items: {}, brickInvites: { F09: d(T2, T1), F13: d(T1), F14: d(T1, T2) } })
     expect(mergeMistakes(undefined, undefined)).toBeUndefined()
+  })
+
+  it('Đồng bộ "Để sau" ôn bài (story 41): hai máy cùng có lessonInvites[s1-t2-w2] → dismissedAt muộn hơn; brickInvites như cũ', () => {
+    const q = { id: 'q-s1-t2-w2-01', tag: 'thì' as const, lessonId: 's1-t2-w2', sectionId: 'grammar' as const }
+    const a = dismissBrickInvite(dismissLessonInvite(recordMistake(empty(), q, 'x', at(1)), 's1-t2-w2', at(2)), 'F09', at(2))
+    const b = dismissLessonInvite(empty(), 's1-t2-w2', at(5))
+    const r = mergeWithRemote(a, remote(b.data))
+    if (r.kind !== 'merged') throw new Error('expected merged')
+    const m = r.store.data.mistakes as {
+      items: Record<string, unknown>
+      brickInvites: Record<string, { dismissedAt: string }>
+      lessonInvites: Record<string, { dismissedAt: string }>
+    }
+    expect(Object.keys(m.items)).toEqual(['q-s1-t2-w2-01'])
+    expect(m.lessonInvites['s1-t2-w2'].dismissedAt).toBe(at(5).toISOString())
+    expect(m.brickInvites.F09.dismissedAt).toBe(at(2).toISOString())
+    expect(mergeWithRemote(r.store, remote(r.store.data))).toMatchObject({ changedLocal: false, push: false })
+  })
+
+  it('mergeMistakes: lessonInvites chỉ có key khi một bên có; cùng luật với brickInvites', () => {
+    const d = (dismissedAt: string, updatedAt = dismissedAt) => ({ dismissedAt, updatedAt })
+    expect(mergeMistakes({ items: {}, brickInvites: { F09: d(T1) } }, { items: {} })).toEqual({
+      items: {},
+      brickInvites: { F09: d(T1) },
+    })
+    expect(mergeMistakes({ items: {} }, { items: {}, lessonInvites: { 's1-t2-w2': d(T1) } })).toEqual({
+      items: {},
+      lessonInvites: { 's1-t2-w2': d(T1) },
+    })
+    expect(
+      mergeMistakes(
+        { items: {}, lessonInvites: { a: d(T2, T1), b: 'junk', c: d(T1, T1) } },
+        { items: {}, lessonInvites: { a: d(T1, T2), b: d(T1), c: d(T1, T2) }, brickInvites: { F09: d(T1) } },
+      ),
+    ).toEqual({ items: {}, brickInvites: { F09: d(T1) }, lessonInvites: { a: d(T2, T1), b: d(T1), c: d(T1, T2) } })
   })
 })

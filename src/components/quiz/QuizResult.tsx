@@ -20,10 +20,12 @@ type Props = {
   onRetry?: () => void
   /** Khối hiện ngay dưới điểm (vd "Học tiếp ở đây" của test quay lại). */
   next?: ReactNode
+  /** false: không có nút "Về bài học / Về Lộ trình" (kiểm tra cuối Bài chính trong buổi 30', story 41). Mặc định true. */
+  showHome?: boolean
 }
 
 /** Kết quả: điểm, từng câu sai kèm đáp án, giải thích và link về đúng đoạn bài nguồn. */
-export function QuizResult({ homeLessonId, questions, graded, onRetry, next }: Props) {
+export function QuizResult({ homeLessonId, questions, graded, onRetry, next, showHome = true }: Props) {
   const byId = new Map(questions.map((q) => [q.id, q]))
   const wrong = graded.answers.filter((a) => !a.correct)
   const perfect = wrong.length === 0
@@ -57,9 +59,11 @@ export function QuizResult({ homeLessonId, questions, graded, onRetry, next }: P
               </Link>
             </Button>
           )}
-          <Button asChild variant="ghost">
-            <Link to={homeLessonId ? lessonHref(homeLessonId) : '/roadmap'}>{homeLessonId ? 'Về bài học' : 'Về Lộ trình'}</Link>
-          </Button>
+          {showHome && (
+            <Button asChild variant="ghost">
+              <Link to={homeLessonId ? lessonHref(homeLessonId) : '/roadmap'}>{homeLessonId ? 'Về bài học' : 'Về Lộ trình'}</Link>
+            </Button>
+          )}
         </CardContent>
       </Card>
 

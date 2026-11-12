@@ -4,17 +4,14 @@ import { Link } from 'react-router'
 
 import { useMistakes } from '@/app/store-context'
 import { useNow } from '@/app/use-now'
-import { Kbd } from '@/components/Kbd'
 import { GeminiSettings } from '@/components/quiz/GeminiSettings'
 import { MistakeCard } from '@/components/quiz/MistakeCard'
-import { QuestionCard } from '@/components/quiz/QuestionCard'
-import { WordReviewCard } from '@/components/quiz/WordReviewCard'
+import { MistakeReviewSession } from '@/components/quiz/MistakeReviewSession'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { getQuestion, MISTAKE_TAGS, type MistakeTag } from '@/data/questions'
+import { MISTAKE_TAGS, type MistakeTag } from '@/data/questions'
 import { readGeminiKey } from '@/lib/ai'
-import { OWL_SELF_NO, OWL_SELF_OK } from '@/lib/owl'
-import { filterMistakes, isAnswerCorrect, isMistakeItem, listMistakes, reviewableDue, shuffleOptions } from '@/lib/quiz'
+import { filterMistakes, listMistakes, reviewableDue } from '@/lib/quiz'
 import { canSpeak } from '@/lib/speech'
 import { cn } from '@/lib/utils'
 
@@ -27,73 +24,6 @@ function BackLink() {
       <ArrowLeft className="size-4" aria-hidden="true" />
       Luyện tập
     </Link>
-  )
-}
-
-/**
- * Phiên ôn sổ: danh sách câu đến hạn chụp lúc bắt đầu; đúng = Nhớ, sai = Quên (`reviewMistake`).
- * Thứ tự lựa chọn xáo theo id câu + lịch hiện tại (mỗi lần ôn một thứ tự khác).
- */
-function ReviewSession({ ids, onDone }: { ids: readonly string[]; onDone: () => void }) {
-  const { items, review } = useMistakes()
-  const [index, setIndex] = useState(0)
-  const [chosen, setChosen] = useState<string | null>(null)
-  // Seed theo lịch lúc bắt đầu ôn câu này (sau khi chấm, lịch đổi nhưng lựa chọn không nhảy).
-  const [seeds] = useState(() =>
-    Object.fromEntries(ids.map((id) => [id, `${id}|${JSON.stringify((items[id] as { card?: unknown })?.card ?? '')}`])),
-  )
-  const id = ids[index]
-  const question = getQuestion(id)
-  const last = index === ids.length - 1
-  // Nút "Câu tiếp" / "Xong" và phím Enter của câu trắc nghiệm (story 31) dùng chung handler. Thẻ tự chấm từ đọc
-  // (`WordReviewCard`) không có phím tắt nên nút của nó không có gợi ý phím.
-  const next = () => {
-    if (last) onDone()
-    else {
-      setIndex((i) => i + 1)
-      setChosen(null)
-    }
-  }
-  const nextButton = <Button onClick={next}>{last ? 'Xong' : 'Câu tiếp'}</Button>
-  const entry = items[id]
-  if (!question) {
-    // Từ đọc chưa đúng ở O.W.L.: ôn bằng tự chấm (đúng = Nhớ, chưa đúng = Quên).
-    if (!isMistakeItem(entry) || !entry.word) return null
-    return (
-      <WordReviewCard
-        key={id}
-        word={entry.word}
-        tag={entry.tag}
-        heading={`Ôn sổ · câu ${index + 1}/${ids.length}`}
-        graded={chosen === null ? null : chosen === OWL_SELF_OK}
-        onGrade={(correct) => {
-          const label = correct ? OWL_SELF_OK : OWL_SELF_NO
-          setChosen(label)
-          review(id, correct, label)
-        }}
-        footer={nextButton}
-      />
-    )
-  }
-  return (
-    <QuestionCard
-      key={id}
-      question={question}
-      options={shuffleOptions(question, seeds[id])}
-      chosen={chosen}
-      onChoose={(option) => {
-        setChosen(option)
-        review(id, isAnswerCorrect(question, option), option)
-      }}
-      heading={`Ôn sổ · câu ${index + 1}/${ids.length}`}
-      footer={
-        <Button onClick={next} aria-keyshortcuts="Enter">
-          {last ? 'Xong' : 'Câu tiếp'}
-          <Kbd>Enter</Kbd>
-        </Button>
-      }
-      onNext={next}
-    />
   )
 }
 
@@ -124,7 +54,7 @@ export function Mistakes() {
       </header>
 
       {session ? (
-        <ReviewSession
+        <MistakeReviewSession
           ids={session}
           onDone={() => {
             setSession(null)

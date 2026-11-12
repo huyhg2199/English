@@ -12,6 +12,8 @@ import { VideoList } from '@/components/media/VideoEmbed'
 import { ReadingSourceContext } from '@/components/reading-source'
 import { Kbd } from '@/components/Kbd'
 import { LessonSectionCard } from '@/components/roadmap/LessonSectionCard'
+import { LessonCheck } from '@/components/session/LessonCheck'
+import { SessionMistakes } from '@/components/session/SessionMistakes'
 import { SessionRail } from '@/components/session/SessionRail'
 import { BackToToday, LinkList, SessionDoneView, StepClock } from '@/components/session/SessionParts'
 import { STEP_ICONS } from '@/components/session/step-icons'
@@ -21,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getBrickMeta, type BrickId } from '@/data/foundation'
 import { getBrick, hasBrickContent } from '@/data/foundation/content'
 import { getLessonContent } from '@/data/lessons'
+import { getQuiz } from '@/data/questions'
 import {
   entertainmentLinks,
   entertainmentTask,
@@ -36,6 +39,7 @@ import {
   lockTheory,
   resolveSessionPlan,
   sessionRecordLessonId,
+  sessionCheckQuizId,
   sessionSearch,
   sessionWordList,
   type ReviewNote,
@@ -150,9 +154,20 @@ function TheoryStep({
 /**
  * Bài chính: thẻ đoạn kèm nội dung (bảng âm, TenseCard, nút thi O.W.L.) hiện ngay trong buổi, lý thuyết trước.
  * Bài T1 chia phần (story 28): đoạn Phát âm chỉ hiện phần của buổi (`partId`); đã xem hết thì hiện mọi phần để ôn cả tuần.
+ * Story 41: buổi học cả bài hoặc phần cuối của bài có quiz bài (`checkQuizId`) thì cuối bước có thẻ kiểm tra 5 câu
+ * (`LessonCheck`, không bắt buộc); đang làm / ở màn kết quả thì ẩn thẻ đoạn (header bài vẫn hiện).
  */
-function LessonStep({ current, partId }: { current: SessionLesson | null; partId: string | null }) {
+function LessonStep({
+  current,
+  partId,
+  checkQuizId,
+}: {
+  current: SessionLesson | null
+  partId: string | null
+  checkQuizId: string | null
+}) {
   const { weakest } = useSkillBoard()
+  const [checkFocused, setCheckFocused] = useState(false)
   if (!current) {
     return (
       <Card>
@@ -172,6 +187,8 @@ function LessonStep({ current, partId }: { current: SessionLesson | null; partId
   const content = getLessonContent(lesson.id)
   const partCount = content?.parts?.length ?? 0
   const view: PronunciationView = partId ? { kind: 'part', partId } : { kind: 'all' }
+  const checkQuiz = checkQuizId ? getQuiz(checkQuizId) : undefined
+  const showSections = !(checkQuiz && checkFocused)
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -180,31 +197,33 @@ function LessonStep({ current, partId }: { current: SessionLesson | null; partId
         </p>
         <h2 className="text-xl font-semibold break-words">{lesson.title}</h2>
       </div>
-      {partCount > 0 && !partId && (
+      {showSections && partCount > 0 && !partId && (
         <p className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
           Đã xem đủ {partCount} phần, hôm nay ôn lại cả tuần.
         </p>
       )}
       {/* Lý thuyết (phát âm, ngữ pháp) luôn trước; đoạn luyện của kỹ năng yếu nhất lên trước đoạn luyện khác, nhãn "Ưu tiên". */}
-      {prioritizeSections(
-        lesson.sections.filter((s) => s.id !== 'entertainment'),
-        weakest,
-      ).map(({ section, priority }) => (
-        <ReadingSourceContext.Provider
-          key={section.id}
-          value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
-        >
-          <LessonSectionCard lesson={lesson} stage={stage} section={section} priority={priority}>
-            <LessonSectionContent
-              lesson={lesson}
-              stage={stage}
-              section={section}
-              content={content}
-              pronunciationView={view}
-            />
-          </LessonSectionCard>
-        </ReadingSourceContext.Provider>
-      ))}
+      {showSections &&
+        prioritizeSections(
+          lesson.sections.filter((s) => s.id !== 'entertainment'),
+          weakest,
+        ).map(({ section, priority }) => (
+          <ReadingSourceContext.Provider
+            key={section.id}
+            value={{ title: `${lesson.title} · ${section.title}`, url: sectionHref(lesson.id, section.id) }}
+          >
+            <LessonSectionCard lesson={lesson} stage={stage} section={section} priority={priority}>
+              <LessonSectionContent
+                lesson={lesson}
+                stage={stage}
+                section={section}
+                content={content}
+                pronunciationView={view}
+              />
+            </LessonSectionCard>
+          </ReadingSourceContext.Provider>
+        ))}
+      {checkQuiz && <LessonCheck lesson={lesson} quiz={checkQuiz} onFocusChange={setCheckFocused} />}
       <Link to={lessonHref(lesson.id)} className="self-start text-sm text-primary underline-offset-4 hover:underline">
         Trang bài: kiểm tra bài, ghi chú, đánh dấu xong
       </Link>
@@ -246,6 +265,8 @@ function FunStep({ plan }: { plan: SessionPlan }) {
  * chạy ngay trong buổi) → Ôn & từ mới 8' → Giải trí nhẹ 10'; sau Sân ga: Bài chính 15' → Ôn flashcard 5' → Giải trí 10'.
  * Kế hoạch và bước chốt trên URL (`?brick=F03&step=theory` / `?lesson=…&part=…&step=lesson`), nên mở trang khác rồi quay lại
  * vẫn đúng buổi. Rời buổi giữa chừng không ghi gì; chỉ "Xong buổi" mới ghi nhật ký.
+ * Story 41: cuối Bài chính có kiểm tra 5 câu (tuỳ chọn, đánh dấu bài xong khi đạt); bước Ôn mở đầu bằng câu Sổ lỗi đến
+ * hạn (bỏ qua được). Không bước nào bắt buộc làm trước khi sang bước sau.
  */
 export function Session() {
   const { record } = useSessions()
@@ -356,23 +377,30 @@ export function Session() {
             <TheoryStep brickId={brickId} review={review} note={theory?.note ?? null} followUp={followUp} onFollowUp={followUpTo} />
           )}
           {isFlashcards && (
-            <FlashcardSession
-              firstList={sessionWordList(plan)}
-              renderDone={() => (
-                <Card className="items-center text-center">
-                  <CardHeader className="w-full items-center">
-                    <PartyPopper className="mx-auto size-10 text-primary" aria-hidden="true" />
-                    <CardTitle>Phần ôn xong</CardTitle>
-                    <CardDescription>
-                      Hết thẻ cho hôm nay.{nextStep ? ` Sang phần ${nextStep.title.toLowerCase()} thôi.` : ''}
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              )}
-            />
+            // Story 41: câu Sổ lỗi đến hạn (tối đa 5, ngày tồn ôn 3) ôn trước, xong / bỏ qua mới tới phiên flashcard.
+            <SessionMistakes key={meta.id}>
+              <FlashcardSession
+                firstList={sessionWordList(plan)}
+                renderDone={() => (
+                  <Card className="items-center text-center">
+                    <CardHeader className="w-full items-center">
+                      <PartyPopper className="mx-auto size-10 text-primary" aria-hidden="true" />
+                      <CardTitle>Phần ôn xong</CardTitle>
+                      <CardDescription>
+                        Hết thẻ cho hôm nay.{nextStep ? ` Sang phần ${nextStep.title.toLowerCase()} thôi.` : ''}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                )}
+              />
+            </SessionMistakes>
           )}
           {meta.id === 'lesson' && (
-            <LessonStep current={plan.mode === 'lesson' ? plan.lesson : null} partId={plan.mode === 'lesson' ? plan.partId : null} />
+            <LessonStep
+              current={plan.mode === 'lesson' ? plan.lesson : null}
+              partId={plan.mode === 'lesson' ? plan.partId : null}
+              checkQuizId={sessionCheckQuizId(plan)}
+            />
           )}
           {meta.id === 'fun' && <FunStep plan={plan} />}
 

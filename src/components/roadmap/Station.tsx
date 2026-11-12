@@ -13,10 +13,16 @@ const STATE_TEXT: Record<StationState, string> = {
   locked: 'chưa học',
 }
 
-type Props = { lesson: Lesson; monthLabel: string; state: StationState }
+/** Nhãn kiểm tra bài dưới tên bài (story 41): "đạt x%" / "chưa kiểm tra"; `passed` (≥ 70%) tô màu chính. */
+export type StationCheck = { text: string; passed: boolean }
 
-/** Một trạm (tuần) trên bản đồ. Đã qua: sáng vàng nến. Học tiếp: viền sáng + nhãn. Bỏ qua (xếp lớp): mờ + nhãn. */
-export function Station({ lesson, monthLabel, state }: Props) {
+type Props = { lesson: Lesson; monthLabel: string; state: StationState; check?: StationCheck | null }
+
+/**
+ * Một trạm (tuần) trên bản đồ. Đã qua: sáng vàng nến. Học tiếp: viền sáng + nhãn. Bỏ qua (xếp lớp): mờ + nhãn.
+ * Có `check` thì thêm một dòng nhỏ dưới tên bài (điểm kiểm tra bài, story 41).
+ */
+export function Station({ lesson, monthLabel, state, check }: Props) {
   const isCheckpoint = !!lesson.checkpointId
 
   return (
@@ -76,6 +82,11 @@ export function Station({ lesson, monthLabel, state }: Props) {
           >
             {lesson.title}
           </span>
+          {check && (
+            <span className={cn('block text-[11px]', check.passed ? 'text-primary' : 'text-muted-foreground')}>
+              {check.text}
+            </span>
+          )}
           {state !== 'skipped' && <span className="sr-only"> ({STATE_TEXT[state]})</span>}
         </span>
       </Link>

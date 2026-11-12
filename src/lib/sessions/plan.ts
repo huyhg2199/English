@@ -1,5 +1,6 @@
 import { BRICKS, brickLessonId, isBrickId, type BrickId } from '@/data/foundation'
 import { lessonPartIds } from '@/data/lessons'
+import { getQuiz, lessonQuizId } from '@/data/questions'
 import { foundationState, isInFoundation, nextBrickIdFromState, readFoundation } from '@/lib/foundation'
 import { markLessonPartSeen, nextLessonPartId, readSeenPartIds } from '@/lib/roadmap-progress'
 import type { Store } from '@/lib/storage'
@@ -188,6 +189,21 @@ export function resolveSessionPlan(params: SessionParams, store: Store, hasConte
   }
   const stepIndex = stepIndexOf(plan, params.step)
   return { plan, stepIndex, search: sessionSearch(plan, stepIndex) }
+}
+
+/**
+ * Quiz kiểm tra cuối bước Bài chính của buổi (story 41): quiz bài `lesson-<id>` khi buổi là buổi bài, bài có quiz bài, và
+ * buổi học cả bài (`partId` null: bài không chia phần hoặc buổi ôn cả tuần) hoặc phần cuối của bài. Buổi học phần 1, 2 của
+ * bài T1 chia phần thì chưa học hết bài nên chưa kiểm tra; buổi Sân ga, hết lộ trình hay bài không có quiz → null.
+ */
+export function sessionCheckQuizId(plan: SessionPlan): string | null {
+  if (plan.mode !== 'lesson' || !plan.lesson) return null
+  const lessonId = plan.lesson.lesson.id
+  const quizId = lessonQuizId(lessonId)
+  if (!getQuiz(quizId)) return null
+  if (plan.partId === null) return quizId
+  const parts = lessonPartIds(lessonId)
+  return parts.length > 0 && parts[parts.length - 1] === plan.partId ? quizId : null
 }
 
 /** `lessonId` ghi vào nhật ký khi "Xong buổi": viên dạng `f03` hoặc id bài; không có → undefined. */

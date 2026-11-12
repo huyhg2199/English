@@ -1,4 +1,5 @@
 import { isBrickId, ROW_IDS } from '@/data/foundation'
+import { getLesson } from '@/data/roadmap'
 import { createDefaultFoundation, isBrickProgress, isRowResult } from '@/lib/foundation'
 import { isNote } from '@/lib/notes'
 import { isPlacementAttempt } from '@/lib/placement/store'
@@ -168,6 +169,11 @@ export function sanitizeBackupData(data: Record<string, unknown>): Record<string
       // Dấu "Để sau" của lời mời ôn viên (story 28): chỉ id viên F01–F18 với mục hợp lệ.
       const invites = isPlainObject(value.brickInvites) ? safeEntries(value.brickInvites, isBrickInviteDismissal) : {}
       clean.brickInvites = Object.fromEntries(Object.entries(invites).filter(([id]) => isBrickId(id)))
+    }
+    if (key === 'mistakes' && 'lessonInvites' in clean) {
+      // Dấu "Để sau" của lời mời ôn bài thì (story 41): chỉ id bài của lộ trình với mục hợp lệ.
+      const invites = isPlainObject(value.lessonInvites) ? safeEntries(value.lessonInvites, isBrickInviteDismissal) : {}
+      clean.lessonInvites = Object.fromEntries(Object.entries(invites).filter(([id]) => getLesson(id) !== undefined))
     }
     out[key] = clean
   }

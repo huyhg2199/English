@@ -5,19 +5,18 @@ import type { Stage } from '@/data/roadmap'
 import type { RoadmapProgress } from '@/lib/roadmap-progress'
 import { cn } from '@/lib/utils'
 
-import { Station, type StationState } from './Station'
+import { Station, type StationCheck } from './Station'
+import { stationState } from './station-state'
 
-type Props = { stage: Stage; progress: RoadmapProgress }
-
-function stationState(id: string, progress: RoadmapProgress): StationState {
-  if (progress.completed.has(id)) return 'done'
-  if (progress.nextLessonId === id) return 'next'
-  if (progress.skipped.has(id)) return 'skipped'
-  return 'locked'
+type Props = {
+  stage: Stage
+  progress: RoadmapProgress
+  /** Nhãn kiểm tra bài theo id bài (story 41, `roadmapCheckLabel`); thiếu → trạm không có nhãn. */
+  checks?: ReadonlyMap<string, StationCheck | null>
 }
 
 /** Một Năm học: thẻ thông tin chặng rồi đường trạm theo tháng. */
-export function StageMap({ stage, progress }: Props) {
+export function StageMap({ stage, progress, checks }: Props) {
   const lessons = stage.months.flatMap((m) => m.lessons)
   const doneCount = lessons.filter((l) => progress.completed.has(l.id)).length
   const headingId = `stage-${stage.id}`
@@ -120,6 +119,7 @@ export function StageMap({ stage, progress }: Props) {
                 lesson={lesson}
                 monthLabel={month.label}
                 state={stationState(lesson.id, progress)}
+                check={checks?.get(lesson.id) ?? null}
               />
             ))}
           </ol>

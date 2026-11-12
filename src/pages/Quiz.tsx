@@ -1,27 +1,18 @@
-import { useState, type ReactNode } from 'react'
-import { ArrowLeft, BookOpen, ClipboardCheck, Compass, MapPinOff } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowLeft, ClipboardCheck, Compass, MapPinOff } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
 
-import { useComeback, useLoadedStore, useQuizzes } from '@/app/store-context'
-import { Kbd } from '@/components/Kbd'
-import { QuestionCard } from '@/components/quiz/QuestionCard'
+import { useComeback, useLoadedStore } from '@/app/store-context'
 import { QuizResult } from '@/components/quiz/QuizResult'
+import { brickLabel, newRun, type Run } from '@/components/quiz/quiz-run'
+import { QuizNotReady, QuizRun } from '@/components/quiz/QuizRun'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
-import { getBrickMeta, type BrickId } from '@/data/foundation'
-import { getQuiz, QUESTION_BANK, type Question, type QuizDef } from '@/data/questions'
+import { getQuiz, QUESTION_BANK, type QuizDef } from '@/data/questions'
 import { getLesson, lessonHref, SECTION_TITLES, sectionHref, type SectionId } from '@/data/roadmap'
 import { COMEBACK_QUIZ_ID, pickComebackTest, weakestSectionFrom } from '@/lib/comeback'
-import { brickHref, isBrickTaught } from '@/lib/foundation'
-import {
-  attemptId,
-  gradeAttempt,
-  planQuiz,
-  seenQuestionIds,
-  shuffleOptions,
-  type AttemptKind,
-  type GradedAttempt,
-} from '@/lib/quiz'
+import { isBrickTaught } from '@/lib/foundation'
+import { planQuiz, seenQuestionIds, type GradedAttempt } from '@/lib/quiz'
 import { currentLessonId } from '@/lib/schedule'
 import { canSpeak } from '@/lib/speech'
 
@@ -34,147 +25,6 @@ function BackLink({ to = '/practice', label = 'Luyện tập' }: { to?: string; 
       <ArrowLeft className="size-4" aria-hidden="true" />
       {label}
     </Link>
-  )
-}
-
-function randomPart(): string {
-  const c = globalThis.crypto
-  if (c && typeof c.randomUUID === 'function') return c.randomUUID().slice(0, 8)
-  return Math.random().toString(36).slice(2, 10)
-}
-
-type Run = { seed: string; startedAt: Date }
-
-function newRun(): Run {
-  return { seed: randomPart(), startedAt: new Date() }
-}
-
-type RunProps = {
-  quizId: string
-  questions: readonly Question[]
-  run: Run
-  kind?: AttemptKind
-  /** Màn kết quả sau khi chấm (lần làm đã được ghi). */
-  renderResult: (graded: GradedAttempt) => ReactNode
-}
-
-/**
- * Một lần làm: câu đã chọn sẵn theo seed của lần làm, chọn xong hiện đúng/sai ngay.
- * Chỉ ghi lần làm (và đẩy câu sai vào Sổ lỗi) khi làm xong câu cuối; rời trang giữa chừng thì không ghi gì.
- */
-function QuizRun({ quizId, questions, run, kind, renderResult }: RunProps) {
-  const { record } = useQuizzes()
-  const [index, setIndex] = useState(0)
-  const [chosen, setChosen] = useState<Record<string, string>>({})
-  const [graded, setGraded] = useState<GradedAttempt | null>(null)
-
-  if (graded) return renderResult(graded)
-  if (questions.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardDescription>Chưa có câu hỏi phù hợp cho bài test này.</CardDescription>
-        </CardHeader>
-      </Card>
-    )
-  }
-
-  const question = questions[index]
-  const last = index === questions.length - 1
-  const finish = () => {
-    const result = gradeAttempt(questions, chosen)
-    const now = new Date()
-    record(
-      {
-        id: attemptId(quizId, now, randomPart()),
-        quizId,
-        seed: run.seed,
-        startedAt: run.startedAt,
-        answers: result.answers,
-        ...(kind ? { kind } : {}),
-      },
-      now,
-    )
-    setGraded(result)
-    window.scrollTo(0, 0)
-  }
-  // Nút "Câu tiếp" / "Xem kết quả" và phím Enter (story 31) dùng chung handler.
-  const next = last ? finish : () => setIndex((i) => i + 1)
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="h-1.5 overflow-hidden rounded-full bg-muted"
-        role="progressbar"
-        aria-label="Tiến độ bài test"
-        aria-valuemin={0}
-        aria-valuemax={questions.length}
-        aria-valuenow={index + (chosen[question.id] ? 1 : 0)}
-      >
-        <div
-          className="h-full bg-primary transition-all"
-          style={{ width: `${((index + (chosen[question.id] ? 1 : 0)) / questions.length) * 100}%` }}
-        />
-      </div>
-      <QuestionCard
-        key={question.id}
-        question={question}
-        options={shuffleOptions(question, run.seed)}
-        chosen={chosen[question.id] ?? null}
-        onChoose={(option) => setChosen((c) => ({ ...c, [question.id]: option }))}
-        heading={`Câu ${index + 1}/${questions.length}`}
-        footer={
-          <Button onClick={next} aria-keyshortcuts="Enter">
-            {last ? 'Xem kết quả' : 'Câu tiếp'}
-            <Kbd>Enter</Kbd>
-          </Button>
-        }
-        onNext={next}
-      />
-      <p className="text-xs text-muted-foreground">Rời trang giữa chừng thì lần làm này không được lưu.</p>
-    </div>
-  )
-}
-
-const brickLabel = (id: BrickId) => `${id} · ${getBrickMeta(id)?.title ?? id}`
-
-/** Quiz bài / mini test còn ít hơn `MIN_QUIZ_QUESTIONS` câu đủ nền: mời học viên còn thiếu, không chạy, không ghi gì. */
-function QuizNotReady({
-  quiz,
-  missingBrickIds,
-  startBrickId,
-}: {
-  quiz: QuizDef
-  missingBrickIds: readonly BrickId[]
-  startBrickId: BrickId | null
-}) {
-  // Học theo thứ tự Sân ga: viên chưa dạy đầu tiên (luôn ≤ viên thiếu đầu tiên), không nhảy cóc tới viên đề cần.
-  const first = startBrickId ?? missingBrickIds[0]
-  return (
-    <Card>
-      <CardHeader>
-        <CardDescription className="break-words">
-          Bài test này cần vài viên gạch bạn chưa học ở Sân ga 9¾: {missingBrickIds.map(brickLabel).join(', ')}.
-        </CardDescription>
-        <CardDescription>Học xong rồi quay lại nhé. Bài học vẫn đánh dấu xong được như thường.</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        {first && (
-          <Button asChild className="h-auto min-h-9 justify-start whitespace-normal text-left">
-            <Link to={brickHref(first)}>
-              <BookOpen aria-hidden="true" />
-              Học {brickLabel(first)}
-            </Link>
-          </Button>
-        )}
-        <Button asChild variant="outline" className="self-start">
-          <Link to={lessonHref(quiz.homeLessonId)}>
-            <ArrowLeft aria-hidden="true" />
-            Về bài
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
   )
 }
 
