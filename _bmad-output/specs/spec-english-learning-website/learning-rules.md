@@ -28,7 +28,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 | F14 to be phủ định, hỏi + từ để hỏi | C | 10 | isn't/aren't, câu hỏi, trả lời ngắn, what/where/who/how old/how much |
 | F15 There is/are + giới từ nơi chốn | C | 13 | There is/are đủ 3 dạng (There isn't…, Is there…? Yes, there is), some/any, many/much/a lot of, How many/How much; tả phòng hay ảnh với in/on/under/next to/between (TOEIC Part 1) |
 | F16 have/has + nối câu | C | 10 | Nói sở hữu, has với he/she/it, "I am 25"; nối 2 câu bằng and/but/or/because/so, không nói "Because…, so…" |
-| F17 Thì là gì | D · Cầu sang Năm 1 | 8 | Nhận ra go/goes/going/went/gone trên trục thời gian; chỉ cần nhận ra |
+| F17 Thì là gì | D · Cầu sang Năm 1 | 8 | Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has (học ở T3); chỉ cần nhận ra |
 | F18 at/in/on + trạng từ tần suất | D | 8 | at + giờ, on + thứ, in + tháng; always/usually… đứng đâu; kể lịch một ngày |
 
 - **Thứ tự màn trong viên:** giải thích tiếng Việt (40–80 chữ) → "Tiếng Việt nói… / Tiếng Anh bắt buộc…" → ví dụ mẫu → ví dụ một chỗ trống → 2–5 câu luyện có nút "Gợi ý" (chủ yếu bấm chọn 3 đáp án; có thể là nghe rồi chọn, chạm âm tiết, sắp thứ tự, xếp nhóm) → Áp dụng (làm ra một thứ cụ thể: đánh vần tên mình, nói một giá tiền, tả căn phòng bằng 2–3 câu).
@@ -50,6 +50,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 - Lý thuyết luôn đi trước luyện.
 - **Khi đang ở Sân ga:** Lý thuyết 12' (1 viên gạch, hiện ngay trong buổi; xong viên có nút "Học tiếp viên sau", không bắt buộc, chỉ hiện khi còn viên tiếp theo) → Ôn & từ mới 8' → Giải trí nhẹ 10' (VOA Let's Learn English L1–L3, có phụ đề Việt khi có).
 - **Sau khi qua hoặc bỏ qua Sân ga:** Bài chính 15' → Ôn flashcard 5' → Giải trí 10'. Nội dung bài (bảng âm, TenseCard…) hiện ngay trong buổi, không phải mở trang bài. Thì có phần luyện có bậc (ví dụ mẫu → tự điền → 5–7 câu luyện có Gợi ý, dưới 60% mời xem lại + 2 câu dễ hơn → áp dụng) hiện ngay dưới TenseCard. Sai thì giải thích và làm lại, không ghi Sổ lỗi, không lưu tiến độ hay lần làm quiz; chỉ câu nói ở bước áp dụng ghi điểm nói như viên gạch (story 35). Các thì T1–T2 (hiện tại đơn, hiện tại tiếp diễn, quá khứ đơn với to be, có quy tắc, bất quy tắc, quá khứ tiếp diễn (s1-t2-w4: was / were + V-ing, when + quá khứ đơn, while; đưa vào Chặng 1 theo quyết định ngày 2026-11-11, story 46)) đều có phần luyện và 12 câu quiz mỗi thì, trong đó có câu gõ dạng đúng, biến đổi và dịch Việt → Anh (story 36). Các chủ điểm T3–T4 (will, be going to, hiện tại hoàn thành, hoàn thành và quá khứ đơn, can / should / must, so sánh, bị động hiện tại) cũng có phần luyện và 12 câu quiz mỗi chủ điểm, gồm câu gõ dạng đúng, biến đổi và dịch Việt → Anh (story 37).
+- **Ngữ pháp theo ngày (story 47):** 8 bài học một thì (hay hai thì chung khuôn) trong một tuần (s1-t2-w1 → s1-t2-w4, s1-t3-w1 → s1-t3-w3, s1-t4-w1) chia đoạn Ngữ pháp thành 5 ngày: N1 khẳng định, N2 phủ định, N3 câu hỏi (thêm khối luyện của thì), N4 so với thì trước (khối "Chọn thì" có sẵn của bài hoặc 3 cặp câu mới), N5 ôn trộn cả tuần (cả đoạn Ngữ pháp, có kiểm tra 5 câu cuối Bài chính). Ngày N1–N3 hiện phần đầu thẻ thì với các dòng công thức của ngày và 3 câu luyện nói mới; N4 hiện dòng công thức gán cho ngày (nếu có), khối "Chọn thì" và / hoặc 3 cặp câu, không có câu luyện nói; ngày nào cũng có nút "Xem cả thẻ" (đóng sẵn) cho từng thì của bài. Dùng đúng cơ chế phần của bài T1 (story 28): id ngày `<bài>-n1` … `-n5` nằm trong `partsSeen`, buổi 30' chốt `?part=` là ngày chưa xem đầu tiên, "Xong buổi" đánh dấu ngày đó, xem đủ 5 ngày thì buổi ôn cả tuần ("Đã xem đủ 5 ngày Ngữ pháp, hôm nay ôn lại cả tuần."). Trang bài vẫn hiện đủ nội dung, đầu đoạn Ngữ pháp có danh sách "5 ngày của tuần" (nhãn "Đã xem" / "Ngày tiếp theo", nút "Xong ngày này"; chỉ ở trang bài). Cả đoạn (trang bài, ngày 5, buổi ôn cả tuần) có khối "Câu luyện theo ngày" (câu nói và cặp câu của N1–N4, đóng sẵn). Không khoá ngày nào. Không chia: T1 (đã chia đoạn Phát âm), s1-t3-w4, s1-t4-w3, s1-t4-w4; đoạn Phát âm của T2–T4 không chia.
 - Kế hoạch buổi chốt lúc bắt đầu buổi: xong viên cuối cùng giữa buổi thì buổi vẫn chạy hết 3 phần như đã chốt.
 - `prioritizeSections` (đẩy kỹ năng yếu, CAP-7) chỉ đổi thứ tự giữa các phần luyện, không bao giờ đẩy phần lý thuyết xuống dưới phần luyện.
 - **Ngày lười (10'):** ở Sân ga là ôn 1 viên gạch (viên xong gần nhất; chưa xong viên nào thì xem phần giải thích của viên tiếp theo) + 3 từ (không dùng tin); sau Sân ga là 1 tin + 3 từ (mục Nội dung bài). Vẫn giữ streak.
@@ -91,7 +92,8 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 - Áp dụng khi nghỉ hơn 1 tuần.
 - Test 5' lấy câu từ các bài của 4 tuần gần nhất và từ Sổ lỗi.
-- Khi đang ở Sân ga: test lấy câu từ các viên đã xong (câu luyện, quiz hàng) và Sổ lỗi, kết quả đưa Huy tới viên chứa lỗ hổng. Chưa xong viên nào thì không có test, app mời học tiếp viên tiếp theo.
+- Khi đang ở Sân ga (story 47): test lấy câu kiểm tra hàng (Quiz engine) của các viên đã học xong, ưu tiên 4 viên xong gần nhất, cộng tối đa 3 câu Sổ lỗi. Câu luyện trong viên không phải câu của Quiz engine nên không vào đề; câu bài lộ trình chưa học không bao giờ vào đề (câu bài chỉ vào khi nằm trong Sổ lỗi). Kết quả đưa Huy tới viên chứa lỗ hổng (`/foundation/Fxx`); đúng hết thì tới viên tiếp theo (hết viên thì trang Sân ga). Chưa xong viên nào và Sổ lỗi trống thì không có test, thẻ Sân ga vẫn mời học viên tiếp theo.
+- Sau Sân ga, câu Sổ lỗi của viên gạch sai nhiều nhất cũng trỏ về viên đó; hoà với câu bài thì bài lộ trình thắng.
 
 ## Sổ lỗi & AI (CAP-19)
 
@@ -110,7 +112,7 @@ Khoá lý thuyết vỡ lòng nằm trước bài `s1-t1-w1`. 48 bài, id bài, 
 
 ## Nội dung bài (CAP-2, CAP-9, CAP-11, CAP-18)
 
-- **Chỉ dùng kiến thức đã dạy:** mỗi câu hỏi khai báo khái niệm nó cần. Quiz bài và mini test bỏ câu chưa đủ nền; còn dưới 4 câu thì hiện thông báo nhẹ, không chặn việc xong bài. Ngoại lệ: Soát vé và "Tôi biết rồi" (mục Sân ga), "Đo trình độ" (đề ETS làm ngoài app). Nội dung giải trí (video, nhạc, tin) không thuộc luật này.
+- **Chỉ dùng kiến thức đã dạy:** mỗi câu hỏi khai báo khái niệm nó cần. Từ story 47 mọi câu quiz của 15 bài T1–T4 đều khai báo (thiếu là lỗi test): khái niệm viên gạch bất kỳ, hoặc khái niệm bài (T1 và T2–T4: hiện tại tiếp diễn, quá khứ, will, going to, hoàn thành, modal, so sánh, bị động, các khái niệm phát âm của bài) của bài đứng trước hay chính bài; câu đoạn Ngữ pháp T2–T4 có ít nhất 1 khái niệm của chính bài (trừ câu ôn). Lúc chạy vẫn chỉ lọc theo viên gạch; khái niệm bài được bảo đảm bằng test tĩnh. "Don't + V" (mệnh lệnh phủ định) dạy ở s1-t1-w3. Quiz bài và mini test bỏ câu chưa đủ nền; còn dưới 4 câu thì hiện thông báo nhẹ, không chặn việc xong bài. Ngoại lệ: Soát vé và "Tôi biết rồi" (mục Sân ga), "Đo trình độ" (đề ETS làm ngoài app). Nội dung giải trí (video, nhạc, tin) không thuộc luật này.
 - **Dữ liệu từ** (IPA, trọng âm, nghĩa Việt, câu ví dụ) do AI sinh lúc build. Huy duyệt một mẫu. Mỗi từ có link sang Cambridge để đối chiếu.
 - **Câu thoại minh hoạ các thì** lấy từ transcript VOA và YouGlish.
 - **Phần 10' giải trí (Đợt 1):** khi soạn bài, chọn sẵn 1–2 link ngoài cho mỗi bài.

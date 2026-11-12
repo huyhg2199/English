@@ -9,11 +9,17 @@ import { QuizNotReady, QuizRun } from '@/components/quiz/QuizRun'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { getQuiz, QUESTION_BANK, type QuizDef } from '@/data/questions'
-import { getLesson, lessonHref, SECTION_TITLES, sectionHref, type SectionId } from '@/data/roadmap'
-import { COMEBACK_QUIZ_ID, pickComebackTest, weakestSectionFrom } from '@/lib/comeback'
-import { isBrickTaught } from '@/lib/foundation'
+import { hasBrickContent } from '@/data/foundation/content'
+import {
+  COMEBACK_QUIZ_ID,
+  comebackHome,
+  comebackQuestions,
+  comebackTarget,
+  weakestSectionFrom,
+  type ComebackHome,
+} from '@/lib/comeback'
+import { isBrickTaught, isInFoundation } from '@/lib/foundation'
 import { planQuiz, seenQuestionIds, type GradedAttempt } from '@/lib/quiz'
-import { currentLessonId } from '@/lib/schedule'
 import { canSpeak } from '@/lib/speech'
 
 function BackLink({ to = '/practice', label = 'Luyện tập' }: { to?: string; label?: string }) {
@@ -68,20 +74,22 @@ function DefinedQuizRun({ quiz, run, onRetry }: { quiz: QuizDef; run: Run; onRet
   )
 }
 
-/** "Học tiếp ở đây": đoạn có nhiều câu sai nhất; không sai câu nào thì bài hiện tại. */
-function ComebackNext({ graded, homeLessonId }: { graded: GradedAttempt; homeLessonId: string | null }) {
+/**
+ * "Học tiếp ở đây": đoạn bài / viên gạch có nhiều câu sai nhất; không sai câu nào thì `home` (bài hiện tại, hoặc viên
+ * tiếp theo khi đang ở Sân ga; story 47).
+ */
+function ComebackNext({ graded, home }: { graded: GradedAttempt; home: ComebackHome | null }) {
   const weak = weakestSectionFrom(graded)
-  const lesson = weak ? getLesson(weak.lessonId) : homeLessonId ? getLesson(homeLessonId) : undefined
-  const href = weak ? sectionHref(weak.lessonId, weak.sectionId) : homeLessonId ? lessonHref(homeLessonId) : '/roadmap'
-  const label = weak
-    ? `${lesson?.title ?? weak.lessonId} · ${SECTION_TITLES[weak.sectionId as SectionId] ?? weak.sectionId}`
-    : (lesson?.title ?? 'Lộ trình')
+  const { href, label } = comebackTarget(weak, home)
+  const atFoundation = home?.kind === 'brick' || home?.kind === 'foundation'
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-primary/50 p-3 text-left">
       <p className="text-sm text-muted-foreground">
         {weak
-          ? `Chỗ cần ôn nhất: ${weak.wrong} câu sai ở đoạn này. Ôn lại rồi học tiếp bài hiện tại nhé.`
-          : 'Vẫn nhớ tốt! Học tiếp bài hiện tại thôi.'}
+          ? `Chỗ cần ôn nhất: ${weak.wrong} câu sai ở ${/^f\d{2}$/.test(weak.lessonId) ? 'viên' : 'đoạn'} này. Ôn lại rồi học tiếp nhé.`
+          : atFoundation
+            ? 'Vẫn nhớ tốt! Học tiếp Sân ga thôi.'
+            : 'Vẫn nhớ tốt! Học tiếp bài hiện tại thôi.'}
       </p>
       <Button asChild className="h-auto min-h-9 justify-start whitespace-normal text-left">
         <Link to={href}>
@@ -99,16 +107,22 @@ function ComebackRun({ run }: { run: Run }) {
   const [now] = useState(() => new Date())
   const { skip } = useComeback(now)
   const navigate = useNavigate()
-  // Chốt đề và bài hiện tại lúc bắt đầu: ghi lần làm (câu sai vào Sổ lỗi) không đổi đề đang làm.
-  const [{ questions, homeLessonId }] = useState(() => ({
-    questions: pickComebackTest(store, QUESTION_BANK, run.seed, { canSpeak: canSpeak() }),
-    homeLessonId: currentLessonId(store),
+  // Chốt đề và chỗ học tiếp lúc bắt đầu: ghi lần làm (câu sai vào Sổ lỗi) không đổi đề đang làm.
+  const [{ questions, home, atFoundation }] = useState(() => ({
+    questions: comebackQuestions(store, run.seed, { canSpeak: canSpeak() }),
+    home: comebackHome(store, hasBrickContent),
+    atFoundation: isInFoundation(store),
   }))
+  const homeLessonId = home?.kind === 'lesson' ? home.lessonId : null
   if (questions.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardDescription>Chưa có câu hỏi nào để dựng test quay lại. Học tiếp bài hiện tại là được.</CardDescription>
+          <CardDescription>
+            {atFoundation
+              ? 'Chưa có câu hỏi nào để dựng test quay lại. Học tiếp viên tiếp theo ở Sân ga nhé.'
+              : 'Chưa có câu hỏi nào để dựng test quay lại. Học tiếp bài hiện tại là được.'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <Button asChild>
@@ -130,8 +144,10 @@ function ComebackRun({ run }: { run: Run }) {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">
-        {questions.length} câu từ các bài gần đây và Sổ lỗi sai. Sai cũng không sao: app chỉ dùng để tìm chỗ cần ôn, tiến độ
-        giữ nguyên.
+        {atFoundation
+          ? `${questions.length} câu từ các viên đã học và Sổ lỗi sai.`
+          : `${questions.length} câu từ các bài gần đây và Sổ lỗi sai.`}{' '}
+        Sai cũng không sao: app chỉ dùng để tìm chỗ cần ôn, tiến độ giữ nguyên.
       </p>
       <QuizRun
         quizId={COMEBACK_QUIZ_ID}
@@ -143,7 +159,7 @@ function ComebackRun({ run }: { run: Run }) {
             homeLessonId={homeLessonId}
             questions={questions}
             graded={graded}
-            next={<ComebackNext graded={graded} homeLessonId={homeLessonId} />}
+            next={<ComebackNext graded={graded} home={home} />}
           />
         )}
       />

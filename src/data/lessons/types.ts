@@ -308,6 +308,44 @@ export type LessonPart = {
   requires: readonly RequiredConcept[]
 }
 
+/** Kiểu của một ngày Ngữ pháp (story 47), theo thứ tự N1 → N5. */
+export type GrammarDayKind = 'affirmative' | 'negative' | 'question' | 'compare' | 'mixed'
+
+/**
+ * Một ngày của đoạn Ngữ pháp chia theo ngày (story 47): bài học một thì (hay hai thì chung khuôn) trong một tuần chia 5
+ * ngày: khẳng định → phủ định → câu hỏi → so với thì trước → ôn trộn cả tuần. Ngày dùng cơ chế phần của story 28 (id
+ * nằm trong `partsSeen`, buổi chốt `?part=`). N1–N3 có đúng 3 câu luyện nói mới (id `${id}-say-${k}`); N4 có khối
+ * "Chọn thì" của bài (`choiceIds`) hoặc 3 cặp câu so với thì của bài trước (`compare`); N5 là cả đoạn Ngữ pháp như cũ.
+ */
+export type GrammarDay = {
+  /** `${lessonId}-n${k}`, k đếm từ 1. */
+  id: string
+  kind: GrammarDayKind
+  /** "Câu khẳng định", "So với hiện tại đơn", "Ôn trộn cả tuần". */
+  title: string
+  /** Một câu: hôm nay làm gì. */
+  note: string
+  /** Dòng công thức của ngày: nhãn có thật trong `Tense.formulas` của thì `tenseId`. */
+  focus?: readonly { tenseId: string; labels: readonly string[] }[]
+  /** N1–N3: đúng 3 câu luyện nói. */
+  sentences?: readonly PracticeSentence[]
+  /** Id khối "Chọn thì" của bài được gán cho ngày này (kèm khối luyện của khối). */
+  choiceIds?: readonly string[]
+  /** N4: đúng 3 cặp câu so với thì của bài trước (`withTenseIds`). */
+  compare?: { withTenseIds: readonly string[]; pairs: readonly MinimalPair[] }
+  /** Khai báo tay theo luật câu hỏi (viên bất kỳ, bài trước hoặc chính bài); bắt buộc khi có `sentences` / `compare`. */
+  requires?: readonly RequiredConcept[]
+}
+
+/** Cách hiện đoạn Phát âm của bài chia phần (story 28): mọi phần (trang bài, buổi ôn cả tuần) hoặc một phần (buổi bài). */
+export type PronunciationView = { kind: 'all' } | { kind: 'part'; partId: string }
+
+/**
+ * Cách hiện đoạn Ngữ pháp của bài chia theo ngày (story 47): `all` = trang bài (danh sách 5 ngày + cả đoạn), `week` = buổi ôn
+ * cả tuần (cả đoạn, không danh sách ngày), `day` = buổi một ngày.
+ */
+export type GrammarView = { kind: 'all' } | { kind: 'week' } | { kind: 'day'; dayId: string }
+
 export type LessonContent = {
   lessonId: string
   pronunciation?: PronunciationContent
@@ -317,6 +355,11 @@ export type LessonContent = {
    */
   parts?: readonly LessonPart[]
   grammar?: GrammarContent
+  /**
+   * Ngữ pháp theo ngày (story 47, 8 bài một thì T2–T4): 5 ngày N1–N5. Bài có `parts` thì không có `grammarDays`. Trang bài
+   * vẫn hiện đủ đoạn Ngữ pháp, đầu đoạn có danh sách 5 ngày; buổi 30' chỉ hiện ngày của buổi.
+   */
+  grammarDays?: readonly GrammarDay[]
   /** Tuần Tết: chỉ nhắc chạy chế độ ngày lười, không có nội dung mới. */
   lazyWeek?: boolean
   /**

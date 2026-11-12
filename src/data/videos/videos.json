@@ -78,16 +78,6 @@
     "startSec": 20
   },
   {
-    "id": "n7RA6XxfpNU",
-    "title": "Improve Your English Listening & Speaking 🎧 Simple Story: My Weekend",
-    "channel": "English Moment",
-    "channelUrl": "https://www.youtube.com/channel/UCo6OLFc-OLws90UoRB8pKlQ",
-    "license": "cc-by",
-    "lessonId": "s1-t2-w2",
-    "sectionId": "entertainment",
-    "startSec": 24
-  },
-  {
     "id": "qNAfpbnIQkc",
     "title": "3 ways to pronounce 'ed' - English In A Minute",
     "channel": "BBC Learning English",
@@ -110,6 +100,16 @@
     "license": "youtube-standard",
     "lessonId": "s1-t2-w4",
     "sectionId": "pronunciation"
+  },
+  {
+    "id": "n7RA6XxfpNU",
+    "title": "Improve Your English Listening & Speaking 🎧 Simple Story: My Weekend",
+    "channel": "English Moment",
+    "channelUrl": "https://www.youtube.com/channel/UCo6OLFc-OLws90UoRB8pKlQ",
+    "license": "cc-by",
+    "lessonId": "s1-t2-w4",
+    "sectionId": "entertainment",
+    "startSec": 24
   },
   {
     "id": "psI7E_J1zPo",

@@ -49,6 +49,48 @@ function Dialogue({ line }: { line: DialogueLine }) {
   )
 }
 
+/** Bảng công thức của thì (TenseCard và phần đầu thẻ của ngày Ngữ pháp, story 47). */
+function Formulas({ formulas }: { formulas: Tense['formulas'] }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h4 className="font-semibold">Công thức</h4>
+      <dl className="flex flex-col gap-2 text-sm">
+        {formulas.map((f) => (
+          <div key={f.label} className="rounded-lg bg-secondary/60 p-2">
+            <dt className="text-xs text-muted-foreground">
+              <GlossaryText text={f.label} />
+            </dt>
+            <dd lang="en" className="font-medium break-words">
+              <GlossaryText text={f.text} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+/**
+ * Phần đầu thẻ thì cho một ngày Ngữ pháp (story 47): tên, cách dùng, dòng thời gian, chip tín hiệu và chỉ các dòng công thức
+ * có nhãn trong `formulaLabels` (theo thứ tự của thẻ). Thẻ đầy đủ mở bằng "Xem cả thẻ" ở nơi gọi.
+ */
+export function TenseHead({ tense, formulaLabels }: { tense: Tense; formulaLabels: readonly string[] }) {
+  const formulas = tense.formulas.filter((f) => formulaLabels.includes(f.label))
+  return (
+    <article className="flex flex-col gap-4">
+      <header>
+        <h3 className="text-lg font-semibold">{tense.name}</h3>
+        <p className="text-sm text-muted-foreground">
+          <GlossaryText text={tense.use} />
+        </p>
+      </header>
+      {tense.timeline && <TenseTimeline kind={tense.timeline.kind} label={tense.timeline.label} />}
+      {tense.signalWords && tense.signalWords.length > 0 && <SignalWords words={tense.signalWords} />}
+      {formulas.length > 0 && <Formulas formulas={formulas} />}
+    </article>
+  )
+}
+
 /**
  * Một thì / chủ điểm: dòng thời gian (nếu là thì), chip từ tín hiệu (story 39, thì có `signalWords`), công thức, 3 quy tắc, ví dụ có dịch, lỗi hay mắc, câu thoại VOA và thẻ
  * thần chú. Lời tiếng Việt (`use`, nhãn và chữ công thức, quy tắc, `mistakes[].why`) có chip thuật ngữ (story 26); câu
@@ -68,21 +110,7 @@ export function TenseCard({ tense, unlockedSpellIds }: { tense: Tense; unlockedS
       {tense.timeline && <TenseTimeline kind={tense.timeline.kind} label={tense.timeline.label} />}
       {tense.signalWords && tense.signalWords.length > 0 && <SignalWords words={tense.signalWords} />}
 
-      <div className="flex flex-col gap-2">
-        <h4 className="font-semibold">Công thức</h4>
-        <dl className="flex flex-col gap-2 text-sm">
-          {tense.formulas.map((f) => (
-            <div key={f.label} className="rounded-lg bg-secondary/60 p-2">
-              <dt className="text-xs text-muted-foreground">
-                <GlossaryText text={f.label} />
-              </dt>
-              <dd lang="en" className="font-medium break-words">
-                <GlossaryText text={f.text} />
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+      <Formulas formulas={tense.formulas} />
 
       <div className="flex flex-col gap-1">
         <h4 className="font-semibold">3 quy tắc</h4>

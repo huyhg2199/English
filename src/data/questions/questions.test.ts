@@ -8,11 +8,13 @@ import { hasVietnameseMarks, matchesTyped, mixPool, normalizeTyped, pickQuiz, qu
 import { hasPractice, practiceEnglishTexts } from '@/lib/tense-practice'
 import {
   frontedTimeTail,
+  isTenseScopeId,
   outOfScopeWords,
   promptEnglish,
   sContraction,
   T3_T4_SCOPE_IDS,
   type T1T2ScopeId,
+  type TenseScopeId,
 } from '@/lib/tense-scope'
 
 import { conceptSource, requiresViolations } from './concepts'
@@ -358,8 +360,8 @@ describe('câu was / were và Wh + did của s1-t2-w2 (story 33)', () => {
     for (const r of cards) expect(prompts.has(r.cloze), r.id).toBe(false)
   })
 
-  it('6 câu cũ vẫn không có requires, đề giữ nguyên', () => {
-    for (const id of OLD_IDS) expect(getQuestion(id)?.requires, id).toBeUndefined()
+  it('6 câu cũ có requires (story 47), đề giữ nguyên', () => {
+    for (const id of OLD_IDS) expect(getQuestion(id)?.requires, id).toBeDefined()
     expect(getQuestion('q-s1-t2-w2-01')?.prompt).toBe('I ___ my parents last Sunday.')
     expect(getQuestion('q-s1-t2-w2-04')?.prompt).toBe('___ you call him last night?')
     expect(getQuestion('q-s1-t2-w4-02')?.prompt).toBe('Last night I ___ very tired.')
@@ -620,21 +622,21 @@ describe('câu luyện thì T1–T2 (story 36)', () => {
       kind: 'transform',
       prompt: 'Đổi sang câu hỏi: You were at work yesterday.',
       answer: 'Were you at work yesterday?',
-      requires: ['be-questions', 'subject-pronouns', 'prepositions-of-place'],
+      requires: ['be-questions', 'subject-pronouns', 'prepositions-of-place', 'past-to-be'],
     })
     expect(golden('q-s1-t2-w2-20')).toMatchObject({
       kind: 'transform',
       prompt: 'Đổi sang quá khứ (last Sunday): I play football.',
       answer: 'I played football last Sunday.',
       accept: ['Last Sunday I played football.'],
-      requires: ['present-simple', 'subject-pronouns', 'days-months'],
+      requires: ['present-simple', 'subject-pronouns', 'days-months', 'past-simple', 'verb-forms'],
     })
     expect(golden('q-s1-t2-w3-13')).toMatchObject({
       kind: 'transform',
       prompt: 'Dịch sang tiếng Anh: Tuần trước anh ấy mua một chiếc xe đạp mới. (buy, a new bike)',
       answer: 'He bought a new bike last week.',
       accept: ['Last week he bought a new bike.'],
-      requires: ['subject-pronouns', 'articles', 'adjective-before-noun', 'verb-forms'],
+      requires: ['subject-pronouns', 'articles', 'adjective-before-noun', 'verb-forms', 'past-simple-irregular'],
     })
     for (const id of ['q-s1-t1-w2-08', 'q-s1-t1-w3-15', 'q-s1-t2-w2-13']) expect(golden(id).accept, id).toBeUndefined()
   })
@@ -796,7 +798,7 @@ describe('câu quá khứ tiếp diễn (story 46)', () => {
     }
   })
 
-  it('6 câu cũ -01 … -06 không đổi chữ, không có requires', () => {
+  it('6 câu cũ -01 … -06 không đổi chữ; có requires (story 47) nhưng -01 … -04 là câu ôn nên không cần khái niệm past-continuous', () => {
     const OLD: Record<number, [string, string]> = {
       1: ['Right now, my brother ___ a shower.', 'is taking'],
       2: ['Last night I ___ very tired.', 'was'],
@@ -808,7 +810,8 @@ describe('câu quá khứ tiếp diễn (story 46)', () => {
     for (const [n, [prompt, answer]] of Object.entries(OLD)) {
       const q = getQuestion(id(Number(n)))!
       expect([q.prompt, q.answer], q.id).toEqual([prompt, answer])
-      expect(q.requires, q.id).toBeUndefined()
+      expect(q.requires, q.id).toBeDefined()
+      expect(q.requires, q.id).not.toContain('past-continuous')
     }
   })
 })
@@ -1019,52 +1022,52 @@ describe('câu luyện chủ điểm T3–T4 (story 37)', () => {
       prompt: 'I promise I ___ (call) you tonight.',
       answer: 'will call',
       accept: ["'ll call"],
-      requires: ['subject-pronouns', 'object-pronouns', 'verb-forms'],
+      requires: ['subject-pronouns', 'object-pronouns', 'verb-forms', 'will'],
     })
     expect(golden('q-s1-t3-w2-11')).toMatchObject({
       kind: 'transform',
       prompt: 'Đổi sang câu phủ định: They are going to sell their house.',
       answer: "They aren't going to sell their house.",
-      requires: ['subject-pronouns', 'possessive-adjectives', 'be-negative', 'verb-forms'],
+      requires: ['subject-pronouns', 'possessive-adjectives', 'be-negative', 'verb-forms', 'going-to'],
     })
     expect(golden('q-s1-t3-w3-13')).toMatchObject({
       kind: 'transform',
       prompt: 'Dịch sang tiếng Anh: Bố tôi chưa bao giờ lái xe ô tô. (father, never, drive, a car)',
       answer: 'My father has never driven a car.',
       accept: ["My father's never driven a car."],
-      requires: ['possessive-adjectives', 'articles', 'frequency-adverbs', 'verb-forms'],
+      requires: ['possessive-adjectives', 'articles', 'frequency-adverbs', 'verb-forms', 'present-perfect'],
     })
     expect(golden('q-s1-t3-w4-11')).toMatchObject({
       kind: 'transform',
       prompt: 'Đổi sang hiện tại hoàn thành (since 2019): My parents live in Da Nang.',
       answer: 'My parents have lived in Da Nang since 2019.',
-      requires: ['possessive-adjectives', 'plurals', 'numbers', 'verb-forms'],
+      requires: ['possessive-adjectives', 'plurals', 'numbers', 'verb-forms', 'present-perfect-vs-past'],
     })
     expect(golden('q-s1-t3-w4-13')).toMatchObject({
       kind: 'transform',
       prompt: 'Dịch sang tiếng Anh: Chúng tôi chuyển tới Hà Nội ba năm trước. (move, Hanoi, three years ago)',
       answer: 'We moved to Hanoi three years ago.',
       accept: ['Three years ago we moved to Hanoi.'],
-      requires: ['subject-pronouns', 'numbers', 'verb-forms'],
+      requires: ['subject-pronouns', 'numbers', 'verb-forms', 'present-perfect-vs-past'],
     })
     expect(golden('q-s1-t4-w1-11')).toMatchObject({
       kind: 'transform',
       prompt: 'Đổi sang câu phủ định: My grandfather can swim.',
       answer: "My grandfather can't swim.",
-      requires: ['possessive-adjectives', 'subject-verb'],
+      requires: ['possessive-adjectives', 'subject-verb', 'modals'],
     })
     expect(golden('q-s1-t4-w3-07')).toMatchObject({
       kind: 'type',
       tag: 'từ loại',
       prompt: 'This bag is ___ (heavy) than that one.',
       answer: 'heavier',
-      requires: ['demonstratives', 'be-affirmative', 'parts-of-speech'],
+      requires: ['demonstratives', 'be-affirmative', 'parts-of-speech', 'comparatives'],
     })
     expect(golden('q-s1-t4-w3-21')).toMatchObject({
       kind: 'transform',
       prompt: 'Đổi sang bị động: People speak French in Canada.',
       answer: 'French is spoken in Canada.',
-      requires: ['be-affirmative', 'verb-forms', 'prepositions-of-place'],
+      requires: ['be-affirmative', 'irregular-plurals', 'verb-forms', 'prepositions-of-place', 'passive-present'],
     })
     for (const id of ['q-s1-t3-w2-11', 'q-s1-t3-w4-11', 'q-s1-t4-w1-11', 'q-s1-t4-w3-07', 'q-s1-t4-w3-21']) {
       expect(golden(id).accept, id).toBeUndefined()
@@ -1155,7 +1158,44 @@ describe('câu luyện chủ điểm T3–T4 (story 37)', () => {
       prompt: 'This is ___ restaurant in town.',
       answer: 'the best',
     })
-    // Câu cũ của 6 bài T3–T4 vẫn không có requires (requires câu cũ là việc của story 47).
-    for (const t of TOPICS) for (const n of TOPIC_QUESTIONS[t].old) expect(q(TOPIC_QUESTIONS[t].lessonId, n).requires, `${t} ${n}`).toBeUndefined()
+    // Story 47: câu cũ của 6 bài T3–T4 có requires, kèm khái niệm của chính bài.
+    for (const t of TOPICS) for (const n of TOPIC_QUESTIONS[t].old) expect(q(TOPIC_QUESTIONS[t].lessonId, n).requires, `${t} ${n}`).toBeDefined()
+  })
+})
+
+describe('story 47: 66 câu cũ T2–T4 (-01 … -06) nằm trong phạm vi chữ của thì cuối bài', () => {
+  /** Thì cuối bài có bảng phạm vi (thứ tự TenseCard của bài); ôn tổng s1-t4-w4 không có đoạn Ngữ pháp → `passive-present`. */
+  const lastTenseScope = (lessonId: string): TenseScopeId => {
+    if (lessonId === 's1-t4-w4') return 'passive-present'
+    const ids = (getLessonContent(lessonId)?.grammar?.tenses ?? []).map((t) => t.id).filter(isTenseScopeId)
+    const last = ids.at(-1)
+    if (!last) throw new Error(`${lessonId}: không có thì có bảng phạm vi`)
+    return last
+  }
+
+  it('thì cuối bài đúng như lộ trình', () => {
+    expect(T2_T4.map(lastTenseScope)).toEqual([
+      'present-continuous',
+      'past-simple',
+      'past-simple-irregular',
+      'past-continuous',
+      'will',
+      'going-to',
+      'present-perfect',
+      'present-perfect-vs-past',
+      'modals',
+      'passive-present',
+      'passive-present',
+    ])
+  })
+
+  it('đề đã điền đáp án, đáp án, audioText (không quét lựa chọn sai)', () => {
+    const old = QUESTION_BANK.filter((q) => T2_T4.includes(q.lessonId) && Number(q.id.slice(-2)) <= 6)
+    expect(old).toHaveLength(66)
+    for (const q of old) {
+      const scope = lastTenseScope(q.lessonId)
+      const texts = [q.prompt.replace('___', q.answer), q.answer, ...('audioText' in q && q.audioText ? [q.audioText] : [])]
+      for (const text of texts) expect(outOfScopeWords(scope, text), `${q.id} (${scope}): ${text}`).toEqual([])
+    }
   })
 })

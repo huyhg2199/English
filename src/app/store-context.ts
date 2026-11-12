@@ -23,8 +23,7 @@ import {
   recordAttempt as recordPronunciationAttempt,
   type SpeakOutcome,
 } from '@/lib/pronunciation'
-import { QUESTION_BANK } from '@/data/questions'
-import { COMEBACK_QUIZ_ID, pendingComeback, pickComebackTest, skipComeback } from '@/lib/comeback'
+import { COMEBACK_QUIZ_ID, comebackQuestions, pendingComeback, skipComeback } from '@/lib/comeback'
 import { canSpeak } from '@/lib/speech'
 import {
   completeBrick,
@@ -573,7 +572,7 @@ export function useComeback(now: Date) {
   const { store } = useLoadedStore()
   const pending = useMemo(() => pendingComeback(store, now), [store, now])
   const questionCount = useMemo(
-    () => (pending ? pickComebackTest(store, QUESTION_BANK, 'probe', { canSpeak: canSpeak() }).length : 0),
+    () => (pending ? comebackQuestions(store, 'probe', { canSpeak: canSpeak() }).length : 0),
     [store, pending],
   )
   const skip = useCallback(

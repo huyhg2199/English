@@ -226,9 +226,9 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     expect(outOfScopeWords('present-perfect-vs-past', 'How long have you lived here?')).toEqual([])
   })
 
-  it('hàng "T1–T2 chặt thêm": was made, is cleaned, since Monday, the best, Don\'t worry., have to go bị báo ở 6 thì T1–T2', () => {
+  it('hàng "T1–T2 chặt thêm": was made, is cleaned, since Monday, the best, have to go bị báo ở 7 thì T1–T2', () => {
     for (const id of T1_T2_SCOPE_IDS) {
-      for (const text of ['was made', 'is cleaned', 'since Monday', 'the best', "Don't worry.", 'have to go']) {
+      for (const text of ['was made', 'is cleaned', 'since Monday', 'the best', 'have to go']) {
         expect(flagged(id, text), `${id}: ${text}`).toBe(true)
       }
     }
@@ -241,8 +241,8 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     const ALWAYS = [
       'would', 'may', 'might', 'shall', 'ought', 'I would go.', "I'd go home.", "wouldn't", 'He had to wait.',
       'I used to swim.', 'He had bought it.', "She hadn't finished.", 'The cake was made yesterday.',
-      "They weren't invited.", 'Was the room cleaned?', "Don't worry.",
-      "Stop! Don't touch it.", 'I have got to go.', "I've got to go.", 'I gotta go.', 'Were these old cups made in Japan?',
+      "They weren't invited.", 'Was the room cleaned?',
+      'I have got to go.', "I've got to go.", 'I gotta go.', 'Were these old cups made in Japan?',
       // Review story 46: bị động quá khứ tiếp diễn vẫn bị báo khi quá khứ tiếp diễn đã mở.
       'The room was being cleaned.', 'Were they being helped?',
     ]
@@ -272,10 +272,22 @@ describe('outOfScopeWords T3–T4 (story 37)', () => {
     for (const id of TENSE_SCOPE_IDS.filter((x) => x !== 'present-simple')) {
       expect(outOfScopeWords(id, 'How many books do you have?'), id).toEqual([])
     }
-    // Vẫn bị báo: might, had to, "Don't + V" (quá khứ tiếp diễn mở từ past-continuous, story 46).
+    // Vẫn bị báo: might, had to (quá khứ tiếp diễn mở từ past-continuous, story 46).
     for (const id of TENSE_SCOPE_IDS) {
-      for (const text of ['might', 'He had to wait.', "Don't worry."]) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
+      for (const text of ['might', 'He had to wait.']) expect(flagged(id, text), `${id}: ${text}`).toBe(true)
     }
+  })
+
+  it('story 47: "Don\'t + V" dạy ở s1-t1-w3: chỉ present-simple báo, present-simple-questions và mọi thì sau không báo', () => {
+    // present-simple chưa mở don't nên báo cả từ don't lẫn cụm "don't worry".
+    expect(outOfScopeWords('present-simple', "Don't worry.")).toContain("don't worry")
+    expect(outOfScopeWords('present-simple', "Stop! Don't touch it.")).toContain("don't touch")
+    for (const id of TENSE_SCOPE_IDS.filter((x) => x !== 'present-simple')) {
+      for (const text of ["Don't worry.", "Stop! Don't touch it."]) {
+        expect(outOfScopeWords(id, text), `${id}: ${text}`).toEqual([])
+      }
+    }
+    expect(outOfScopeWords('will', "Don't worry. I won't forget.")).toEqual([])
   })
 
   it("could, have to, would like không bị báo từ `modals`; would / 'd ngoài like vẫn bị báo (story 45)", () => {

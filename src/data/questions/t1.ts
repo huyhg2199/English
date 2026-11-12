@@ -284,7 +284,8 @@ export const T1_QUESTIONS: readonly Question[] = [
     options: ['because', 'music', 'usually', 'television'],
     answer: 'because',
     explanation: 'because /bɪˈkɑːz/ nhấn âm thứ hai (be-CAUSE). music /ˈmjuːzɪk/, usually /ˈjuːʒuəli/, television /ˈteləvɪʒən/ nhấn âm đầu.',
-    requires: ['ipa', 'syllables', 'stress'],
+    // Story 47: test liên từ quét cả QUESTION_BANK; because là liên từ của F16.
+    requires: ['ipa', 'syllables', 'stress', 'conjunctions'],
   },
   {
     id: 'q-s1-t1-w3-06',

@@ -157,7 +157,7 @@ export const BRICKS: readonly BrickMeta[] = [
     row: 'D',
     title: 'Thì là gì',
     minutes: 8,
-    goalVi: 'Nhận ra go/goes/going/went/gone trên trục thời gian; chỉ cần nhận ra',
+    goalVi: 'Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has (học ở T3); chỉ cần nhận ra',
     teaches: ['tenses-overview', 'verb-forms'],
     uses: ['en-vs-vi', 'subject-verb', 'be-affirmative'],
   },

@@ -237,6 +237,8 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
     { label: 'Phủ định', text: "S + do not (don't) / does not (doesn't) + động từ nguyên mẫu" },
     { label: 'Câu hỏi Yes/No', text: "Do / Does + S + động từ nguyên mẫu …?  → Yes, I do. / No, she doesn't." },
     { label: 'Câu hỏi Wh-', text: 'What / Where / When … + do / does + S + động từ nguyên mẫu?' },
+    // Story 47: mệnh lệnh phủ định dạy ở đây, cùng don't sẵn có.
+    { label: 'Mệnh lệnh phủ định', text: "Don't + động từ nguyên mẫu: Don't worry. Don't be late." },
   ],
   rules: [
     'I / you / we / they dùng do; he / she / it dùng does.',
@@ -259,6 +261,16 @@ export const PRESENT_SIMPLE_QUESTIONS: Tense = {
       why: 'Tiếng Việt hỏi bằng "… không?" ở cuối; tiếng Anh cần do / does ở đầu câu.',
     },
     { wrong: 'He not like it.', right: "He doesn't like it.", why: 'Phủ định động từ thường phải mượn do / does + not.' },
+    {
+      wrong: 'Not touch it!',
+      right: "Don't touch it!",
+      why: 'Câu cấm (bảo ai đừng làm gì) cũng mượn Don\'t + động từ nguyên mẫu, không đặt not ở đầu câu.',
+    },
+    {
+      wrong: "I haven't a car.",
+      right: "I don't have a car.",
+      why: 'have = có là động từ thường, nên phủ định mượn don\'t / doesn\'t: I don\'t have, she doesn\'t have.',
+    },
   ],
   dialogues: [
     // Nháy cong ’ giữ nguyên như transcript VOA (so khớp giọng nói tự chuẩn hoá ’ thành ').

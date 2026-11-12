@@ -166,9 +166,9 @@ describe('nội dung bài T1', () => {
           sentenceIds.push(s.id)
         }
       }
-      // Câu luyện nói của các phần (story 28) cũng không được trùng id với câu nào khác.
-      for (const p of c.parts ?? []) {
-        for (const s of p.sentences) {
+      // Câu luyện nói của các phần (story 28) và của ngày Ngữ pháp (story 47) cũng không được trùng id với câu nào khác.
+      for (const p of [...(c.parts ?? []), ...(c.grammarDays ?? [])]) {
+        for (const s of p.sentences ?? []) {
           expect(s.id.startsWith(`${c.lessonId}-`), s.id).toBe(true)
           sentenceIds.push(s.id)
         }
@@ -1793,6 +1793,10 @@ describe('chọn thì, từ tín hiệu, bảng trợ động từ (story 39)', 
     expect(scoped).toEqual(
       expect.arrayContaining(['will-vs-going-to@going-to', 'dont-translate@present-perfect-vs-past', 'have-to-could-would-like@modals']),
     )
+    // Không "Don't + V": story 47 mở "Don't + V" từ s1-t1-w3 nên outOfScopeWords không còn báo; kiểm bằng regex riêng.
+    for (const c of allTenseChoices()) {
+      for (const text of englishTexts(c)) expect(/(?:^|[.!?—–]\s*)Don'?t [a-z]+/.test(text.replace(/[’‘]/g, "'")), `${c.id}: ${text}`).toBe(false)
+    }
     let checked = 0
     for (const c of allTenseChoices()) {
       const at = lessonOrder(blockLesson(c.id))

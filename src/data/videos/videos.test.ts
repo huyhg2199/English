@@ -118,6 +118,14 @@ describe('videosFor', () => {
     expect(ids(videosFor('s1-t4-w4', 'pronunciation'))).toEqual(['sAumTZ1lkZE', 'mV_CEIroJs8'])
   })
 
+  it('story 47: "My Weekend" (động từ bất quy tắc) chuyển sang đoạn giải trí s1-t2-w4; s1-t2-w2 còn 1 video', () => {
+    const ids = (xs: readonly { id: string }[]) => xs.map((v) => v.id)
+    expect(ids(videosFor('s1-t2-w2'))).toEqual(['RGFc-1uNHX8'])
+    expect(ids(videosFor('s1-t2-w2', 'entertainment'))).toEqual([])
+    expect(ids(videosFor('s1-t2-w4'))).toEqual(['4cU9fqpCqBA', 'n7RA6XxfpNU'])
+    expect(ids(videosFor('s1-t2-w4', 'entertainment'))).toEqual(['n7RA6XxfpNU'])
+  })
+
   it('mục trong videos.json xếp theo thứ tự bài', () => {
     const order = new Map(allLessons().map((l, i) => [l.id, i]))
     const idx = LESSON_VIDEOS.map((v) => order.get(v.lessonId) ?? -1)

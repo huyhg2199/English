@@ -10,7 +10,8 @@ import { IRREGULAR_VERBS } from '@/data/lessons/irregular-verbs'
  * story 37). Nhóm modal mở từ s1-t4-w1 (chủ điểm `modals`) là "can / could / should / must, have to, would like" (story 45:
  * could / couldn't, have / has to kể cả don't / doesn't have to và Do / Does … have to, would like / 'd like / Would … like).
  * Nhóm "luôn bị báo" (may / might / shall / ought, would và 'd ngoài would like, wouldn't, had to / having to / used to,
- * have got to / gotta, had + V3, bị động quá khứ, "Don't + V") chưa dạy ở Chặng 1.
+ * have got to / gotta, had + V3, bị động quá khứ) chưa dạy ở Chặng 1. Story 47: "Don't + V" (mệnh lệnh phủ định) dạy ở
+ * s1-t1-w3 cùng don't / doesn't, nên chỉ bị báo khi thì chưa mở `dont` (`present-simple`).
  * Story 46: quá khứ tiếp diễn (was / were + V-ing, when, while) dạy ở s1-t2-w4 (`past-continuous`, đứng sau
  * `past-simple-irregular`), mở từ `past-continuous` trở đi, kể cả 7 chủ điểm T3–T4; 6 thì đứng trước vẫn bị báo.
  * Lượng từ (F15, story 43) và liên từ (F16, story 44) dạy ở Sân ga nên mọi thì dùng được.
@@ -314,8 +315,9 @@ function isWouldLike(tokens: readonly string[], i: number): boolean {
   return WOULD_LIKE_DETERMINERS.has(next) && tokens[i + 3] === 'like'
 }
 /**
- * "Don't + V" mở đầu câu (đầu chuỗi hoặc sau . ! ? —): câu mệnh lệnh phủ định chưa dạy. Luôn bị báo. Xét trên chữ giữ hoa
- * thường (D hoa), để lựa chọn "don't eat" của câu chọn đáp án (mảnh câu, viết thường) không bị tính.
+ * "Don't + V" mở đầu câu (đầu chuỗi hoặc sau . ! ? —): câu mệnh lệnh phủ định, dạy ở s1-t1-w3 (story 47) cùng don't /
+ * doesn't, nên chỉ bị báo khi thì chưa mở `dont`. Xét trên chữ giữ hoa thường (D hoa), để lựa chọn "don't eat" của câu chọn
+ * đáp án (mảnh câu, viết thường) không bị tính.
  */
 const DONT_IMPERATIVE_RE = /(?:^|[.!?—–]\s*)(Don'?t [a-z]+)/g
 /** So sánh nhất: the best / worst / most, the + từ -est (trừ `NOT_SUPERLATIVE`). */
@@ -399,8 +401,8 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
     for (const m of text.matchAll(PAST_PROGRESSIVE_RE)) if (!NOT_PROGRESSIVE.has(m[1])) out.push(m[0])
   }
   // Luôn bị báo: quá khứ hoàn thành, bị động quá khứ (cả was / were being + V3: ở thì chưa mở quá khứ tiếp diễn thì
-  // PAST_PROGRESSIVE_RE đã báo "was being"), had to / used to / got to, "Don't + V" (have / has to mở cùng modal,
-  // story 45).
+  // PAST_PROGRESSIVE_RE đã báo "was being"), had to / used to / got to (have / has to mở cùng modal, story 45).
+  // "Don't + V" chỉ bị báo khi chưa mở don't (story 47: dạy ở s1-t1-w3).
   for (const m of text.matchAll(PAST_PERFECT_RE)) if (isPerfectForm(m[1])) out.push(m[0])
   for (const m of text.matchAll(PAST_PASSIVE_RE)) if (isPassiveForm(m[1])) out.push(m[0])
   if (scope.pastProgressive) for (const m of text.matchAll(PAST_PASSIVE_PROGRESSIVE_RE)) if (isPassiveForm(m[1])) out.push(m[0])
@@ -409,7 +411,7 @@ export function outOfScopeWords(tenseId: TenseScopeId, englishText: string, opts
     if (hit) out.push(`${m[0].trim()} (${hit})`)
   }
   for (const m of text.matchAll(HAVE_TO_RE)) if (!(scope.modal && HAVE_HAS_TO_RE.test(m[0]))) out.push(m[0])
-  for (const m of cased.matchAll(DONT_IMPERATIVE_RE)) out.push(m[1].toLowerCase())
+  if (!scope.dont) for (const m of cased.matchAll(DONT_IMPERATIVE_RE)) out.push(m[1].toLowerCase())
   return out
 }
 

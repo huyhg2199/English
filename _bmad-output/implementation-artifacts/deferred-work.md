@@ -69,6 +69,7 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/21-session-plan-theory-first.md`
   summary: Bài test quay lại có thể trỏ "Học tiếp" tới route hỏng `sectionHref('f03', 'pronunciation')` khi câu sai nhiều nhất là câu viên gạch (`q-fNN`) lấy từ Sổ lỗi.
   evidence: `weakestSectionFrom` trả `{ lessonId: 'f03', sectionId: 'pronunciation' }` (test ở `comeback.test.ts`), `ComebackNext` trong `src/pages/Quiz.tsx` dựng `sectionHref(weak.lessonId, …)` không kiểm id viên; `pickComebackTest` lấy câu từ Sổ lỗi theo `QUESTION_BANK` (có câu `q-fNN` từ story 20). Nên dùng `brickIdFromLessonId` để trỏ `/foundation/F03` (hoặc bỏ câu viên khỏi `weakestSectionFrom`).
+  resolved: Story 47 — `comebackTarget` trỏ câu viên gạch (`fNN`) về `/foundation/Fxx` ("Fxx · tên viên"); `weakestSectionFrom` hoà: bài lộ trình → viên F01 → F18 → id lạ; đang ở Sân ga đề lấy câu kiểm tra hàng của viên đã học xong (`COMEBACK_BANK`), không lấy câu bài chưa học.
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/22-today-welcome-house-schedule-lazy.md`
   summary: `setHouse` cũng bump `placement.updatedAt`, nên người đã có `startLessonId` đổi Nhà sau khi lịch chạy sẽ dời ngày bắt đầu lịch (luật "ETS áp dụng muộn") và xoá số tuần trễ một cách âm thầm.
   evidence: `roadmapStartDate` (`src/lib/schedule/schedule.ts`) đọc `placement.updatedAt` làm ngày áp dụng xếp lớp; `setHouse` (`src/lib/placement`) ghi `updatedAt` mới. Lỗi có từ trước story 22 (rủi ro 2 trong Implementation Notes); story 22 làm nút "Đổi Nhà" dễ thấy hơn (trang Mũ, Phòng Cúp). Cách sửa gợi ý: lưu ngày áp dụng riêng (cần đổi shape store, ngoài phạm vi story 22) hoặc để `setHouse` không chạm field dùng cho lịch.
@@ -114,6 +115,7 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
   summary: goalVi của F17 trong `catalog.ts:158` vẫn ghi "Nhận ra go/goes/going/went/gone trên trục thời gian", trong khi nội dung mới tách gone khỏi ba vùng thời gian.
   evidence: Story 32 cấm sửa `catalog.ts`; nên sửa ở story 47 (dọn thứ tự bài), ví dụ "Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has".
+  resolved: Story 47 — goalVi F17 = "Nhận ra go/goes/going/went trên trục thời gian; gone đi với have / has (học ở T3); chỉ cần nhận ra" (catalog.ts và bảng learning-rules).
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/32-tense-content-fixes.md`
   summary: Khi một câu quiz được viết lại mà giữ id, mục sổ lỗi cũ vẫn hiện `lastChosen` (và lời giải thích Gemini) của lựa chọn không còn tồn tại, ví dụ `q-s1-t3-w1-06`.
   evidence: `MistakeCard.tsx:155` in `entry.lastChosen` nguyên văn, không so với `question.options`. Chỉ xảy ra nếu đã có lỗi câu đó (Huy chưa học tới T3). Cách sửa gợi ý: ẩn dòng "bạn chọn" và coi lời giải thích là cũ khi `lastChosen` không có trong `options`; không cần bump store. Liên quan story 35–42 sẽ viết lại nhiều câu.
@@ -147,6 +149,7 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/36-t1-t2-tense-practice-data.md`
   summary: `requires` của câu gõ quá khứ có quy tắc ở s1-t2-w2 không đồng đều: `q-s1-t2-w2-20` (golden), `-21`, `-22`, `-23` không khai báo `tenses-overview` / `verb-forms` (F17), còn `-24`…`-26` và mọi câu `s1-t2-w3` mới có.
   evidence: Review story 36 (blind, content). Cả hai cách đều hợp lệ (`requiresViolations` rỗng) và bài s1-t2-w2 tự dạy -ed, nên chỉ ảnh hưởng lọc "thiếu nền". Golden `-20` cố định `requires` trong spec story 36; đổi `-21`…`-23` sẽ đổi số câu bị bỏ ở `src/lib/quiz/requires.test.ts`. Story 47 (khái niệm `requires` cho bài T2) nên làm đồng đều.
+  resolved: Story 47 — `-20` … `-23` thêm `verb-forms` (và mọi câu `-20` … `-26` có khái niệm bài `past-simple`); golden `-20` và số câu bị bỏ ở `src/lib/quiz/requires.test.ts` cập nhật theo.
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/38-tense-rule-cards-irregular-verb-srs.md`
   summary: Thẻ quy tắc của thì không giãn nhịp: người đã đánh dấu xong nhiều bài nhận cùng lúc mọi thẻ thì chưa có lịch (tới 52 thẻ nếu xong T1–T4), kể cả ngày tồn ôn > 40 thẻ, trong khi thẻ động từ có giới hạn 10 / ngày và bị chặn ngày tồn ôn.
   evidence: Review story 38 (blind, edge). `buildSession` cho thẻ quy tắc chưa có lịch vào hết, không giới hạn (story 24 / 33, learning-rules "Thẻ quy tắc"); story 38 thêm 52 thẻ thì. Kiểm tay: người mới tới s1-t2-w2 thấy "41 từ mới hôm nay" (10 từ + 21 thẻ thì + 10 thẻ động từ). Cần chọn: giữ như cũ, áp `heavyReview` cho thẻ thì, hay chia thẻ tồn đọng theo ngày (story 42 hoặc story riêng).
@@ -168,6 +171,7 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/37-t3-t4-tense-practice-data.md`
   summary: Câu cũ `q-s1-t3-w1-03` ("Don't worry. I ___ forget.") dùng "Don't + V" (mệnh lệnh phủ định), thứ mà bảng phạm vi story 37 xếp vào nhóm "luôn bị báo" vì Chặng 1 chưa dạy (F08 chỉ dạy mệnh lệnh khẳng định và Let's).
   evidence: Review story 37 (blind). Câu cũ không qua `outOfScopeWords` và spec story 37 cấm sửa câu cũ. Story 47 (requires cho câu cũ) nên chọn: dạy "Don't + V" ở F08 / bài will rồi mở nhóm này, hoặc đổi đề câu cũ (giữ id), hoặc ghi câu này là ngoại lệ.
+  resolved: Story 47 — "Don't + V" dạy ở s1-t1-w3 (dòng công thức "Mệnh lệnh phủ định" + lỗi "Not touch it!"); `outOfScopeWords` chỉ báo "Don't + V" khi thì chưa mở `dont` (`present-simple`), nên câu cũ hợp lệ, không sửa đề. Khối "Chọn thì" vẫn bị chặn "Don't + V" bằng regex riêng trong `lessons.test.ts`.
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/37-t3-t4-tense-practice-data.md`
   summary: AC 1–3 của story 37 chưa kiểm tay trên trình duyệt: hai khối luyện ở s1-t4-w3 (375px, chỉ một khối mở, `scrollWidth` 375, store không đổi), ôn Sổ lỗi câu dịch s1-t3-w3 ("My father's never driven a car" được chấm đúng, "Vì sao sai?" gửi prompt câu gõ), thứ tự khối ở bước Bài chính s1-t3-w2.
   evidence: Review story 37 (blind). Implementation Notes ghi "Chưa kiểm tay"; component không đổi, khối tự hiện qua `GrammarSection` như story 35, 36, và test dữ liệu đã kiểm chấm câu golden bằng `matchesTyped`. Cần Huy mở các route trên Chrome 375px.
@@ -180,6 +184,7 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/43-quantifiers-there-negative-questions.md`
   summary: Test khai báo khái niệm của story 43 (`quantifiers` / `there-negative-questions`) bỏ qua mọi câu chưa có `requires`, nên 3 câu T2–T4 có lượng từ (`t2-t4.ts` "any money", "some water", "many countries") chưa bị kiểm; khi thêm `requires` cho câu T2–T4 cũ, các câu này phải có `quantifiers`.
   evidence: Review story 43 (blind). Thiếu `requires` ở câu T2–T4 có từ trước story 43; spec story 43 giao việc thêm `requires` cho story 47. Story 47 nên chạy lại `quantifierConcepts` (foundation.test.ts) trên mọi câu sau khi thêm `requires`, hoặc dùng danh sách ngoại lệ chốt đúng 3 id này cho tới lúc đó.
+  resolved: Story 47 — mọi câu T2–T4 có `requires` (`q-s1-t3-w2-04` any, `q-s1-t4-w1-06` some, `q-s1-t4-w3-03` many khai báo `quantifiers`); test days-months, lượng từ quét cả câu mới khai báo; test liên từ quét thêm `QUESTION_BANK` (đề lấy phần tiếng Anh qua `promptEnglish`).
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/44-conjunctions-question-words-subject-questions.md`
   summary: Thẻ hư từ `ngsl-because` dùng ví dụ "I am late because of the rain." (`words.json:63`), mà F16 chỉ dạy because + mệnh đề; từ story 44 thẻ này mở ngay sau F16, tức là ngay trong Sân ga.
   evidence: Review story 44 (edge, độ tin thấp). Story 44 cấm đổi `words.json` / `example-overrides.json` (Never). Lần rà ví dụ tới nên thêm override cho `ngsl-because`, ví dụ "I am happy because I have a new job.", rồi chạy lại test ví dụ hư từ.
@@ -219,3 +224,21 @@
 - source_spec: `_bmad-output/specs/spec-english-learning-website/stories/42-tense-map.md`
   summary: (Chưa kiểm chứng, nếu đúng: medium) Mục Sổ lỗi nhãn `thì` của câu đã bị gỡ khỏi kho câu hỏi vẫn được đếm là "chưa thuộc" nhưng `reviewableDue` bỏ qua, nên thì đó không bao giờ thành "chắc".
   evidence: Review story 42 (edge). `openMistakesByLesson` không kiểm `getQuestion(id)`. Cần dò `mistakes.items` của store thật (hoặc lịch sử đổi id câu hỏi) xem có id không tra được; nếu có, bỏ qua mục đó khi đếm (cùng luật với `reviewableDue`) hoặc dọn mục mồ côi.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/47-sequencing-cleanup-grammar-days.md`
+  summary: Tuần will (s1-t3-w1) vẫn chưa có video nói về will, s1-t3-w2 (nối âm) chưa có video nối âm, T1-W3 / T2-W1 chưa có video ngữ pháp riêng.
+  evidence: Story 47 chỉ chuyển "My Weekend" (n7RA6XxfpNU) sang đoạn giải trí s1-t2-w4, không thêm video mới: mỗi ID phải kiểm oEmbed và giấy phép, và luật 1–2 video mỗi bài là quyết định của Huy ở story 15. Lần thêm video tới nên chọn video ngắn có giấy phép rõ cho các bài này.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/47-sequencing-cleanup-grammar-days.md`
+  summary: Phụ đề "My Weekend" (n7RA6XxfpNU) giờ ở tuần ôn quá khứ s1-t2-w4 nhưng chưa có tô thì (đánh dấu V2 bất quy tắc / quá khứ tiếp diễn) trong phụ đề.
+  evidence: Story 47 chỉ đổi `lessonId` trong `videos.json`, không đổi file sub (Never). Nếu muốn dùng video để ôn thì, cần thêm ghi chú / tô thì trong `src/data/subs/n7RA6XxfpNU.json`.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/47-sequencing-cleanup-grammar-days.md`
+  summary: used to, like + V-ing, want + to V (mức A2) chưa dạy ở Chặng 1.
+  evidence: Báo cáo kiểm tra "nền & các thì" mục Thấp; story 47 cố ý không dạy (để Chặng 2), may / might đã dời sang s2-t7-w3 / s2-t7-w4 ở story 45. `outOfScopeWords` vẫn báo used to nhưng KHÔNG báo "want to" / động từ + to V khác, và ba câu phát âm cũ đã trích "want to": `q-s1-t3-w1-05` ("I want to go", to → /tə/), `q-s1-t3-w3-05` ("I want to buy a new phone"), `q-s1-t4-w1-05` (want to → wanna). Các câu này là câu phát âm (hỏi cách đọc từ "to"), không đòi Huy tự dùng mẫu. Story sau dạy want + to V (hoặc thêm luật báo mẫu động từ + to V vào `outOfScopeWords`) thì phải xử lý ba câu này; cặp câu ngày 4 s1-t2-w4 đã bỏ "started to rain" ở review story 47.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/47-sequencing-cleanup-grammar-days.md`
+  summary: Ngày Ngữ pháp N1–N4 không có kiểm tra riêng; điểm "nắm chắc" theo ngày (vd câu quiz gắn ngày) chưa có.
+  evidence: Story 47 dùng lại cơ chế phần (`partsSeen`) và kiểm tra 5 câu cuối Bài chính chỉ ở ngày 5 / buổi ôn cả tuần (luật "phần cuối" của story 41). Muốn kiểm tra sau từng ngày thì cần gắn câu quiz theo dạng (khẳng định / phủ định / câu hỏi).
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/47-sequencing-cleanup-grammar-days.md`
+  summary: Mở lại bài đã xong từ Bản đồ thì (`lessonSessionHref`) vẫn chốt phần / ngày chưa xem đầu tiên: bài T1 chia phần hay bài T2–T4 chia ngày đã đánh dấu xong mà `partsSeen` trống (xong trước story 28 / 47, hoặc bấm "Đánh dấu đã học xong") mở ra "Ngày 1/5" (hay phần 1) chứ không phải buổi ôn cả bài có kiểm tra 5 câu, và "Xong buổi" ghi tiếp ngày cho bài đã xong.
+  evidence: Review story 47 (blind, edge). `lessonPartOf` (`src/lib/sessions/plan.ts`) không xét `done`; story 42 đã ghi hành vi này cho bài T1 ("Bản đồ thì vẫn có nút Làm kiểm tra"), story 47 mở rộng sang 8 bài T2–T4. Cần Huy chọn: bài đã xong thì buổi ghim bài luôn là buổi ôn cả bài (`lessonPartOf` trả null khi `isLessonCompleted`), hay giữ như cũ.
+- source_spec: `_bmad-output/specs/spec-english-learning-website/stories/47-sequencing-cleanup-grammar-days.md`
+  summary: Nội dung bên trong một ngày Ngữ pháp (khối luyện của thì chỉ ở N3, khối "Chọn thì" theo `choiceIds`, phần ôn tập chỉ ở N5 / cả tuần) chỉ được kiểm tay; chọn view của buổi đã có hàm thuần `sessionSectionViews` có test, nhưng `GrammarDayBlock` / `GrammarSection` không có test.
+  evidence: Review story 47 (verification gap). Repo chưa có test component (vitest chỉ chạy `src/**/*.test.ts` môi trường node). Muốn chặn hồi quy thì tách lựa chọn khối của ngày thành hàm thuần (vd `grammarDayBlocks(content, day)`) hoặc thêm môi trường test component.

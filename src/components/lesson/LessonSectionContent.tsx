@@ -1,7 +1,12 @@
 import { ClipboardCheck, GraduationCap } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { GrammarSection, PronunciationSection, type PronunciationView } from '@/components/lesson/LessonContentParts'
+import {
+  GrammarSection,
+  PronunciationSection,
+  type GrammarView,
+  type PronunciationView,
+} from '@/components/lesson/LessonContentParts'
 import { LinkList } from '@/components/session/SessionParts'
 import { Button } from '@/components/ui/button'
 import type { LessonContent } from '@/data/lessons'
@@ -32,17 +37,19 @@ type Props = {
   content: LessonContent | undefined
   /** Đoạn Phát âm của bài chia phần (story 28): mọi phần (mặc định) hay chỉ phần của buổi. */
   pronunciationView?: PronunciationView
+  /** Đoạn Ngữ pháp của bài chia theo ngày (story 47): cả đoạn (mặc định) hay chỉ ngày của buổi. */
+  grammarView?: GrammarView
 }
 
 /**
  * Nội dung học của một đoạn (children của `LessonSectionCard`): bảng âm, TenseCard, link giải trí, nút thi O.W.L.
  * Trang bài và buổi 30' dùng chung (story 21). Nơi gọi tự bọc `ReadingSourceContext.Provider`.
  */
-export function LessonSectionContent({ lesson, stage, section, content, pronunciationView }: Props) {
+export function LessonSectionContent({ lesson, stage, section, content, pronunciationView, grammarView }: Props) {
   return (
     <>
       {content && section.id === 'pronunciation' && <PronunciationSection content={content} view={pronunciationView} />}
-      {content && section.id === 'grammar' && <GrammarSection content={content} />}
+      {content && section.id === 'grammar' && <GrammarSection content={content} view={grammarView} />}
       {section.id === 'entertainment' && <EntertainmentLinks lesson={lesson} />}
       {section.id === 'checkpoint' && lesson.checkpointId === OWL_CHECKPOINT_ID && (
         <div className="flex flex-col gap-2 sm:flex-row">

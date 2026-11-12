@@ -1,6 +1,6 @@
 import { ListenButton } from '@/components/ListenButton'
 import { ReadableText } from '@/components/ReadableText'
-import type { TenseChoice } from '@/data/lessons'
+import type { MinimalPair, TenseChoice } from '@/data/lessons'
 import { choiceSides } from '@/lib/tense-choice'
 
 import { SignalWords } from './SignalWords'
@@ -16,6 +16,29 @@ function Sentence({ en, vi }: { en: string; vi: string }) {
         <ReadableText text={en} className="leading-relaxed break-words" />
         <p className="text-xs text-muted-foreground">{vi}</p>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Danh sách cặp câu dễ nhầm (story 39): mỗi cặp hai câu có nút nghe và ghi chú vì sao. Dùng ở thẻ khối "Chọn thì" và ở cặp
+ * câu "So với thì trước" của ngày 4 Ngữ pháp (story 47).
+ */
+export function MinimalPairList({ pairs, title = 'Cặp câu dễ nhầm' }: { pairs: readonly MinimalPair[]; title?: string }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h4 className="font-semibold">{title}</h4>
+      <ul className="flex flex-col gap-2 text-sm">
+        {pairs.map((p) => (
+          <li key={`${p.a.en}|${p.b.en}`} className="flex flex-col gap-2 rounded-lg border p-2">
+            <Sentence en={p.a.en} vi={p.a.vi} />
+            <Sentence en={p.b.en} vi={p.b.vi} />
+            <p className="text-xs text-muted-foreground">
+              <GlossaryText text={p.noteVi} />
+            </p>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -80,20 +103,7 @@ export function TenseChoiceCard({ choice }: { choice: TenseChoice }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <h4 className="font-semibold">Cặp câu dễ nhầm</h4>
-        <ul className="flex flex-col gap-2 text-sm">
-          {choice.pairs.map((p) => (
-            <li key={`${p.a.en}|${p.b.en}`} className="flex flex-col gap-2 rounded-lg border p-2">
-              <Sentence en={p.a.en} vi={p.a.vi} />
-              <Sentence en={p.b.en} vi={p.b.vi} />
-              <p className="text-xs text-muted-foreground">
-                <GlossaryText text={p.noteVi} />
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <MinimalPairList pairs={choice.pairs} />
 
       <div className="flex flex-col gap-1">
         <h4 className="font-semibold">3 quy tắc chọn</h4>

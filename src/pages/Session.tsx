@@ -6,7 +6,6 @@ import { useLessonParts, useLoadedStore, useSessions, useSkillBoard } from '@/ap
 import { useHotkeys, type HotkeyBindings } from '@/app/use-hotkeys'
 import { BrickPlayer } from '@/components/foundation/BrickPlayer'
 import { FlashcardSession, VocabAttribution } from '@/components/flashcards/FlashcardSession'
-import type { PronunciationView } from '@/components/lesson/LessonContentParts'
 import { LessonSectionContent } from '@/components/lesson/LessonSectionContent'
 import { VideoList } from '@/components/media/VideoEmbed'
 import { ReadingSourceContext } from '@/components/reading-source'
@@ -22,7 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBrickMeta, type BrickId } from '@/data/foundation'
 import { getBrick, hasBrickContent } from '@/data/foundation/content'
-import { getLessonContent } from '@/data/lessons'
+import { getLessonContent, sessionSectionViews } from '@/data/lessons'
 import { getQuiz } from '@/data/questions'
 import {
   entertainmentLinks,
@@ -154,6 +153,8 @@ function TheoryStep({
 /**
  * Bài chính: thẻ đoạn kèm nội dung (bảng âm, TenseCard, nút thi O.W.L.) hiện ngay trong buổi, lý thuyết trước.
  * Bài T1 chia phần (story 28): đoạn Phát âm chỉ hiện phần của buổi (`partId`); đã xem hết thì hiện mọi phần để ôn cả tuần.
+ * Bài T2–T4 chia Ngữ pháp theo ngày (story 47): `partId` là ngày (`lessonPartKind` = `grammar`), đoạn Ngữ pháp chỉ hiện ngày
+ * đó; đã xem đủ 5 ngày thì hiện cả đoạn để ôn cả tuần. Đoạn Phát âm của các bài này không đổi.
  * Story 41: buổi học cả bài hoặc phần cuối của bài có quiz bài (`checkQuizId`) thì cuối bước có thẻ kiểm tra 5 câu
  * (`LessonCheck`, không bắt buộc); đang làm / ở màn kết quả thì ẩn thẻ đoạn (header bài vẫn hiện).
  */
@@ -186,7 +187,8 @@ function LessonStep({
   const { lesson, stage } = current
   const content = getLessonContent(lesson.id)
   const partCount = content?.parts?.length ?? 0
-  const view: PronunciationView = partId ? { kind: 'part', partId } : { kind: 'all' }
+  const dayCount = content?.grammarDays?.length ?? 0
+  const { pronunciation: view, grammar: grammarView } = sessionSectionViews(lesson.id, partId)
   const checkQuiz = checkQuizId ? getQuiz(checkQuizId) : undefined
   const showSections = !(checkQuiz && checkFocused)
   return (
@@ -197,9 +199,11 @@ function LessonStep({
         </p>
         <h2 className="text-xl font-semibold break-words">{lesson.title}</h2>
       </div>
-      {showSections && partCount > 0 && !partId && (
+      {showSections && (partCount > 0 || dayCount > 0) && !partId && (
         <p className="rounded-lg border border-primary/40 bg-accent/40 p-3 text-sm">
-          Đã xem đủ {partCount} phần, hôm nay ôn lại cả tuần.
+          {partCount > 0
+            ? `Đã xem đủ ${partCount} phần, hôm nay ôn lại cả tuần.`
+            : `Đã xem đủ ${dayCount} ngày Ngữ pháp, hôm nay ôn lại cả tuần.`}
         </p>
       )}
       {/* Lý thuyết (phát âm, ngữ pháp) luôn trước; đoạn luyện của kỹ năng yếu nhất lên trước đoạn luyện khác, nhãn "Ưu tiên". */}
@@ -219,6 +223,7 @@ function LessonStep({
                 section={section}
                 content={content}
                 pronunciationView={view}
+                grammarView={grammarView}
               />
             </LessonSectionCard>
           </ReadingSourceContext.Provider>

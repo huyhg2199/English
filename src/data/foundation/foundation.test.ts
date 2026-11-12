@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import { FOUNDATION_QUESTIONS, isTypedQuestion, OWL_QUESTIONS, QUESTION_BANK, type Question } from '@/data/questions'
 import { FUNCTION_WORD_GATES, hasDetails, loadWords, POS_LABELS, STARTER_WORD_IDS } from '@/data/vocab'
-import { allTenses } from '@/data/lessons'
+import { allTenses, LESSON_CONTENTS } from '@/data/lessons'
 import { isCorrect, isFadedCorrect } from '@/lib/foundation/player'
 import { ruleCardId } from '@/lib/flashcard-session'
+import { promptEnglish } from '@/lib/tense-scope'
 import { checkFill } from '@/lib/subs/blanks'
 
 import { BRICKS, getBrickMeta } from './catalog'
@@ -757,6 +758,11 @@ describe('F06 số, thứ, tháng (story 34)', () => {
       for (const n of names) seen.add(n)
       if (names.length > 0 && !(q.requires as readonly string[]).includes('days-months')) missing.push(`${q.id} (${names.join(', ')})`)
     }
+    for (const d of GRAMMAR_DAY_TEXTS) {
+      const names = d.texts.flatMap(dayMonthNames)
+      for (const n of names) seen.add(n)
+      if (names.length > 0 && !d.requires.includes('days-months')) missing.push(`${d.id} (${names.join(', ')})`)
+    }
     expect(missing).toEqual([])
     // Mọi tên thứ / tháng gặp trong các câu trên đều có trong bảng F06.
     const inTables = new Set([...ens('f06-days'), ...ens('f06-months')])
@@ -789,6 +795,24 @@ describe('màn faded đổi từ checkFill sang matchesTyped (story 35): chỉ n
     }
   })
 })
+
+/**
+ * Câu tiếng Anh của ngày Ngữ pháp (story 47: câu nói N1–N3 và cặp câu N4) kèm `requires` khai tay của ngày, để các test khai
+ * báo theo chữ (days-months, lượng từ, liên từ) quét cả ngày.
+ */
+const GRAMMAR_DAY_TEXTS = LESSON_CONTENTS.flatMap((c) =>
+  (c.grammarDays ?? []).flatMap((d) =>
+    d.requires
+      ? [
+          {
+            id: d.id,
+            requires: d.requires as readonly string[],
+            texts: [...(d.sentences ?? []).map((x) => x.text), ...(d.compare?.pairs ?? []).flatMap((p) => [p.a.en, p.b.en])],
+          },
+        ]
+      : [],
+  ),
+)
 
 /** Có lượng từ some / any / many / a lot of (không quét much: How much còn là hỏi giá của F14). */
 const QUANTIFIER_RE = /\b(?:some|any|many)\b|\ba lot of\b/i
@@ -949,6 +973,11 @@ describe('F15 lượng từ, There is phủ định / câu hỏi (story 43)', ()
       if (need.size > 0) hits++
       for (const c of need) if (!(q.requires as readonly string[]).includes(c)) missing.push(`${q.id} thiếu ${c}`)
     }
+    for (const d of GRAMMAR_DAY_TEXTS) {
+      const need = new Set(d.texts.flatMap(quantifierConcepts))
+      if (need.size > 0) hits++
+      for (const c of need) if (!d.requires.includes(c)) missing.push(`${d.id} thiếu ${c}`)
+    }
     expect(missing).toEqual([])
     expect(hits).toBeGreaterThanOrEqual(5)
     // Tự kiểm helper.
@@ -1055,7 +1084,7 @@ describe('F16 nối câu (story 44)', () => {
     for (const t of correct) expect(BECAUSE_SO_RE.test(t), t).toBe(false)
   })
 
-  it('câu có but / or / because / so thì khai báo conjunctions (câu luyện mọi viên, câu FOUNDATION_QUESTIONS)', () => {
+  it('câu có but / or / because / so thì khai báo conjunctions (câu luyện mọi viên, câu FOUNDATION_QUESTIONS và QUESTION_BANK)', () => {
     const missing: string[] = []
     let hits = 0
     for (const b of bricks) {
@@ -1066,11 +1095,23 @@ describe('F16 nối câu (story 44)', () => {
         if (!item.uses.includes('conjunctions')) missing.push(item.id)
       }
     }
-    for (const q of FOUNDATION_QUESTIONS) {
+    // Story 47: mọi câu T1–T4 có requires nên quét cả QUESTION_BANK. Đề câu bài có thể là tiếng Việt ("so sánh"), nên chỉ
+    // lấy phần tiếng Anh của đề (`promptEnglish`).
+    const bankTexts = (q: Question) => [promptEnglish(q.prompt).replace('___', q.answer), ...filledQuestionTexts(q).slice(1)]
+    const scanned: (readonly [Question, string[]])[] = [
+      ...FOUNDATION_QUESTIONS.map((q) => [q, filledQuestionTexts(q)] as const),
+      ...QUESTION_BANK.map((q) => [q, bankTexts(q)] as const),
+    ]
+    for (const [q, texts] of scanned) {
       if (!q.requires) continue
-      if (!filledQuestionTexts(q).some(needsConjunctions)) continue
+      if (!texts.some(needsConjunctions)) continue
       hits++
       if (!(q.requires as readonly string[]).includes('conjunctions')) missing.push(q.id)
+    }
+    for (const d of GRAMMAR_DAY_TEXTS) {
+      if (!d.texts.some(needsConjunctions)) continue
+      hits++
+      if (!d.requires.includes('conjunctions')) missing.push(d.id)
     }
     expect(missing).toEqual([])
     expect(hits).toBeGreaterThanOrEqual(5)
